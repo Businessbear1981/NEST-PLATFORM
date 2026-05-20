@@ -3,6 +3,7 @@ import threading
 import uuid
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 perm_bp = Blueprint("perm", __name__)
 
@@ -29,6 +30,7 @@ PERM_STATUSES = [
 
 
 @perm_bp.route("/<deal_id>/initiate", methods=["POST"])
+@require_auth()
 def initiate_perm(deal_id):
     body = request.get_json() or {}
     rolloff = {
@@ -54,6 +56,7 @@ def initiate_perm(deal_id):
 
 
 @perm_bp.route("/<deal_id>/status", methods=["GET"])
+@require_auth()
 def perm_status(deal_id):
     with _lock:
         rolloff = _rolloffs.get(deal_id)

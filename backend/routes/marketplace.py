@@ -1,6 +1,7 @@
 """Public marketplace routes — deal listings for investors."""
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 marketplace_bp = Blueprint("marketplace", __name__)
 
@@ -14,6 +15,7 @@ def _ok(data, code=200):
 
 
 @marketplace_bp.route("", methods=["GET"])
+@require_auth()
 def list_offerings():
     """Public deal listings — no auth required for viewing."""
     # Import deals store from deals blueprint

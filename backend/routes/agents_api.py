@@ -2,6 +2,7 @@
 import threading
 from flask import Blueprint, jsonify, request, current_app
 from datetime import datetime
+from services.auth import require_auth
 
 agents_bp = Blueprint("agents_api", __name__)
 
@@ -22,25 +23,27 @@ def _err(msg, code=400):
 
 
 AGENT_REGISTRY = {
-    "vector": {"name": "Vector", "status": "standby", "description": "Call/put timing agent"},
-    "apex": {"name": "Apex", "status": "standby", "description": "Short position manager"},
-    "chain": {"name": "Chain", "status": "standby", "description": "Blockchain execution"},
-    "atlas": {"name": "Atlas", "status": "standby", "description": "Financial modeling"},
+    "vector": {"name": "Vector", "status": "active", "description": "Call/put timing agent"},
+    "apex": {"name": "Apex", "status": "active", "description": "Short position manager"},
+    "chain": {"name": "Chain", "status": "active", "description": "Blockchain execution"},
+    "atlas": {"name": "Atlas", "status": "active", "description": "Financial modeling"},
     "morgan": {"name": "Morgan", "status": "active", "description": "Memo + content writer"},
     "sterling": {"name": "Sterling", "status": "active", "description": "Investor placement"},
-    "bridge": {"name": "Bridge", "status": "standby", "description": "Perm debt monitoring"},
-    "quantum": {"name": "Quantum", "status": "standby", "description": "HFT fund optimizer"},
-    "maxwell": {"name": "Maxwell", "status": "standby", "description": "Credit analyst"},
+    "bridge": {"name": "Bridge", "status": "active", "description": "Perm debt monitoring"},
+    "quantum": {"name": "Quantum", "status": "active", "description": "HFT fund optimizer"},
+    "maxwell": {"name": "Maxwell", "status": "active", "description": "Credit analyst"},
     "aria": {"name": "Aria", "status": "active", "description": "Client + BD outreach"},
-    "merlin": {"name": "Merlin", "status": "standby", "description": "M&A intelligence"},
-    "lender_scout": {"name": "LenderScout", "status": "standby", "description": "Direct lender sourcing"},
-    "prometheus": {"name": "Prometheus", "status": "standby", "description": "Financial modeling engine"},
-    "sentinel": {"name": "Sentinel", "status": "standby", "description": "Risk assessment engine"},
-    "blaze": {"name": "Blaze", "status": "standby", "description": "Elite marketing engine"},
+    "merlin": {"name": "Merlin", "status": "active", "description": "M&A intelligence"},
+    "lender_scout": {"name": "LenderScout", "status": "active", "description": "Direct lender sourcing"},
+    "prometheus": {"name": "Prometheus", "status": "active", "description": "Financial modeling engine"},
+    "sentinel": {"name": "Sentinel", "status": "active", "description": "Risk assessment engine"},
+    "blaze": {"name": "Blaze", "status": "active", "description": "Elite marketing engine"},
+    "surety_scout": {"name": "SuretyScout", "status": "active", "description": "Surety sourcing + Hylant liaison"},
 }
 
 
 @agents_bp.route("/status", methods=["GET"])
+@require_auth()
 def all_status():
     with _lock:
         agents = []
@@ -58,6 +61,7 @@ def all_status():
 
 
 @agents_bp.route("/<name>/run", methods=["POST"])
+@require_auth()
 def run_agent(name):
     name_lower = name.lower()
     if name_lower not in AGENT_REGISTRY:
@@ -71,6 +75,19 @@ def run_agent(name):
         "morgan": "MORGAN",
         "aria": "ARIA",
         "sterling": "STERLING",
+        "apex": "APEX",
+        "vector": "VECTOR",
+        "chain": "CHAIN",
+        "atlas": "BOND_OPTIMIZER",
+        "bridge": "BRIDGE",
+        "quantum": "QUANTUM",
+        "maxwell": "MAXWELL",
+        "merlin": "MERLIN",
+        "lender_scout": "LENDER_SCOUT",
+        "prometheus": "PROMETHEUS",
+        "sentinel": "SENTINEL",
+        "blaze": "AUDITOR",
+        "surety_scout": "SURETY_SCOUT",
     }
 
     config_key = agent_map.get(name_lower)

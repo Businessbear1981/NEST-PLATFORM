@@ -24,4 +24,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -fsS http://localhost:${PORT}/api/health || exit 1
 
-CMD ["sh", "-c", "gunicorn -k gthread -w 1 --threads 4 --bind 0.0.0.0:${PORT} --timeout 120 app:app"]
+CMD ["sh", "-c", "gunicorn -k eventlet -w 1 --bind 0.0.0.0:${PORT} --timeout 120 app:app"]

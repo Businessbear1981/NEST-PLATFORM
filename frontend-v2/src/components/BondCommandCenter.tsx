@@ -142,7 +142,7 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
           <DucklingAgentFlow />
           <div className="grid grid-cols-3 gap-4">
             <div className="rounded-2xl border border-cyan-300/25 bg-black/35 shadow-[0_0_32px_rgba(34,211,238,0.06)]">
-              <EagleEyeScoutDashboard summaryMode />
+              <EagleEyeScoutDashboard dealId={dealId} summaryMode />
             </div>
             <div className="rounded-2xl border border-emerald-300/25 bg-black/35 shadow-[0_0_32px_rgba(52,211,153,0.06)]">
               <RootsWorkspace dealId={dealId} summaryMode />
@@ -154,7 +154,7 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
         </TabsContent>
 
         {/* Full views */}
-        <TabsContent value="eagleeye" className="mt-4"><EagleEyeScoutDashboard /></TabsContent>
+        <TabsContent value="eagleeye" className="mt-4"><EagleEyeScoutDashboard dealId={dealId} /></TabsContent>
         <TabsContent value="roots" className="mt-4"><RootsWorkspace dealId={dealId} /></TabsContent>
         <TabsContent value="bonddesk" className="mt-4"><StructuringStudio dealId={dealId} /></TabsContent>
         <TabsContent value="hawkeye" className="mt-4"><HawkeyePlacementScout dealId={dealId} /></TabsContent>

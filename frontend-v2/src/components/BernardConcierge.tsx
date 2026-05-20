@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Send, Loader2, X, Maximize2, Minimize2, Sparkles } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import NestMark from "./NestMark";
+import { useActiveDeal } from "@/contexts/ActiveDealContext";
 
 /**
  * Bernard — NEST AI Analyst Concierge
@@ -34,6 +35,9 @@ const SUGGESTED_PROMPTS = [
 ];
 
 export default function BernardConcierge() {
+  const { dealId } = useActiveDeal();
+  const dealQuery = trpc.deals.get.useQuery({ dealId: dealId ?? "" }, { enabled: !!dealId });
+  const activeDeal = dealQuery.data as any;
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -113,7 +117,16 @@ Respond using the REAL data above. Be Bernard. Riff on it. Suggest next moves. D
 
     // ACTION: Run credit / rating analysis
     if (lower.match(/credit|dscr|ltv|rating|score|grade|maxwell/)) {
-      ratingMutation.mutate({
+      ratingMutation.mutate(activeDeal ? {
+        stabilized_noi_usd: activeDeal.bond_face * 0.08,
+        a_tranche_usd: activeDeal.bond_face * 0.75,
+        b_tranche_usd: activeDeal.bond_face * 0.07,
+        a_coupon_pct: 6.5, b_coupon_pct: 11,
+        total_project_cost_usd: activeDeal.bond_face,
+        appraised_value_usd: activeDeal.bond_face * 1.2,
+        sponsor_equity_usd: activeDeal.bond_face * 0.18,
+        ebitda_usd: activeDeal.bond_face * 0.068,
+      } : {
         stabilized_noi_usd: 12_000_000, a_tranche_usd: 112_500_000, b_tranche_usd: 10_500_000,
         a_coupon_pct: 6.5, b_coupon_pct: 11, total_project_cost_usd: 150_000_000,
         appraised_value_usd: 180_000_000, sponsor_equity_usd: 37_500_000, ebitda_usd: 10_200_000,
@@ -139,7 +152,10 @@ Respond using the REAL data above. Be Bernard. Riff on it. Suggest next moves. D
 
     // ACTION: Generate teaser
     if (lower.match(/teaser|pitch|outreach|email.*investor/)) {
-      teaserMutation.mutate({
+      teaserMutation.mutate(activeDeal ? {
+        dealId: activeDeal.id, dealName: activeDeal.name, totalRaise: activeDeal.bond_face,
+        coupon: 6.5, rating: "A", assetType: activeDeal.project?.asset_type || "bond", state: activeDeal.state || "FL",
+      } : {
         dealId: "current", dealName: "NEST Bond Offering", totalRaise: 150_000_000,
         coupon: 6.5, rating: "A", assetType: "Senior Living CCRC", state: "FL",
       }, {

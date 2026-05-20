@@ -3,9 +3,10 @@ NEST Bond Workflow Routes — Master orchestration for the BondCommandCenter.
 Tracks deal readiness across all 4 pillars (EagleEye, Roots, Bond Desk, Hawkeye).
 """
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from services.auth import require_auth
 from datetime import datetime
 import threading
+from services.auth import require_auth
 
 bond_workflow_bp = Blueprint("bond_workflow", __name__)
 
@@ -45,13 +46,13 @@ def _get_or_create_workflow(deal_id: str) -> dict:
 
 
 @bond_workflow_bp.route("/deal/<deal_id>", methods=["GET"])
-@jwt_required()
+@require_auth()
 def get_by_deal(deal_id):
     return _ok(_get_or_create_workflow(deal_id))
 
 
 @bond_workflow_bp.route("/deal/<deal_id>/run-evaluation", methods=["POST"])
-@jwt_required()
+@require_auth()
 def run_full_ai_evaluation(deal_id):
     """Run full AI evaluation across all pillars — updates readiness score."""
     wf = _get_or_create_workflow(deal_id)
@@ -111,7 +112,7 @@ def run_full_ai_evaluation(deal_id):
 
 
 @bond_workflow_bp.route("/deal/<deal_id>/checklist", methods=["POST"])
-@jwt_required()
+@require_auth()
 def update_checklist(deal_id):
     """Add or toggle a checklist item."""
     b = request.get_json() or {}
@@ -140,7 +141,7 @@ def update_checklist(deal_id):
 
 
 @bond_workflow_bp.route("/deal/<deal_id>/phase", methods=["PATCH"])
-@jwt_required()
+@require_auth()
 def update_phase(deal_id):
     b = request.get_json() or {}
     wf = _get_or_create_workflow(deal_id)

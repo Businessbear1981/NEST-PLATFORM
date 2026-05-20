@@ -1,6 +1,7 @@
 """Direct lender sourcing routes — LenderScout agent interface."""
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 lenders_api_bp = Blueprint("lenders_api", __name__)
 
@@ -18,6 +19,7 @@ def _err(msg, code=400):
 
 
 @lenders_api_bp.route("", methods=["GET"])
+@require_auth()
 def get_lenders():
     """Get all lenders in database + seed data."""
     try:
@@ -28,6 +30,7 @@ def get_lenders():
 
 
 @lenders_api_bp.route("", methods=["POST"])
+@require_auth()
 def add_lender():
     """Add a lender manually."""
     body = request.get_json() or {}
@@ -37,6 +40,7 @@ def add_lender():
 
 
 @lenders_api_bp.route("/search", methods=["POST"])
+@require_auth()
 def search_lenders_for_deal():
     """Run LenderScout to find matching lenders for a deal."""
     body = request.get_json() or {}
@@ -50,6 +54,7 @@ def search_lenders_for_deal():
 
 
 @lenders_api_bp.route("/pipeline", methods=["GET"])
+@require_auth()
 def get_pipeline():
     """Get all active lender pipelines."""
     stages = ["TARGETED", "OUTREACH_SENT", "RESPONDED", "TERM_SHEET_RECEIVED", "COMMITTED", "CLOSED", "PASSED"]

@@ -30,6 +30,11 @@ try:
 except ImportError:
     game_engine = None
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 
 # Seed lender database
 SEED_LENDERS = [
@@ -143,8 +148,33 @@ class LenderScoutAgent:
     }
 
     def __init__(self):
-        self.lender_db = list(SEED_LENDERS)
+        self.lender_db = self._load_lenders()
         self.match_history = []
+
+    def _load_lenders(self):
+        """Load lenders from Supabase, fall back to seed data."""
+        if _db and _db.configured:
+            rows = _db.select("lenders")
+            if rows:
+                return [{
+                    "id": r["id"],
+                    "name": r["name"],
+                    "type": r.get("lender_type", "bank"),
+                    "base_rate": float(r.get("rate_floor", 0.07)),
+                    "cost_of_funds": float(r.get("rate_floor", 0.07)) * 0.6,
+                    "min_deal": float(r.get("min_loan", 0)),
+                    "max_deal": float(r.get("max_loan", 0)),
+                    "sectors": [],
+                    "max_ltv": 0.75,
+                    "min_dscr": 1.20,
+                    "avg_close_days": 45,
+                    "risk_appetite": 0.6,
+                    "deal_volume_ytd": 0,
+                    "portfolio_stress": 0.02,
+                    "sba_preferred": False,
+                    "geography": r.get("states", []) or ["national"],
+                } for r in rows]
+        return list(SEED_LENDERS)
 
     # ------------------------------------------------------------------ #
     #  LENDER SCORING (10 dimensions)                                     #
@@ -414,14 +444,32 @@ Sign as "NEST Capital | Acquisition Finance"
             outreach = self.generate_lender_outreach(best_lender, deal, best_match)
             result["outreach"] = outreach
 
-        # Record history
+        # Record history + persist to DB
+        deal_id = deal.get("deal_id")
         for match in search["top_matches"]:
             self.match_history.append({
                 "lender_id": match["lender_id"],
-                "deal_id": deal.get("deal_id"),
+                "deal_id": deal_id,
                 "score": match["composite_score"],
                 "timestamp": datetime.utcnow().isoformat(),
             })
+            if _db and _db.configured and deal_id:
+                try:
+                    _db.save_lender_match(
+                        deal_id=deal_id,
+                        lender_id=match["lender_id"],
+                        score=match["composite_score"],
+                        match_reasons=match.get("top_strengths", []),
+                        proposed_rate=match.get("base_rate"),
+                    )
+                except Exception:
+                    pass
+
+        if _db and _db.configured:
+            try:
+                _db.update_agent_status("LenderScout", "active")
+            except Exception:
+                pass
 
         result["pipeline_completed"] = datetime.utcnow().isoformat()
         return result

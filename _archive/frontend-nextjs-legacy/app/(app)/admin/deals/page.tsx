@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 function fmt(n: number) { return n?.toLocaleString('en-US', { maximumFractionDigits: 0 }) ?? '—'; }
@@ -8,6 +9,7 @@ function fmtM(n: number) { return n ? `$${(n / 1_000_000).toFixed(1)}M` : '—';
 const STAGES = ['intake', 'credit_analysis', 'packaging', 'placement', 'committed', 'closed'];
 
 export default function DealsPage() {
+  const router = useRouter();
   const [deals, setDeals] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
 
@@ -46,6 +48,7 @@ export default function DealsPage() {
                     <div className="serif" style={{ fontSize: 15, marginBottom: 4 }}>{deal.name || deal.id}</div>
                     <div className="gold mono" style={{ fontSize: 14 }}>{fmtM(deal.bond_face || deal.size_usd || 0)}</div>
                     {deal.asset_type && <div className="tag-gray" style={{ marginTop: 4, display: 'inline-block', fontSize: 8 }}>{deal.asset_type}</div>}
+                    <button className="btn-outline" style={{ marginTop: 8, fontSize: 9, padding: '4px 10px' }} onClick={(e) => { e.stopPropagation(); router.push(`/deals/${deal.id}`); }}>Open Command Center →</button>
                   </div>
                 ))}
               </div>

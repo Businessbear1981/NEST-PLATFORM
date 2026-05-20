@@ -3,8 +3,9 @@ NEST Rating, ESG, Climate, Covenant, and Trustee Routes.
 Supporting modules for the BondCommandCenter.
 """
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from services.auth import require_auth
 from datetime import datetime
+from services.auth import require_auth
 
 rating_esg_bp = Blueprint("rating_esg", __name__)
 
@@ -24,7 +25,7 @@ def _err(msg, code=400):
 # ══════════════════════════════════════════════════════════════════
 
 @rating_esg_bp.route("/rating/assess", methods=["POST"])
-@jwt_required()
+@require_auth()
 def rating_assess():
     b = request.get_json() or {}
     from engines.maxwell_engine import score_deal
@@ -54,7 +55,7 @@ def rating_assess():
 
 
 @rating_esg_bp.route("/rating/compare", methods=["POST"])
-@jwt_required()
+@require_auth()
 def rating_compare():
     b = request.get_json() or {}
     from services.core import JPM, CreditEngine
@@ -100,7 +101,7 @@ ESG_CRITERIA = {
 
 
 @rating_esg_bp.route("/esg/score", methods=["POST"])
-@jwt_required()
+@require_auth()
 def esg_score():
     b = request.get_json() or {}
     scores_input = b.get("scores", {})
@@ -144,7 +145,7 @@ def esg_score():
 # ══════════════════════════════════════════════════════════════════
 
 @rating_esg_bp.route("/climate/assess", methods=["POST"])
-@jwt_required()
+@require_auth()
 def climate_assess():
     b = request.get_json() or {}
     state = b.get("state", "FL")
@@ -198,7 +199,7 @@ def climate_assess():
 # ══════════════════════════════════════════════════════════════════
 
 @rating_esg_bp.route("/covenants/monitor", methods=["POST"])
-@jwt_required()
+@require_auth()
 def covenant_monitor():
     b = request.get_json() or {}
     covenants = b.get("covenants", [])
@@ -259,7 +260,7 @@ TRUSTEE_TASKS = [
 
 
 @rating_esg_bp.route("/trustee/tasks", methods=["GET"])
-@jwt_required()
+@require_auth()
 def trustee_tasks():
     phase = request.args.get("phase")
     tasks = TRUSTEE_TASKS if not phase else [t for t in TRUSTEE_TASKS if t["phase"] == phase]
@@ -273,7 +274,7 @@ def trustee_tasks():
 
 
 @rating_esg_bp.route("/trustee/tasks/<task_id>", methods=["PATCH"])
-@jwt_required()
+@require_auth()
 def update_trustee_task(task_id):
     b = request.get_json() or {}
     task = next((t for t in TRUSTEE_TASKS if t["id"] == task_id), None)
@@ -304,7 +305,7 @@ RMA_BENCHMARKS = {
 
 
 @rating_esg_bp.route("/rma/benchmark", methods=["POST"])
-@jwt_required()
+@require_auth()
 def rma_benchmark():
     b = request.get_json() or {}
     naics = b.get("naics", "6232")

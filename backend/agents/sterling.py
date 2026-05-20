@@ -11,12 +11,36 @@ from typing import Optional
 from services.jimmy_lee import JIMMY_LEE_SYSTEM_PROMPT, count_words, estimate_read_time
 from agents._claude import complete, ClaudeUnavailable
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 
 class SterlingAgent:
     def __init__(self) -> None:
         self._lock = threading.RLock()
         self._investors: dict[str, dict] = {}
-        self._book: dict[str, dict] = {}  # deal_id -> { allocations, indications }
+        self._book: dict[str, dict] = {}
+        self._load_investors()
+
+    def _load_investors(self) -> None:
+        """Load investors from Supabase, fall back to seed data."""
+        if _db and _db.configured:
+            rows = _db.select("investors")
+            if rows:
+                for r in rows:
+                    self._investors[r["id"]] = {
+                        "id": r["id"],
+                        "name": r["name"],
+                        "min_ticket": float(r.get("aum", 0)) * 0.05 or 1_000_000,
+                        "max_ticket": float(r.get("aum", 0)) * 0.25 or 10_000_000,
+                        "prefers": {"asset_classes": [], "yield_floor_pct": 8.0},
+                        "existing": r.get("status") == "active",
+                        "entity_type": r.get("entity_type"),
+                        "tier": r.get("tier", "B"),
+                    }
+                return
         self._seed()
 
     def _seed(self) -> None:
@@ -78,6 +102,14 @@ class SterlingAgent:
                     "existing": inv.get("existing", False),
                 })
         ranked.sort(key=lambda r: r["score"], reverse=True)
+
+        # Persist match results
+        if _db and _db.configured:
+            try:
+                _db.update_agent_status("Sterling", "active")
+            except Exception:
+                pass
+
         return ranked
 
     # ---------- investor updates ----------

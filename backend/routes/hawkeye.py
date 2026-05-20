@@ -3,9 +3,10 @@ NEST Hawkeye Routes — Institutional Placement & Sales Engine.
 Pillar 4: Buyer matching, AI teasers, order book, allocation.
 """
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from services.auth import require_auth
 from datetime import datetime
 import threading
+from services.auth import require_auth
 
 hawkeye_bp = Blueprint("hawkeye", __name__)
 
@@ -53,13 +54,13 @@ def _err(msg, code=400):
 
 
 @hawkeye_bp.route("/buyers", methods=["GET"])
-@jwt_required()
+@require_auth()
 def list_buyers():
     return _ok({"buyers": BUYER_UNIVERSE, "total": len(BUYER_UNIVERSE)})
 
 
 @hawkeye_bp.route("/match", methods=["POST"])
-@jwt_required()
+@require_auth()
 def match_buyers():
     """Match institutional buyers to a deal based on sector, rating, yield, ticket size."""
     b = request.get_json() or {}
@@ -125,7 +126,7 @@ def match_buyers():
 
 
 @hawkeye_bp.route("/teaser", methods=["POST"])
-@jwt_required()
+@require_auth()
 def generate_teaser():
     """Generate AI-powered investor teaser for a deal."""
     b = request.get_json() or {}
@@ -167,7 +168,7 @@ def generate_teaser():
 
 
 @hawkeye_bp.route("/order-book/<deal_id>", methods=["GET"])
-@jwt_required()
+@require_auth()
 def get_order_book(deal_id):
     with _lock:
         book = _order_book.get(deal_id, [])
@@ -181,7 +182,7 @@ def get_order_book(deal_id):
 
 
 @hawkeye_bp.route("/order-book/<deal_id>/indicate", methods=["POST"])
-@jwt_required()
+@require_auth()
 def add_indication(deal_id):
     """Add investor indication to the order book."""
     b = request.get_json() or {}
@@ -201,7 +202,7 @@ def add_indication(deal_id):
 
 
 @hawkeye_bp.route("/order-book/<deal_id>/allocate", methods=["POST"])
-@jwt_required()
+@require_auth()
 def allocate(deal_id):
     """Run allocation — prioritize existing relationships, then largest indications."""
     b = request.get_json() or {}
@@ -242,7 +243,7 @@ def allocate(deal_id):
 
 
 @hawkeye_bp.route("/teasers/<deal_id>", methods=["GET"])
-@jwt_required()
+@require_auth()
 def list_teasers(deal_id):
     with _lock:
         return _ok(_teasers.get(deal_id, []))

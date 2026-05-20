@@ -43,7 +43,7 @@ const RE_TYPE_LABELS: Record<string, string> = {
   ucc_filing: "UCC Filing", permit: "Building Permit", title_transfer: "Title Transfer",
 };
 
-export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: boolean }) {
+export default function EagleEyeScoutDashboard({ dealId, summaryMode }: { dealId?: string; summaryMode?: boolean }) {
   const [subTab, setSubTab] = useState("all");
   const [scoutNaics, setScoutNaics] = useState("6232");
 

@@ -3,9 +3,10 @@ NEST EagleEye Routes — Business Development & Deal Sourcing.
 Pillar 1: Scans UCC filings, title reports, permits, EDGAR, market signals.
 """
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from services.auth import require_auth
 from datetime import datetime
 import threading
+from services.auth import require_auth
 
 eagleeye_bp = Blueprint("eagleeye", __name__)
 
@@ -57,7 +58,7 @@ def _err(msg, code=400):
 
 
 @eagleeye_bp.route("/signals", methods=["GET"])
-@jwt_required()
+@require_auth()
 def list_signals():
     """All discovered deal signals, sorted by score."""
     status_filter = request.args.get("status")
@@ -78,7 +79,7 @@ def list_signals():
 
 
 @eagleeye_bp.route("/signals/<signal_id>", methods=["GET"])
-@jwt_required()
+@require_auth()
 def get_signal(signal_id):
     with _lock:
         sig = next((s for s in _signals if s["id"] == signal_id), None)
@@ -88,7 +89,7 @@ def get_signal(signal_id):
 
 
 @eagleeye_bp.route("/signals/<signal_id>/status", methods=["PATCH"])
-@jwt_required()
+@require_auth()
 def update_signal_status(signal_id):
     b = request.get_json() or {}
     new_status = b.get("status")
@@ -104,7 +105,7 @@ def update_signal_status(signal_id):
 
 
 @eagleeye_bp.route("/scout", methods=["POST"])
-@jwt_required()
+@require_auth()
 def run_scout():
     """Run AI-powered scout — searches for new deal opportunities."""
     b = request.get_json() or {}
@@ -144,14 +145,14 @@ def run_scout():
 
 
 @eagleeye_bp.route("/scout/history", methods=["GET"])
-@jwt_required()
+@require_auth()
 def scout_history():
     with _lock:
         return _ok(_scout_runs[::-1])
 
 
 @eagleeye_bp.route("/convert/<signal_id>", methods=["POST"])
-@jwt_required()
+@require_auth()
 def convert_to_deal(signal_id):
     """Convert a signal into a NEST deal — pushes to Roots."""
     with _lock:
@@ -180,7 +181,7 @@ def convert_to_deal(signal_id):
 
 
 @eagleeye_bp.route("/stats", methods=["GET"])
-@jwt_required()
+@require_auth()
 def stats():
     with _lock:
         total = len(_signals)

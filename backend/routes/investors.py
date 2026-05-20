@@ -3,6 +3,7 @@ import threading
 import uuid
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 investors_bp = Blueprint("investors", __name__)
 
@@ -66,12 +67,14 @@ _seed()
 
 
 @investors_bp.route("", methods=["GET"])
+@require_auth()
 def list_investors():
     with _lock:
         return _ok(list(_investors.values()))
 
 
 @investors_bp.route("", methods=["POST"])
+@require_auth()
 def add_investor():
     body = request.get_json() or {}
     if not body.get("name"):

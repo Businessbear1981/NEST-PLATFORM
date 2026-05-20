@@ -1,11 +1,13 @@
 """Risk assessment routes — sentinel.score_deal + risk reports + covenant tests."""
 from flask import Blueprint, request
 from services.core import risk, credit, ok, err
+from services.auth import require_auth
 
 risk_bp = Blueprint("risk", __name__)
 
 
 @risk_bp.get("/score/<deal_id>")
+@require_auth()
 def score_deal(deal_id):
     from routes.deals import _deals, _lock
     with _lock:
@@ -20,6 +22,7 @@ def score_deal(deal_id):
 
 
 @risk_bp.get("/portfolio")
+@require_auth()
 def portfolio_risk():
     from routes.deals import _deals, _lock
     with _lock:
@@ -38,6 +41,7 @@ def portfolio_risk():
 
 
 @risk_bp.post("/covenant-test")
+@require_auth()
 def covenant_test():
     data = request.get_json(force=True)
     deal_id = data.get("deal_id")

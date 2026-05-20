@@ -1,6 +1,7 @@
 """Insurance surety platform routes — provider matching, premium calculation, outreach."""
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 surety_bp = Blueprint("surety", __name__)
 
@@ -18,6 +19,7 @@ def _err(msg, code=400):
 
 
 @surety_bp.route("/providers", methods=["GET"])
+@require_auth()
 def list_providers():
     """List all surety/insurance providers."""
     from agents.surety_scout import SURETY_PROVIDERS
@@ -25,6 +27,7 @@ def list_providers():
 
 
 @surety_bp.route("/premium", methods=["POST"])
+@require_auth()
 def calculate_premium():
     """Calculate surety premium for a deal."""
     body = request.get_json() or {}
@@ -34,6 +37,7 @@ def calculate_premium():
 
 
 @surety_bp.route("/match", methods=["POST"])
+@require_auth()
 def match_providers():
     """Score and rank providers for a deal."""
     body = request.get_json() or {}
@@ -43,6 +47,7 @@ def match_providers():
 
 
 @surety_bp.route("/outreach", methods=["POST"])
+@require_auth()
 def generate_outreach():
     """Generate outreach letter to a surety provider."""
     body = request.get_json() or {}
@@ -55,6 +60,7 @@ def generate_outreach():
 
 
 @surety_bp.route("/run/<deal_id>", methods=["POST"])
+@require_auth()
 def full_run(deal_id):
     """Full SuretyScout run for a deal."""
     body = request.get_json() or {}

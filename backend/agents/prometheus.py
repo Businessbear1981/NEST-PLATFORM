@@ -15,6 +15,11 @@ except ImportError:
     JIMMY_LEE_SYSTEM_PROMPT = ""
     ClaudeUnavailable = Exception
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 
 class PrometheusAgent:
     """In-house financial modeling: proforma, feasibility, audit sim, stress test."""
@@ -367,7 +372,7 @@ class PrometheusAgent:
         stress = self.run_stress_tests(proforma)
         break_even = self.compute_break_even(proforma)
 
-        return {
+        result = {
             "deal_id": deal_id,
             "proforma_summary": proforma["summary"],
             "benchmarks": benchmarks,
@@ -375,6 +380,28 @@ class PrometheusAgent:
             "break_even": break_even,
             "run_at": datetime.utcnow().isoformat(),
         }
+
+        # Persist to Supabase
+        if _db and _db.configured and deal_id:
+            try:
+                summary = proforma.get("summary", {})
+                _db.save_modeling_result(
+                    deal_id=deal_id,
+                    model_type="proforma_stress",
+                    inputs=inputs,
+                    outputs=result,
+                    irr=summary.get("levered_irr"),
+                    npv=summary.get("total_noi"),
+                    dscr_min=summary.get("min_dscr"),
+                    dscr_avg=summary.get("avg_dscr"),
+                    is_feasible=summary.get("avg_dscr", 0) >= 1.25,
+                    run_by="Prometheus",
+                )
+                _db.update_agent_status("Prometheus", "active")
+            except Exception:
+                pass
+
+        return result
 
 
 # Singleton

@@ -141,6 +141,7 @@ export default function Dashboard() {
 
   function logout() {
     localStorage.removeItem('nest_token');
+    localStorage.removeItem('nest_user');
     router.replace('/login');
   }
 

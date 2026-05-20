@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/AuthContext';
 
 /* ── Brand tokens ── */
 const C = {
@@ -23,6 +24,7 @@ const F = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,17 +35,12 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || json.message || 'Login failed');
-      const token = json.data?.access_token ?? json.access_token ?? json.token;
-      if (!token) throw new Error('No token received');
-      localStorage.setItem('nest_token', token);
-      router.replace('/dashboard');
+      const user = await login(email, password);
+      if (user.role === 'admin' || user.role === 'banker' || user.role === 'analyst' || user.role === 'compliance') {
+        router.replace('/admin/deals');
+      } else {
+        router.replace('/dashboard');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -160,7 +157,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             style={inputStyle}
-            placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+            placeholder={'\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'}
           />
         </div>
 

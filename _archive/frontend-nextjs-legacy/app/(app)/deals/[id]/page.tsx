@@ -18,7 +18,7 @@ export default function DealDetailPage() {
   useEffect(() => {
     if (!dealId) return
     fetch(`${API}/api/deals/${dealId}`, { headers: h() }).then(r => r.json()).then(d => { if (d.data) setDeal(d.data) }).catch(() => {})
-    fetch(`${API}/api/deals/${dealId}/bond`, { headers: h() }).then(r => r.json()).then(d => { if (d.data) setBond(d.data) }).catch(() => {})
+    fetch(`${API}/api/deals/${dealId}/bonds`, { headers: h() }).then(r => r.json()).then(d => { if (d.data) setBond(d.data) }).catch(() => {})
     fetch(`${API}/api/deals/${dealId}/checklist`, { headers: h() }).then(r => r.json()).then(d => { if (d.data) setChecklist(d.data) }).catch(() => {})
   }, [dealId])
 

@@ -3,6 +3,11 @@ Full JPM benchmark comparison with narrative grading.
 """
 from services.core import credit, JPM, call_claude, ts
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 
 class MaxwellAgent:
     def analyze(self, deal: dict) -> dict:
@@ -13,11 +18,30 @@ class MaxwellAgent:
             f"Grade: {metrics['obligor_grade']}, Score: {metrics['deal_score']}. "
             f"Reference JPM benchmarks. Be direct.",
         )
-        return {
+        result = {
             "metrics": metrics,
             "commentary": commentary,
             "timestamp": ts(),
         }
+
+        # Persist to Supabase if deal_id present and DB configured
+        deal_id = deal.get("deal_id") or deal.get("id")
+        if _db and _db.configured and deal_id:
+            try:
+                _db.save_modeling_result(
+                    deal_id=deal_id,
+                    model_type="credit_analysis",
+                    inputs=deal,
+                    outputs=result,
+                    dscr_min=metrics.get("dscr"),
+                    dscr_avg=metrics.get("dscr"),
+                    run_by="Maxwell",
+                )
+                _db.update_agent_status("Maxwell", "active")
+            except Exception:
+                pass
+
+        return result
 
     def normalize_ebitda(self, financials: dict) -> dict:
         raw_ebitda = financials.get("ebitda_usd", 0)

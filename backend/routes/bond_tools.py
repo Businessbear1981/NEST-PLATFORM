@@ -1,6 +1,7 @@
 """Bond grading, project audit, and bond optimization routes."""
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 bond_tools_bp = Blueprint("bond_tools", __name__)
 
@@ -20,6 +21,7 @@ def _err(msg, code=400):
 # ── Bond Grading ────────────────────────────────────────────────
 
 @bond_tools_bp.route("/grade", methods=["POST"])
+@require_auth()
 def grade_bond():
     """Grade a bond structure and identify rating."""
     body = request.get_json() or {}
@@ -33,6 +35,7 @@ def grade_bond():
 
 
 @bond_tools_bp.route("/grade/criteria", methods=["GET"])
+@require_auth()
 def rating_criteria():
     """List S&P-aligned rating criteria."""
     from services.bond_grader import RATING_CRITERIA
@@ -40,6 +43,7 @@ def rating_criteria():
 
 
 @bond_tools_bp.route("/grade/enhancements", methods=["GET"])
+@require_auth()
 def structural_enhancements():
     """List available structural enhancements and their impact."""
     from services.bond_grader import STRUCTURAL_ENHANCEMENTS
@@ -49,6 +53,7 @@ def structural_enhancements():
 # ── Project Audit ───────────────────────────────────────────────
 
 @bond_tools_bp.route("/audit", methods=["POST"])
+@require_auth()
 def audit_deal():
     """Run full project audit."""
     body = request.get_json() or {}
@@ -63,6 +68,7 @@ def audit_deal():
 
 
 @bond_tools_bp.route("/audit/report", methods=["POST"])
+@require_auth()
 def audit_report():
     """Generate formatted audit report."""
     body = request.get_json() or {}
@@ -75,6 +81,7 @@ def audit_report():
 # ── Bond Optimization ──────────────────────────────────────────
 
 @bond_tools_bp.route("/optimize", methods=["POST"])
+@require_auth()
 def optimize_bond():
     """Run bond optimization analysis."""
     body = request.get_json() or {}
@@ -88,6 +95,7 @@ def optimize_bond():
 
 
 @bond_tools_bp.route("/optimize/call-analysis", methods=["POST"])
+@require_auth()
 def call_analysis():
     """Analyze whether to execute a bond call."""
     body = request.get_json() or {}
@@ -101,6 +109,7 @@ def call_analysis():
 
 
 @bond_tools_bp.route("/optimize/new-issuance", methods=["POST"])
+@require_auth()
 def new_issuance():
     """Calculate new bond issuance with fee schedule."""
     body = request.get_json() or {}
@@ -110,6 +119,7 @@ def new_issuance():
 
 
 @bond_tools_bp.route("/optimize/savings", methods=["POST"])
+@require_auth()
 def savings_analysis():
     """Calculate savings from a call/refi action."""
     body = request.get_json() or {}
@@ -119,3 +129,31 @@ def savings_analysis():
         proposed_terms=body.get("proposed_terms", {}),
     )
     return _ok(result)
+
+
+# ── Live Stress Test Rates ────────────────────────────────────
+
+@bond_tools_bp.route("/stress/rates", methods=["GET"])
+@require_auth()
+def stress_test_rates():
+    """Live rates formatted for Bond Desk stress testing engine."""
+    try:
+        from services.data_connectors import FREDPlugin
+        fred = FREDPlugin()
+        snapshot = fred.get_bond_desk_snapshot()
+        rates = snapshot.get("rates", {})
+    except Exception:
+        rates = {"treasury_10yr": 4.28, "treasury_5yr": 4.05, "sofr": 5.33, "fed_funds": 5.33}
+
+    base_10yr = rates.get("treasury_10yr", 4.28)
+    return _ok({
+        "base_rates": rates,
+        "source": snapshot.get("source", "static"),
+        "stress_scenarios": {
+            "base": {"treasury_10yr": base_10yr, "label": "Current market"},
+            "rates_up_100": {"treasury_10yr": base_10yr + 1.0, "label": "+100bps shock"},
+            "rates_up_200": {"treasury_10yr": base_10yr + 2.0, "label": "+200bps shock"},
+            "rates_down_100": {"treasury_10yr": max(0, base_10yr - 1.0), "label": "-100bps relief"},
+            "spread_widen": {"ig_spread_bps": rates.get("ig_spread", 1.12) * 100 + 50, "label": "Spread widening +50bps"},
+        },
+    })

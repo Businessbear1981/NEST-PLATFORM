@@ -5,6 +5,11 @@ The immune system of the NEST platform.
 """
 from datetime import datetime
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 
 # ── Risk Dimension Weights ──────────────────────────────────────
 
@@ -75,6 +80,32 @@ class SentinelAgent:
         }
 
         self._scores[deal_id] = result
+
+        # Persist to Supabase
+        if _db and _db.configured and deal_id:
+            try:
+                _db.save_risk_score(deal_id, {
+                    "overall": result["composite_score"],
+                    "credit": dimension_scores.get("credit_risk", {}).get("score", 0),
+                    "market": dimension_scores.get("market_risk", {}).get("score", 0),
+                    "construction": dimension_scores.get("construction_risk", {}).get("score", 0),
+                    "legal": dimension_scores.get("regulatory_risk", {}).get("score", 0),
+                    "operational": dimension_scores.get("operational_risk", {}).get("score", 0),
+                    "environmental": dimension_scores.get("environmental_risk", {}).get("score", 0),
+                    "political": dimension_scores.get("sponsor_risk", {}).get("score", 0),
+                }, grade=level)
+
+                # Save alerts for high-risk dimensions
+                for dim_name, dim_data in dimension_scores.items():
+                    if dim_data["score"] >= 60:
+                        _db.save_risk_alert(deal_id, "high", dim_name,
+                                            f"{dim_name} elevated at {dim_data['score']:.0f}",
+                                            "; ".join(dim_data.get("factors", [])[:3]))
+
+                _db.update_agent_status("Sentinel", "active")
+            except Exception:
+                pass
+
         return result
 
     def score_market_risk(self, signals: dict) -> dict:

@@ -20,9 +20,9 @@ except ImportError:
     ask_claude = None
 
 try:
-    from services.jimmy_lee import jimmy_lee
+    from services.edgar_scanner import edgar_scanner
 except ImportError:
-    jimmy_lee = None
+    edgar_scanner = None
 
 try:
     from blockchain.nest_chain import chain
@@ -33,6 +33,12 @@ try:
     from game_theory.engine import game_engine
 except ImportError:
     game_engine = None
+
+try:
+    from services.data_connectors import EDGARPlugin
+    jimmy_lee = EDGARPlugin()
+except ImportError:
+    jimmy_lee = None
 
 
 # NAICS priority tiers for NEST acquisition strategy
@@ -361,13 +367,25 @@ Provide:
         if jimmy_lee is not None:
             try:
                 for code in naics_codes:
-                    results = jimmy_lee.search_companies(
-                        naics=code,
-                        min_revenue=min_revenue,
-                        max_revenue=max_revenue,
-                    )
-                    if results:
-                        targets.extend(results)
+                    sector_name = ""
+                    for tier_data in NAICS_PRIORITY.values():
+                        if code in tier_data["codes"]:
+                            sector_name = tier_data["codes"][code]
+                            break
+                    if not sector_name:
+                        continue
+                    result = jimmy_lee.execute(company=sector_name, filing_type="10-K")
+                    if result.get("success") and result.get("filings"):
+                        for filing in result["filings"]:
+                            targets.append({
+                                "name": filing.get("name", "Unknown"),
+                                "naics": code,
+                                "sector": sector_name,
+                                "source": "edgar_filing",
+                                "form": filing.get("form", ""),
+                                "filing_date": filing.get("date", ""),
+                                "url": filing.get("url", ""),
+                            })
             except Exception:
                 pass
 

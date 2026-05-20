@@ -1,6 +1,7 @@
 """M&A Intelligence routes — Merlin agent interface."""
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 ma_bp = Blueprint("ma", __name__)
 
@@ -18,12 +19,14 @@ def _err(msg, code=400):
 
 
 @ma_bp.route("/targets", methods=["GET"])
+@require_auth()
 def get_targets():
     """List all M&A targets."""
     return _ok([])  # Will be populated once Supabase is connected
 
 
 @ma_bp.route("/analyze", methods=["POST"])
+@require_auth()
 def analyze_company():
     """Run full Merlin analysis on a company."""
     body = request.get_json() or {}
@@ -43,6 +46,7 @@ def analyze_company():
 
 
 @ma_bp.route("/game-theory", methods=["POST"])
+@require_auth()
 def run_game_theory():
     """Run 3-level game theory analysis."""
     body = request.get_json() or {}
@@ -60,6 +64,7 @@ def run_game_theory():
 
 
 @ma_bp.route("/irr", methods=["POST"])
+@require_auth()
 def compute_irr():
     """Compute IRR model for acquisition."""
     body = request.get_json() or {}
@@ -79,6 +84,7 @@ def compute_irr():
 
 
 @ma_bp.route("/pipeline", methods=["GET"])
+@require_auth()
 def get_pipeline():
     """Get M&A pipeline by stage."""
     return _ok({
@@ -88,6 +94,7 @@ def get_pipeline():
 
 
 @ma_bp.route("/digest", methods=["GET"])
+@require_auth()
 def get_digest():
     """Get today's Merlin morning digest."""
     return _ok({"digest": "Good morning. No scans run today. Use POST /api/ma/analyze to analyze a target."})

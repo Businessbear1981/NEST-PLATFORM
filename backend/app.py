@@ -37,6 +37,9 @@ from routes.bond_workflow import bond_workflow_bp
 from routes.eagleeye import eagleeye_bp
 from routes.hawkeye import hawkeye_bp
 from routes.rating_esg import rating_esg_bp
+from routes.health import health_bp
+from routes.nightvision import nightvision_bp
+from services.logging_service import init_request_logging
 from services.fund_engine import FundEngine
 from services.deals import DealsRegistry
 from services.auth import AuthService
@@ -64,6 +67,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    init_request_logging(app)
 
     engine = FundEngine()
     app.config["FUND_ENGINE"] = engine
@@ -119,10 +123,8 @@ def create_app():
     app.register_blueprint(eagleeye_bp, url_prefix="/api/eagleeye")
     app.register_blueprint(hawkeye_bp, url_prefix="/api/hawkeye")
     app.register_blueprint(rating_esg_bp, url_prefix="/api/rating-esg")
-
-    @app.get("/api/health")
-    def health():
-        return jsonify({"ok": True, "service": "nest-backend", "port": Config.PORT})
+    app.register_blueprint(health_bp, url_prefix="/api")
+    app.register_blueprint(nightvision_bp, url_prefix="/api/nightvision")
 
     @app.get("/api/metrics")
     def metrics():

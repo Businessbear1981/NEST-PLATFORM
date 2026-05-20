@@ -9,6 +9,26 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 
+def _fetch_fred_rates():
+    """Try to get live FRED rates. Returns dict or None."""
+    try:
+        from services.data_connectors import FREDPlugin
+        fred = FREDPlugin()
+        snap = fred.get_bond_desk_snapshot()
+        if snap.get("success"):
+            r = snap["rates"]
+            return {
+                "treasury_10yr": r.get("treasury_10yr", 4.35),
+                "sofr": r.get("sofr", 5.31),
+                "credit_spread_ig": round(r.get("ig_spread", 1.12) * 100),
+                "credit_spread_hy": round(r.get("hy_spread", 3.45) * 100),
+                "_source": snap.get("source", "fred"),
+            }
+    except Exception:
+        pass
+    return None
+
+
 class VectorAgent:
     """Scores 14 market & deal signals to generate call/put recommendations."""
 
@@ -315,8 +335,8 @@ class VectorAgent:
     # ------------------------------------------------------------------
 
     def _default_signals(self) -> dict:
-        """Simulated market snapshot when live feed is unavailable."""
-        return {
+        """Live FRED rates when available, simulated fallback otherwise."""
+        static = {
             'treasury_10yr': 4.35,
             'treasury_change_bps': -8,
             'sofr': 5.31,
@@ -331,7 +351,12 @@ class VectorAgent:
             'hft_return_ytd': 21.3,
             'b_tranche_coverage': 1.15,
             'lc_capacity_ratio': 0.85,
+            '_source': 'static_fallback',
         }
+        live = _fetch_fred_rates()
+        if live:
+            static.update(live)
+        return static
 
     def _default_deal_data(self, deal_id: str) -> dict:
         """Stub deal data keyed off Jacaranda Trace PLOM parameters."""

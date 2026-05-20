@@ -2,6 +2,7 @@
 import threading
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from services.auth import require_auth
 
 market_bp = Blueprint("market", __name__)
 
@@ -35,6 +36,7 @@ DEFAULT_SIGNALS = {
 
 
 @market_bp.route("/signals", methods=["POST"])
+@require_auth()
 def ingest_signals():
     body = request.get_json() or {}
     signals = body.get("signals", DEFAULT_SIGNALS)
@@ -66,11 +68,24 @@ def latest_signals():
     with _lock:
         if _signals:
             return _ok(_signals[-1])
-    # Return defaults if no signals ingested yet
-    score = _compute_vector_score(DEFAULT_SIGNALS)
+    # Try live FRED rates before falling back to hardcoded defaults
+    signals_to_use = dict(DEFAULT_SIGNALS)
+    fred = _get_fred_plugin()
+    if fred:
+        try:
+            snap = fred.get_bond_desk_snapshot()
+            if snap.get("success"):
+                r = snap["rates"]
+                signals_to_use["treasury_10yr_pct"] = r.get("treasury_10yr", 4.25)
+                signals_to_use["sofr_pct"] = r.get("sofr", 4.30)
+                signals_to_use["credit_spread_ig_bps"] = round(r.get("ig_spread", 1.25) * 100)
+                signals_to_use["credit_spread_hy_bps"] = round(r.get("hy_spread", 3.75) * 100)
+        except Exception:
+            pass
+    score = _compute_vector_score(signals_to_use)
     return _ok({
         "captured_at": _ts(),
-        "signals": DEFAULT_SIGNALS,
+        "signals": signals_to_use,
         "vector_score": score,
         "vector_recommendation": _vector_recommendation(score),
         "apex_short_active": False,
@@ -132,3 +147,43 @@ def _vector_recommendation(score: int) -> str:
         return "hold"
     else:
         return "put_alert"
+
+
+# ── Live FRED Rates ────────────────────────────────────────────
+
+def _get_fred_plugin():
+    try:
+        from services.data_connectors import FREDPlugin
+        return FREDPlugin()
+    except Exception:
+        return None
+
+
+@market_bp.route("/rates/live", methods=["GET"])
+def live_rates():
+    """Bond Desk live rate snapshot from FRED."""
+    fred = _get_fred_plugin()
+    if not fred:
+        return _err("FRED plugin unavailable", 503)
+    snapshot = fred.get_bond_desk_snapshot()
+    return _ok(snapshot)
+
+
+@market_bp.route("/rates/yield-curve", methods=["GET"])
+def yield_curve():
+    """Full Treasury yield curve."""
+    fred = _get_fred_plugin()
+    if not fred:
+        return _err("FRED plugin unavailable", 503)
+    curve = fred.get_yield_curve()
+    return _ok(curve)
+
+
+@market_bp.route("/rates/snapshot", methods=["GET"])
+def market_snapshot():
+    """Quick market snapshot — key rates for dashboards."""
+    fred = _get_fred_plugin()
+    if not fred:
+        return _err("FRED plugin unavailable", 503)
+    snap = fred.get_market_snapshot()
+    return _ok(snap)
