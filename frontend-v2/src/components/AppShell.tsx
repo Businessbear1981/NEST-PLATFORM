@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
-  BarChart3, Building2, Briefcase, Radio,
+  BarChart3, Building2, Briefcase, Radio, Flame,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
@@ -23,6 +23,7 @@ const NAV_SECTIONS = [
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring & Live Ops" },
       { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Placement & Sales" },
       { label: "NightVision", href: "/nightvision", icon: Shield, desc: "Compliance" },
+      { label: "Phoenix", href: "/phoenix", icon: Flame, desc: "Distressed Acquisition" },
     ],
   },
   {

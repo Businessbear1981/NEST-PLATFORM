@@ -41,6 +41,7 @@ from routes.rating_esg import rating_esg_bp
 from routes.health import health_bp
 from routes.nightvision import nightvision_bp
 from routes.treasury import treasury_bp
+from routes.phoenix import phoenix_bp
 from services.logging_service import init_request_logging
 from services.fund_engine import FundEngine
 from services.deals import DealsRegistry
@@ -96,6 +97,8 @@ def create_app():
     app.config["ACTIVITY"] = ActivityFeed()
     from services.treasury_engine import TreasuryEngine
     app.config["TREASURY_ENGINE"] = TreasuryEngine()
+    from services.phoenix_engine import PhoenixEngine
+    app.config["PHOENIX_ENGINE"] = PhoenixEngine()
 
     # Core blueprints
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
@@ -131,6 +134,7 @@ def create_app():
     app.register_blueprint(nightvision_bp, url_prefix="/api/nightvision")
     app.register_blueprint(bond_structuring_bp, url_prefix="/api/bond-structuring")
     app.register_blueprint(treasury_bp, url_prefix="/api/treasury")
+    app.register_blueprint(phoenix_bp, url_prefix="/api/phoenix")
 
     @app.get("/api/metrics")
     def metrics():

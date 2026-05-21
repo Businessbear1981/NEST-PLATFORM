@@ -14,6 +14,7 @@ import {
   Target,
   Users,
   Wallet,
+  Flame,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -35,6 +36,7 @@ const AdminPlatform = lazy(() => import("@/components/AdminPlatform").then((modu
 const CompliancePortal = lazy(() => import("@/components/CompliancePortal").then((module) => ({ default: module.CompliancePortal })));
 const LiveAgentDashboard = lazy(() => import("@/components/LiveAgentDashboard").then((module) => ({ default: module.LiveAgentDashboard })));
 const TreasuryDesk = lazy(() => import("@/components/TreasuryDesk").then((module) => ({ default: module.TreasuryDesk })));
+const PhoenixDesk = lazy(() => import("@/components/PhoenixDesk").then((module) => ({ default: module.PhoenixDesk })));
 
 const TREE_LOGO = "";
 const HERO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='600'%3E%3Crect fill='%23060E1A' width='1200' height='600'/%3E%3C/svg%3E";
@@ -323,6 +325,7 @@ export function OperationsDealDetailPage({ dealId }: { dealId: string }) {
     { id: "agents", label: "Agent ops", icon: Layers3, tone: "cyan" as const, summary: "Live agent flow, task routing, desk logs, and AI-control observability." },
     { id: "control", label: "Admin / Compliance", icon: Users, tone: "red" as const, summary: "Approval queues, module health, archive lock, surveillance acknowledgements, and control-plane state." },
     { id: "treasury", label: "Treasury (Ramp)", icon: Wallet, tone: "gold" as const, summary: "Prefunded P-card operations, budget reconciliation, NEST soft costs, and rebate economics." },
+    { id: "phoenix", label: "Phoenix", icon: Flame, tone: "red" as const, summary: "Distressed CRE acquisition — problem assets and brownfield rehabilitation via bond stabilization." },
   ];
 
   const activeWorkspaceDefinition = workspaceTabs.find((tab) => tab.id === activeWorkspace) ?? workspaceTabs[0];
@@ -375,6 +378,12 @@ export function OperationsDealDetailPage({ dealId }: { dealId: string }) {
         return (
           <LazyWorkspace>
             <TreasuryDesk dealId={String(deal.id)} />
+          </LazyWorkspace>
+        );
+      case "phoenix":
+        return (
+          <LazyWorkspace>
+            <PhoenixDesk />
           </LazyWorkspace>
         );
       case "capital-stack":
