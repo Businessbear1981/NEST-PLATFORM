@@ -26,6 +26,7 @@ import BernardConcierge from "./components/BernardConcierge";
 import BondArrangementEngine from "./components/BondArrangementEngine";
 import AboutNest from "./components/AboutNest";
 import AppShell from "./components/AppShell";
+import PhoenixDesk from "./components/PhoenixDesk";
 
 function BondCommandPage(props: any) {
   return (
@@ -45,6 +46,7 @@ function Router() {
       <Route path={"/architecture"} component={ArchitecturePage} />
       <Route path={"/portals"} component={PortalsPage} />
       <Route path={"/agents"} component={AgentsPage} />
+      <Route path={"/operations"} component={OperationsDealsPage} />
       <Route path={"/operations/deals"} component={OperationsDealsPage} />
       <Route path={"/operations/deal/:dealId"} component={(props: any) => <OperationsDealDetailPage dealId={props.params.dealId} />} />
       <Route path={"/command-center"} component={BondCommandPage} />
@@ -54,6 +56,7 @@ function Router() {
       <Route path={"/bond-desk"} component={BondDeskPage} />
       <Route path={"/hawkeye"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><HawkeyePlacementScout /></main>}</Route>
       <Route path={"/nightvision"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><NightVisionComplianceLair /></main>}</Route>
+      <Route path={"/phoenix"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><PhoenixDesk /></main>}</Route>
       <Route path={"/agents/platform"} component={AgentPlatformPage} />
       <Route path={"/rating"} component={RatingIntelligencePage} />
       <Route path={"/surety"} component={InsuranceSuretyPage} />
