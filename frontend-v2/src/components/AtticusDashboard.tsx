@@ -43,7 +43,7 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
   const requiredComplete = checklist.filter((c) => c.required && c.completed).length;
   const readinessPct = Math.round((requiredComplete / required) * 100);
 
-  const categories = [...new Set(checklist.map((c) => c.category))];
+  const categories = Array.from(new Set(checklist.map((c) => c.category)));
 
   const generateLegalMemo = () => {
     legalMemoMutation.mutate({

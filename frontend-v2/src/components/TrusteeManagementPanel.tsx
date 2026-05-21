@@ -9,7 +9,7 @@ export default function TrusteeManagementPanel({ dealId }: { dealId?: string }) 
     onSuccess: () => tasksQuery.refetch(),
   });
 
-  const data = tasksQuery.data as any;
+  const data = (tasksQuery.data ?? {}) as any;
   const tasks = data?.tasks ?? [];
   const completionPct = data?.completion_pct ?? 0;
 

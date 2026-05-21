@@ -254,7 +254,7 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
           </div>
           <Progress value={checkReadiness} className="h-2" />
 
-          {[...new Set(READINESS_CHECKLIST.map((i) => i.category))].map((cat) => (
+          {Array.from(new Set(READINESS_CHECKLIST.map((i) => i.category))).map((cat) => (
             <div key={cat}>
               <h4 className="mb-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-slate-400">{cat}</h4>
               <div className="space-y-1">
@@ -436,7 +436,7 @@ function CreditMemoPanel({ creditMemoMutation, ratingMutation }: { creditMemoMut
     });
   };
 
-  const rating = ratingMutation.data as any;
+  const rating = (ratingMutation.data ?? {}) as any;
 
   return (
     <div className="space-y-4">
@@ -483,7 +483,7 @@ function CreditMemoPanel({ creditMemoMutation, ratingMutation }: { creditMemoMut
 // ══════════════════════════════════════════════════════════════════
 
 function ESGPanel({ esgMutation }: { esgMutation: any }) {
-  const data = esgMutation.data as any;
+  const data = (esgMutation.data ?? {}) as any;
 
   return (
     <div className="space-y-4">

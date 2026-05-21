@@ -124,14 +124,14 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
             <Radio size={14} className="text-emerald-400" /> Power strip — live rates
           </div>
           <span className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">
-            {marketRatesQuery.data?.source ?? "loading"}
+            {marketRatesQuery.data?.timestamp ?? "loading"}
           </span>
         </div>
         <div className="mt-3 grid grid-cols-3 gap-3">
           <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
             <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">10yr Treasury</span>
             <p className="font-mono text-lg font-semibold text-amber-100">
-              {marketRatesQuery.isLoading ? "..." : marketRatesQuery.data?.treasury_10yr_pct != null ? `${marketRatesQuery.data.treasury_10yr_pct}%` : marketRatesQuery.data?.data ? "—" : "4.28%"}
+              {marketRatesQuery.isLoading ? "..." : marketRatesQuery.data?.treasury_10yr_pct != null ? `${marketRatesQuery.data.treasury_10yr_pct}%` : "4.28%"}
             </p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
@@ -179,9 +179,9 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
                   {refiMutation.data.recommendation?.replace(/_/g, " ")}
                 </p>
                 <p className="font-mono text-[0.62rem] text-slate-500">
-                  Rate Δ: {refiMutation.data.rate_change_bps > 0 ? "+" : ""}{refiMutation.data.rate_change_bps}bp
-                  {refiMutation.data.estimated_client_saving_usd > 0 && (
-                    <> · Est. saving: ${(refiMutation.data.estimated_client_saving_usd / 1_000_000).toFixed(2)}M</>
+                  Rate Δ: {refiMutation.data.rate_delta_bps > 0 ? "+" : ""}{refiMutation.data.rate_delta_bps}bp
+                  {refiMutation.data.estimated_savings_usd > 0 && (
+                    <> · Est. saving: ${(refiMutation.data.estimated_savings_usd / 1_000_000).toFixed(2)}M</>
                   )}
                 </p>
               </div>

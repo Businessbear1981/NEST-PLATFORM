@@ -25,7 +25,7 @@ export default function SuretyUnderwritingDashboard({ dealId }: { dealId?: strin
     });
   };
 
-  const data = ratingMutation.data as any;
+  const data = (ratingMutation.data ?? {}) as any;
 
   return (
     <div className="space-y-5">

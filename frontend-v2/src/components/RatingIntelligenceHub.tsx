@@ -25,9 +25,9 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
     esgMutation.mutate({ scores: {} });
   };
 
-  const rating = ratingMutation.data as any;
+  const rating = (ratingMutation.data ?? {}) as any;
   const comparison = (compareMutation.data as any)?.comparison;
-  const esg = esgMutation.data as any;
+  const esg = (esgMutation.data ?? {}) as any;
 
   return (
     <div className="space-y-6">

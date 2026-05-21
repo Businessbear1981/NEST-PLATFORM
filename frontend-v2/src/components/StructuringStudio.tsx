@@ -191,12 +191,13 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
             </h3>
             <div className="mt-4 space-y-2">
               {stressResult && Object.entries(stressResult).map(([name, data]: [string, any]) => {
-                const statusColor = {
+                const colorMap: Record<string, string> = {
                   green: "border-emerald-300/30 bg-emerald-400/10 text-emerald-200",
                   yellow: "border-amber-300/30 bg-amber-300/10 text-amber-200",
                   red: "border-red-400/30 bg-red-500/10 text-red-200",
                   critical: "border-red-500/40 bg-red-600/15 text-red-100",
-                }[data.status] ?? "";
+                };
+                const statusColor = colorMap[data.status] ?? "";
                 return (
                   <div key={name} className={`flex items-center justify-between rounded-xl border p-3 ${statusColor}`}>
                     <div>
