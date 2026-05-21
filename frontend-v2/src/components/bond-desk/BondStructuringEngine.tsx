@@ -44,6 +44,24 @@ export default function BondStructuringEngine() {
   const [showTrancheForm, setShowTrancheForm] = useState(false);
   const [activeStress, setActiveStress] = useState<string>("base");
 
+  // Call/Put optionality state
+  const [showCallFields, setShowCallFields] = useState(false);
+  const [showPutFields, setShowPutFields] = useState(false);
+  const [callDate, setCallDate] = useState("");
+  const [callPrice, setCallPrice] = useState("100");
+  const [callType, setCallType] = useState<"par" | "make-whole" | "declining_premium">("par");
+  const [putDate, setPutDate] = useState("");
+  const [putTrigger, setPutTrigger] = useState<"rate_increase" | "covenant_breach" | "credit_downgrade">("rate_increase");
+  const [callPutResult, setCallPutResult] = useState<{
+    recommendation: string;
+    rate_change_bps: number;
+    estimated_client_saving_usd: number;
+    net_client_benefit_usd: number;
+    arrangement_fee_usd: number;
+  } | null>(null);
+
+  const callPutMutation = trpc.bondStructuring.callPutAnalysis.useMutation();
+
   const handleSetDeal = () => {
     const tpc = parseFloat(dealForm.total_project_cost_usd) || 0;
     const noi = parseFloat(dealForm.stabilized_noi_usd) || 0;
@@ -83,10 +101,23 @@ export default function BondStructuringEngine() {
       spread_bps: parseFloat(trancheForm.spread_bps) || 85,
       maturity_yrs: parseFloat(trancheForm.maturity_yrs) || 10,
       ltc_pct: parseFloat(trancheForm.ltc_pct) || 75,
+      ...(showCallFields && callDate ? {
+        call_schedule: [{ date: callDate, price: parseFloat(callPrice) || 100, type: callType }],
+      } : {}),
+      ...(showPutFields && putDate ? {
+        put_schedule: [{ date: putDate, trigger: putTrigger }],
+      } : {}),
     };
     addTranche(tranche);
     log("NEST", "tranche_added", `${tranche.label} — $${(size/1e6).toFixed(1)}M at ${tranche.coupon_pct}%`);
     setShowTrancheForm(false);
+    setShowCallFields(false);
+    setShowPutFields(false);
+    setCallDate("");
+    setCallPrice("100");
+    setCallType("par");
+    setPutDate("");
+    setPutTrigger("rate_increase");
     setTrancheForm({ series: "B", label: "Series B Mezzanine", size_usd: "", coupon_pct: "11.0", spread_bps: "145", maturity_yrs: "7", ltc_pct: "7" });
   };
 
@@ -215,6 +246,20 @@ export default function BondStructuringEngine() {
                   <div><span className="text-slate-600">Coupon</span><br/><span className="text-slate-200">{t.coupon_pct}%</span></div>
                   <div><span className="text-slate-600">Spread</span><br/><span className="text-slate-200">{t.spread_bps}bp</span></div>
                 </div>
+                {((t as any).call_schedule?.length > 0 || (t as any).put_schedule?.length > 0) && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {(t as any).call_schedule?.map((c: any, i: number) => (
+                      <span key={`call-${i}`} className="rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[0.5rem] text-emerald-400">
+                        CALL: {c.type} @ {c.date?.slice(0, 7)}
+                      </span>
+                    ))}
+                    {(t as any).put_schedule?.map((p: any, i: number) => (
+                      <span key={`put-${i}`} className="rounded bg-cyan-500/15 px-1.5 py-0.5 font-mono text-[0.5rem] text-cyan-400">
+                        PUT: {p.trigger} @ {p.date?.slice(0, 7)}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             ))}
 
@@ -255,6 +300,71 @@ export default function BondStructuringEngine() {
                   <Input label="Spread bp" value={trancheForm.spread_bps} onChange={(v) => setTrancheForm({...trancheForm, spread_bps: v})} type="number" />
                   <Input label="Maturity yr" value={trancheForm.maturity_yrs} onChange={(v) => setTrancheForm({...trancheForm, maturity_yrs: v})} type="number" />
                 </div>
+                {/* Call Schedule */}
+                <div className="space-y-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowCallFields(!showCallFields)}
+                    className={`w-full rounded-lg border px-3 py-1.5 font-mono text-[0.6rem] transition-all ${
+                      showCallFields
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                        : "border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-400"
+                    }`}
+                  >
+                    {showCallFields ? "- Remove Call Option" : "+ Add Call Option"}
+                  </button>
+                  {showCallFields && (
+                    <div className="grid grid-cols-3 gap-2">
+                      <Input label="Call Date" value={callDate} onChange={setCallDate} placeholder="2028-06-01" />
+                      <Input label="Call Price" value={callPrice} onChange={setCallPrice} placeholder="100" type="number" />
+                      <div>
+                        <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">Call Type</label>
+                        <select
+                          value={callType}
+                          onChange={(e) => setCallType(e.target.value as typeof callType)}
+                          className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-slate-200"
+                        >
+                          <option value="par">Par</option>
+                          <option value="make-whole">Make-Whole</option>
+                          <option value="declining_premium">Declining Premium</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Put Schedule */}
+                <div className="space-y-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowPutFields(!showPutFields)}
+                    className={`w-full rounded-lg border px-3 py-1.5 font-mono text-[0.6rem] transition-all ${
+                      showPutFields
+                        ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-400"
+                        : "border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-400"
+                    }`}
+                  >
+                    {showPutFields ? "- Remove Put Option" : "+ Add Put Option"}
+                  </button>
+                  {showPutFields && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input label="Put Date" value={putDate} onChange={setPutDate} placeholder="2029-01-01" />
+                      <div>
+                        <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">Put Trigger</label>
+                        <select
+                          value={putTrigger}
+                          onChange={(e) => setPutTrigger(e.target.value as typeof putTrigger)}
+                          className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-slate-200"
+                        >
+                          <option value="rate_increase">Rate Increase</option>
+                          <option value="covenant_breach">Covenant Breach</option>
+                          <option value="credit_downgrade">Credit Downgrade</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex gap-2">
                   <button onClick={handleAddTranche} className="flex-1 rounded-lg bg-[#C4A048] px-3 py-1.5 font-mono text-xs font-semibold text-[#030A06]">Add</button>
                   <button onClick={() => setShowTrancheForm(false)} className="rounded-lg border border-white/10 px-3 py-1.5 font-mono text-xs text-slate-500">Cancel</button>
@@ -333,6 +443,91 @@ export default function BondStructuringEngine() {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Call/Put Optionality Analysis */}
+            {state.tranches.some((t: any) => t.call_schedule?.length > 0 || t.put_schedule?.length > 0) && (
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Call/Put Optionality</h4>
+                  <button
+                    onClick={() => {
+                      if (!state.activeDeal) return;
+                      const firstCallTranche = state.tranches.find((t: any) => t.call_schedule?.length > 0);
+                      callPutMutation.mutate({
+                        current_rate_bps: firstCallTranche ? firstCallTranche.spread_bps : state.tranches[0].spread_bps,
+                        original_rate_bps: firstCallTranche ? firstCallTranche.spread_bps + 50 : state.tranches[0].spread_bps + 50,
+                        deal: { bond_face_usd: state.activeDeal.total_project_cost_usd },
+                      }, {
+                        onSuccess: (data: any) => setCallPutResult(data),
+                      });
+                    }}
+                    disabled={callPutMutation.isPending}
+                    className="rounded-lg bg-[#C4A048]/20 px-3 py-1 font-mono text-[0.6rem] text-[#C4A048] transition-all hover:bg-[#C4A048]/30 disabled:opacity-50"
+                  >
+                    {callPutMutation.isPending ? "Analyzing..." : "Run Analysis"}
+                  </button>
+                </div>
+
+                {/* Tranche optionality summary */}
+                <div className="mb-3 space-y-1">
+                  {state.tranches.filter((t: any) => t.call_schedule?.length > 0 || t.put_schedule?.length > 0).map((t: any) => (
+                    <div key={t.id} className="flex items-center gap-2 font-mono text-[0.55rem]">
+                      <span className="text-slate-400">{t.label}:</span>
+                      {t.call_schedule?.map((c: any, i: number) => (
+                        <span key={`c-${i}`} className="text-emerald-400">CALL {c.type} @ {c.date?.slice(0, 7)}</span>
+                      ))}
+                      {t.put_schedule?.map((p: any, i: number) => (
+                        <span key={`p-${i}`} className="text-cyan-400">PUT {p.trigger} @ {p.date?.slice(0, 7)}</span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Analysis result */}
+                {callPutResult && (
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[0.55rem] uppercase text-slate-500">Recommendation</span>
+                      <span className={`rounded-full px-2 py-0.5 font-mono text-[0.6rem] font-bold ${
+                        callPutResult.recommendation === "EXECUTE_CALL" ? "bg-emerald-500/20 text-emerald-400" :
+                        callPutResult.recommendation === "CALL_ELIGIBLE" ? "bg-cyan-500/20 text-cyan-400" :
+                        callPutResult.recommendation === "PUT_ALERT" ? "bg-rose-500/20 text-rose-400" :
+                        callPutResult.recommendation === "MONITOR" ? "bg-amber-500/20 text-amber-400" :
+                        "bg-slate-500/20 text-slate-400"
+                      }`}>
+                        {callPutResult.recommendation}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 font-mono text-[0.6rem]">
+                      <div>
+                        <span className="text-slate-600">Rate Change</span>
+                        <div className={`text-sm font-semibold ${callPutResult.rate_change_bps < 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                          {callPutResult.rate_change_bps > 0 ? "+" : ""}{callPutResult.rate_change_bps}bp
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-slate-600">Est. Savings</span>
+                        <div className="text-sm font-semibold text-[#C4A048]">
+                          ${(callPutResult.estimated_client_saving_usd / 1e3).toFixed(0)}K
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-slate-600">Net Benefit</span>
+                        <div className="text-sm font-semibold text-[#C4A048]">
+                          ${(callPutResult.net_client_benefit_usd / 1e3).toFixed(0)}K
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-slate-600">Arrangement Fee</span>
+                        <div className="text-sm font-semibold text-slate-300">
+                          ${(callPutResult.arrangement_fee_usd / 1e3).toFixed(0)}K
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </>
