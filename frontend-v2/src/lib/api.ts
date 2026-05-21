@@ -331,10 +331,41 @@ export const metrics = {
   health: () => nestFetch("/api/health"),
 };
 
+// ── Bond Structuring (GENIE) ────────────────────────────────
+export const bondStructuring = {
+  structure: (params: {
+    deal: Record<string, unknown>;
+    tranches: Array<Record<string, unknown>>;
+  }) =>
+    nestFetch("/api/bond-structuring/structure", {
+      method: "POST",
+      body: JSON.stringify(params),
+    }),
+  dealImpact: (params: {
+    rate_delta_bps: number;
+    current_stack: Record<string, unknown>;
+    deal: Record<string, unknown>;
+  }) =>
+    nestFetch("/api/bond-structuring/deal-impact", {
+      method: "POST",
+      body: JSON.stringify(params),
+    }),
+  callPutAnalysis: (params: Record<string, unknown>) =>
+    nestFetch("/api/bond-structuring/call-put-analysis", {
+      method: "POST",
+      body: JSON.stringify(params),
+    }),
+  poolAnalysis: (params: { deals: Array<Record<string, unknown>> }) =>
+    nestFetch("/api/bond-structuring/pool-analysis", {
+      method: "POST",
+      body: JSON.stringify(params),
+    }),
+};
+
 export const api = {
   auth, deals, fund, agents, market, bondTools, risk,
   modeling, maxwell, architect, pricing, insurance, roots, metrics,
-  powerstrip, bondWorkflow, eagleeye, hawkeye, ratingEsg,
+  powerstrip, bondWorkflow, eagleeye, hawkeye, ratingEsg, bondStructuring,
 };
 
 export default api;

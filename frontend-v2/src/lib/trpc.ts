@@ -424,6 +424,19 @@ const ratingEsg = {
   rmaBenchmark: m((input: Record<string, unknown>) => api.ratingEsg.rmaBenchmark(input)),
 };
 
+// ── Bond Structuring (GENIE) ───────────────────────────────────
+
+const bondStructuring = {
+  structure: m((input: { deal: Record<string, unknown>; tranches: Array<Record<string, unknown>> }) =>
+    api.bondStructuring.structure(input)),
+  dealImpact: m((input: { rate_delta_bps: number; current_stack: Record<string, unknown>; deal: Record<string, unknown> }) =>
+    api.bondStructuring.dealImpact(input)),
+  callPutAnalysis: m((input: Record<string, unknown>) =>
+    api.bondStructuring.callPutAnalysis(input)),
+  poolAnalysis: m((input: { deals: Array<Record<string, unknown>> }) =>
+    api.bondStructuring.poolAnalysis(input)),
+};
+
 // ── useUtils (cache invalidation helper) ─────────────────────────
 
 function useUtils() {
@@ -455,5 +468,6 @@ export const trpc = {
   eagleeye,
   hawkeye: hawkeyeHooks,
   ratingEsg,
+  bondStructuring,
   useUtils,
 };
