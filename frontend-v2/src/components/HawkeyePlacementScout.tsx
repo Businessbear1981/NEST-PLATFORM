@@ -109,6 +109,13 @@ const DEMO_INVESTORS: Record<string, InvestorType[]> = {
     { id: "ag", name: "Angelo Gordon & Co", type: "credit_fund", aum: 55_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["CRE", "Healthcare", "Mixed Use"], lastDeal: "Active in sub-IG — will take BB+ at right spread", yieldFloor: 9.0 },
     { id: "pg", name: "PGIM Fixed Income", type: "credit_fund", aum: 830_000_000_000, minTicket: 50_000_000, maxTicket: 200_000_000, appetite: "hot", sectors: ["Investment Grade", "CMBS"], lastDeal: "Anchor buyer — can take full A tranche", yieldFloor: 5.0 },
   ],
+  pension_funds: [
+    { id: "calpers", name: "CalPERS — Real Assets", type: "pension", aum: 502_000_000_000, minTicket: 50_000_000, maxTicket: 200_000_000, appetite: "hot", sectors: ["Infrastructure", "Healthcare", "Industrial", "CMBS"], lastDeal: "Increased real assets allocation by $8B — actively deploying", yieldFloor: 4.8 },
+    { id: "calstrs", name: "CalSTRS — Fixed Income", type: "pension", aum: 340_000_000_000, minTicket: 25_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Investment Grade", "Multifamily", "Healthcare"], lastDeal: "Conservative mandate — A-rated only, long duration preferred", yieldFloor: 5.0 },
+    { id: "nycers", name: "NYC Employees' Retirement System", type: "pension", aum: 85_000_000_000, minTicket: 15_000_000, maxTicket: 75_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Affordable Housing"], lastDeal: "ESG mandate — prioritizes healthcare and community impact", yieldFloor: 5.2 },
+    { id: "wsib", name: "Washington State Investment Board", type: "pension", aum: 190_000_000_000, minTicket: 20_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Industrial", "Infrastructure", "CMBS"], lastDeal: "Took $40M in Pacific NW infrastructure bond last quarter", yieldFloor: 5.0 },
+    { id: "trs", name: "Teacher Retirement System of Texas", type: "pension", aum: 210_000_000_000, minTicket: 25_000_000, maxTicket: 150_000_000, appetite: "hot", sectors: ["Healthcare", "CRE", "Mixed Use"], lastDeal: "New structured credit allocation — $2B to deploy in FY26", yieldFloor: 5.5 },
+  ],
   ria_wealth: [
     { id: "lpl", name: "LPL Financial — Fixed Income Desk", type: "ria", aum: 1_100_000_000_000, minTicket: 2_000_000, maxTicket: 15_000_000, appetite: "warm", sectors: ["Healthcare", "Multifamily"], lastDeal: "Distributes to 20K+ advisor network — slower execution", yieldFloor: 6.0 },
     { id: "rj", name: "Raymond James — Structured Products", type: "ria", aum: 210_000_000_000, minTicket: 5_000_000, maxTicket: 25_000_000, appetite: "hot", sectors: ["CMBS", "Healthcare", "Industrial"], lastDeal: "Strong appetite — syndicate desk wants co-manager role", yieldFloor: 5.8 },
@@ -141,6 +148,7 @@ const DEMO_ROADSHOW = [
 
 const INVESTOR_TABS = [
   { key: "insurance", label: "Insurance" },
+  { key: "pension_funds", label: "Pension Funds" },
   { key: "banks", label: "Banks" },
   { key: "family_offices", label: "Family Offices" },
   { key: "credit_funds", label: "Credit Funds" },
