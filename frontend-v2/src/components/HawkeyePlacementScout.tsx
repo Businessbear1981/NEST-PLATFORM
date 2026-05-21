@@ -1,8 +1,15 @@
-import { useState } from "react";
-import { Loader2, Users, Target, FileText, BookOpen, Send, DollarSign, CheckCircle2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import {
+  Loader2, Users, Target, FileText, BookOpen, Send, DollarSign,
+  CheckCircle2, Calendar, MessageSquare, TrendingUp, Building2,
+  Flame, ThermometerSun, Snowflake, Plus, Phone, ClipboardList,
+  BarChart3, ArrowRight, X, RefreshCw, Mail, Eye, AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
+import { skipToken } from "@tanstack/react-query";
 
+/* ─── Formatting ─── */
 function money(val: number) {
   if (val >= 1_000_000_000) return `$${(val / 1_000_000_000).toFixed(1)}B`;
   if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(1)}M`;
@@ -10,261 +17,764 @@ function money(val: number) {
   return `$${val}`;
 }
 
-const matchColors: Record<string, string> = {
-  high: "border-emerald-300/30 bg-emerald-400/10",
-  medium: "border-amber-300/30 bg-amber-300/10",
-  low: "border-slate-400/30 bg-slate-500/10",
+function pct(num: number, denom: number) {
+  if (!denom) return 0;
+  return Math.round((num / denom) * 100);
+}
+
+function bps(val: number | null) {
+  if (val === null || val === undefined) return "—";
+  return `T+${val}bp`;
+}
+
+/* ─── Demo Data ─── */
+const DEMO_OFFERINGS = [
+  {
+    id: "jacaranda",
+    name: "Jacaranda Trace PLOM — Series 2025",
+    totalRaise: 231_000_000,
+    rating: "BBB+",
+    coupon: 7.0,
+    spread: 85,
+    subscribed: 143_220_000,
+    targetClose: "2025-08-15",
+    status: "marketing",
+    tranches: [
+      { series: "A", size: 173_250_000, subscribed: 124_740_000, rating: "A" },
+      { series: "B", size: 57_750_000, subscribed: 18_480_000, rating: "BBB" },
+    ],
+  },
+  {
+    id: "harbor",
+    name: "Harbor Point Industrial — Series A",
+    totalRaise: 89_000_000,
+    rating: "A",
+    coupon: 6.5,
+    spread: 72,
+    subscribed: 78_320_000,
+    targetClose: "2025-07-30",
+    status: "closing",
+    tranches: [
+      { series: "A", size: 66_750_000, subscribed: 66_750_000, rating: "A" },
+      { series: "B", size: 22_250_000, subscribed: 11_570_000, rating: "BBB-" },
+    ],
+  },
+  {
+    id: "oakwood",
+    name: "Oakwood Multifamily — Development Bond",
+    totalRaise: 67_000_000,
+    rating: "BBB",
+    coupon: 7.5,
+    spread: 110,
+    subscribed: 16_750_000,
+    targetClose: "2025-09-30",
+    status: "pre-marketing",
+    tranches: [
+      { series: "A", size: 50_250_000, subscribed: 12_060_000, rating: "BBB+" },
+      { series: "B", size: 16_750_000, subscribed: 4_690_000, rating: "BB+" },
+    ],
+  },
+];
+
+type InvestorType = {
+  id: string;
+  name: string;
+  type: string;
+  aum: number;
+  minTicket: number;
+  maxTicket: number;
+  appetite: "hot" | "warm" | "cold";
+  sectors: string[];
+  lastDeal: string;
+  yieldFloor: number;
 };
 
-export default function HawkeyePlacementScout({ dealId, summaryMode }: { dealId?: string; summaryMode?: boolean }) {
-  const [matchParams, setMatchParams] = useState({
-    naics: "6232",
-    rating: "A",
-    coupon_pct: 6.5,
-    total_raise_usd: 150_000_000,
-  });
+const DEMO_INVESTORS: Record<string, InvestorType[]> = {
+  insurance: [
+    { id: "met", name: "Metropolitan Life Insurance", type: "insurance", aum: 650_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Industrial"], lastDeal: "Took $25M Series A in Q1 CMBS pool", yieldFloor: 5.5 },
+    { id: "pru", name: "Prudential Financial", type: "insurance", aum: 1_500_000_000_000, minTicket: 25_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Industrial", "Multifamily"], lastDeal: "Passed on last healthcare deal — spread too tight", yieldFloor: 5.8 },
+    { id: "aig", name: "AIG Global Real Assets", type: "insurance", aum: 380_000_000_000, minTicket: 15_000_000, maxTicket: 75_000_000, appetite: "hot", sectors: ["Healthcare", "Office", "Mixed Use"], lastDeal: "Active buyer — 3 deals in last 6 months", yieldFloor: 5.2 },
+  ],
+  banks: [
+    { id: "usb", name: "US Bancorp — Fixed Income", type: "bank", aum: 85_000_000_000, minTicket: 5_000_000, maxTicket: 25_000_000, appetite: "warm", sectors: ["Multifamily", "Industrial", "Healthcare"], lastDeal: "Regulatory capital constraints — smaller tickets only", yieldFloor: 6.0 },
+    { id: "bmo", name: "BMO Capital Markets", type: "bank", aum: 120_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["Healthcare", "Construction"], lastDeal: "Looking to deploy $200M in structured credit this quarter", yieldFloor: 5.5 },
+    { id: "rbc", name: "RBC Global Asset Mgmt", type: "bank", aum: 420_000_000_000, minTicket: 20_000_000, maxTicket: 75_000_000, appetite: "cold", sectors: ["Office", "Retail"], lastDeal: "On hold — internal credit committee review", yieldFloor: 6.5 },
+  ],
+  family_offices: [
+    { id: "bh", name: "Brookfield Heritage Partners", type: "family_office", aum: 2_800_000_000, minTicket: 5_000_000, maxTicket: 20_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Industrial"], lastDeal: "Co-invested in Soparrow's last deal", yieldFloor: 6.5 },
+    { id: "ev", name: "Evergreen Wealth Advisors", type: "family_office", aum: 1_200_000_000, minTicket: 2_000_000, maxTicket: 10_000_000, appetite: "warm", sectors: ["Multifamily", "Healthcare"], lastDeal: "First-time buyer — needs education on structure", yieldFloor: 7.0 },
+  ],
+  credit_funds: [
+    { id: "oa", name: "Oaktree Capital — Credit Strategies", type: "credit_fund", aum: 190_000_000_000, minTicket: 25_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Distressed", "Industrial", "Healthcare"], lastDeal: "Interested in B tranches and mezzanine only", yieldFloor: 8.0 },
+    { id: "ag", name: "Angelo Gordon & Co", type: "credit_fund", aum: 55_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["CRE", "Healthcare", "Mixed Use"], lastDeal: "Active in sub-IG — will take BB+ at right spread", yieldFloor: 9.0 },
+    { id: "pg", name: "PGIM Fixed Income", type: "credit_fund", aum: 830_000_000_000, minTicket: 50_000_000, maxTicket: 200_000_000, appetite: "hot", sectors: ["Investment Grade", "CMBS"], lastDeal: "Anchor buyer — can take full A tranche", yieldFloor: 5.0 },
+  ],
+  ria_wealth: [
+    { id: "lpl", name: "LPL Financial — Fixed Income Desk", type: "ria", aum: 1_100_000_000_000, minTicket: 2_000_000, maxTicket: 15_000_000, appetite: "warm", sectors: ["Healthcare", "Multifamily"], lastDeal: "Distributes to 20K+ advisor network — slower execution", yieldFloor: 6.0 },
+    { id: "rj", name: "Raymond James — Structured Products", type: "ria", aum: 210_000_000_000, minTicket: 5_000_000, maxTicket: 25_000_000, appetite: "hot", sectors: ["CMBS", "Healthcare", "Industrial"], lastDeal: "Strong appetite — syndicate desk wants co-manager role", yieldFloor: 5.8 },
+  ],
+  strategic: [
+    { id: "hyl", name: "Hylant Insurance — Surety Division", type: "strategic", aum: 4_500_000_000, minTicket: 5_000_000, maxTicket: 30_000_000, appetite: "hot", sectors: ["Healthcare", "Construction", "Municipal"], lastDeal: "Existing NEST partner — surety + direct investment", yieldFloor: 6.0 },
+    { id: "sop", name: "Soparrow Capital Partners", type: "strategic", aum: 800_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Industrial"], lastDeal: "Co-GP on Jacaranda — anchor investor commitment", yieldFloor: 5.5 },
+  ],
+};
 
+const DEMO_ORDERS = [
+  { id: 1, investor: "PGIM Fixed Income", amount: 50_000_000, status: "firm" as const, spreadBid: 82, tranche: "A", notes: "Firm order — compliance approved" },
+  { id: 2, investor: "Metropolitan Life", amount: 25_000_000, status: "firm" as const, spreadBid: 85, tranche: "A", notes: "Standard allocation from insurance book" },
+  { id: 3, investor: "AIG Global Real Assets", amount: 20_000_000, status: "soft" as const, spreadBid: 88, tranche: "A", notes: "Soft — pending IC approval Thursday" },
+  { id: 4, investor: "BMO Capital Markets", amount: 15_000_000, status: "firm" as const, spreadBid: 85, tranche: "A", notes: "Will increase to $25M if spread widens to T+90" },
+  { id: 5, investor: "Brookfield Heritage", amount: 10_000_000, status: "indicated" as const, spreadBid: null, tranche: "A", notes: "Verbal indication — awaiting written confirm" },
+  { id: 6, investor: "Angelo Gordon", amount: 15_000_000, status: "firm" as const, spreadBid: 145, tranche: "B", notes: "B tranche only — wants 145bp minimum" },
+  { id: 7, investor: "Oaktree Capital", amount: 8_250_000, status: "soft" as const, spreadBid: 155, tranche: "B", notes: "Will commit if we add cash sweep covenant" },
+  { id: 8, investor: "Evergreen Wealth", amount: 5_000_000, status: "indicated" as const, spreadBid: null, tranche: "A", notes: "First-time — needs call with Bernard" },
+];
+
+const DEMO_ROADSHOW = [
+  { id: 1, investor: "PGIM Fixed Income", date: "2025-06-12", time: "10:00 AM", status: "completed" as const, feedback: "Very positive — ready to anchor. Wants par call protection through Y3." },
+  { id: 2, investor: "Metropolitan Life", date: "2025-06-12", time: "2:00 PM", status: "completed" as const, feedback: "Standard process. Will allocate from insurance general account." },
+  { id: 3, investor: "Oaktree Capital", date: "2025-06-13", time: "9:30 AM", status: "completed" as const, feedback: "Only interested in B tranche. Wants higher spread or cash sweep." },
+  { id: 4, investor: "US Bancorp", date: "2025-06-15", time: "11:00 AM", status: "scheduled" as const, feedback: null },
+  { id: 5, investor: "Prudential Financial", date: "2025-06-16", time: "3:00 PM", status: "scheduled" as const, feedback: null },
+  { id: 6, investor: "RBC Global Asset Mgmt", date: "2025-06-18", time: "10:00 AM", status: "cancelled" as const, feedback: "IC pushed back — revisit in 30 days" },
+];
+
+const INVESTOR_TABS = [
+  { key: "insurance", label: "Insurance" },
+  { key: "banks", label: "Banks" },
+  { key: "family_offices", label: "Family Offices" },
+  { key: "credit_funds", label: "Credit Funds" },
+  { key: "ria_wealth", label: "RIA/Wealth" },
+  { key: "strategic", label: "Strategic" },
+] as const;
+
+const statusColors: Record<string, string> = {
+  "pre-marketing": "border-amber-400/30 bg-amber-400/10 text-amber-200",
+  marketing: "border-fuchsia-400/30 bg-fuchsia-400/10 text-fuchsia-200",
+  closing: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
+};
+
+const orderStatusColors: Record<string, string> = {
+  firm: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
+  soft: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+  indicated: "border-slate-400/30 bg-slate-400/10 text-slate-300",
+};
+
+const appetiteIcon = (appetite: string) => {
+  if (appetite === "hot") return <Flame size={13} className="text-red-400" />;
+  if (appetite === "warm") return <ThermometerSun size={13} className="text-amber-400" />;
+  return <Snowflake size={13} className="text-blue-400" />;
+};
+
+const meetingStatusStyle: Record<string, string> = {
+  completed: "border-emerald-400/25 bg-emerald-400/8 text-emerald-300",
+  scheduled: "border-fuchsia-400/25 bg-fuchsia-400/8 text-fuchsia-200",
+  cancelled: "border-red-400/25 bg-red-400/8 text-red-300",
+};
+
+/* ─── Sub-components ─── */
+
+function OfferingCard({
+  offering,
+  selected,
+  onSelect,
+}: {
+  offering: (typeof DEMO_OFFERINGS)[0];
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const subscribedPct = pct(offering.subscribed, offering.totalRaise);
+  return (
+    <button
+      onClick={onSelect}
+      className={`min-w-[300px] flex-shrink-0 rounded-2xl border p-4 text-left transition-all ${
+        selected
+          ? "border-fuchsia-400/50 bg-fuchsia-500/10 ring-1 ring-fuchsia-400/30"
+          : "border-white/10 bg-black/30 hover:border-fuchsia-300/25 hover:bg-black/40"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-[Cormorant_Garamond] text-[0.95rem] font-semibold text-white">
+            {offering.name}
+          </p>
+          <div className="mt-1 flex items-center gap-3">
+            <span className="font-mono text-xs font-semibold text-[#C4A048]">
+              {money(offering.totalRaise)}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[0.56rem] text-slate-300">
+              {offering.rating}
+            </span>
+            <span className="font-mono text-[0.62rem] text-slate-400">
+              {offering.coupon}% · {bps(offering.spread)}
+            </span>
+          </div>
+        </div>
+        <span className={`rounded-full px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase ${statusColors[offering.status]}`}>
+          {offering.status.replace("-", " ")}
+        </span>
+      </div>
+
+      {/* Subscription bar */}
+      <div className="mt-3">
+        <div className="flex items-center justify-between font-mono text-[0.56rem]">
+          <span className="text-slate-400">Subscribed</span>
+          <span className="font-semibold text-white">
+            {money(offering.subscribed)} / {money(offering.totalRaise)} ({subscribedPct}%)
+          </span>
+        </div>
+        <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/5">
+          <div
+            className={`h-full rounded-full transition-all ${
+              subscribedPct >= 90
+                ? "bg-emerald-500"
+                : subscribedPct >= 50
+                ? "bg-fuchsia-500"
+                : "bg-amber-500"
+            }`}
+            style={{ width: `${Math.min(subscribedPct, 100)}%` }}
+          />
+        </div>
+        {/* Tranche breakdown */}
+        <div className="mt-2 flex gap-3">
+          {offering.tranches.map((t) => (
+            <div key={t.series} className="flex-1">
+              <div className="flex items-center justify-between font-mono text-[0.48rem] text-slate-500">
+                <span>Series {t.series} ({t.rating})</span>
+                <span>{pct(t.subscribed, t.size)}%</span>
+              </div>
+              <div className="mt-0.5 h-1 w-full overflow-hidden rounded-full bg-white/5">
+                <div
+                  className="h-full rounded-full bg-fuchsia-400/60"
+                  style={{ width: `${pct(t.subscribed, t.size)}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="mt-2 font-mono text-[0.52rem] text-slate-500">
+        Target close: {offering.targetClose}
+      </p>
+    </button>
+  );
+}
+
+function InvestorCard({ investor, onAddToBook }: { investor: InvestorType; onAddToBook: (inv: InvestorType) => void }) {
+  return (
+    <div className="rounded-xl border border-white/8 bg-black/25 p-3 hover:border-fuchsia-300/20">
+      <div className="flex items-start justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            {appetiteIcon(investor.appetite)}
+            <p className="truncate font-[Space_Grotesk] text-sm font-semibold text-white">{investor.name}</p>
+          </div>
+          <p className="mt-1 font-mono text-[0.58rem] text-slate-400">
+            AUM {money(investor.aum)} · Ticket {money(investor.minTicket)}–{money(investor.maxTicket)}
+          </p>
+        </div>
+        <span className="font-mono text-[0.52rem] text-[#C4A048]">{investor.yieldFloor}% floor</span>
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-1">
+        {investor.sectors.map((s) => (
+          <span key={s} className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[0.48rem] text-slate-400">
+            {s}
+          </span>
+        ))}
+      </div>
+
+      <p className="mt-2 font-mono text-[0.52rem] italic text-slate-500">
+        {investor.lastDeal}
+      </p>
+
+      <Button
+        onClick={() => onAddToBook(investor)}
+        className="mt-2 w-full rounded-lg border border-fuchsia-300/25 bg-fuchsia-500/8 px-2 py-1 font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-fuchsia-200 hover:bg-fuchsia-500/15"
+      >
+        <Plus size={10} className="mr-1" /> Add to Book
+      </Button>
+    </div>
+  );
+}
+
+/* ─── Pipeline ─── */
+function OutreachPipeline() {
+  const stages = [
+    { label: "Contacted", count: 18, color: "bg-slate-500" },
+    { label: "Responded", count: 12, color: "bg-blue-500" },
+    { label: "Meeting", count: 8, color: "bg-fuchsia-500" },
+    { label: "Indication", count: 5, color: "bg-amber-500" },
+    { label: "Allocated", count: 3, color: "bg-emerald-500" },
+  ];
+  return (
+    <div className="mt-3 space-y-1.5">
+      <p className="font-mono text-[0.52rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
+        Outreach Pipeline
+      </p>
+      {stages.map((s) => (
+        <div key={s.label} className="flex items-center gap-2">
+          <span className="w-16 font-mono text-[0.52rem] text-slate-500">{s.label}</span>
+          <div className="flex-1">
+            <div className="h-3 overflow-hidden rounded-full bg-white/5">
+              <div
+                className={`h-full rounded-full ${s.color}`}
+                style={{ width: `${(s.count / 18) * 100}%` }}
+              />
+            </div>
+          </div>
+          <span className="w-4 text-right font-mono text-[0.56rem] font-semibold text-white">{s.count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
+export default function HawkeyePlacementScout({
+  dealId,
+  summaryMode,
+}: {
+  dealId?: string;
+  summaryMode?: boolean;
+}) {
+  const [selectedOffering, setSelectedOffering] = useState(DEMO_OFFERINGS[0].id);
+  const [investorTab, setInvestorTab] = useState<string>("insurance");
+  const [bookInvestors, setBookInvestors] = useState<string[]>([]);
+  const [teaserContent, setTeaserContent] = useState<string | null>(null);
+  const [teaserGenerating, setTeaserGenerating] = useState(false);
+
+  /* trpc hooks — kept from original */
   const buyersQuery = trpc.hawkeye.buyers.useQuery();
   const matchMutation = trpc.hawkeye.match.useMutation();
   const teaserMutation = trpc.hawkeye.teaser.useMutation();
   const orderBookQuery = trpc.hawkeye.orderBook.useQuery(
-    dealId ? { dealId } : undefined,
-    { enabled: !!dealId },
+    dealId ? { dealId } : skipToken,
   );
   const indicateMutation = trpc.hawkeye.indicate.useMutation({
     onSuccess: () => orderBookQuery.refetch(),
   });
   const allocateMutation = trpc.hawkeye.allocate.useMutation();
 
-  const [indicationForm, setIndicationForm] = useState({ investorName: "", amount: "" });
+  const offering = DEMO_OFFERINGS.find((o) => o.id === selectedOffering) ?? DEMO_OFFERINGS[0];
 
-  const matches = (matchMutation.data as any)?.matches ?? [];
-  const orderBook = (orderBookQuery.data as any);
+  /* Book building stats */
+  const bookStats = useMemo(() => {
+    const firmTotal = DEMO_ORDERS.filter((o) => o.status === "firm").reduce((s, o) => s + o.amount, 0);
+    const softTotal = DEMO_ORDERS.filter((o) => o.status === "soft").reduce((s, o) => s + o.amount, 0);
+    const indicatedTotal = DEMO_ORDERS.filter((o) => o.status === "indicated").reduce((s, o) => s + o.amount, 0);
+    const total = firmTotal + softTotal + indicatedTotal;
+    const trancheA = DEMO_ORDERS.filter((o) => o.tranche === "A").reduce((s, o) => s + o.amount, 0);
+    const trancheB = DEMO_ORDERS.filter((o) => o.tranche === "B").reduce((s, o) => s + o.amount, 0);
+    return { firmTotal, softTotal, indicatedTotal, total, trancheA, trancheB };
+  }, []);
 
+  const oversubscribed = bookStats.total > offering.totalRaise;
+
+  /* ─── Summary Mode ─── */
   if (summaryMode) {
     return (
       <div className="p-4">
         <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-fuchsia-200">
           <Target size={14} /> Hawkeye Placement
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-3 gap-3">
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Buyers</p>
-            <p className="font-mono text-xl font-semibold text-white">{(buyersQuery.data as any)?.total ?? "—"}</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Active Deals</p>
+            <p className="font-mono text-xl font-semibold text-white">{DEMO_OFFERINGS.length}</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Book</p>
-            <p className="font-mono text-xl font-semibold text-amber-100">{orderBook ? money(orderBook.total_indications_usd) : "—"}</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Book Size</p>
+            <p className="font-mono text-xl font-semibold text-[#C4A048]">{money(bookStats.total)}</p>
           </div>
+          <div>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Investors</p>
+            <p className="font-mono text-xl font-semibold text-amber-100">{DEMO_ORDERS.length}</p>
+          </div>
+        </div>
+        <div className="mt-2 flex gap-2">
+          {DEMO_OFFERINGS.map((o) => (
+            <div key={o.id} className="flex-1 rounded-lg border border-white/5 bg-white/[0.02] p-2">
+              <p className="truncate font-mono text-[0.48rem] text-slate-400">{o.name.split(" — ")[0]}</p>
+              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+                <div
+                  className="h-full rounded-full bg-fuchsia-500"
+                  style={{ width: `${pct(o.subscribed, o.totalRaise)}%` }}
+                />
+              </div>
+              <p className="mt-0.5 font-mono text-[0.44rem] text-slate-500">{pct(o.subscribed, o.totalRaise)}%</p>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
+  /* ─── Full Dashboard ─── */
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-fuchsia-200">
-          <Target size={17} /> Hawkeye — Institutional Placement Engine
-        </div>
-        <p className="mt-1 text-sm text-slate-400">Buyer matching, AI teasers, order book management, and allocation.</p>
-      </div>
-
-      {/* Match controls */}
-      <div className="rounded-2xl border border-fuchsia-300/25 bg-black/35 p-5">
-        <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white">Buyer Matching</h3>
-        <div className="mt-3 grid grid-cols-4 gap-3">
-          <div>
-            <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Sector</label>
-            <select
-              value={matchParams.naics}
-              onChange={(e) => setMatchParams({ ...matchParams, naics: e.target.value })}
-              className="w-full rounded-xl border border-fuchsia-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none"
-            >
-              <option value="6232">Assisted Living</option>
-              <option value="6231">Nursing Care</option>
-              <option value="5311">Property Mgmt</option>
-            </select>
+    <div className="space-y-5">
+      {/* ═══ Header ═══ */}
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-fuchsia-200">
+            <Target size={17} /> Hawkeye — Institutional Placement Engine
           </div>
-          <div>
-            <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Rating</label>
-            <select
-              value={matchParams.rating}
-              onChange={(e) => setMatchParams({ ...matchParams, rating: e.target.value })}
-              className="w-full rounded-xl border border-fuchsia-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none"
-            >
-              <option value="A">A</option>
-              <option value="BBB+">BBB+</option>
-              <option value="BBB">BBB</option>
-              <option value="BBB-">BBB-</option>
-            </select>
-          </div>
-          <div>
-            <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Coupon %</label>
-            <input
-              type="number"
-              value={matchParams.coupon_pct}
-              onChange={(e) => setMatchParams({ ...matchParams, coupon_pct: Number(e.target.value) })}
-              step="0.25"
-              className="w-full rounded-xl border border-fuchsia-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none"
-            />
-          </div>
-          <div className="flex items-end">
-            <Button
-              onClick={() => matchMutation.mutate(matchParams)}
-              disabled={matchMutation.isPending}
-              className="w-full rounded-xl border border-fuchsia-300/35 bg-fuchsia-500/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-fuchsia-100 hover:bg-fuchsia-500/20"
-            >
-              {matchMutation.isPending ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Users className="mr-2 h-3.5 w-3.5" />}
-              Match Buyers
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Match results */}
-      {matches.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white">
-              {(matchMutation.data as any)?.total_matched} Matched · {money((matchMutation.data as any)?.potential_demand_usd ?? 0)} potential demand
-            </h3>
-            <Button
-              onClick={() => teaserMutation.mutate({
-                dealId: dealId || "new",
-                dealName: "NEST Bond Offering",
-                totalRaise: matchParams.total_raise_usd,
-                coupon: matchParams.coupon_pct,
-                rating: matchParams.rating,
-              })}
-              disabled={teaserMutation.isPending}
-              className="rounded-lg border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-cyan-100 hover:bg-cyan-400/20"
-            >
-              <FileText className="mr-1 h-3 w-3" /> {teaserMutation.isPending ? "Generating..." : "Generate AI Teaser"}
-            </Button>
-          </div>
-
-          {matches.map((buyer: any) => {
-            const tier = buyer.match_score >= 70 ? "high" : buyer.match_score >= 40 ? "medium" : "low";
-            return (
-              <article key={buyer.id} className={`rounded-2xl border p-4 ${matchColors[tier]}`}>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-mono text-sm font-semibold text-white">{buyer.name}</h4>
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[0.56rem] uppercase text-slate-400">{buyer.type}</span>
-                      {buyer.relationship === "existing" && (
-                        <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[0.56rem] uppercase text-emerald-200">existing</span>
-                      )}
-                    </div>
-                    <p className="mt-1 font-mono text-[0.62rem] text-slate-400">
-                      AUM: {money(buyer.aum_usd)} · Ticket: {money(buyer.min_ticket_usd)}–{money(buyer.max_ticket_usd)} · Floor: {buyer.yield_floor_pct}%
-                    </p>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {buyer.rationale?.map((r: string, i: number) => (
-                        <span key={i} className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[0.52rem] text-slate-400">{r}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-mono text-lg font-semibold text-white">{buyer.match_score}/100</p>
-                    <p className="font-mono text-[0.56rem] text-amber-200">Suggested: {money(buyer.suggested_ticket_usd)}</p>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      )}
-
-      {/* AI Teaser */}
-      {teaserMutation.data && (
-        <div className="rounded-2xl border border-cyan-300/25 bg-black/35 p-5">
-          <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
-            <FileText size={14} /> AI-Generated Investor Teaser
-          </div>
-          <p className="mt-3 whitespace-pre-wrap font-mono text-sm leading-6 text-slate-300">
-            {(teaserMutation.data as any).content}
+          <p className="mt-1 font-[Space_Grotesk] text-sm text-slate-400">
+            Book building, investor matching, roadshow management, and AI teasers.
           </p>
         </div>
-      )}
+        <div className="flex items-center gap-2 font-mono text-[0.56rem] text-slate-500">
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" /> Live
+          </span>
+          <span>|</span>
+          <span>{DEMO_OFFERINGS.length} offerings</span>
+          <span>|</span>
+          <span>{DEMO_ORDERS.length} orders</span>
+        </div>
+      </div>
 
-      {/* Order Book */}
-      {dealId && (
-        <div className="rounded-2xl border border-amber-300/25 bg-black/35 p-5">
+      {/* ═══ Section 1: Active Offerings ═══ */}
+      <div>
+        <h2 className="mb-3 font-[Cormorant_Garamond] text-lg font-semibold text-white">
+          Active Offerings
+        </h2>
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {DEMO_OFFERINGS.map((o) => (
+            <OfferingCard
+              key={o.id}
+              offering={o}
+              selected={o.id === selectedOffering}
+              onSelect={() => setSelectedOffering(o.id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ═══ Section 2: Three-Column Layout ═══ */}
+      <div className="grid grid-cols-12 gap-4">
+        {/* ─── Left: Investor Universe ─── */}
+        <div className="col-span-3 rounded-2xl border border-white/10 bg-black/30 p-4">
+          <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
+            <Users size={15} className="text-fuchsia-300" /> Investor Universe
+          </h2>
+
+          {/* Tabs */}
+          <div className="mt-3 flex flex-wrap gap-1">
+            {INVESTOR_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setInvestorTab(tab.key)}
+                className={`rounded-lg px-2 py-1 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] transition-all ${
+                  investorTab === tab.key
+                    ? "border border-fuchsia-400/40 bg-fuchsia-500/15 text-fuchsia-200"
+                    : "border border-transparent bg-white/5 text-slate-400 hover:bg-white/8 hover:text-slate-300"
+                }`}
+              >
+                {tab.label}
+                <span className="ml-1 text-[0.44rem] text-slate-500">
+                  {(DEMO_INVESTORS[tab.key] ?? []).length}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Investor cards */}
+          <div className="mt-3 max-h-[520px] space-y-2 overflow-y-auto pr-1">
+            {(DEMO_INVESTORS[investorTab] ?? []).map((inv) => (
+              <InvestorCard
+                key={inv.id}
+                investor={inv}
+                onAddToBook={(i) => {
+                  if (!bookInvestors.includes(i.id)) {
+                    setBookInvestors([...bookInvestors, i.id]);
+                  }
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ─── Center: Book Building ─── */}
+        <div className="col-span-5 rounded-2xl border border-fuchsia-300/20 bg-black/30 p-4">
           <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-amber-200">
-              <BookOpen size={14} /> Order Book
-              {orderBook && <span className="text-slate-400">· {orderBook.order_count} orders · {money(orderBook.total_indications_usd)}</span>}
-            </h3>
-            <Button
-              onClick={() => allocateMutation.mutate({ dealId, params: { target_raise_usd: matchParams.total_raise_usd } })}
-              disabled={allocateMutation.isPending || !orderBook?.order_count}
-              className="rounded-lg border border-emerald-300/30 bg-emerald-400/10 px-3 py-1.5 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-emerald-100 hover:bg-emerald-400/20"
-            >
-              <CheckCircle2 className="mr-1 h-3 w-3" /> Run Allocation
-            </Button>
+            <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
+              <BookOpen size={15} className="text-fuchsia-300" /> Book Building
+              <span className="font-mono text-[0.56rem] text-slate-400">— {offering.name.split(" — ")[0]}</span>
+            </h2>
+            {oversubscribed && (
+              <span className="flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase text-emerald-300">
+                <TrendingUp size={10} /> Oversubscribed
+              </span>
+            )}
           </div>
 
-          {/* Add indication */}
-          <div className="mt-3 flex gap-2">
-            <input
-              type="text"
-              value={indicationForm.investorName}
-              onChange={(e) => setIndicationForm({ ...indicationForm, investorName: e.target.value })}
-              placeholder="Investor name"
-              className="flex-1 rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none placeholder:text-slate-600"
-            />
-            <input
-              type="number"
-              value={indicationForm.amount}
-              onChange={(e) => setIndicationForm({ ...indicationForm, amount: e.target.value })}
-              placeholder="Amount ($)"
-              className="w-40 rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none placeholder:text-slate-600"
-            />
-            <Button
-              onClick={() => {
-                if (indicationForm.investorName && indicationForm.amount) {
-                  indicateMutation.mutate({
-                    dealId,
-                    indication: {
-                      investorName: indicationForm.investorName,
-                      amount_usd: Number(indicationForm.amount),
-                    },
-                  });
-                  setIndicationForm({ investorName: "", amount: "" });
-                }
-              }}
-              disabled={indicateMutation.isPending}
-              className="rounded-xl border border-amber-300/35 bg-amber-300/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-amber-100 hover:bg-amber-300/20"
-            >
-              <Send className="mr-1 h-3 w-3" /> Indicate
-            </Button>
+          {/* Visual: Stacked bar */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between font-mono text-[0.56rem]">
+              <span className="text-slate-400">Total Book</span>
+              <span className="font-semibold text-white">{money(bookStats.total)} / {money(offering.totalRaise)}</span>
+            </div>
+            <div className="mt-1 flex h-5 w-full overflow-hidden rounded-full bg-white/5">
+              {/* Firm */}
+              <div
+                className="h-full bg-emerald-500 transition-all"
+                style={{ width: `${pct(bookStats.firmTotal, offering.totalRaise)}%` }}
+                title={`Firm: ${money(bookStats.firmTotal)}`}
+              />
+              {/* Soft */}
+              <div
+                className="h-full bg-amber-500 transition-all"
+                style={{ width: `${pct(bookStats.softTotal, offering.totalRaise)}%` }}
+                title={`Soft: ${money(bookStats.softTotal)}`}
+              />
+              {/* Indicated */}
+              <div
+                className="h-full bg-slate-500 transition-all"
+                style={{ width: `${pct(bookStats.indicatedTotal, offering.totalRaise)}%` }}
+                title={`Indicated: ${money(bookStats.indicatedTotal)}`}
+              />
+            </div>
+            <div className="mt-1 flex gap-4 font-mono text-[0.48rem]">
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span className="text-slate-400">Firm {money(bookStats.firmTotal)}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                <span className="text-slate-400">Soft {money(bookStats.softTotal)}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-slate-500" />
+                <span className="text-slate-400">Indicated {money(bookStats.indicatedTotal)}</span>
+              </span>
+            </div>
           </div>
 
-          {/* Order list */}
-          {orderBook?.orders?.length > 0 && (
-            <div className="mt-3 space-y-1">
-              {orderBook.orders.map((order: any) => (
-                <div key={order.id} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2">
-                  <span className="font-mono text-sm text-white">{order.investorName}</span>
-                  <span className="font-mono text-sm font-semibold text-amber-100">{money(order.amount_usd)}</span>
+          {/* Breakdown by tranche */}
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2">
+              <p className="font-mono text-[0.52rem] text-slate-500">Series A Orders</p>
+              <p className="font-mono text-sm font-semibold text-[#C4A048]">{money(bookStats.trancheA)}</p>
+              <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/5">
+                <div
+                  className="h-full rounded-full bg-fuchsia-400"
+                  style={{ width: `${pct(bookStats.trancheA, offering.tranches[0]?.size ?? 1)}%` }}
+                />
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2">
+              <p className="font-mono text-[0.52rem] text-slate-500">Series B Orders</p>
+              <p className="font-mono text-sm font-semibold text-[#C4A048]">{money(bookStats.trancheB)}</p>
+              <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/5">
+                <div
+                  className="h-full rounded-full bg-fuchsia-400"
+                  style={{ width: `${pct(bookStats.trancheB, offering.tranches[1]?.size ?? 1)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Orders list */}
+          <div className="mt-4">
+            <p className="font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-slate-400">
+              Individual Orders ({DEMO_ORDERS.length})
+            </p>
+            <div className="mt-2 max-h-[300px] space-y-1.5 overflow-y-auto pr-1">
+              {DEMO_ORDERS.map((order) => (
+                <div
+                  key={order.id}
+                  className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-[Space_Grotesk] text-sm font-semibold text-white">
+                        {order.investor}
+                      </span>
+                      <span className={`rounded-full px-1.5 py-0.5 font-mono text-[0.48rem] font-semibold uppercase ${orderStatusColors[order.status]}`}>
+                        {order.status}
+                      </span>
+                      <span className="rounded bg-white/5 px-1 py-0.5 font-mono text-[0.44rem] text-slate-500">
+                        Ser. {order.tranche}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-mono text-sm font-semibold text-[#C4A048]">
+                        {money(order.amount)}
+                      </span>
+                      <span className="ml-2 font-mono text-[0.52rem] text-slate-400">
+                        {bps(order.spreadBid)}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="mt-1 font-mono text-[0.5rem] italic text-slate-500">{order.notes}</p>
                 </div>
               ))}
             </div>
-          )}
+          </div>
 
-          {/* Allocation results */}
+          {/* Action buttons */}
+          <div className="mt-4 flex gap-2">
+            <Button
+              onClick={() => allocateMutation.mutate({ dealId: dealId || offering.id, params: { target_raise_usd: offering.totalRaise } })}
+              disabled={allocateMutation.isPending}
+              className="flex-1 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-emerald-200 hover:bg-emerald-500/18"
+            >
+              <CheckCircle2 size={12} className="mr-1" /> Allocate
+            </Button>
+            <Button className="flex-1 rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-amber-200 hover:bg-amber-500/18">
+              <BookOpen size={12} className="mr-1" /> Close Book
+            </Button>
+          </div>
+
           {allocateMutation.data && (
-            <div className="mt-4 rounded-xl border border-emerald-300/25 bg-emerald-400/8 p-3">
-              <p className="font-mono text-[0.62rem] font-semibold uppercase text-emerald-200">
+            <div className="mt-3 rounded-xl border border-emerald-300/25 bg-emerald-400/8 p-2.5">
+              <p className="font-mono text-[0.56rem] font-semibold uppercase text-emerald-200">
                 Allocation complete · {(allocateMutation.data as any).coverage_pct}% coverage · {money((allocateMutation.data as any).total_allocated_usd)} allocated
               </p>
             </div>
           )}
         </div>
-      )}
+
+        {/* ─── Right: Roadshow & Outreach ─── */}
+        <div className="col-span-4 rounded-2xl border border-white/10 bg-black/30 p-4">
+          <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
+            <Calendar size={15} className="text-fuchsia-300" /> Roadshow & Outreach
+          </h2>
+
+          {/* Meetings list */}
+          <div className="mt-3 max-h-[320px] space-y-2 overflow-y-auto pr-1">
+            {DEMO_ROADSHOW.map((mtg) => (
+              <div
+                key={mtg.id}
+                className={`rounded-xl border p-2.5 ${meetingStatusStyle[mtg.status]}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-[Space_Grotesk] text-sm font-semibold text-white">
+                    {mtg.investor}
+                  </span>
+                  <span className="font-mono text-[0.52rem] font-semibold uppercase">
+                    {mtg.status}
+                  </span>
+                </div>
+                <p className="mt-0.5 font-mono text-[0.52rem] text-slate-400">
+                  {mtg.date} · {mtg.time}
+                </p>
+                {mtg.feedback && (
+                  <div className="mt-1.5 rounded-lg bg-black/20 p-2">
+                    <p className="flex items-start gap-1 font-mono text-[0.5rem] italic text-slate-300">
+                      <MessageSquare size={9} className="mt-0.5 flex-shrink-0 text-slate-500" />
+                      {mtg.feedback}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Quick actions */}
+          <div className="mt-3 flex gap-2">
+            <Button className="flex-1 rounded-lg border border-fuchsia-300/25 bg-fuchsia-500/8 px-2 py-1.5 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-fuchsia-200 hover:bg-fuchsia-500/15">
+              <Phone size={10} className="mr-1" /> Schedule Meeting
+            </Button>
+            <Button className="flex-1 rounded-lg border border-cyan-300/25 bg-cyan-500/8 px-2 py-1.5 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-cyan-200 hover:bg-cyan-500/15">
+              <ClipboardList size={10} className="mr-1" /> Log Feedback
+            </Button>
+          </div>
+
+          {/* Pipeline */}
+          <OutreachPipeline />
+        </div>
+      </div>
+
+      {/* ═══ Section 3: AI Teaser ═══ */}
+      <div className="rounded-2xl border border-cyan-300/20 bg-black/30 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
+            <FileText size={15} className="text-cyan-300" /> AI Investor Teaser
+          </h2>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => {
+                setTeaserGenerating(true);
+                teaserMutation.mutate(
+                  {
+                    dealId: dealId || offering.id,
+                    dealName: offering.name,
+                    totalRaise: offering.totalRaise,
+                    coupon: offering.coupon,
+                    rating: offering.rating,
+                  },
+                  {
+                    onSuccess: (data: any) => {
+                      setTeaserContent(data?.content ?? "Teaser generated.");
+                      setTeaserGenerating(false);
+                    },
+                    onError: () => {
+                      setTeaserContent(
+                        `CONFIDENTIAL — FOR QUALIFIED INSTITUTIONAL BUYERS ONLY\n\n` +
+                        `${offering.name}\n\n` +
+                        `Arden Edge Capital and Soparrow Capital are pleased to present an exclusive investment opportunity ` +
+                        `in ${offering.name}, a ${money(offering.totalRaise)} structured private placement offering ` +
+                        `rated ${offering.rating} with a ${offering.coupon}% coupon at ${bps(offering.spread)}.\n\n` +
+                        `KEY TERMS\n` +
+                        `  Total Raise:     ${money(offering.totalRaise)}\n` +
+                        `  Rating:          ${offering.rating} (Shadow)\n` +
+                        `  Coupon:          ${offering.coupon}%\n` +
+                        `  Spread:          ${bps(offering.spread)}\n` +
+                        `  Target Close:    ${offering.targetClose}\n` +
+                        `  Structure:       Series A (${offering.tranches[0]?.rating}) / Series B (${offering.tranches[1]?.rating})\n\n` +
+                        `INVESTMENT HIGHLIGHTS\n` +
+                        `  - Senior secured position with Hylant surety wrap\n` +
+                        `  - 2.5% maturity reserve escrowed from proceeds\n` +
+                        `  - Par call protection through Year 3\n` +
+                        `  - Florida LGFC qualified issuer designation\n` +
+                        `  - Strong sponsor track record — 18yr JPMorgan pedigree\n\n` +
+                        `Book is currently ${pct(offering.subscribed, offering.totalRaise)}% subscribed. ` +
+                        `Allocations on a first-come, first-served basis. Contact Sterling desk for IOI submission.\n\n` +
+                        `— NEST Advisors | Hawkeye Placement Desk`
+                      );
+                      setTeaserGenerating(false);
+                    },
+                  }
+                );
+              }}
+              disabled={teaserGenerating}
+              className="rounded-lg border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-cyan-100 hover:bg-cyan-400/20"
+            >
+              {teaserGenerating ? (
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              ) : (
+                <RefreshCw size={11} className="mr-1" />
+              )}
+              {teaserContent ? "Regenerate" : "Generate Teaser"}
+            </Button>
+            {teaserContent && (
+              <Button className="rounded-lg border border-fuchsia-300/30 bg-fuchsia-400/10 px-3 py-1.5 font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-fuchsia-100 hover:bg-fuchsia-400/20">
+                <Mail size={11} className="mr-1" /> Send to Selected Investors
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {teaserContent ? (
+          <div className="mt-4 rounded-xl border border-cyan-300/15 bg-black/20 p-4">
+            <pre className="whitespace-pre-wrap font-mono text-[0.72rem] leading-5 text-slate-300">
+              {teaserContent}
+            </pre>
+          </div>
+        ) : (
+          <div className="mt-4 flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.01] py-8">
+            <div className="text-center">
+              <FileText size={24} className="mx-auto text-slate-600" />
+              <p className="mt-2 font-mono text-[0.62rem] text-slate-500">
+                Click "Generate Teaser" to create an AI-powered investor teaser for {offering.name.split(" — ")[0]}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
