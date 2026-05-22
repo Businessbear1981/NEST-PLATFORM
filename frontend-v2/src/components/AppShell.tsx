@@ -4,7 +4,7 @@ import {
   Scale, FileCheck, Users, ClipboardCheck, Lock,
   BarChart3, Building2, Briefcase, Radio, Flame, Wallet,
   LayoutDashboard, Crosshair, HandCoins, UserCircle, Settings,
-  Megaphone, Calculator, Search,
+  Megaphone, Calculator, Search, Wrench, Video, FileText, CreditCard,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
@@ -28,7 +28,6 @@ const NAV_SECTIONS = [
       { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
       { label: "Contact Strategy", href: "/contact-strategy", icon: Users, desc: "Relationship Management" },
       { label: "Outreach", href: "/outreach", icon: Megaphone, desc: "Campaigns & Sequences" },
-      { label: "Content Library", href: "/content-library", icon: FileCheck, desc: "Decks, Memos, Media" },
       { label: "Heat Maps", href: "/heat-maps", icon: BarChart3, desc: "Market Intelligence" },
       { label: "Bond", href: "/eagleeye-bond", icon: Target, desc: "Bond Placement" },
       { label: "ICRE", href: "/eagleeye-icre", icon: Crosshair, desc: "CRE Placement" },
@@ -37,10 +36,19 @@ const NAV_SECTIONS = [
     ],
   },
   {
+    label: "TOOLS",
+    items: [
+      { label: "Back of the Napkin", href: "/napkin", icon: Calculator, desc: "Quick Spread" },
+      { label: "Content Library", href: "/content-library", icon: FileCheck, desc: "Decks, Memos, Media" },
+      { label: "Video Generator", href: "/video-generator", icon: Video, desc: "AI Video Production" },
+      { label: "Teaser Generator", href: "/teaser-generator", icon: FileText, desc: "Investor Teasers" },
+      { label: "Credit Memo", href: "/credit-memo", icon: CreditCard, desc: "Memo Generation" },
+    ],
+  },
+  {
     label: "NEST BOND",
     items: [
       { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion & Docs" },
-      { label: "Back of the Napkin", href: "/napkin", icon: Calculator, desc: "Quick Spread" },
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
