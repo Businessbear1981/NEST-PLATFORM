@@ -77,8 +77,9 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: "NEST LABS",
+    label: "NEST SUITE",
     items: [
+      { label: "C-Suite", href: "/c-suite", icon: LayoutDashboard, desc: "ORCA Management Lair" },
       { label: "Agent Platform", href: "/agents/platform", icon: Bot },
       { label: "Data Connectors", href: "/data-connectors", icon: Radio },
     ],
