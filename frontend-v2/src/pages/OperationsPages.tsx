@@ -38,7 +38,7 @@ const LiveAgentDashboard = lazy(() => import("@/components/LiveAgentDashboard").
 const TreasuryDesk = lazy(() => import("@/components/TreasuryDesk").then((module) => ({ default: module.TreasuryDesk })));
 const PhoenixDesk = lazy(() => import("@/components/PhoenixDesk").then((module) => ({ default: module.PhoenixDesk })));
 
-const TREE_LOGO = "";
+const TREE_LOGO = "/nest-logo.webp";
 const HERO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='600'%3E%3Crect fill='%23060E1A' width='1200' height='600'/%3E%3C/svg%3E";
 
 function LazyWorkspace({ children }: { children: ReactNode }) {
