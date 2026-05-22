@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
-  BarChart3, Building2, Briefcase, Radio, Flame,
+  BarChart3, Building2, Briefcase, Radio, Flame, Wallet,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
@@ -35,6 +35,7 @@ const NAV_SECTIONS = [
       { label: "KYC Compliance", href: "/kyc", icon: Lock },
       { label: "Compliance Portal", href: "/compliance", icon: ClipboardCheck },
       { label: "Client Deposits", href: "/deposits", icon: Users },
+      { label: "Treasury", href: "/treasury", icon: Wallet },
     ],
   },
   {

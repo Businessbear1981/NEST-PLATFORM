@@ -96,6 +96,7 @@ class TreasuryEngine:
             "total_loaded": total_loaded,
             "total_spent": total_spent,
             "available_balance": total_loaded - total_spent,
+            "escrow_source": "Client prefunded escrow — auto-pay on statement cycle",
             "active_cards": len([c for c in cards if c["state"] == "ACTIVE"]),
             "total_transactions": len(txns),
             "rebate_accrued": rebate["accrued"],

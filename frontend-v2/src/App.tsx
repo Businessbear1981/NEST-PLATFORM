@@ -27,6 +27,7 @@ import BondArrangementEngine from "./components/BondArrangementEngine";
 import AboutNest from "./components/AboutNest";
 import AppShell from "./components/AppShell";
 import PhoenixDesk from "./components/PhoenixDesk";
+import TreasuryDesk from "./components/TreasuryDesk";
 
 function BondCommandPage(props: any) {
   return (
@@ -57,6 +58,7 @@ function Router() {
       <Route path={"/hawkeye"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><HawkeyePlacementScout /></main>}</Route>
       <Route path={"/nightvision"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><NightVisionComplianceLair /></main>}</Route>
       <Route path={"/phoenix"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><PhoenixDesk /></main>}</Route>
+      <Route path={"/treasury"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><TreasuryDesk dealId="1" /></main>}</Route>
       <Route path={"/agents/platform"} component={AgentPlatformPage} />
       <Route path={"/rating"} component={RatingIntelligencePage} />
       <Route path={"/surety"} component={InsuranceSuretyPage} />

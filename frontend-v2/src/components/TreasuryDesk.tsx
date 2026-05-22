@@ -174,7 +174,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
   }, [dealId]);
 
   const tabs: { id: Tab; label: string; icon: typeof CreditCard }[] = [
-    { id: "pcard", label: "P-Card Ops", icon: CreditCard },
+    { id: "pcard", label: "Ramp Program", icon: CreditCard },
     { id: "budget", label: "Budget & Recon", icon: LineChart },
     { id: "softcosts", label: "NEST Soft Costs", icon: Receipt },
     { id: "economics", label: "Economics", icon: TrendingUp },
@@ -194,10 +194,10 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
       {/* ── Overview Metrics ─────────────────────────────────────── */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: "Total Loaded", value: money(overview?.total_loaded ?? 0), icon: Wallet, tone: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8" },
-          { label: "Total Spent", value: money(overview?.total_spent ?? 0), icon: DollarSign, tone: "text-amber-200 border-amber-300/35 bg-amber-300/9" },
+          { label: "Escrow Prefunded", value: money(overview?.total_loaded ?? 0), icon: Wallet, tone: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8" },
+          { label: "Auto-Pay Disbursed", value: money(overview?.total_spent ?? 0), icon: DollarSign, tone: "text-amber-200 border-amber-300/35 bg-amber-300/9" },
           { label: "Active Cards", value: String(overview?.active_cards ?? 0), icon: CreditCard, tone: "text-emerald-200 border-emerald-300/30 bg-emerald-400/8" },
-          { label: "Rebate Accrued", value: money(overview?.rebate_accrued ?? 0), icon: Banknote, tone: "text-fuchsia-200 border-fuchsia-300/30 bg-fuchsia-500/8" },
+          { label: "1.5% Rebate", value: money(overview?.rebate_accrued ?? 0), icon: Banknote, tone: "text-fuchsia-200 border-fuchsia-300/30 bg-fuchsia-500/8" },
         ].map((m) => (
           <article key={m.label} className={`relative overflow-hidden rounded-[1.25rem] border p-4 ${m.tone}`}>
             <div className="flex items-center justify-between">

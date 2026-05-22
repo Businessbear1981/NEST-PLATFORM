@@ -324,7 +324,7 @@ export function OperationsDealDetailPage({ dealId }: { dealId: string }) {
     { id: "monitoring", label: "Draws / Covenants", icon: Layers3, tone: "green" as const, summary: "Draw controls, covenant surveillance, tenant roster, and retained approval evidence." },
     { id: "agents", label: "Agent ops", icon: Layers3, tone: "cyan" as const, summary: "Live agent flow, task routing, desk logs, and AI-control observability." },
     { id: "control", label: "Admin / Compliance", icon: Users, tone: "red" as const, summary: "Approval queues, module health, archive lock, surveillance acknowledgements, and control-plane state." },
-    { id: "treasury", label: "Treasury (Ramp)", icon: Wallet, tone: "gold" as const, summary: "Prefunded P-card operations, budget reconciliation, NEST soft costs, and rebate economics." },
+    { id: "treasury", label: "Treasury", icon: Wallet, tone: "gold" as const, summary: "Prefunded P-card operations, budget reconciliation, NEST soft costs, and rebate economics." },
     { id: "phoenix", label: "Phoenix", icon: Flame, tone: "red" as const, summary: "Distressed CRE acquisition — problem assets and brownfield rehabilitation via bond stabilization." },
   ];
 
