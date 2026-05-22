@@ -22,6 +22,8 @@ const NAV_SECTIONS = [
         { label: "Owner/User", href: "/dashboard-ou", icon: Search },
         { label: "Fee / Treasury — Co.", href: "/dashboard-treasury-co", icon: Wallet },
         { label: "Fee / Treasury — Emp.", href: "/dashboard-treasury-emp", icon: Wallet },
+        { label: "Comp / Success Fee", href: "/dashboard-comp", icon: HandCoins },
+        { label: "P × V", href: "/dashboard-pv", icon: BarChart3 },
         { label: "Investor", href: "/investor-dashboard", icon: BarChart3 },
         { label: "Partner", href: "/partner-dashboard", icon: HandCoins },
         { label: "Client", href: "/client-dashboard", icon: UserCircle },
