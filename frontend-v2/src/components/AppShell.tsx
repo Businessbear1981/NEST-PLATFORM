@@ -28,6 +28,11 @@ const NAV_SECTIONS = [
         { label: "Partner", href: "/partner-dashboard", icon: HandCoins },
         { label: "Client", href: "/client-dashboard", icon: UserCircle },
       ]},
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, children: [
+        { label: "Bond", href: "/deal-intake-bond", icon: Landmark },
+        { label: "M&A", href: "/deal-intake-ma", icon: Megaphone },
+        { label: "Sparrow", href: "/deal-intake-sparrow", icon: Building2 },
+      ]},
       { label: "Command Center", href: "/command-center", icon: Radio },
       { label: "Operations", href: "/operations/deals", icon: Building2 },
       { label: "Admin", href: "/admin", icon: Settings },
@@ -59,8 +64,11 @@ const NAV_SECTIONS = [
   {
     label: "NEST BOND",
     items: [
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion & Docs" },
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Submission Portal" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion Layer", children: [
+        { label: "Bond", href: "/roots-bond", icon: Landmark },
+        { label: "M&A", href: "/roots-ma", icon: Megaphone },
+        { label: "Sparrow", href: "/roots-sparrow", icon: Building2 },
+      ]},
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
