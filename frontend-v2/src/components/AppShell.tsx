@@ -59,8 +59,8 @@ const NAV_SECTIONS = [
   {
     label: "NEST BOND",
     items: [
-      { label: "Deal Intake", href: "/deal-intake-bond", icon: Briefcase, desc: "Bond Submissions" },
-      { label: "Roots", href: "/roots-bond", icon: TreePine, desc: "Bond Repository" },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Bond Submissions" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Bond Repository" },
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
@@ -70,16 +70,16 @@ const NAV_SECTIONS = [
   {
     label: "SPARROW",
     items: [
-      { label: "Deal Intake", href: "/deal-intake-sparrow", icon: Briefcase, desc: "Sparrow Submissions" },
-      { label: "Roots", href: "/roots-sparrow", icon: TreePine, desc: "Sparrow Repository" },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Sparrow Submissions" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Sparrow Repository" },
       { label: "Traditional Deals", href: "/sparrow", icon: Building2, desc: "Conventional Lending" },
     ],
   },
   {
     label: "NEST IB",
     items: [
-      { label: "Deal Intake", href: "/deal-intake-ib", icon: Briefcase, desc: "IB Submissions" },
-      { label: "Roots", href: "/roots-ib", icon: TreePine, desc: "IB Repository" },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "IB Submissions" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "IB Repository" },
       { label: "M&A", href: "/ma-desk", icon: Megaphone, desc: "Mergers & Acquisitions" },
       { label: "Equity Raise", href: "/equity-raise", icon: HandCoins, desc: "Capital Formation" },
       { label: "Investments", href: "/investments", icon: BarChart3, desc: "Principal Positions" },
@@ -88,8 +88,8 @@ const NAV_SECTIONS = [
   {
     label: "NEST TERM LENDING",
     items: [
-      { label: "Deal Intake", href: "/deal-intake-lending", icon: Briefcase, desc: "Lending Submissions" },
-      { label: "Roots", href: "/roots-lending", icon: TreePine, desc: "Lending Repository" },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Lending Submissions" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Lending Repository" },
       { label: "Phoenix", href: "/phoenix", icon: Flame, desc: "Distressed CRE" },
     ],
   },
