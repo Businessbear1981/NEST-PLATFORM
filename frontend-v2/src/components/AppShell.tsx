@@ -3,47 +3,72 @@ import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
   BarChart3, Building2, Briefcase, Radio, Flame, Wallet,
+  LayoutDashboard, Crosshair, HandCoins, UserCircle, Settings,
+  Megaphone, Calculator, Search,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
 const NAV_SECTIONS = [
   {
-    label: "DEAL PIPELINE",
+    label: "WORKFLOW",
     items: [
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { label: "Command Center", href: "/command-center", icon: Radio },
       { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
       { label: "Operations", href: "/operations/deals", icon: Building2 },
+      { label: "Investor Dashboard", href: "/investor-dashboard", icon: BarChart3 },
+      { label: "Partner Dashboard", href: "/partner-dashboard", icon: HandCoins },
+      { label: "Client Dashboard", href: "/client-dashboard", icon: UserCircle },
+      { label: "Admin", href: "/admin", icon: Settings },
     ],
   },
   {
-    label: "PILLARS",
+    label: "BUSINESS DEVELOPMENT",
     items: [
-      { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Deal Sourcing & BD" },
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Readiness & Docs" },
-      { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring & Live Ops" },
-      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Placement & Sales" },
-      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "Compliance" },
-      { label: "Phoenix", href: "/phoenix", icon: Flame, desc: "Distressed Acquisition" },
+      { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
+      { label: "Bond", href: "/eagleeye-bond", icon: Target, desc: "Bond Placement" },
+      { label: "ICRE", href: "/eagleeye-icre", icon: Crosshair, desc: "CRE Placement" },
+      { label: "Owner/User", href: "/eagleeye-ou", icon: Search, desc: "Business Placement" },
+      { label: "M&A", href: "/eagleeye-ma", icon: Megaphone, desc: "M&A Placement" },
     ],
   },
   {
-    label: "MODULES",
+    label: "NEST BOND",
     items: [
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion & Docs" },
+      { label: "Back of the Napkin", href: "/napkin", icon: Calculator, desc: "Quick Spread" },
+      { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
-      { label: "Covenant Monitoring", href: "/covenants", icon: Scale },
-      { label: "KYC Compliance", href: "/kyc", icon: Lock },
-      { label: "Compliance Portal", href: "/compliance", icon: ClipboardCheck },
-      { label: "Client Deposits", href: "/deposits", icon: Users },
       { label: "Treasury", href: "/treasury", icon: Wallet },
     ],
   },
   {
-    label: "SYSTEM",
+    label: "NEST M&A",
+    items: [
+      { label: "M&A Intelligence", href: "/ma-desk", icon: Megaphone, desc: "Target Scoring" },
+    ],
+  },
+  {
+    label: "NEST TERM LENDING",
+    items: [
+      { label: "Phoenix", href: "/phoenix", icon: Flame, desc: "Distressed CRE" },
+    ],
+  },
+  {
+    label: "COMPLIANCE",
+    items: [
+      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "Monitoring" },
+      { label: "Atticus", href: "/atticus", icon: Scale, desc: "Counsel / CCO" },
+      { label: "KYC", href: "/kyc", icon: Lock },
+      { label: "Covenant Monitor", href: "/covenants", icon: ClipboardCheck },
+    ],
+  },
+  {
+    label: "NEST LABS",
     items: [
       { label: "Agent Platform", href: "/agents/platform", icon: Bot },
-      { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
-      { label: "Admin", href: "/admin", icon: Lock },
+      { label: "Data Connectors", href: "/data-connectors", icon: Radio },
     ],
   },
 ];
