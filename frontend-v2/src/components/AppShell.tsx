@@ -68,7 +68,7 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: "COMPLIANCE",
+    label: "COMPLIANCE & LEGAL",
     items: [
       { label: "NightVision", href: "/nightvision", icon: Shield, desc: "KYC · AML · OFAC" },
       { label: "Atticus", href: "/atticus", icon: Scale, desc: "In-House Counsel" },
