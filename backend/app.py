@@ -42,6 +42,7 @@ from routes.health import health_bp
 from routes.nightvision import nightvision_bp
 from routes.treasury import treasury_bp
 from routes.phoenix import phoenix_bp
+from routes.napkin import napkin_bp
 from services.logging_service import init_request_logging
 from services.fund_engine import FundEngine
 from services.deals import DealsRegistry
@@ -135,6 +136,7 @@ def create_app():
     app.register_blueprint(bond_structuring_bp, url_prefix="/api/bond-structuring")
     app.register_blueprint(treasury_bp, url_prefix="/api/treasury")
     app.register_blueprint(phoenix_bp, url_prefix="/api/phoenix")
+    app.register_blueprint(napkin_bp, url_prefix="/api/napkin")
 
     @app.get("/api/metrics")
     def metrics():
