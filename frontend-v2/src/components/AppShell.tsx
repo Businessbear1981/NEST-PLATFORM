@@ -16,6 +16,12 @@ const NAV_SECTIONS = [
     items: [
       { label: "Dashboards", href: "/dashboard", icon: LayoutDashboard, children: [
         { label: "Main", href: "/dashboard", icon: LayoutDashboard },
+        { label: "Bond", href: "/dashboard-bond", icon: Landmark },
+        { label: "M&A", href: "/dashboard-ma", icon: Megaphone },
+        { label: "ICRE", href: "/dashboard-icre", icon: Crosshair },
+        { label: "Owner/User", href: "/dashboard-ou", icon: Search },
+        { label: "Fee / Treasury — Co.", href: "/dashboard-treasury-co", icon: Wallet },
+        { label: "Fee / Treasury — Emp.", href: "/dashboard-treasury-emp", icon: Wallet },
         { label: "Investor", href: "/investor-dashboard", icon: BarChart3 },
         { label: "Partner", href: "/partner-dashboard", icon: HandCoins },
         { label: "Client", href: "/client-dashboard", icon: UserCircle },
