@@ -68,9 +68,17 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: "NEST M&A",
+    label: "SPARROW",
     items: [
-      { label: "M&A Intelligence", href: "/ma-desk", icon: Megaphone, desc: "Target Scoring" },
+      { label: "Traditional Deals", href: "/sparrow", icon: Building2, desc: "Conventional Lending" },
+    ],
+  },
+  {
+    label: "NEST IB",
+    items: [
+      { label: "M&A", href: "/ma-desk", icon: Megaphone, desc: "Mergers & Acquisitions" },
+      { label: "Equity Raise", href: "/equity-raise", icon: HandCoins, desc: "Capital Formation" },
+      { label: "Investments", href: "/investments", icon: BarChart3, desc: "Principal Positions" },
     ],
   },
   {
