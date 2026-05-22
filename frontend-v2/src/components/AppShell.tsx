@@ -26,6 +26,10 @@ const NAV_SECTIONS = [
     label: "BUSINESS DEVELOPMENT",
     items: [
       { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
+      { label: "Contact Strategy", href: "/contact-strategy", icon: Users, desc: "Relationship Management" },
+      { label: "Outreach", href: "/outreach", icon: Megaphone, desc: "Campaigns & Sequences" },
+      { label: "Content Library", href: "/content-library", icon: FileCheck, desc: "Decks, Memos, Media" },
+      { label: "Heat Maps", href: "/heat-maps", icon: BarChart3, desc: "Market Intelligence" },
       { label: "Bond", href: "/eagleeye-bond", icon: Target, desc: "Bond Placement" },
       { label: "ICRE", href: "/eagleeye-icre", icon: Crosshair, desc: "CRE Placement" },
       { label: "Owner/User", href: "/eagleeye-ou", icon: Search, desc: "Business Placement" },
