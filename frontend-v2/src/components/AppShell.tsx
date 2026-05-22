@@ -14,7 +14,6 @@ const NAV_SECTIONS = [
     items: [
       { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { label: "Command Center", href: "/command-center", icon: Radio },
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
       { label: "Operations", href: "/operations/deals", icon: Building2 },
       { label: "Investor Dashboard", href: "/investor-dashboard", icon: BarChart3 },
       { label: "Partner Dashboard", href: "/partner-dashboard", icon: HandCoins },
@@ -49,6 +48,7 @@ const NAV_SECTIONS = [
     label: "NEST BOND",
     items: [
       { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion & Docs" },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Submission Portal" },
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
@@ -81,6 +81,12 @@ const NAV_SECTIONS = [
     items: [
       { label: "C-Suite", href: "/c-suite", icon: LayoutDashboard, desc: "ORCA Management Lair" },
       { label: "Agent Platform", href: "/agents/platform", icon: Bot },
+    ],
+  },
+  {
+    label: "NEST LABS",
+    items: [
+      { label: "Tech Stack", href: "/tech-stack", icon: Wrench, desc: "APIs & Subscriptions" },
       { label: "Data Connectors", href: "/data-connectors", icon: Radio },
     ],
   },
