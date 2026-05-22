@@ -70,10 +70,8 @@ const NAV_SECTIONS = [
   {
     label: "COMPLIANCE",
     items: [
-      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "Monitoring" },
-      { label: "Atticus", href: "/atticus", icon: Scale, desc: "Counsel / CCO" },
-      { label: "KYC", href: "/kyc", icon: Lock },
-      { label: "Covenant Monitor", href: "/covenants", icon: ClipboardCheck },
+      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "KYC · AML · OFAC" },
+      { label: "Atticus", href: "/atticus", icon: Scale, desc: "In-House Counsel" },
     ],
   },
   {
