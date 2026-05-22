@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "regions": ["pdx1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://nest-backend-q789.onrender.com"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://nest-backend-q789.onrender.com"
+    }
+  }
+}
