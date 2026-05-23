@@ -29,6 +29,21 @@ import AppShell from "./components/AppShell";
 import PhoenixDesk from "./components/PhoenixDesk";
 import TreasuryDesk from "./components/TreasuryDesk";
 import { useLocation } from "wouter";
+import {
+  BondDashboard, MADashboard, ICREDashboard, OUDashboard,
+  TreasuryCompanyDashboard, TreasuryEmployeeDashboard, CompDashboard,
+  PVDashboard, InvestorDashboard, PartnerDashboard, ClientDashboard,
+  ContactStrategy, Outreach, HeatMaps, EagleEyeBond, EagleEyeICRE,
+  EagleEyeOU, EagleEyeMA,
+  NapkinPage, ContentLibrary, VideoGenerator, TeaserGenerator, CreditMemo,
+  DealIntakeBond, RootsBond,
+  DealIntakeSparrow, RootsSparrow, SparrowDeals,
+  DealIntakeIB, RootsIB, MADesk, EquityRaise, Investments,
+  DealIntakeLending, RootsLending,
+  AtticusPage,
+  CSuitePage,
+  TechStackPage, DataConnectorsPage,
+} from "./components/ModulePages";
 
 function ModulePage() {
   const [location] = useLocation();
@@ -101,63 +116,63 @@ function Router() {
       <Route path={"/about"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><AboutNest /></main>}</Route>
 
       {/* ── Dashboards ─────────────────────────────────────── */}
-      <Route path={"/dashboard-bond"} component={ModulePage} />
-      <Route path={"/dashboard-ma"} component={ModulePage} />
-      <Route path={"/dashboard-icre"} component={ModulePage} />
-      <Route path={"/dashboard-ou"} component={ModulePage} />
-      <Route path={"/dashboard-treasury-co"} component={ModulePage} />
-      <Route path={"/dashboard-treasury-emp"} component={ModulePage} />
-      <Route path={"/dashboard-comp"} component={ModulePage} />
-      <Route path={"/dashboard-pv"} component={ModulePage} />
-      <Route path={"/investor-dashboard"} component={ModulePage} />
-      <Route path={"/partner-dashboard"} component={ModulePage} />
-      <Route path={"/client-dashboard"} component={ModulePage} />
+      <Route path={"/dashboard-bond"} component={BondDashboard} />
+      <Route path={"/dashboard-ma"} component={MADashboard} />
+      <Route path={"/dashboard-icre"} component={ICREDashboard} />
+      <Route path={"/dashboard-ou"} component={OUDashboard} />
+      <Route path={"/dashboard-treasury-co"} component={TreasuryCompanyDashboard} />
+      <Route path={"/dashboard-treasury-emp"} component={TreasuryEmployeeDashboard} />
+      <Route path={"/dashboard-comp"} component={CompDashboard} />
+      <Route path={"/dashboard-pv"} component={PVDashboard} />
+      <Route path={"/investor-dashboard"} component={InvestorDashboard} />
+      <Route path={"/partner-dashboard"} component={PartnerDashboard} />
+      <Route path={"/client-dashboard"} component={ClientDashboard} />
 
       {/* ── Business Development ───────────────────────────── */}
-      <Route path={"/contact-strategy"} component={ModulePage} />
-      <Route path={"/outreach"} component={ModulePage} />
-      <Route path={"/heat-maps"} component={ModulePage} />
-      <Route path={"/eagleeye-bond"} component={ModulePage} />
-      <Route path={"/eagleeye-icre"} component={ModulePage} />
-      <Route path={"/eagleeye-ou"} component={ModulePage} />
-      <Route path={"/eagleeye-ma"} component={ModulePage} />
+      <Route path={"/contact-strategy"} component={ContactStrategy} />
+      <Route path={"/outreach"} component={Outreach} />
+      <Route path={"/heat-maps"} component={HeatMaps} />
+      <Route path={"/eagleeye-bond"} component={EagleEyeBond} />
+      <Route path={"/eagleeye-icre"} component={EagleEyeICRE} />
+      <Route path={"/eagleeye-ou"} component={EagleEyeOU} />
+      <Route path={"/eagleeye-ma"} component={EagleEyeMA} />
 
       {/* ── Tools ──────────────────────────────────────────── */}
-      <Route path={"/napkin"} component={ModulePage} />
-      <Route path={"/content-library"} component={ModulePage} />
-      <Route path={"/video-generator"} component={ModulePage} />
-      <Route path={"/teaser-generator"} component={ModulePage} />
-      <Route path={"/credit-memo"} component={ModulePage} />
+      <Route path={"/napkin"} component={NapkinPage} />
+      <Route path={"/content-library"} component={ContentLibrary} />
+      <Route path={"/video-generator"} component={VideoGenerator} />
+      <Route path={"/teaser-generator"} component={TeaserGenerator} />
+      <Route path={"/credit-memo"} component={CreditMemo} />
 
       {/* ── NEST Bond ──────────────────────────────────────── */}
-      <Route path={"/deal-intake-bond"} component={ModulePage} />
-      <Route path={"/roots-bond"} component={ModulePage} />
+      <Route path={"/deal-intake-bond"} component={DealIntakeBond} />
+      <Route path={"/roots-bond"} component={RootsBond} />
 
       {/* ── Sparrow ────────────────────────────────────────── */}
-      <Route path={"/deal-intake-sparrow"} component={ModulePage} />
-      <Route path={"/roots-sparrow"} component={ModulePage} />
-      <Route path={"/sparrow"} component={ModulePage} />
+      <Route path={"/deal-intake-sparrow"} component={DealIntakeSparrow} />
+      <Route path={"/roots-sparrow"} component={RootsSparrow} />
+      <Route path={"/sparrow"} component={SparrowDeals} />
 
       {/* ── NEST IB ────────────────────────────────────────── */}
-      <Route path={"/deal-intake-ib"} component={ModulePage} />
-      <Route path={"/roots-ib"} component={ModulePage} />
-      <Route path={"/ma-desk"} component={ModulePage} />
-      <Route path={"/equity-raise"} component={ModulePage} />
-      <Route path={"/investments"} component={ModulePage} />
+      <Route path={"/deal-intake-ib"} component={DealIntakeIB} />
+      <Route path={"/roots-ib"} component={RootsIB} />
+      <Route path={"/ma-desk"} component={MADesk} />
+      <Route path={"/equity-raise"} component={EquityRaise} />
+      <Route path={"/investments"} component={Investments} />
 
       {/* ── NEST Term Lending ──────────────────────────────── */}
-      <Route path={"/deal-intake-lending"} component={ModulePage} />
-      <Route path={"/roots-lending"} component={ModulePage} />
+      <Route path={"/deal-intake-lending"} component={DealIntakeLending} />
+      <Route path={"/roots-lending"} component={RootsLending} />
 
       {/* ── Compliance & Legal ─────────────────────────────── */}
-      <Route path={"/atticus"} component={ModulePage} />
+      <Route path={"/atticus"} component={AtticusPage} />
 
       {/* ── NEST Suite ─────────────────────────────────────── */}
-      <Route path={"/c-suite"} component={ModulePage} />
+      <Route path={"/c-suite"} component={CSuitePage} />
 
       {/* ── NEST Labs ──────────────────────────────────────── */}
-      <Route path={"/tech-stack"} component={ModulePage} />
-      <Route path={"/data-connectors"} component={ModulePage} />
+      <Route path={"/tech-stack"} component={TechStackPage} />
+      <Route path={"/data-connectors"} component={DataConnectorsPage} />
 
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
