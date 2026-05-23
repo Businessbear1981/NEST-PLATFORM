@@ -351,6 +351,38 @@ Repo: github.com/Businessbear1981/NEST-ADVISORS-V3
 
 ---
 
+---
+
+## V1 (MANUS) MODULES MISSING FROM V3
+
+These modules existed in the Manus V2 build (live at nestadvisors.ai) and were NOT carried into V3. The code is in the repo at `frontend/app/(app)/admin/` — needs to be ported to V3 design system.
+
+| Module | V1 Lines | Description | Priority |
+|--------|----------|-------------|----------|
+| **Dashboard** | 534 | Full institutional dashboard — the V1 was the good one | HIGH |
+| **Forensic Audit** | 128 | Document checklist, financial integrity, severity-weighted findings, review gate | HIGH |
+| **AI Tools** | 284 | Agent tooling panel — configure and deploy AI agents | HIGH |
+| **Bond Intel** | 267 | Bond intelligence — market data, comps, spread analysis | HIGH |
+| **Marketing** | 219 | Marketing engine — campaigns, content calendar, outreach | MEDIUM |
+| **Licensing** | 216 | Licensing management — regulatory, state licenses, compliance | MEDIUM |
+| **Modeling** | 141 | Financial modeling — proforma, scenarios, stress testing | HIGH |
+| **Monitor** | 140 | Post-close monitoring — covenant surveillance, alerts | MEDIUM |
+| **Blockchain** | 109 | Chain agent — ERC-1400, tokenized bond issuance | LOW |
+| **HFT Fund** | 95 | Quantum agent — $32.4M AUM, portfolio management | MEDIUM |
+| **Marketplace** | 96 | Bond marketplace — secondary market, listings | LOW |
+| **Lenders** | 88 | LenderScout — 800+ lender database, matching | HIGH |
+| **Risk** | 83 | Sentinel — 7-dimension risk assessment | HIGH |
+| **Docs** | 83 | Document management (Roots should absorb this) | MEDIUM |
+| **Vector Agent** | 95 | Market signal monitoring — 14 signals, 15-min intervals | MEDIUM |
+| **Deals Detail** | 72 | Deal detail page — V1 version | REFERENCE |
+
+**V1 source code location:** `nest/frontend/app/(app)/admin/`
+**Action:** Port each module to V3 design system (Vite + React, NEST terminal aesthetic). The V1 code is Next.js App Router — needs adaptation but the content and layout are the reference.
+
+---
+
 ## BOTTOM LINE
 
-The platform LOOKS like an investment bank. It needs to WORK like one. Enter a deal → every number flows → every module computes → every dashboard updates. That's the product.
+The platform LOOKS like an investment bank. It needs to WORK like one. Enter a deal → every number flows → every module computes → every dashboard updates.
+
+The V1 Manus build had modules that worked. V3 lost them in the rebuild. Port them back, wire them to real data, and make the workflow flow. That's the product.
