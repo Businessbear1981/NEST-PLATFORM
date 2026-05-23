@@ -14,9 +14,21 @@ const NAV_SECTIONS = [
   {
     label: "WORKFLOW",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Dashboards", href: "/dashboard", icon: LayoutDashboard, children: [
+        { label: "Main", href: "/dashboard", icon: LayoutDashboard },
+        { label: "Bond", href: "/dashboard-bond", icon: Landmark },
+        { label: "M&A", href: "/dashboard-ma", icon: Megaphone },
+        { label: "ICRE", href: "/dashboard-icre", icon: Crosshair },
+        { label: "Owner/User", href: "/dashboard-ou", icon: Search },
+        { label: "Fee / Treasury — Co.", href: "/dashboard-treasury-co", icon: Wallet },
+        { label: "Fee / Treasury — Emp.", href: "/dashboard-treasury-emp", icon: Wallet },
+        { label: "Comp / Success Fee", href: "/dashboard-comp", icon: HandCoins },
+        { label: "P × V", href: "/dashboard-pv", icon: BarChart3 },
+        { label: "Investor", href: "/investor-dashboard", icon: BarChart3 },
+        { label: "Partner", href: "/partner-dashboard", icon: HandCoins },
+        { label: "Client", href: "/client-dashboard", icon: UserCircle },
+      ]},
       { label: "Command Center", href: "/command-center", icon: Radio },
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
       { label: "Operations", href: "/operations/deals", icon: Building2 },
       { label: "Admin", href: "/admin", icon: Settings },
     ],
@@ -25,29 +37,68 @@ const NAV_SECTIONS = [
     label: "BUSINESS DEVELOPMENT",
     items: [
       { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
-      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Bond Placement" },
+      { label: "Contact Strategy", href: "/contact-strategy", icon: Users },
+      { label: "Outreach", href: "/outreach", icon: Megaphone },
+      { label: "Heat Maps", href: "/heat-maps", icon: BarChart3 },
+      { label: "Bond", href: "/eagleeye-bond", icon: Target },
+      { label: "ICRE", href: "/eagleeye-icre", icon: Crosshair },
+      { label: "Owner/User", href: "/eagleeye-ou", icon: Search },
+      { label: "M&A", href: "/eagleeye-ma", icon: Megaphone },
+    ],
+  },
+  {
+    label: "TOOLS",
+    items: [
+      { label: "Back of the Napkin", href: "/napkin", icon: Calculator },
+      { label: "Content Library", href: "/content-library", icon: FileCheck },
+      { label: "Video Generator", href: "/video-generator", icon: Video },
+      { label: "Teaser Generator", href: "/teaser-generator", icon: FileText },
+      { label: "Credit Memo", href: "/credit-memo", icon: CreditCard },
     ],
   },
   {
     label: "NEST BOND",
     items: [
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion & Docs" },
-      { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
+      { label: "Roots", href: "/roots", icon: TreePine },
+      { label: "Bond Desk", href: "/bond-desk", icon: Landmark },
+      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Bond Placement" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
       { label: "Treasury", href: "/treasury", icon: Wallet },
     ],
   },
   {
-    label: "NEST TERM LENDING",
+    label: "SPARROW",
     items: [
-      { label: "Phoenix", href: "/phoenix", icon: Flame, desc: "Distressed CRE" },
+      { label: "Deal Intake", href: "/deal-intake-sparrow", icon: Briefcase },
+      { label: "Roots", href: "/roots-sparrow", icon: TreePine },
+      { label: "Traditional Deals", href: "/sparrow", icon: Building2 },
     ],
   },
   {
-    label: "COMPLIANCE",
+    label: "NEST IB",
+    items: [
+      { label: "Deal Intake", href: "/deal-intake-ib", icon: Briefcase },
+      { label: "Roots", href: "/roots-ib", icon: TreePine },
+      { label: "M&A", href: "/ma-desk", icon: Megaphone },
+      { label: "Equity Raise", href: "/equity-raise", icon: HandCoins },
+      { label: "Investments", href: "/investments", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "NEST TERM LENDING",
+    items: [
+      { label: "Deal Intake", href: "/deal-intake-lending", icon: Briefcase },
+      { label: "Roots", href: "/roots-lending", icon: TreePine },
+      { label: "Phoenix", href: "/phoenix", icon: Flame },
+    ],
+  },
+  {
+    label: "COMPLIANCE & LEGAL",
     items: [
       { label: "NightVision", href: "/nightvision", icon: Shield, desc: "KYC · AML · OFAC" },
+      { label: "Atticus", href: "/atticus", icon: Scale, desc: "In-House Counsel" },
     ],
   },
   {
