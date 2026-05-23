@@ -14,21 +14,9 @@ const NAV_SECTIONS = [
   {
     label: "WORKFLOW",
     items: [
-      { label: "Dashboards", href: "/dashboard", icon: LayoutDashboard, children: [
-        { label: "Main", href: "/dashboard", icon: LayoutDashboard },
-        { label: "Bond", href: "/dashboard-bond", icon: Landmark },
-        { label: "M&A", href: "/dashboard-ma", icon: Megaphone },
-        { label: "ICRE", href: "/dashboard-icre", icon: Crosshair },
-        { label: "Owner/User", href: "/dashboard-ou", icon: Search },
-        { label: "Fee / Treasury — Co.", href: "/dashboard-treasury-co", icon: Wallet },
-        { label: "Fee / Treasury — Emp.", href: "/dashboard-treasury-emp", icon: Wallet },
-        { label: "Comp / Success Fee", href: "/dashboard-comp", icon: HandCoins },
-        { label: "P × V", href: "/dashboard-pv", icon: BarChart3 },
-        { label: "Investor", href: "/investor-dashboard", icon: BarChart3 },
-        { label: "Partner", href: "/partner-dashboard", icon: HandCoins },
-        { label: "Client", href: "/client-dashboard", icon: UserCircle },
-      ]},
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { label: "Command Center", href: "/command-center", icon: Radio },
+      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
       { label: "Operations", href: "/operations/deals", icon: Building2 },
       { label: "Admin", href: "/admin", icon: Settings },
     ],
@@ -37,30 +25,13 @@ const NAV_SECTIONS = [
     label: "BUSINESS DEVELOPMENT",
     items: [
       { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
-      { label: "Contact Strategy", href: "/contact-strategy", icon: Users, desc: "Relationship Management" },
-      { label: "Outreach", href: "/outreach", icon: Megaphone, desc: "Campaigns & Sequences" },
-      { label: "Heat Maps", href: "/heat-maps", icon: BarChart3, desc: "Market Intelligence" },
-      { label: "Bond", href: "/eagleeye-bond", icon: Target, desc: "Bond Placement" },
-      { label: "ICRE", href: "/eagleeye-icre", icon: Crosshair, desc: "CRE Placement" },
-      { label: "Owner/User", href: "/eagleeye-ou", icon: Search, desc: "Business Placement" },
-      { label: "M&A", href: "/eagleeye-ma", icon: Megaphone, desc: "M&A Placement" },
-    ],
-  },
-  {
-    label: "TOOLS",
-    items: [
-      { label: "Back of the Napkin", href: "/napkin", icon: Calculator, desc: "Quick Spread" },
-      { label: "Content Library", href: "/content-library", icon: FileCheck, desc: "Decks, Memos, Media" },
-      { label: "Video Generator", href: "/video-generator", icon: Video, desc: "AI Video Production" },
-      { label: "Teaser Generator", href: "/teaser-generator", icon: FileText, desc: "Investor Teasers" },
-      { label: "Credit Memo", href: "/credit-memo", icon: CreditCard, desc: "Memo Generation" },
+      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Bond Placement" },
     ],
   },
   {
     label: "NEST BOND",
     items: [
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Bond Submissions" },
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Bond Repository" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Ingestion & Docs" },
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring" },
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
@@ -68,36 +39,15 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: "SPARROW",
-    items: [
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Sparrow Submissions" },
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Sparrow Repository" },
-      { label: "Traditional Deals", href: "/sparrow", icon: Building2, desc: "Conventional Lending" },
-    ],
-  },
-  {
-    label: "NEST IB",
-    items: [
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "IB Submissions" },
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "IB Repository" },
-      { label: "M&A", href: "/ma-desk", icon: Megaphone, desc: "Mergers & Acquisitions" },
-      { label: "Equity Raise", href: "/equity-raise", icon: HandCoins, desc: "Capital Formation" },
-      { label: "Investments", href: "/investments", icon: BarChart3, desc: "Principal Positions" },
-    ],
-  },
-  {
     label: "NEST TERM LENDING",
     items: [
-      { label: "Deal Intake", href: "/deal-intake", icon: Briefcase, desc: "Lending Submissions" },
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Lending Repository" },
       { label: "Phoenix", href: "/phoenix", icon: Flame, desc: "Distressed CRE" },
     ],
   },
   {
-    label: "COMPLIANCE & LEGAL",
+    label: "COMPLIANCE",
     items: [
       { label: "NightVision", href: "/nightvision", icon: Shield, desc: "KYC · AML · OFAC" },
-      { label: "Atticus", href: "/atticus", icon: Scale, desc: "In-House Counsel" },
     ],
   },
   {
