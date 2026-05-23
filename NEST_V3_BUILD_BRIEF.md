@@ -385,4 +385,61 @@ These modules existed in the Manus V2 build (live at nestadvisors.ai) and were N
 
 The platform LOOKS like an investment bank. It needs to WORK like one. Enter a deal → every number flows → every module computes → every dashboard updates.
 
-The V1 Manus build had modules that worked. V3 lost them in the rebuild. Port them back, wire them to real data, and make the workflow flow. That's the product.
+The V1 Manus build had modules that worked. V3 lost them in the rebuild. Port them back, wire them to real data, and make the workflow flow.
+
+---
+
+## API KEYS LOADED IN .env (backend/.env)
+
+These are active and configured. Kevin should NOT need to re-provision any of these:
+
+| Key | Service | Status |
+|-----|---------|--------|
+| ANTHROPIC_API_KEY | Claude API (AI engine) | Active |
+| ANTHROPIC_MODEL | claude-sonnet-4-20250514 | Set |
+| OPENROUTER_API_KEY | OpenRouter (multi-model routing) | Active |
+| FRED_API_KEY | Federal Reserve Economic Data | Active |
+| SUPABASE_URL | Supabase (database) | Configured |
+| SUPABASE_SERVICE_KEY | Supabase service role | Active |
+| SENDGRID_API_KEY | SendGrid (email) | Active |
+| STRIPE_SECRET_KEY | Stripe (payments) | Active |
+| DEEPSEEK_API_KEY | DeepSeek (AI fallback) | Active |
+| COMPOSIO_API_KEY | Composio (tool integration) | Active |
+| JWT_SECRET_KEY | JWT auth signing | Set |
+| SECRET_KEY | Flask secret | Set |
+
+Also configured: ANTHROPIC_MAX_TOKENS, B_TRANCHE_COUPON_PCT, FUND_TICK_SECONDS, MGMT_FEE_PCT, WC_SPREAD_BPS, HOST, PORT, FRONTEND_ORIGIN, JWT_TTL_HOURS, DEBUG
+
+---
+
+## WHAT WAS OMITTED IN V3 REDESIGN (intentional — different approach)
+
+These V1 features were deliberately NOT carried forward because V3 took a different architectural approach:
+
+| Feature | V1 Approach | V3 Approach | Notes |
+|---------|------------|------------|-------|
+| Auth flow | Supabase Auth + JWT | Same JWT but simplified | V3 auth works, just streamlined |
+| Deployment | Vercel (frontend) + Railway (backend) | Local dev, Railway backend | V3 not yet deployed to production |
+| Routing | Next.js App Router with layouts | Vite + wouter SPA | Intentional — faster dev, simpler |
+| CSS | Custom CSS classes (serif, sage, mono, card, kpi) | Tailwind + inline styles | V3 design system is different |
+| Deal flow | Server-rendered with Supabase persistence | Client-side with in-memory + trpc hooks | Needs real persistence wired |
+
+## WHAT WAS SIMPLY LOST (unintentional — needs to come back)
+
+These V1 intelligence engines existed, called real backend APIs, and were dropped in the V3 rebuild without replacement:
+
+| Module | V1 Lines | Backend APIs It Called | What It Did |
+|--------|----------|----------------------|-------------|
+| **Dashboard** | 534 | `/api/deals`, `/api/agents/status`, `/api/market/signals/latest`, `/api/fund/hft/war-chest`, `/api/blockchain/events` | Full institutional dashboard: pipeline KPIs, rate ticker, deal cards with readiness, agent fleet grid, HFT war chest strip, blockchain feed |
+| **Forensic Audit** | 128 | `/api/audit/standards`, `/api/audit/run` | FBI/DOJ-standard audit: expandable category checks, overall score /100, clean opinion flag, JP Morgan ready flag, critical issues, category breakdown |
+| **Bond Intelligence** | 267 | `/api/bond-intel/milestones`, `/api/bond-intel/team`, `/api/bond-intel/100pct-path`, `/api/bond-intel/types`, `/api/bond-intel/rating-readiness`, `/api/phase-bonds/structure` | 5-tab engine: Rating Readiness (input form → achievable ratings + gaps), Milestone Gates (10 gates to 100% financing), Professional Team, Phase Bonds (multi-phase structuring), 100% Financing Path |
+| **AI Tools / CNS** | 284 | `/api/nervous-system/dashboard`, `/api/data/market-rates`, `/api/nervous-system/ingest` | Central Nervous System: 13 plugin logos that light up when active, live market rates, task router (select type + prompt → routes to correct AI), result display with latency/tokens, activity log |
+| **Risk / Sentinel** | 83 | `/api/deals`, `/api/bond-tools/audit` | 7-dimension risk assessment per deal (Market, Construction, Credit, Operational, Regulatory, Sponsor, Environmental), click deal → audit → grade + composite score |
+| **Modeling / Prometheus** | 141 | `/api/bond-tools/grade`, `/api/bond-tools/optimize` | Bond Grading (base → enhanced with structural enhancements), Stress Testing (4 scenarios), Bond Optimization (current vs market rate, recommended actions, annual savings) |
+| **Lender Scout** | 88 | `/api/surety/providers`, `/api/lenders-direct/search` | 800+ lender database, provider cards, pipeline kanban (6 stages), deal-based lender search |
+| **Marketing Studio** | 219 | Marketing API lib (content types, generate, batch, history) | Content command center: select type → generate with Jimmy Lee tone, 3-column layout, batch package (exec summary + teaser + term sheet + deck), copy/download/print, markdown preview |
+
+**CRITICAL:** The backend services for ALL of these still exist at port 8000. The routes respond. The intelligence logic is in the Python services. Only the FRONTEND was lost. Porting = read V1 component → adapt to V3 Vite/React → keep all API calls identical.
+
+**Source code for porting:** `nest/frontend/app/(app)/admin/` and `nest/frontend/app/(app)/dashboard/page.tsx`
+**Detailed porting guide:** `nest/V1_MODULES_TO_PORT.md` That's the product.
