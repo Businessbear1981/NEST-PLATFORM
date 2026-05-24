@@ -29,6 +29,14 @@ import AppShell from "./components/AppShell";
 import PhoenixDesk from "./components/PhoenixDesk";
 import TreasuryDesk from "./components/TreasuryDesk";
 import { useLocation } from "wouter";
+import InstitutionalDashboard from "./components/InstitutionalDashboard";
+import ForensicAudit from "./components/ForensicAudit";
+import BondIntelligence from "./components/BondIntelligence";
+import CentralNervousSystem from "./components/CentralNervousSystem";
+import RiskCommandCenter from "./components/RiskCommandCenter";
+import ModelingStudio from "./components/ModelingStudio";
+import LenderCommandCenter from "./components/LenderCommandCenter";
+import MarketingStudio from "./components/MarketingStudio";
 import {
   BondDashboard, MADashboard, ICREDashboard, OUDashboard,
   TreasuryCompanyDashboard, TreasuryEmployeeDashboard, CompDashboard,
@@ -173,6 +181,16 @@ function Router() {
       {/* ── NEST Labs ──────────────────────────────────────── */}
       <Route path={"/tech-stack"} component={TechStackPage} />
       <Route path={"/data-connectors"} component={DataConnectorsPage} />
+
+      {/* ── V1 Intelligence Engines (ported) ─────────────── */}
+      <Route path={"/institutional-dashboard"}>{() => <InstitutionalDashboard />}</Route>
+      <Route path={"/forensic-audit"}>{() => <ForensicAudit />}</Route>
+      <Route path={"/bond-intel"}>{() => <BondIntelligence />}</Route>
+      <Route path={"/nervous-system"}>{() => <CentralNervousSystem />}</Route>
+      <Route path={"/risk-command"}>{() => <RiskCommandCenter />}</Route>
+      <Route path={"/modeling-studio"}>{() => <ModelingStudio />}</Route>
+      <Route path={"/lender-scout"}>{() => <LenderCommandCenter />}</Route>
+      <Route path={"/marketing-studio"}>{() => <MarketingStudio />}</Route>
 
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
