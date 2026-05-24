@@ -124,7 +124,18 @@ function Router() {
       <Route path={"/admin"} component={AdminPlatformPage} />
       <Route path={"/about"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><AboutNest /></main>}</Route>
 
-      {/* ── Dashboards ─────────────────────────────────────── */}
+      {/* ── V1 Intelligence Engines (real, ported from Manus) ── */}
+      <Route path={"/institutional-dashboard"}>{() => <InstitutionalDashboard />}</Route>
+      <Route path={"/forensic-audit"}>{() => <ForensicAudit />}</Route>
+      <Route path={"/bond-intel"}>{() => <BondIntelligence />}</Route>
+      <Route path={"/nervous-system"}>{() => <CentralNervousSystem />}</Route>
+      <Route path={"/risk-command"}>{() => <RiskCommandCenter />}</Route>
+      <Route path={"/modeling-studio"}>{() => <ModelingStudio />}</Route>
+      <Route path={"/lender-scout"}>{() => <LenderCommandCenter />}</Route>
+      <Route path={"/marketing-studio"}>{() => <MarketingStudio />}</Route>
+      <Route path={"/convergence"}>{() => <ConvergenceRadar />}</Route>
+
+      {/* ── Remaining routes (ModulePages — to be replaced as engines are built) ── */}
       <Route path={"/dashboard-bond"} component={BondDashboard} />
       <Route path={"/dashboard-ma"} component={MADashboard} />
       <Route path={"/dashboard-icre"} component={ICREDashboard} />
@@ -136,8 +147,6 @@ function Router() {
       <Route path={"/investor-dashboard"} component={InvestorDashboard} />
       <Route path={"/partner-dashboard"} component={PartnerDashboard} />
       <Route path={"/client-dashboard"} component={ClientDashboard} />
-
-      {/* ── Business Development ───────────────────────────── */}
       <Route path={"/contact-strategy"} component={ContactStrategy} />
       <Route path={"/outreach"} component={Outreach} />
       <Route path={"/heat-maps"} component={HeatMaps} />
@@ -145,41 +154,25 @@ function Router() {
       <Route path={"/eagleeye-icre"} component={EagleEyeICRE} />
       <Route path={"/eagleeye-ou"} component={EagleEyeOU} />
       <Route path={"/eagleeye-ma"} component={EagleEyeMA} />
-
-      {/* ── Tools ──────────────────────────────────────────── */}
       <Route path={"/napkin"} component={NapkinPage} />
       <Route path={"/content-library"} component={ContentLibrary} />
       <Route path={"/video-generator"} component={VideoGenerator} />
       <Route path={"/teaser-generator"} component={TeaserGenerator} />
       <Route path={"/credit-memo"} component={CreditMemo} />
-
-      {/* ── NEST Bond ──────────────────────────────────────── */}
       <Route path={"/deal-intake-bond"} component={DealIntakeBond} />
       <Route path={"/roots-bond"} component={RootsBond} />
-
-      {/* ── Sparrow ────────────────────────────────────────── */}
       <Route path={"/deal-intake-sparrow"} component={DealIntakeSparrow} />
       <Route path={"/roots-sparrow"} component={RootsSparrow} />
       <Route path={"/sparrow"} component={SparrowDeals} />
-
-      {/* ── NEST IB ────────────────────────────────────────── */}
       <Route path={"/deal-intake-ib"} component={DealIntakeIB} />
       <Route path={"/roots-ib"} component={RootsIB} />
       <Route path={"/ma-desk"} component={MADesk} />
       <Route path={"/equity-raise"} component={EquityRaise} />
       <Route path={"/investments"} component={Investments} />
-
-      {/* ── NEST Term Lending ──────────────────────────────── */}
       <Route path={"/deal-intake-lending"} component={DealIntakeLending} />
       <Route path={"/roots-lending"} component={RootsLending} />
-
-      {/* ── Compliance & Legal ─────────────────────────────── */}
       <Route path={"/atticus"} component={AtticusPage} />
-
-      {/* ── NEST Suite ─────────────────────────────────────── */}
       <Route path={"/c-suite"} component={CSuitePage} />
-
-      {/* ── NEST Labs ──────────────────────────────────────── */}
       <Route path={"/tech-stack"} component={TechStackPage} />
       <Route path={"/data-connectors"} component={DataConnectorsPage} />
 
