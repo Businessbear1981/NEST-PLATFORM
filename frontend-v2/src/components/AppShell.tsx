@@ -37,6 +37,7 @@ const NAV_SECTIONS = [
     label: "BUSINESS DEVELOPMENT",
     items: [
       { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
+      { label: "Convergence Radar", href: "/convergence", icon: Radio, desc: "Multi-Signal Detection" },
       { label: "Contact Strategy", href: "/contact-strategy", icon: Users },
       { label: "Outreach", href: "/outreach", icon: Megaphone },
       { label: "Marketing Studio", href: "/marketing-studio", icon: FileText },

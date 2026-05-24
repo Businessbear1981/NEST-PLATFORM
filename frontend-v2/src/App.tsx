@@ -37,6 +37,7 @@ import RiskCommandCenter from "./components/RiskCommandCenter";
 import ModelingStudio from "./components/ModelingStudio";
 import LenderCommandCenter from "./components/LenderCommandCenter";
 import MarketingStudio from "./components/MarketingStudio";
+import ConvergenceRadar from "./components/ConvergenceRadar";
 import {
   BondDashboard, MADashboard, ICREDashboard, OUDashboard,
   TreasuryCompanyDashboard, TreasuryEmployeeDashboard, CompDashboard,
@@ -191,6 +192,7 @@ function Router() {
       <Route path={"/modeling-studio"}>{() => <ModelingStudio />}</Route>
       <Route path={"/lender-scout"}>{() => <LenderCommandCenter />}</Route>
       <Route path={"/marketing-studio"}>{() => <MarketingStudio />}</Route>
+      <Route path={"/convergence"}>{() => <ConvergenceRadar />}</Route>
 
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
