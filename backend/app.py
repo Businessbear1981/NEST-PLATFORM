@@ -43,6 +43,7 @@ from routes.nightvision import nightvision_bp
 from routes.treasury import treasury_bp
 from routes.phoenix import phoenix_bp
 from routes.napkin import napkin_bp
+from routes.convergence import convergence_bp
 from services.logging_service import init_request_logging
 from services.fund_engine import FundEngine
 from services.deals import DealsRegistry
@@ -137,6 +138,9 @@ def create_app():
     app.register_blueprint(treasury_bp, url_prefix="/api/treasury")
     app.register_blueprint(phoenix_bp, url_prefix="/api/phoenix")
     app.register_blueprint(napkin_bp, url_prefix="/api/napkin")
+    from services.convergence_engine import ConvergenceEngine
+    app.config["CONVERGENCE_ENGINE"] = ConvergenceEngine()
+    app.register_blueprint(convergence_bp, url_prefix="/api/convergence")
 
     @app.get("/api/metrics")
     def metrics():
