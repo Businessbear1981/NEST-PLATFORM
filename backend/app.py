@@ -44,6 +44,7 @@ from routes.treasury import treasury_bp
 from routes.phoenix import phoenix_bp
 from routes.napkin import napkin_bp
 from routes.convergence import convergence_bp
+from routes.scanner import scanner_bp
 from services.logging_service import init_request_logging
 from services.fund_engine import FundEngine
 from services.deals import DealsRegistry
@@ -141,6 +142,9 @@ def create_app():
     from services.convergence_engine import ConvergenceEngine
     app.config["CONVERGENCE_ENGINE"] = ConvergenceEngine()
     app.register_blueprint(convergence_bp, url_prefix="/api/convergence")
+    from services.autonomous_scanner import AutonomousScanner
+    app.config["SCANNER"] = AutonomousScanner(convergence_engine=app.config["CONVERGENCE_ENGINE"])
+    app.register_blueprint(scanner_bp, url_prefix="/api/scanner")
 
     @app.get("/api/metrics")
     def metrics():
