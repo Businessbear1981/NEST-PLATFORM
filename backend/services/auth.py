@@ -342,6 +342,13 @@ def require_auth(*roles: str):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
+            # Demo bypass — allows unauthenticated access when NEST_DEMO_MODE=1
+            if os.environ.get("NEST_DEMO_MODE") == "1":
+                g.current_user = User(
+                    id="demo-admin", email="sean@nestadvisors.com",
+                    password_hash="", role="admin", name="Sean Gilmore (Demo)",
+                )
+                return fn(*args, **kwargs)
             try:
                 user = _service().verify_token(_bearer_token() or "")
             except AuthError as e:
