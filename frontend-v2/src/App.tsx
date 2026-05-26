@@ -28,6 +28,13 @@ import AboutNest from "./components/AboutNest";
 import SignalIntelligenceFeed from "./components/SignalIntelligenceFeed";
 import EagleEyeV2 from "./components/EagleEyeV2";
 import AppShell from "./components/AppShell";
+import BernardPage from "./pages/v4/BernardPage";
+import CreditUWPage from "./pages/v4/CreditUWPage";
+import TrusteePage from "./pages/v4/TrusteePage";
+import ConstructionPage from "./pages/v4/ConstructionPage";
+import SurveillancePage from "./pages/v4/SurveillancePage";
+import TreasuryPage from "./pages/v4/TreasuryPage";
+import EMMAPage from "./pages/v4/EMMAPage";
 
 function BondCommandPage(props: any) {
   return (
@@ -68,6 +75,14 @@ function Router() {
       <Route path={"/deposits"} component={ClientDepositPage} />
       <Route path={"/admin"} component={AdminPlatformPage} />
       <Route path={"/about"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><AboutNest /></main>}</Route>
+      {/* V4 Operating Framework Modules */}
+      <Route path={"/bernard"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><BernardPage /></main>}</Route>
+      <Route path={"/credit"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><CreditUWPage /></main>}</Route>
+      <Route path={"/trustee"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><TrusteePage /></main>}</Route>
+      <Route path={"/construction"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ConstructionPage /></main>}</Route>
+      <Route path={"/surveillance"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><SurveillancePage /></main>}</Route>
+      <Route path={"/treasury"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><TreasuryPage /></main>}</Route>
+      <Route path={"/emma"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><EMMAPage /></main>}</Route>
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
