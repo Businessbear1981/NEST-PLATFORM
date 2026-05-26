@@ -8,41 +8,75 @@ import NestMark from "./NestMark";
 
 const NAV_SECTIONS = [
   {
-    label: "DEAL PIPELINE",
+    label: "ORCA C-SUITE",
     items: [
+      { label: "Bernard CEO", href: "/bernard", icon: Bot },
+      { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "BOND DESK",
+    items: [
+      { label: "New Deal Input", href: "/deal-input-v4", icon: Briefcase },
+      { label: "GENIE Bond Desk", href: "/bond-desk", icon: Landmark },
       { label: "Command Center", href: "/command-center", icon: Radio },
       { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
+    ],
+  },
+  {
+    label: "CREDIT & RATING",
+    items: [
+      { label: "Credit Underwriting", href: "/credit", icon: Scale },
+      { label: "Rating / Mirror Agents", href: "/rating", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "DEAL EXECUTION",
+    items: [
+      { label: "Surety & Enhancement", href: "/surety", icon: FileCheck },
+      { label: "Hawkeye Placement", href: "/hawkeye", icon: Target },
+      { label: "Roots / Documents", href: "/roots", icon: TreePine },
       { label: "Operations", href: "/operations/deals", icon: Building2 },
     ],
   },
   {
-    label: "PILLARS",
+    label: "RISK & COMPLIANCE",
     items: [
-      { label: "EagleEye V2", href: "/eagleeye-v2", icon: Activity, desc: "Signal Intelligence" },
-      { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Deal Sourcing & BD" },
-      { label: "Roots", href: "/roots", icon: TreePine, desc: "Readiness & Docs" },
-      { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring & Live Ops" },
-      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Placement & Sales" },
-      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "Compliance" },
-    ],
-  },
-  {
-    label: "MODULES",
-    items: [
-      { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
-      { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
-      { label: "Covenant Monitoring", href: "/covenants", icon: Scale },
-      { label: "KYC Compliance", href: "/kyc", icon: Lock },
+      { label: "NightVision", href: "/nightvision", icon: Shield },
+      { label: "Covenants", href: "/covenants", icon: Scale },
       { label: "Compliance Portal", href: "/compliance", icon: ClipboardCheck },
-      { label: "Client Deposits", href: "/deposits", icon: Users },
+      { label: "KYC / AML", href: "/kyc", icon: Lock },
+      { label: "Surveillance", href: "/surveillance", icon: Eye },
     ],
   },
   {
-    label: "SYSTEM",
+    label: "CONSTRUCTION & TREASURY",
     items: [
+      { label: "Construction Risk", href: "/construction", icon: Building2 },
+      { label: "Treasury / Ramp", href: "/treasury", icon: Landmark },
+      { label: "Trustee Liaison", href: "/trustee", icon: Users },
+    ],
+  },
+  {
+    label: "BUSINESS DEVELOPMENT",
+    items: [
+      { label: "EagleEye V2", href: "/eagleeye-v2", icon: Activity },
+      { label: "EagleEye Scout", href: "/eagleeye", icon: Eye },
+      { label: "Signal Intel", href: "/signals", icon: Radio },
+    ],
+  },
+  {
+    label: "INTELLIGENCE",
+    items: [
+      { label: "EMMA", href: "/emma", icon: BarChart3 },
       { label: "Agent Platform", href: "/agents/platform", icon: Bot },
-      { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
-      { label: "Admin", href: "/admin", icon: Lock },
+    ],
+  },
+  {
+    label: "ADMIN",
+    items: [
+      { label: "Admin Platform", href: "/admin", icon: Lock },
+      { label: "Client Deposits", href: "/deposits", icon: Users },
     ],
   },
 ];
