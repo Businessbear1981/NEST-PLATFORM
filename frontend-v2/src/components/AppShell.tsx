@@ -6,96 +6,55 @@ import {
 } from "lucide-react";
 import NestMark from "./NestMark";
 
-/*
- * Navigation maps to every process in the Bible's 18 silos + Operating Framework desks:
- * Silo 1: Bond Anatomy → Deal Input (bond type, tax status, amortization)
- * Silo 2: Players → Counterparty management across all desks
- * Silo 3: Workflow → Deal flow pipeline (intake → closing → admin)
- * Silo 4: Documents → Roots/Document desk
- * Silo 5: Fee Architecture → Pricing in bond desk
- * Silo 6: Calls/Puts/Optionality → Structuring in bond desk
- * Silo 7: Covenants → Covenant monitoring
- * Silo 8: Reserves/Waterfalls → Structuring + Treasury
- * Silo 9: Credit Enhancement → Surety/Enhancement desk
- * Silo 10: Tranching → Bond desk structuring
- * Silo 11: Pricing/Spreads → Placement desk + market data
- * Silo 12: Post-Closing Admin → Operations desk
- * Silo 13: Refundings/Restructurings → Surveillance desk
- * Silo 14: Risk Rating/LGD → Rating desk + Mirror Agents
- * Silo 15: Modeling Engine → Prometheus/modeling
- * Silo 16: Rule Library → Intelligence engine
- * Silo 17: Agent Specs → Agent platform
- * Silo 18: Tech Stack → Admin/system
- */
 const NAV_SECTIONS = [
   {
-    label: "ORCA C-SUITE",
+    label: "OVERVIEW",
     items: [
-      { label: "Bernard CEO", href: "/bernard", icon: Bot },
       { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
+      { label: "Active Deals", href: "/deals", icon: Building2 },
+      { label: "Bernard", href: "/bernard", icon: Bot },
     ],
   },
   {
-    label: "BOND DESK",
+    label: "ORIGINATION",
     items: [
-      { label: "Deal Input", href: "/deal-input-v4", icon: Briefcase },
-      { label: "GENIE Structuring", href: "/bond-desk", icon: Landmark },
-      { label: "Operations / Pipeline", href: "/operations/deals", icon: Building2 },
+      { label: "New Deal", href: "/deal-input-v4", icon: Briefcase },
+      { label: "EagleEye", href: "/eagleeye-v2", icon: Eye },
     ],
   },
   {
-    label: "CREDIT & RATING",
+    label: "STRUCTURING",
     items: [
-      { label: "Credit Underwriting", href: "/credit", icon: Scale },
-      { label: "Rating & Submission", href: "/rating", icon: BarChart3 },
+      { label: "Bond Desk", href: "/bond-desk", icon: Landmark },
+      { label: "Credit & Rating", href: "/credit", icon: Scale },
+      { label: "Rating Submission", href: "/rating", icon: BarChart3 },
+      { label: "Enhancement", href: "/surety", icon: FileCheck },
     ],
   },
   {
-    label: "ENHANCEMENT & INSURANCE",
+    label: "EXECUTION",
     items: [
-      { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
-      { label: "Trustee Liaison", href: "/trustee", icon: Users },
+      { label: "Placement", href: "/hawkeye", icon: Target },
+      { label: "Documents", href: "/roots", icon: TreePine },
+      { label: "Construction", href: "/construction", icon: Building2 },
+      { label: "Treasury", href: "/treasury", icon: Landmark },
     ],
   },
   {
-    label: "PLACEMENT & DOCS",
+    label: "ADMINISTRATION",
     items: [
-      { label: "Hawkeye Placement", href: "/hawkeye", icon: Target },
-      { label: "Roots / Documents", href: "/roots", icon: TreePine },
-      { label: "Client Deposits", href: "/deposits", icon: Users },
-    ],
-  },
-  {
-    label: "CONSTRUCTION & TREASURY",
-    items: [
-      { label: "Construction Risk", href: "/construction", icon: Building2 },
-      { label: "Treasury / Ramp", href: "/treasury", icon: Landmark },
-    ],
-  },
-  {
-    label: "COMPLIANCE & SURVEILLANCE",
-    items: [
-      { label: "NightVision", href: "/nightvision", icon: Shield },
       { label: "Covenants", href: "/covenants", icon: Scale },
       { label: "Surveillance", href: "/surveillance", icon: Eye },
-      { label: "Compliance Portal", href: "/compliance", icon: ClipboardCheck },
-      { label: "KYC / AML", href: "/kyc", icon: Lock },
+      { label: "Compliance", href: "/nightvision", icon: Shield },
+      { label: "Trustee", href: "/trustee", icon: Users },
     ],
   },
   {
-    label: "BUSINESS DEVELOPMENT",
+    label: "SYSTEM",
     items: [
-      { label: "EagleEye V2", href: "/eagleeye-v2", icon: Activity },
-      { label: "EagleEye Scout", href: "/eagleeye", icon: Eye },
-      { label: "Signal Intelligence", href: "/signals", icon: Radio },
-    ],
-  },
-  {
-    label: "INTELLIGENCE & AGENTS",
-    items: [
-      { label: "EMMA Bond Intel", href: "/emma", icon: BarChart3 },
-      { label: "Agent Operations", href: "/agents/platform", icon: Bot },
-      { label: "Admin Platform", href: "/admin", icon: Lock },
+      { label: "EMMA", href: "/emma", icon: BarChart3 },
+      { label: "Agents", href: "/agents/platform", icon: Bot },
+      { label: "Admin", href: "/admin", icon: Lock },
     ],
   },
 ];
