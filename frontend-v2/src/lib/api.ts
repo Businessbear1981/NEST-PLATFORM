@@ -408,11 +408,102 @@ export const signals = {
     nestFetch(`/api/signals/vector/history?limit=${limit || 50}`),
 };
 
+// ── V4 Operating Framework — Desk Registry + Bernard ────────
+export const desks = {
+  list: () => nestFetch("/api/desks/"),
+  get: (deskId: string) => nestFetch(`/api/desks/${deskId}`),
+  agents: (deskId: string) => nestFetch(`/api/desks/${deskId}/agents`),
+  allAgents: () => nestFetch("/api/desks/agents/all"),
+  summary: () => nestFetch("/api/desks/"),
+};
+
+export const bernard = {
+  ask: (question: string, context?: Record<string, unknown>) =>
+    nestFetch("/api/desks/bernard/ask", { method: "POST", body: JSON.stringify({ question, context }) }),
+  route: (task: string) =>
+    nestFetch("/api/desks/bernard/route", { method: "POST", body: JSON.stringify({ task }) }),
+  tutorial: (decisionPoint: string, context?: Record<string, unknown>) =>
+    nestFetch("/api/desks/bernard/tutorial", { method: "POST", body: JSON.stringify({ decision_point: decisionPoint, context }) }),
+  narrate: (event: string, dealContext?: Record<string, unknown>) =>
+    nestFetch("/api/desks/bernard/narrate", { method: "POST", body: JSON.stringify({ event, deal_context: dealContext }) }),
+  firmReview: (deals?: unknown[], metrics?: Record<string, unknown>) =>
+    nestFetch("/api/desks/bernard/firm-review", { method: "POST", body: JSON.stringify({ deals, metrics }) }),
+};
+
+// ── V4 Intelligence Engine ──────────────────────────────────
+export const intel = {
+  size: (params: Record<string, unknown>) =>
+    nestFetch("/api/intel/size", { method: "POST", body: JSON.stringify(params) }),
+  sizeMa: (params: Record<string, unknown>) =>
+    nestFetch("/api/intel/size/ma", { method: "POST", body: JSON.stringify(params) }),
+  underwrite: (deal: Record<string, unknown>) =>
+    nestFetch("/api/intel/underwrite", { method: "POST", body: JSON.stringify(deal) }),
+  covenants: (params: Record<string, unknown>) =>
+    nestFetch("/api/intel/covenants", { method: "POST", body: JSON.stringify(params) }),
+  sectors: () => nestFetch("/api/intel/sectors"),
+  creditPolicy: () => nestFetch("/api/intel/credit-policy"),
+  pricing: () => nestFetch("/api/intel/pricing"),
+};
+
+// ── V4 Mirror Agents (Rating Desk) ──────────────────────────
+export const mirrorAgents = {
+  moodys: (deal: Record<string, unknown>) =>
+    nestFetch("/api/rating/moodys/predict", { method: "POST", body: JSON.stringify(deal) }),
+  sp: (deal: Record<string, unknown>) =>
+    nestFetch("/api/rating/sp/predict", { method: "POST", body: JSON.stringify(deal) }),
+  dual: (deal: Record<string, unknown>) =>
+    nestFetch("/api/rating/dual", { method: "POST", body: JSON.stringify(deal) }),
+  levers: (deal: Record<string, unknown>) =>
+    nestFetch("/api/rating/levers", { method: "POST", body: JSON.stringify(deal) }),
+  scorecard: (deal: Record<string, unknown>) =>
+    nestFetch("/api/rating/moodys/scorecard", { method: "POST", body: JSON.stringify(deal) }),
+};
+
+// ── V4 EMMA Intelligence ────────────────────────────────────
+export const emma = {
+  search: (params: Record<string, string>) => {
+    const qs = new URLSearchParams(params);
+    return nestFetch(`/api/emma/search?${qs}`);
+  },
+  parse: (text: string, sourceUrl?: string) =>
+    nestFetch("/api/emma/parse", { method: "POST", body: JSON.stringify({ text, source_url: sourceUrl }) }),
+  templates: (sector: string, minPar?: number, maxPar?: number) =>
+    nestFetch(`/api/emma/templates?sector=${sector}${minPar ? `&min_par=${minPar}` : ""}${maxPar ? `&max_par=${maxPar}` : ""}`),
+  sectors: () => nestFetch("/api/emma/templates/sectors"),
+  comps: (params: Record<string, string>) => {
+    const qs = new URLSearchParams(params);
+    return nestFetch(`/api/emma/comps?${qs}`);
+  },
+  stats: () => nestFetch("/api/emma/stats"),
+  poll: (sector?: string) =>
+    nestFetch("/api/emma/poll", { method: "POST", body: JSON.stringify({ sector }) }),
+};
+
+// ── V4 Workflow Engine ──────────────────────────────────────
+export const workflow = {
+  stages: () => nestFetch("/api/workflow/stages"),
+  pipeline: () => nestFetch("/api/workflow/pipeline"),
+  init: (dealId: string, dealType: string, source?: string) =>
+    nestFetch("/api/workflow/init", { method: "POST", body: JSON.stringify({ deal_id: dealId, deal_type: dealType, source }) }),
+  get: (dealId: string) => nestFetch(`/api/workflow/${dealId}`),
+  passGate: (dealId: string, gateCondition: string) =>
+    nestFetch(`/api/workflow/${dealId}/gate`, { method: "POST", body: JSON.stringify({ gate_condition: gateCondition }) }),
+  advance: (dealId: string) =>
+    nestFetch(`/api/workflow/${dealId}/advance`, { method: "POST" }),
+};
+
+// ── V4 Counterparties ───────────────────────────────────────
+export const counterparties = {
+  all: () => nestFetch("/api/counterparties/"),
+  byRole: (role: string) => nestFetch(`/api/counterparties/${role}`),
+  feasibility: (sector: string) => nestFetch(`/api/counterparties/feasibility/${sector}`),
+};
+
 export const api = {
   auth, deals, fund, agents, market, bondTools, risk,
   modeling, maxwell, architect, pricing, insurance, roots, metrics,
   powerstrip, bondWorkflow, eagleeye, hawkeye, ratingEsg, bondStructuring,
-  signals,
+  signals, desks, bernard, intel, mirrorAgents, emma, workflow, counterparties,
 };
 
 export default api;

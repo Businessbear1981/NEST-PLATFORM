@@ -503,6 +503,73 @@ const signalHooks = {
   ),
 };
 
+// ── V4 Operating Framework Hooks ────────────────────────────────
+
+const desksHooks = {
+  list: q(["desks"], () => api.desks.list()),
+  agents: {
+    useQuery: (input?: { deskId: string }, opts?: Partial<UseQueryOptions>) =>
+      useQuery({ queryKey: ["desks", "agents", input?.deskId], queryFn: () => api.desks.agents(input?.deskId || "bond_desk"), ...opts }),
+  },
+  allAgents: q(["desks", "allAgents"], () => api.desks.allAgents()),
+};
+
+const bernardHooks = {
+  ask: m((input: { question: string; context?: Record<string, unknown> }) => api.bernard.ask(input.question, input.context)),
+  route: m((input: { task: string }) => api.bernard.route(input.task)),
+  tutorial: m((input: { decisionPoint: string; context?: Record<string, unknown> }) => api.bernard.tutorial(input.decisionPoint, input.context)),
+  firmReview: m((input: { deals?: unknown[]; metrics?: Record<string, unknown> }) => api.bernard.firmReview(input.deals, input.metrics)),
+};
+
+const intelHooks = {
+  size: m((input: Record<string, unknown>) => api.intel.size(input)),
+  sizeMa: m((input: Record<string, unknown>) => api.intel.sizeMa(input)),
+  underwrite: m((input: Record<string, unknown>) => api.intel.underwrite(input)),
+  covenants: m((input: Record<string, unknown>) => api.intel.covenants(input)),
+  sectors: q(["intel", "sectors"], () => api.intel.sectors()),
+  creditPolicy: q(["intel", "creditPolicy"], () => api.intel.creditPolicy()),
+  pricing: q(["intel", "pricing"], () => api.intel.pricing()),
+};
+
+const mirrorHooks = {
+  moodys: m((input: Record<string, unknown>) => api.mirrorAgents.moodys(input)),
+  sp: m((input: Record<string, unknown>) => api.mirrorAgents.sp(input)),
+  dual: m((input: Record<string, unknown>) => api.mirrorAgents.dual(input)),
+  levers: m((input: Record<string, unknown>) => api.mirrorAgents.levers(input)),
+  scorecard: m((input: Record<string, unknown>) => api.mirrorAgents.scorecard(input)),
+};
+
+const emmaHooks = {
+  search: {
+    useQuery: (input?: Record<string, string>, opts?: Partial<UseQueryOptions>) =>
+      useQuery({ queryKey: ["emma", "search", input], queryFn: () => api.emma.search(input || {}), ...opts }),
+  },
+  parse: m((input: { text: string; sourceUrl?: string }) => api.emma.parse(input.text, input.sourceUrl)),
+  templates: {
+    useQuery: (input?: { sector: string }, opts?: Partial<UseQueryOptions>) =>
+      useQuery({ queryKey: ["emma", "templates", input?.sector], queryFn: () => api.emma.templates(input?.sector || "senior_living"), ...opts }),
+  },
+  sectors: q(["emma", "sectors"], () => api.emma.sectors()),
+  stats: q(["emma", "stats"], () => api.emma.stats()),
+  poll: m((input: { sector?: string }) => api.emma.poll(input.sector)),
+};
+
+const workflowHooks = {
+  stages: q(["workflow", "stages"], () => api.workflow.stages()),
+  pipeline: q(["workflow", "pipeline"], () => api.workflow.pipeline()),
+  init: m((input: { dealId: string; dealType: string; source?: string }) => api.workflow.init(input.dealId, input.dealType, input.source)),
+  passGate: m((input: { dealId: string; gateCondition: string }) => api.workflow.passGate(input.dealId, input.gateCondition)),
+  advance: m((input: { dealId: string }) => api.workflow.advance(input.dealId)),
+};
+
+const counterpartyHooks = {
+  all: q(["counterparties"], () => api.counterparties.all()),
+  byRole: {
+    useQuery: (input?: { role: string }, opts?: Partial<UseQueryOptions>) =>
+      useQuery({ queryKey: ["counterparties", input?.role], queryFn: () => api.counterparties.byRole(input?.role || "broker_dealer"), ...opts }),
+  },
+};
+
 // ── Public export ────────────────────────────────────────────────
 
 export const trpc = {
@@ -521,5 +588,13 @@ export const trpc = {
   ratingEsg,
   bondStructuring,
   signals: signalHooks,
+  // V4 Operating Framework
+  desks: desksHooks,
+  bernard: bernardHooks,
+  intel: intelHooks,
+  mirror: mirrorHooks,
+  emma: emmaHooks,
+  workflow: workflowHooks,
+  counterparties: counterpartyHooks,
   useUtils,
 };
