@@ -75,6 +75,7 @@ from routes.workflow import workflow_bp
 from routes.counterparties import counterparties_bp
 from routes.mirror_agents import mirror_bp
 from routes.v2_compat import v2_compat_bp
+from routes.deal_flow import deal_flow_bp
 
 
 def create_app():
@@ -163,6 +164,12 @@ def create_app():
     app.register_blueprint(counterparties_bp, url_prefix="/api/counterparties")
     app.register_blueprint(mirror_bp, url_prefix="/api/rating")
     app.register_blueprint(v2_compat_bp, url_prefix="/api")
+    app.register_blueprint(deal_flow_bp, url_prefix="/api/deal-flow")
+
+    # Seed EMMA with real bond structures on startup
+    from services.emma_seed_data import seed_emma_database
+    seed_count = seed_emma_database()
+    app.logger.info(f"EMMA seeded with {seed_count} bond structures")
 
     @app.get("/api/metrics")
     def metrics():
