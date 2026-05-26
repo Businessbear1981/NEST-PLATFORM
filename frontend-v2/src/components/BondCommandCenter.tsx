@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, RefreshCw, Eye, Layers3, Target, TrendingUp, ShieldCheck, Scale, Gavel, Bot, Shield } from "lucide-react";
+import { Loader2, RefreshCw, Eye, Layers3, Target, TrendingUp, ShieldCheck, Scale, Gavel, Bot, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import NestMark from "./NestMark";
 
 import EagleEyeScoutDashboard from "./EagleEyeScoutDashboard";
+import EagleEyeV2 from "./EagleEyeV2";
 import RootsWorkspace from "./RootsWorkspace";
 import StructuringStudio from "./StructuringStudio";
 import HawkeyePlacementScout from "./HawkeyePlacementScout";
@@ -20,6 +21,7 @@ import DucklingAgentFlow from "./DucklingAgentFlow";
 
 const PILLAR_TABS = [
   { value: "overview", label: "Overview", icon: Bot },
+  { value: "eagleeye-v2", label: "EagleEye V2", icon: Zap },
   { value: "eagleeye", label: "EagleEye", icon: Eye },
   { value: "roots", label: "Roots", icon: TrendingUp },
   { value: "bonddesk", label: "Bond Desk", icon: Layers3 },
@@ -154,6 +156,7 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
         </TabsContent>
 
         {/* Full views */}
+        <TabsContent value="eagleeye-v2" className="mt-4"><EagleEyeV2 /></TabsContent>
         <TabsContent value="eagleeye" className="mt-4"><EagleEyeScoutDashboard /></TabsContent>
         <TabsContent value="roots" className="mt-4"><RootsWorkspace dealId={dealId} /></TabsContent>
         <TabsContent value="bonddesk" className="mt-4"><StructuringStudio dealId={dealId} /></TabsContent>

@@ -367,10 +367,52 @@ export const bondStructuring = {
     }),
 };
 
+// ── Signal Intelligence ──────────────────────────────────────
+export const signals = {
+  query: (filters?: Record<string, string>) => {
+    const params = new URLSearchParams(filters || {});
+    return nestFetch(`/api/signals/query?${params}`);
+  },
+  latest: (filters?: Record<string, string>) => {
+    const params = new URLSearchParams(filters || {});
+    return nestFetch(`/api/signals/latest?${params}`);
+  },
+  stats: () => nestFetch("/api/signals/stats"),
+  related: (params: { signal_id?: string; entity?: string; market?: string; state?: string; exclude_id?: string }) => {
+    const qs = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) {
+      if (v) qs.set(k, v);
+    }
+    return nestFetch(`/api/signals/related?${qs}`);
+  },
+  updateStatus: (signalId: string, status: string) =>
+    nestFetch(`/api/signals/${signalId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+  pollFred: () => nestFetch("/api/signals/poll/fred", { method: "POST" }),
+  pollEdgar: (days?: number) =>
+    nestFetch(`/api/signals/poll/edgar${days ? `?days=${days}` : ""}`, { method: "POST" }),
+  alerts: (filters?: Record<string, string>) => {
+    const params = new URLSearchParams(filters || {});
+    return nestFetch(`/api/signals/alerts?${params}`);
+  },
+  updateAlertStatus: (alertId: string, status: string) =>
+    nestFetch(`/api/signals/alerts/${alertId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+  vectorLatest: (dealId?: string) =>
+    nestFetch(`/api/signals/vector/latest${dealId ? `?deal_id=${dealId}` : ""}`),
+  vectorHistory: (limit?: number) =>
+    nestFetch(`/api/signals/vector/history?limit=${limit || 50}`),
+};
+
 export const api = {
   auth, deals, fund, agents, market, bondTools, risk,
   modeling, maxwell, architect, pricing, insurance, roots, metrics,
   powerstrip, bondWorkflow, eagleeye, hawkeye, ratingEsg, bondStructuring,
+  signals,
 };
 
 export default api;

@@ -226,14 +226,8 @@ const mTargets = {
 
 // ── Tenants (in-memory until backend route) ──────────────────────
 
-let _tenants: Array<Record<string, any>> = [
-  { id: 1, dealId: 1, name: "Pacific Health Partners", unit: "Suite 100-108", sqft: 42000, monthlyRent: 168000, leaseExpiry: "2029-06-30", status: "active", creditRating: "A", createdAt: "2026-01-15T10:00:00Z" },
-  { id: 2, dealId: 1, name: "TechVentures Inc", unit: "Suite 200-204", sqft: 28000, monthlyRent: 126000, leaseExpiry: "2028-12-31", status: "active", creditRating: "BBB+", createdAt: "2026-01-20T10:00:00Z" },
-  { id: 3, dealId: 1, name: "Meridian Capital Advisors", unit: "Suite 300", sqft: 12000, monthlyRent: 60000, leaseExpiry: "2030-03-31", status: "active", creditRating: "A-", createdAt: "2026-02-01T10:00:00Z" },
-  { id: 4, dealId: 1, name: "CoreLogic Analytics", unit: "Suite 400-402", sqft: 18000, monthlyRent: 81000, leaseExpiry: "2028-09-30", status: "active", creditRating: "BBB", createdAt: "2026-02-15T10:00:00Z" },
-  { id: 5, dealId: 1, name: "Vertex Legal Group", unit: "Suite 500", sqft: 8500, monthlyRent: 42500, leaseExpiry: "2027-12-31", status: "active", creditRating: "BBB+", createdAt: "2026-03-01T10:00:00Z" },
-];
-let _tenantSeq = 6;
+let _tenants: Array<Record<string, any>> = [];
+let _tenantSeq = 1;
 
 const tenants = {
   listByDeal: {
@@ -266,14 +260,8 @@ const tenants = {
 
 // ── Draws (in-memory until backend route) ────────────────────────
 
-let _draws: Array<Record<string, any>> = [
-  { id: 1, dealId: 1, drawNumber: 1, amount: 8200000, status: "approved", description: "Site preparation and grading", createdAt: "2026-02-15T10:00:00Z", approvalNotes: "Engineer cert verified" },
-  { id: 2, dealId: 1, drawNumber: 2, amount: 9400000, status: "approved", description: "Foundation and structural steel", createdAt: "2026-03-15T10:00:00Z", approvalNotes: "Inspection passed" },
-  { id: 3, dealId: 1, drawNumber: 3, amount: 11800000, status: "approved", description: "Vertical construction — floors 1-8", createdAt: "2026-04-15T10:00:00Z", approvalNotes: "Photos reviewed" },
-  { id: 4, dealId: 1, drawNumber: 4, amount: 10600000, status: "requested", description: "MEP rough-in and curtain wall", createdAt: "2026-05-15T10:00:00Z" },
-  { id: 5, dealId: 1, drawNumber: 5, amount: 12100000, status: "requested", description: "Interior finishes and common areas", createdAt: "2026-05-20T10:00:00Z" },
-];
-let _drawSeq = 6;
+let _draws: Array<Record<string, any>> = [];
+let _drawSeq = 1;
 
 const draws = {
   listByDeal: {
@@ -309,15 +297,8 @@ const draws = {
 
 // ── Covenants (in-memory until backend route) ────────────────────
 
-let _covenants: Array<Record<string, any>> = [
-  { id: 1, dealId: 1, type: "DSCR", threshold: "1.25", current: "1.41", status: "compliant", lastChecked: new Date().toISOString(), createdAt: new Date().toISOString() },
-  { id: 2, dealId: 1, type: "LTV", threshold: "75", current: "68", status: "compliant", lastChecked: new Date().toISOString(), createdAt: new Date().toISOString() },
-  { id: 3, dealId: 1, type: "Occupancy", threshold: "85", current: "78", status: "breach", lastChecked: new Date().toISOString(), createdAt: new Date().toISOString() },
-  { id: 4, dealId: 1, type: "Interest Coverage", threshold: "2.00", current: "2.34", status: "compliant", lastChecked: new Date().toISOString(), createdAt: new Date().toISOString() },
-  { id: 5, dealId: 1, type: "Leverage", threshold: "4.50", current: "4.12", status: "compliant", lastChecked: new Date().toISOString(), createdAt: new Date().toISOString() },
-  { id: 6, dealId: 1, type: "LTC", threshold: "80", current: "82", status: "breach", lastChecked: new Date().toISOString(), createdAt: new Date().toISOString() },
-];
-let _covenantSeq = 7;
+let _covenants: Array<Record<string, any>> = [];
+let _covenantSeq = 1;
 
 const covenants = {
   listByDeal: {
@@ -472,6 +453,56 @@ function useUtils() {
   };
 }
 
+// ── Signal Intelligence ─────────────────────────────────────────
+
+const signalHooks = {
+  query: {
+    useQuery: (
+      input?: Record<string, string>,
+      opts?: Partial<UseQueryOptions>,
+    ) =>
+      useQuery({
+        queryKey: ["signals", "query", input],
+        queryFn: () => api.signals.query(input),
+        ...opts,
+      }),
+  },
+  related: {
+    useQuery: (
+      input?: { signal_id?: string; entity?: string; market?: string; state?: string; exclude_id?: string },
+      opts?: Partial<UseQueryOptions>,
+    ) =>
+      useQuery({
+        queryKey: ["signals", "related", input],
+        queryFn: () => api.signals.related(input || {}),
+        enabled: !!(input?.entity || input?.market || input?.state),
+        ...opts,
+      }),
+  },
+  updateStatus: m((input: { signalId: string; status: string }) =>
+    api.signals.updateStatus(input.signalId, input.status),
+  ),
+  stats: q(["signals", "stats"], () => api.signals.stats()),
+  vectorLatest: q(["signals", "vectorLatest"], () => api.signals.vectorLatest()),
+  vectorHistory: q(["signals", "vectorHistory"], () => api.signals.vectorHistory()),
+  pollFred: m(() => api.signals.pollFred()),
+  pollEdgar: m((input?: { days?: number }) => api.signals.pollEdgar(input?.days)),
+  alerts: {
+    useQuery: (
+      input?: Record<string, string>,
+      opts?: Partial<UseQueryOptions>,
+    ) =>
+      useQuery({
+        queryKey: ["signals", "alerts", input],
+        queryFn: () => api.signals.alerts(input),
+        ...opts,
+      }),
+  },
+  updateAlertStatus: m((input: { alertId: string; status: string }) =>
+    api.signals.updateAlertStatus(input.alertId, input.status),
+  ),
+};
+
 // ── Public export ────────────────────────────────────────────────
 
 export const trpc = {
@@ -489,5 +520,6 @@ export const trpc = {
   hawkeye: hawkeyeHooks,
   ratingEsg,
   bondStructuring,
+  signals: signalHooks,
   useUtils,
 };

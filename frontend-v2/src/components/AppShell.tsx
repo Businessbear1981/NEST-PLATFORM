@@ -1,133 +1,54 @@
 import { Link, useLocation } from "wouter";
-import { useState } from "react";
 import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
-  BarChart3, Building2, Briefcase, Radio, Flame, Wallet,
-  LayoutDashboard, Crosshair, HandCoins, UserCircle, Settings,
-  Megaphone, Calculator, Search, Wrench, Video, FileText, CreditCard,
-  ChevronDown,
+  BarChart3, Building2, Briefcase, Radio, Activity,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
 const NAV_SECTIONS = [
   {
-    label: "WORKFLOW",
+    label: "DEAL PIPELINE",
     items: [
-      { label: "Dashboards", href: "/dashboard", icon: LayoutDashboard, children: [
-        { label: "Main", href: "/dashboard", icon: LayoutDashboard },
-        { label: "Bond", href: "/dashboard-bond", icon: Landmark },
-        { label: "M&A", href: "/dashboard-ma", icon: Megaphone },
-        { label: "ICRE", href: "/dashboard-icre", icon: Crosshair },
-        { label: "Owner/User", href: "/dashboard-ou", icon: Search },
-        { label: "Fee / Treasury — Co.", href: "/dashboard-treasury-co", icon: Wallet },
-        { label: "Fee / Treasury — Emp.", href: "/dashboard-treasury-emp", icon: Wallet },
-        { label: "Comp / Success Fee", href: "/dashboard-comp", icon: HandCoins },
-        { label: "P × V", href: "/dashboard-pv", icon: BarChart3 },
-        { label: "Investor", href: "/investor-dashboard", icon: BarChart3 },
-        { label: "Partner", href: "/partner-dashboard", icon: HandCoins },
-        { label: "Client", href: "/client-dashboard", icon: UserCircle },
-      ]},
       { label: "Command Center", href: "/command-center", icon: Radio },
-      { label: "Operations", href: "/operations/deals", icon: Building2 },
-      { label: "Admin", href: "/admin", icon: Settings },
-    ],
-  },
-  {
-    label: "BUSINESS DEVELOPMENT",
-    items: [
-      { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Market Outreach & BD" },
-      { label: "Convergence Radar", href: "/convergence", icon: Radio, desc: "Multi-Signal Detection" },
-      { label: "Contact Strategy", href: "/contact-strategy", icon: Users },
-      { label: "Outreach", href: "/outreach", icon: Megaphone },
-      { label: "Marketing Studio", href: "/marketing-studio", icon: FileText },
-      { label: "Heat Maps", href: "/heat-maps", icon: BarChart3 },
-      { label: "Bond", href: "/eagleeye-bond", icon: Target },
-      { label: "ICRE", href: "/eagleeye-icre", icon: Crosshair },
-      { label: "Owner/User", href: "/eagleeye-ou", icon: Search },
-      { label: "M&A", href: "/eagleeye-ma", icon: Megaphone },
-    ],
-  },
-  {
-    label: "TOOLS",
-    items: [
-      { label: "Back of the Napkin", href: "/napkin", icon: Calculator },
-      { label: "Content Library", href: "/content-library", icon: FileCheck },
-      { label: "Video Generator", href: "/video-generator", icon: Video },
-      { label: "Teaser Generator", href: "/teaser-generator", icon: FileText },
-      { label: "Credit Memo", href: "/credit-memo", icon: CreditCard },
-    ],
-  },
-  {
-    label: "NEST BOND",
-    items: [
       { label: "Deal Intake", href: "/deal-intake", icon: Briefcase },
-      { label: "Roots", href: "/roots", icon: TreePine },
-      { label: "Bond Desk", href: "/bond-desk", icon: Landmark },
-      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Bond Placement" },
-      { label: "Bond Intelligence", href: "/bond-intel", icon: BarChart3 },
+      { label: "Operations", href: "/operations/deals", icon: Building2 },
+    ],
+  },
+  {
+    label: "PILLARS",
+    items: [
+      { label: "EagleEye V2", href: "/eagleeye-v2", icon: Activity, desc: "Signal Intelligence" },
+      { label: "EagleEye", href: "/eagleeye", icon: Eye, desc: "Deal Sourcing & BD" },
+      { label: "Roots", href: "/roots", icon: TreePine, desc: "Readiness & Docs" },
+      { label: "Bond Desk", href: "/bond-desk", icon: Landmark, desc: "Structuring & Live Ops" },
+      { label: "Hawkeye", href: "/hawkeye", icon: Target, desc: "Placement & Sales" },
+      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "Compliance" },
+    ],
+  },
+  {
+    label: "MODULES",
+    items: [
       { label: "Rating Intelligence", href: "/rating", icon: BarChart3 },
-      { label: "Forensic Audit", href: "/forensic-audit", icon: FileCheck },
-      { label: "Modeling Studio", href: "/modeling-studio", icon: BarChart3 },
       { label: "Surety & Insurance", href: "/surety", icon: FileCheck },
-      { label: "Lender Scout", href: "/lender-scout", icon: Search },
-      { label: "Treasury", href: "/treasury", icon: Wallet },
+      { label: "Covenant Monitoring", href: "/covenants", icon: Scale },
+      { label: "KYC Compliance", href: "/kyc", icon: Lock },
+      { label: "Compliance Portal", href: "/compliance", icon: ClipboardCheck },
+      { label: "Client Deposits", href: "/deposits", icon: Users },
     ],
   },
   {
-    label: "SPARROW",
+    label: "SYSTEM",
     items: [
-      { label: "Deal Intake", href: "/deal-intake-sparrow", icon: Briefcase },
-      { label: "Roots", href: "/roots-sparrow", icon: TreePine },
-      { label: "Traditional Deals", href: "/sparrow", icon: Building2 },
-    ],
-  },
-  {
-    label: "NEST IB",
-    items: [
-      { label: "Deal Intake", href: "/deal-intake-ib", icon: Briefcase },
-      { label: "Roots", href: "/roots-ib", icon: TreePine },
-      { label: "M&A", href: "/ma-desk", icon: Megaphone },
-      { label: "Equity Raise", href: "/equity-raise", icon: HandCoins },
-      { label: "Investments", href: "/investments", icon: BarChart3 },
-    ],
-  },
-  {
-    label: "NEST TERM LENDING",
-    items: [
-      { label: "Deal Intake", href: "/deal-intake-lending", icon: Briefcase },
-      { label: "Roots", href: "/roots-lending", icon: TreePine },
-      { label: "Phoenix", href: "/phoenix", icon: Flame },
-    ],
-  },
-  {
-    label: "COMPLIANCE & LEGAL",
-    items: [
-      { label: "NightVision", href: "/nightvision", icon: Shield, desc: "KYC · AML · OFAC" },
-      { label: "Atticus", href: "/atticus", icon: Scale, desc: "In-House Counsel" },
-    ],
-  },
-  {
-    label: "NEST SUITE",
-    items: [
-      { label: "C-Suite", href: "/c-suite", icon: LayoutDashboard, desc: "ORCA Management Lair" },
-      { label: "Nervous System", href: "/nervous-system", icon: Radio, desc: "AI Plugin Grid" },
-      { label: "Risk Command", href: "/risk-command", icon: Shield, desc: "Sentinel 7-Dimension" },
       { label: "Agent Platform", href: "/agents/platform", icon: Bot },
-    ],
-  },
-  {
-    label: "NEST LABS",
-    items: [
-      { label: "Tech Stack", href: "/tech-stack", icon: Wrench, desc: "APIs & Subscriptions" },
-      { label: "Data Connectors", href: "/data-connectors", icon: Radio },
+      { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
+      { label: "Admin", href: "/admin", icon: Lock },
     ],
   },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   return (
     <div className="flex min-h-screen bg-[#03060b]">
@@ -138,72 +59,25 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <NestMark className="h-7 w-7" />
           <div>
             <p className="font-[Cormorant_Garamond] text-lg font-semibold tracking-[0.14em] text-[#C4A048]">NEST</p>
-            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-slate-500">Digital Investment Bank</p>
+            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-slate-500">Command Platform</p>
           </div>
         </Link>
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-2 py-3">
           {NAV_SECTIONS.map((section) => (
-            <div key={section.label} className="mb-3">
-              <p className="mb-1 px-2 font-mono text-[0.5rem] font-bold uppercase tracking-[0.18em] text-slate-600">
+            <div key={section.label} className="mb-4">
+              <p className="mb-1.5 px-2 font-mono text-[0.5rem] font-bold uppercase tracking-[0.18em] text-slate-600">
                 {section.label}
               </p>
-              {section.items.map((item: any) => {
+              {section.items.map((item) => {
                 const Icon = item.icon;
-                const hasChildren = item.children && item.children.length > 0;
-                const isOpen = openDropdown === item.label;
                 const active = location === item.href || location.startsWith(item.href + "/");
-                const childActive = hasChildren && item.children.some((c: any) => location === c.href);
-
-                if (hasChildren) {
-                  return (
-                    <div key={item.label}>
-                      <button
-                        onClick={() => setOpenDropdown(isOpen ? null : item.label)}
-                        className={`mb-0.5 flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-all ${
-                          isOpen || childActive
-                            ? "bg-cyan-400/10 text-cyan-200"
-                            : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                        }`}
-                      >
-                        <span className="flex items-center gap-2.5">
-                          <Icon size={14} className={isOpen || childActive ? "text-cyan-300" : "text-slate-500"} />
-                          <span className="font-mono text-[0.68rem] uppercase tracking-[0.06em]">{item.label}</span>
-                        </span>
-                        <ChevronDown size={12} className={`transition-transform ${isOpen ? "rotate-180" : ""} text-slate-500`} />
-                      </button>
-                      {isOpen && (
-                        <div className="ml-5 border-l border-white/5 pl-2">
-                          {item.children.map((child: any) => {
-                            const CIcon = child.icon;
-                            const cActive = location === child.href;
-                            return (
-                              <Link
-                                key={child.href}
-                                href={child.href}
-                                className={`mb-0.5 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-all ${
-                                  cActive
-                                    ? "bg-cyan-400/15 text-cyan-200"
-                                    : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
-                                }`}
-                              >
-                                <CIcon size={12} className={cActive ? "text-cyan-300" : "text-slate-600"} />
-                                <span className="font-mono text-[0.62rem] uppercase tracking-[0.06em]">{child.label}</span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`mb-0.5 flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs transition-all ${
+                    className={`mb-0.5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs transition-all ${
                       active
                         ? "bg-cyan-400/15 text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.1)]"
                         : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
