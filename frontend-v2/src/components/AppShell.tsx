@@ -47,7 +47,7 @@ const NAV_SECTIONS = [
     label: "CREDIT & RATING",
     items: [
       { label: "Credit Underwriting", href: "/credit", icon: Scale },
-      { label: "Rating / Mirror Agents", href: "/rating", icon: BarChart3 },
+      { label: "Rating & Submission", href: "/rating", icon: BarChart3 },
     ],
   },
   {
