@@ -40,7 +40,6 @@ const NAV_SECTIONS = [
     items: [
       { label: "Deal Input", href: "/deal-input-v4", icon: Briefcase },
       { label: "GENIE Structuring", href: "/bond-desk", icon: Landmark },
-      { label: "Command Center", href: "/command-center", icon: Radio },
       { label: "Operations / Pipeline", href: "/operations/deals", icon: Building2 },
     ],
   },
