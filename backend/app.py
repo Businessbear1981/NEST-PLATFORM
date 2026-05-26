@@ -67,6 +67,13 @@ from agents.quantum import QuantumAgent
 from agents.sentinel import SentinelAgent
 from agents.surety_scout import SuretyScoutAgent
 from agents.vector_agent import VectorAgent
+from agents.bernard import BernardAgent
+from routes.desks import desks_bp
+from routes.emma import emma_bp
+from routes.intelligence_engine_api import intel_engine_bp
+from routes.workflow import workflow_bp
+from routes.counterparties import counterparties_bp
+from routes.mirror_agents import mirror_bp
 
 
 def create_app():
@@ -100,6 +107,7 @@ def create_app():
     app.config["ACTIVITY"] = ActivityFeed()
     from services.treasury_engine import TreasuryEngine
     app.config["TREASURY_ENGINE"] = TreasuryEngine()
+    app.config["BERNARD"] = BernardAgent()
     from services.phoenix_engine import PhoenixEngine
     app.config["PHOENIX_ENGINE"] = PhoenixEngine()
 
@@ -146,6 +154,14 @@ def create_app():
     app.config["SCANNER"] = AutonomousScanner(convergence_engine=app.config["CONVERGENCE_ENGINE"])
     app.register_blueprint(scanner_bp, url_prefix="/api/scanner")
 
+    # Operating Framework v1 — Desk Registry + Bernard CEO + EMMA Intelligence
+    app.register_blueprint(desks_bp, url_prefix="/api/desks")
+    app.register_blueprint(emma_bp, url_prefix="/api/emma")
+    app.register_blueprint(intel_engine_bp, url_prefix="/api/intel")
+    app.register_blueprint(workflow_bp, url_prefix="/api/workflow")
+    app.register_blueprint(counterparties_bp, url_prefix="/api/counterparties")
+    app.register_blueprint(mirror_bp, url_prefix="/api/rating")
+
     @app.get("/api/metrics")
     def metrics():
         from routes.deals import _deals, _bonds, _lock
@@ -165,7 +181,7 @@ def create_app():
                 "total_pipeline_usd": total_pipeline,
                 "bond_structures": bond_count,
                 "agents_active": 16,
-                "agents_total": 16,
+                "agents_total": len(__import__("agents.desk_registry", fromlist=["get_all_agents"]).get_all_agents()),
             },
             "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
         })

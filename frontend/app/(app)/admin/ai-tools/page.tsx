@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API = process.env.NEXT_PUBLIC_API_URL || '';
 
 const PLUGIN_META: Record<string, { label: string; color: string; logo: string; category: string }> = {
   claude:           { label: 'Claude',           color: '#D4A574', logo: 'C',  category: 'AI Intelligence' },
