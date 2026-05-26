@@ -25,12 +25,14 @@ interface Message {
 }
 
 const SUGGESTED_PROMPTS = [
-  "Oi Bernard, run credit on this deal",
-  "What's the 10yr at today bruv?",
-  "Draft me an investor teaser yeah",
-  "Bernard arrange the surety package",
-  "Pull today's building permits",
-  "How's our pipeline looking mate?",
+  "Run a dual rating prediction on this deal",
+  "Size an M&A acquisition bond",
+  "What desks are involved in a new deal?",
+  "Run credit analysis — DSCR and leverage",
+  "Match investors for this offering",
+  "What's the 10yr Treasury at today?",
+  "Draft an investor teaser",
+  "Explain the Universal Credit Policy",
 ];
 
 export default function BernardConcierge() {
@@ -40,7 +42,7 @@ export default function BernardConcierge() {
     {
       id: "welcome",
       role: "bernard",
-      content: "Right then. I'm Bernard. I do the thinking so you don't have to — and let's be honest, that's probably for the best innit? Credit analysis, memos, market data, surety packages, investor outreach — whatever you need. I'll even explain it slow enough for you to follow. Go on then, what d'you need bruv?",
+      content: "Bernard here — CEO and platform orchestrator for NEST Advisors. 75 agents across 14 desks, all reporting to me. Credit analysis, bond sizing, dual rating predictions, investor matching, deal structuring, EMMA intelligence — I route to the right desk and give you the answer. What do you need?",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -48,8 +50,11 @@ export default function BernardConcierge() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const routeMutation = trpc.powerstrip.route.useMutation();
+  const bernardMutation = trpc.bernard.ask.useMutation();
   const marketRatesMutation = trpc.powerstrip.bondPricing.useMutation();
   const ratingMutation = trpc.ratingEsg.ratingAssess.useMutation();
+  const mirrorMutation = trpc.mirror.dual.useMutation();
+  const sizingMutation = trpc.intel.size.useMutation();
   const matchMutation = trpc.hawkeye.match.useMutation();
   const teaserMutation = trpc.hawkeye.teaser.useMutation();
   const scoutMutation = trpc.eagleeye.scout.useMutation();
@@ -110,6 +115,51 @@ Respond using the REAL data above. Be Bernard. Riff on it. Suggest next moves. D
     // Bernard detects intent, fires the right backend action,
     // then wraps results in his personality.
     const lower = msg.toLowerCase();
+
+    // ACTION: Mirror Agent dual rating prediction (V4)
+    if (lower.match(/mirror.*agent|predict.*rating|moody.*s&p|dual.*rating|what.*rating|rate this/)) {
+      mirrorMutation.mutate({
+        sector: "senior_living", dscr: 1.35, leverage: 4.2, revenue: 25_000_000, ebitda: 4_000_000,
+        equity_pct: 0.30, enhancement: "none", management_quality: "strong",
+        market_position: "satisfactory", revenue_diversity: "moderate", days_cash_on_hand: 120,
+      }, {
+        onSuccess: (data: any) => {
+          const m = data.moodys?.predicted_rating || "N/A";
+          const s = data.sp?.predicted_rating || "N/A";
+          fireAI(msg, `Mirror Agent dual prediction:\nMoody's: ${m} (composite ${data.moodys?.scorecard?.composite_score})\nS&P: ${s} (anchor ${data.sp?.anchor})\n\nStructural levers available. Respond with analysis.`);
+        },
+        onError: () => addBernardMessage("Mirror Agents are offline. Try again."),
+      });
+      return;
+    }
+
+    // ACTION: Bond sizing via Intelligence Engine (V4)
+    if (lower.match(/size.*bond|size.*deal|how.*big|what.*bond.*amount|sources.*uses|s&u/)) {
+      sizingMutation.mutate({
+        deal_type: "ma_acquisition", ebitda: 4_000_000, sector: "business_services",
+        acquisition_multiple: 7.0, sponsor_equity_pct: 0.30,
+      }, {
+        onSuccess: (data: any) => {
+          const bond = data.capital_structure?.senior_bond || 0;
+          const ev = data.valuation?.enterprise_value || 0;
+          const grade = data.credit?.grade || "N/A";
+          fireAI(msg, `Intelligence Engine sizing result:\nEV: $${(ev/1e6).toFixed(1)}M | Bond: $${(bond/1e6).toFixed(1)}M | Grade: ${grade} | DSCR: ${data.credit?.dscr}x\nS&U balanced: ${data.sources_and_uses?.balanced}\n\nRespond with this data.`);
+        },
+        onError: () => addBernardMessage("Intelligence Engine offline. Try again."),
+      });
+      return;
+    }
+
+    // ACTION: Ask Bernard CEO directly (V4) — for firm/platform questions
+    if (lower.match(/nest|platform|desk|agent|workflow|pipeline|firm|org|structure|how.*work|what.*is/)) {
+      bernardMutation.mutate({ question: msg }, {
+        onSuccess: (data: any) => {
+          addBernardMessage(data.response || "No response from Bernard CEO.", data.routed_to ? `routed: ${data.routed_to}` : undefined);
+        },
+        onError: () => addBernardMessage("Bernard CEO connection failed. Falling back to general AI."),
+      });
+      return;
+    }
 
     // ACTION: Run credit / rating analysis
     if (lower.match(/credit|dscr|ltv|rating|score|grade|maxwell/)) {
