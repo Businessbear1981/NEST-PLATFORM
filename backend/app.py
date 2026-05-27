@@ -80,6 +80,7 @@ from routes.doc_ingestion import doc_ingestion_bp
 from routes.preflight import preflight_bp
 from routes.client_portal import client_portal_bp
 from routes.bd import bd_bp
+from routes.bernard import bernard_bp
 
 
 def create_app():
@@ -173,6 +174,7 @@ def create_app():
     app.register_blueprint(preflight_bp, url_prefix="/api/preflight")
     app.register_blueprint(client_portal_bp, url_prefix="/api/client")
     app.register_blueprint(bd_bp, url_prefix="/api/bd")
+    app.register_blueprint(bernard_bp, url_prefix="/api/bernard")
 
     # Seed EMMA with real bond structures on startup
     from services.emma_seed_data import seed_emma_database
