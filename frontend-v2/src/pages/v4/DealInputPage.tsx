@@ -13,7 +13,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Single-page form — no tabs needed
 import { trpc } from "@/lib/trpc";
 
 // ── Deal Types (Use Case Manual template) ─────────────────────
@@ -92,7 +92,6 @@ const labelClass = "block font-mono text-[0.6rem] uppercase tracking-wider text-
 const sectionClass = "rounded-[1.25rem] border border-slate-700/60 bg-[#0D2218]/80 p-5";
 
 export default function DealInputPage() {
-  const [activeTab, setActiveTab] = useState("deal");
   const [result, setResult] = useState<any>(null);
 
   // ── Deal Type ──────────────────────────────────
@@ -149,9 +148,88 @@ export default function DealInputPage() {
 
   const selectedSector = SECTORS.find((s) => s.value === sector);
 
+  // Auto-select bond type and amortization based on deal type + sector
+  // Per Bible: bond type is driven by tax status, issuer type, and use case
+  function autoSelectDefaults(dt: string, sec: string) {
+    setDealType(dt);
+    // Tax-exempt 501(c)(3) sectors
+    const taxExemptSectors = ["senior_living", "hospitals", "charter_schools", "higher_education"];
+    // PAB 142 sectors
+    const pabSectors = ["affordable_multifamily", "data_centers", "solid_waste", "water_sewer"];
+
+    if (dt === "ma_acquisition") {
+      setBondType("taxable_senior_secured");
+      setAmortType("io_then_amort");
+      setTenorYears("7");
+      setIoPeriodMonths("18");
+      setNcPeriod("3");
+      setDscrCovenant("1.20");
+      setLeverageCeiling("5.5");
+      setCovenantHolidayMonths("18");
+    } else if (dt === "construction") {
+      if (taxExemptSectors.includes(sec)) setBondType("tax_exempt_501c3");
+      else if (pabSectors.includes(sec)) setBondType("tax_exempt_pab_142");
+      else setBondType("project_finance");
+      setAmortType("io_then_amort");
+      setTenorYears("30");
+      setIoPeriodMonths("24");
+      setNcPeriod("10");
+      setDscrCovenant("1.20");
+    } else if (dt === "working_capital") {
+      setBondType("taxable_corporate");
+      setAmortType("bullet");
+      setTenorYears("3");
+      setNcPeriod("2");
+      setDscrCovenant("1.15");
+    } else if (dt === "equipment") {
+      setBondType("taxable_senior_secured");
+      setAmortType("level_debt_service");
+      setTenorYears("7");
+      setNcPeriod("2");
+    } else if (dt === "real_estate") {
+      if (pabSectors.includes(sec)) setBondType("tax_exempt_pab_142");
+      else if (taxExemptSectors.includes(sec)) setBondType("tax_exempt_501c3");
+      else setBondType("project_finance");
+      setAmortType("level_debt_service");
+      setTenorYears("30");
+      setNcPeriod("10");
+      setDscrCovenant("1.20");
+    }
+  }
+
+  const [pipelineResult, setPipelineResult] = useState<any>(null);
+  const [runningPipeline, setRunningPipeline] = useState(false);
+
   const sizeMutation = trpc.intel.size.useMutation({
-    onSuccess: (data) => { setResult(data); setActiveTab("result"); },
+    onSuccess: (data) => { setResult(data); },
   });
+
+  async function runFullPipeline() {
+    setRunningPipeline(true);
+    try {
+      const body: Record<string, unknown> = {
+        deal_type: dealType, sector, sponsor_type: sponsorType,
+        name: dealName, borrower: borrowerName, sponsor: sponsorName,
+        sponsor_experience_years: parseInt(sponsorExperience),
+        equity_pct: parseFloat(sponsorEquityPct) / 100,
+        enhancement, ebitda: parseFloat(ebitda) || 0,
+        revenue: parseFloat(revenue) || 0,
+        acquisition_multiple: parseFloat(acquisitionMultiple) || 0,
+        rollover_equity: parseFloat(rolloverEquity) || 0,
+        seller_note: parseFloat(sellerNote) || 0,
+        net_debt_at_close: parseFloat(netDebt) || 0,
+        transaction_expenses: parseFloat(txExpenses) || 0,
+        management_quality: "strong", market_position: "satisfactory",
+        revenue_diversity: "moderate", days_cash_on_hand: 120,
+      };
+      const res = await fetch("/api/deal-flow/run", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.success) setPipelineResult(data.data);
+    } finally { setRunningPipeline(false); }
+  }
 
   function runSizing() {
     const base: Record<string, unknown> = {
@@ -179,16 +257,7 @@ export default function DealInputPage() {
     sizeMutation.mutate(base);
   }
 
-  const tabs = [
-    { key: "deal", label: "1. Deal Type" },
-    { key: "borrower", label: "2. Borrower" },
-    { key: "financials", label: "3. Financials" },
-    { key: "bond", label: "4. Bond Type" },
-    { key: "structure", label: "5. Structure" },
-    { key: "covenants", label: "6. Covenants" },
-    { key: "enhancement", label: "7. Enhancement" },
-    { key: "result", label: "8. Result" },
-  ];
+  // Single-page form — no tabs
 
   return (
     <div className="space-y-6">
@@ -203,21 +272,13 @@ export default function DealInputPage() {
         </div>
       </section>
 
-      {/* Tab Navigation */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex flex-wrap gap-1">
-          {tabs.map((t) => (
-            <TabsTrigger key={t.key} value={t.key} className="text-xs">{t.label}</TabsTrigger>
-          ))}
-        </TabsList>
-
-        {/* TAB 1: Deal Type */}
-        <TabsContent value="deal" className="mt-6 space-y-4">
+      {/* Single-page form — all sections visible with dropdowns */}
+      <div className="space-y-5">
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Deal Type</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {DEAL_TYPES.map((dt) => (
-                <button key={dt.value} onClick={() => setDealType(dt.value)}
+                <button key={dt.value} onClick={() => autoSelectDefaults(dt.value, sector)}
                   className={`text-left rounded-xl border p-3 transition ${dealType === dt.value ? "border-[#C4A048]/50 bg-[#C4A048]/10" : "border-white/10 bg-white/[0.03] hover:border-white/20"}`}>
                   <p className="text-sm font-semibold text-white">{dt.label}</p>
                   <p className="text-[0.65rem] text-slate-400 mt-1">{dt.description}</p>
@@ -247,10 +308,8 @@ export default function DealInputPage() {
               </div>
             )}
           </div>
-        </TabsContent>
 
-        {/* TAB 2: Borrower */}
-        <TabsContent value="borrower" className="mt-6">
+        {/* Borrower */}
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Borrower & Sponsor Profile</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -266,10 +325,8 @@ export default function DealInputPage() {
               <div><label className={labelClass}>Sponsor AUM / Net Worth ($)</label><input type="number" value={sponsorAUM} onChange={(e) => setSponsorAUM(e.target.value)} placeholder="800000000" className={inputClass} /></div>
             </div>
           </div>
-        </TabsContent>
 
-        {/* TAB 3: Financials — dynamic by deal type */}
-        <TabsContent value="financials" className="mt-6">
+        {/* Financials — dynamic by deal type */}
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Financial Inputs — {DEAL_TYPES.find((d) => d.value === dealType)?.label}</h3>
 
@@ -315,10 +372,8 @@ export default function DealInputPage() {
               </div>
             )}
           </div>
-        </TabsContent>
 
-        {/* TAB 4: Bond Type */}
-        <TabsContent value="bond" className="mt-6">
+        {/* Bond Type */}
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Bond Type Selection</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -331,10 +386,8 @@ export default function DealInputPage() {
               ))}
             </div>
           </div>
-        </TabsContent>
 
-        {/* TAB 5: Structure */}
-        <TabsContent value="structure" className="mt-6 space-y-4">
+        {/* Structure */}
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Amortization</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -363,10 +416,8 @@ export default function DealInputPage() {
               <label className="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" checked={putOption} onChange={(e) => setPutOption(e.target.checked)} /> Investor Put Option</label>
             </div>
           </div>
-        </TabsContent>
 
-        {/* TAB 6: Covenants */}
-        <TabsContent value="covenants" className="mt-6">
+        {/* Covenants */}
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Covenant Package</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -380,10 +431,8 @@ export default function DealInputPage() {
               )}
             </div>
           </div>
-        </TabsContent>
 
-        {/* TAB 7: Enhancement */}
-        <TabsContent value="enhancement" className="mt-6">
+        {/* Enhancement */}
           <div className={sectionClass}>
             <h3 className="text-sm font-semibold text-[#C4A048] mb-4">Credit Enhancement</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -402,11 +451,10 @@ export default function DealInputPage() {
               {sizeMutation.isPending ? "Running Intelligence Engine..." : "Run Bond Sizing →"}
             </Button>
           </div>
-        </TabsContent>
 
-        {/* TAB 8: Result */}
-        <TabsContent value="result" className="mt-6 space-y-4">
-          {result && (
+        {/* Results — appears after sizing runs */}
+        {result && (
+          <div className="space-y-4">
             <>
               {/* Valuation */}
               {result.valuation && (
@@ -478,10 +526,57 @@ export default function DealInputPage() {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Run Full Pipeline */}
+              <Card className="border-[#C4A048]/20 bg-[#0D2218]">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-white">Run Full Deal Pipeline</p>
+                      <p className="text-xs text-slate-400 mt-1">Intake → Credit → Rating → Structuring — all desks process this deal</p>
+                    </div>
+                    <Button onClick={runFullPipeline} disabled={runningPipeline} className="bg-[#C4A048] text-[#030A06] hover:bg-[#E8C87A]">
+                      {runningPipeline ? "Running Pipeline..." : "Run Full Pipeline →"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pipeline Results */}
+              {pipelineResult && (
+                <Card className="border-emerald-500/20 bg-[#0D2218]">
+                  <CardHeader><CardTitle className="text-emerald-400 text-sm">Pipeline Complete — {pipelineResult.pipeline_summary?.desks_completed?.length || 0} desks processed</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-4 gap-4 mb-4">
+                      <div><p className="font-mono text-[0.6rem] uppercase text-slate-500">Bond</p><p className="font-mono text-lg text-[#C4A048]">${((pipelineResult.bond_amount || 0) / 1e6).toFixed(1)}M</p></div>
+                      <div><p className="font-mono text-[0.6rem] uppercase text-slate-500">Grade</p><p className="font-mono text-lg text-white">{pipelineResult.credit_grade}</p></div>
+                      <div><p className="font-mono text-[0.6rem] uppercase text-slate-500">Moody's</p><p className="font-mono text-lg text-white">{pipelineResult.predicted_moodys || "—"}</p></div>
+                      <div><p className="font-mono text-[0.6rem] uppercase text-slate-500">Covenants</p><p className="font-mono text-lg text-white">{pipelineResult.covenant_package?.dscr_covenant || "—"}x DSCR</p></div>
+                    </div>
+                    {pipelineResult.credit_memo && (
+                      <div className="border-t border-white/10 pt-3 mt-3">
+                        <p className="font-mono text-[0.6rem] uppercase text-slate-500 mb-2">Credit Memo</p>
+                        <pre className="text-xs text-slate-300 whitespace-pre-wrap font-mono leading-relaxed max-h-48 overflow-y-auto">{pipelineResult.credit_memo}</pre>
+                      </div>
+                    )}
+                    {pipelineResult.structural_levers && (
+                      <div className="border-t border-white/10 pt-3 mt-3">
+                        <p className="font-mono text-[0.6rem] uppercase text-slate-500 mb-2">Structural Levers</p>
+                        {pipelineResult.structural_levers.map((l: any, i: number) => (
+                          <div key={i} className="flex items-center gap-2 py-1 text-xs text-slate-300">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#C4A048]" />
+                            {l.lever} — {l.notches || l.impact}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </>
-          )}
-        </TabsContent>
-      </Tabs>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
