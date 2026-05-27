@@ -44,6 +44,9 @@ SECTOR_MULTIPLES = {
     "hospitality": {"range": (8, 12), "metric": "EBITDA"},
     "data_centers": {"range": (12, 20), "metric": "EBITDA"},
     "real_estate": {"range": (10, 16), "metric": "NOI", "cap_rate_range": (5.0, 8.0)},
+    "biotech_pharma": {"range": (12, 25), "metric": "EBITDA", "note": "Pre-revenue valued on pipeline/platform"},
+    "defense_gov": {"range": (10, 18), "metric": "EBITDA", "note": "Contract-driven, recurring revenue"},
+    "technology": {"range": (10, 20), "metric": "EBITDA", "alt_metric": "ARR", "alt_range": (5, 15)},
 }
 
 SECTOR_LEVERAGE_CAPACITY = {
@@ -281,6 +284,8 @@ class IntelligenceEngine:
             return self._size_equipment(inputs)
         elif deal_type == "real_estate":
             return self._size_real_estate(inputs)
+        elif deal_type in ("equity_raise", "equity", "m_and_a_equity"):
+            return self.size_equity_raise(inputs)
         return {"error": f"Unknown deal type: {deal_type}"}
 
     def _size_construction(self, inputs: dict) -> dict:
@@ -299,6 +304,127 @@ class IntelligenceEngine:
             "note": "Full spec pending Use Case Manual Ch.2",
             "generated_at": datetime.utcnow().isoformat(),
         }
+
+    def size_equity_raise(self, inputs: dict) -> dict:
+        """Size an equity raise / M&A investment — learned from HBO2 deal.
+
+        Handles: primary equity, secondary purchases, control vs minority,
+        MOIC/IRR projections, cap table, liquidation preferences.
+        """
+        pre_money = inputs.get("pre_money_valuation", 0)
+        primary_equity = inputs.get("primary_equity", 0)
+        secondary = inputs.get("secondary_purchases", 0)
+        total_investment = primary_equity + secondary
+        post_money = pre_money + primary_equity
+
+        # Ownership
+        primary_ownership = primary_equity / post_money if post_money else 0
+        total_ownership = (primary_equity + secondary) / post_money if post_money else 0
+        control = total_ownership > 0.50
+
+        # Revenue/EBITDA projections
+        revenue_at_maturity = inputs.get("revenue_at_maturity", 0)
+        ebitda_at_maturity = inputs.get("ebitda_at_maturity", 0)
+        ebitda_margin = ebitda_at_maturity / revenue_at_maturity if revenue_at_maturity else 0
+        exit_multiple = inputs.get("exit_multiple", 12.0)
+        hold_period = inputs.get("hold_period_years", 5)
+
+        # Exit valuation
+        exit_ev = ebitda_at_maturity * exit_multiple
+        investor_exit_value = exit_ev * total_ownership
+        moic = investor_exit_value / total_investment if total_investment else 0
+        irr = (moic ** (1 / hold_period) - 1) if hold_period and moic > 0 else 0
+
+        # Downside scenario
+        downside_multiple = inputs.get("downside_multiple", 8.0)
+        downside_ev = ebitda_at_maturity * 0.6 * downside_multiple  # 60% of base EBITDA
+        downside_investor = downside_ev * total_ownership
+        downside_moic = downside_investor / total_investment if total_investment else 0
+
+        # Upside scenario
+        upside_multiple = inputs.get("upside_multiple", 15.0)
+        upside_ev = ebitda_at_maturity * 1.5 * upside_multiple  # 150% of base EBITDA
+        upside_investor = upside_ev * total_ownership
+        upside_moic = upside_investor / total_investment if total_investment else 0
+
+        # Use of proceeds
+        uses = inputs.get("use_of_proceeds", {})
+        if not uses and primary_equity:
+            uses = {
+                "facility_construction": round(primary_equity * 0.40),
+                "rd_and_trials": round(primary_equity * 0.30),
+                "working_capital": round(primary_equity * 0.20),
+                "reserves": round(primary_equity * 0.10),
+            }
+
+        return {
+            "use_case": "equity_raise",
+            "deal_type": "control_equity" if control else "minority_equity",
+            "valuation": {
+                "pre_money": pre_money,
+                "post_money": post_money,
+                "primary_equity": primary_equity,
+                "secondary_purchases": secondary,
+                "total_investment": total_investment,
+            },
+            "ownership": {
+                "primary_pct": round(primary_ownership * 100, 1),
+                "total_pct": round(total_ownership * 100, 1),
+                "control": control,
+                "governance": "Full board control + capital allocation" if control else "Board seats + protective provisions",
+            },
+            "projections": {
+                "revenue_at_maturity": revenue_at_maturity,
+                "ebitda_at_maturity": ebitda_at_maturity,
+                "ebitda_margin": round(ebitda_margin * 100, 1),
+                "exit_multiple": exit_multiple,
+                "hold_period_years": hold_period,
+            },
+            "returns": {
+                "base_case": {
+                    "exit_ev": round(exit_ev),
+                    "investor_value": round(investor_exit_value),
+                    "moic": round(moic, 1),
+                    "irr": round(irr * 100, 1),
+                },
+                "downside": {
+                    "exit_ev": round(downside_ev),
+                    "investor_value": round(downside_investor),
+                    "moic": round(downside_moic, 1),
+                },
+                "upside": {
+                    "exit_ev": round(upside_ev),
+                    "investor_value": round(upside_investor),
+                    "moic": round(upside_moic, 1),
+                },
+            },
+            "use_of_proceeds": uses,
+            "risk_factors": self._equity_risk_factors(inputs),
+            "generated_at": datetime.utcnow().isoformat(),
+        }
+
+    def _equity_risk_factors(self, inputs: dict) -> list[dict]:
+        """Generate risk factors for equity deals."""
+        risks = []
+        sector = inputs.get("sector", "")
+
+        if "biotech" in sector or "pharma" in sector or inputs.get("fda_required"):
+            risks.append({"risk": "Regulatory/FDA approval risk", "severity": "high", "mitigant": "Late-stage platform, defined approval pathway"})
+            risks.append({"risk": "Clinical trial execution risk", "severity": "high", "mitigant": "Manufacturing facility de-risks supply chain"})
+
+        if inputs.get("pre_revenue", True):
+            risks.append({"risk": "Pre-revenue — no operating cash flow", "severity": "high", "mitigant": "Capital deployed to defined milestones"})
+
+        if inputs.get("single_product", True):
+            risks.append({"risk": "Single product concentration", "severity": "medium", "mitigant": "Platform technology with multiple applications"})
+
+        if inputs.get("government_contract_dependent"):
+            risks.append({"risk": "Government/DOD contract dependency", "severity": "medium", "mitigant": "Critical infrastructure designation, bipartisan support"})
+
+        risks.append({"risk": "Execution risk on facility completion", "severity": "medium", "mitigant": "Defined budget and timeline, experienced operators"})
+        risks.append({"risk": "Market/exit timing risk", "severity": "medium", "mitigant": "Multiple exit paths: IPO, strategic sale, sponsor recap"})
+
+        return risks
 
     def _size_working_capital(self, inputs: dict) -> dict:
         """Working Capital bond sizing (Ch.3 template — spec pending)."""
