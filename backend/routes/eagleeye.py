@@ -6,13 +6,16 @@ from flask import Blueprint, jsonify, request
 from services.auth import require_auth
 from datetime import datetime
 import threading
-from services.auth import require_auth
+from services.deals import DealsRegistry
+from services.eagleeye_intelligence import EagleEyeIntelligence
 
 eagleeye_bp = Blueprint("eagleeye", __name__)
 
 _signals = []
 _scout_runs = []
 _lock = threading.Lock()
+_deals = DealsRegistry()
+_intelligence = EagleEyeIntelligence()
 
 # Seed some realistic signals
 _signals = [
@@ -198,3 +201,119 @@ def stats():
         "converted": converted,
         "scout_runs": len(_scout_runs),
     })
+
+
+# ── Cross-Deal Intelligence Engine ──────────────────────────────
+
+@eagleeye_bp.route("/intelligence/report", methods=["GET"])
+def intelligence_report():
+    """Full cross-deal intelligence report across the entire pipeline."""
+    deals = _deals.list_active(blind=False)
+    report = _intelligence.generate_intelligence_report(deals)
+    return _ok(report)
+
+
+@eagleeye_bp.route("/intelligence/patterns", methods=["GET"])
+def intelligence_patterns():
+    """Cross-deal pattern detection — sectors, geography, size tiers."""
+    deals = _deals.list_active(blind=False)
+    patterns = _intelligence.detect_cross_deal_patterns(deals)
+    return _ok({"patterns": patterns, "deal_count": len(deals)})
+
+
+@eagleeye_bp.route("/intelligence/bond-angles", methods=["POST"])
+def intelligence_bond_angles():
+    """Find bond structuring angles for a specific deal."""
+    body = request.get_json() or {}
+    deal_id = body.get("deal_id")
+    deal = body.get("deal")
+
+    if deal:
+        # Ad-hoc analysis on a deal payload
+        angles = _intelligence.find_bond_angles(deal)
+        return _ok(angles)
+
+    if not deal_id:
+        return _err("Provide deal_id or deal object")
+
+    deal = _deals.get(deal_id)
+    if not deal:
+        return _err("Deal not found", 404)
+
+    angles = _intelligence.find_bond_angles(deal)
+    return _ok(angles)
+
+
+@eagleeye_bp.route("/intelligence/ipo-tracker", methods=["POST"])
+def intelligence_ipo_tracker():
+    """Pre-IPO trajectory analysis for a deal."""
+    body = request.get_json() or {}
+    deal_id = body.get("deal_id")
+
+    if not deal_id:
+        return _err("Provide deal_id")
+
+    deal = _deals.get(deal_id)
+    if not deal:
+        return _err("Deal not found", 404)
+
+    trajectory = _intelligence.assess_ipo_trajectory(deal)
+    return _ok(trajectory)
+
+
+@eagleeye_bp.route("/intelligence/scores", methods=["GET"])
+def intelligence_scores():
+    """Score all active deals on attractiveness — ranked list."""
+    deals = _deals.list_active(blind=False)
+    scores = [_intelligence.score_deal_attractiveness(d) for d in deals]
+    scores.sort(key=lambda s: s["score"], reverse=True)
+    return _ok({
+        "scores": scores,
+        "deal_count": len(scores),
+        "average_score": round(sum(s["score"] for s in scores) / max(len(scores), 1), 1),
+    })
+
+
+@eagleeye_bp.route("/pipeline", methods=["GET"])
+def pipeline_view():
+    """Enhanced pipeline — deals + intelligence scores + patterns."""
+    deals = _deals.list_active(blind=False)
+    scores_map = {}
+    for d in deals:
+        s = _intelligence.score_deal_attractiveness(d)
+        scores_map[d["id"]] = s
+
+    enriched = []
+    for d in deals:
+        entry = dict(d)
+        entry["intelligence"] = scores_map.get(d["id"], {})
+        enriched.append(entry)
+
+    enriched.sort(key=lambda x: x.get("intelligence", {}).get("score", 0), reverse=True)
+
+    patterns = _intelligence.detect_cross_deal_patterns(deals)
+
+    return _ok({
+        "deals": enriched,
+        "deal_count": len(enriched),
+        "total_pipeline_usd": sum(d.get("size_usd", 0) for d in deals),
+        "patterns": patterns,
+    })
+
+
+@eagleeye_bp.route("/intelligence/pitch", methods=["POST"])
+def intelligence_pitch():
+    """Generate a client pitch for a specific deal, powered by cross-deal intelligence."""
+    body = request.get_json() or {}
+    deal_id = body.get("deal_id")
+
+    if not deal_id:
+        return _err("Provide deal_id")
+
+    deal = _deals.get(deal_id)
+    if not deal:
+        return _err("Deal not found", 404)
+
+    all_deals = _deals.list_active(blind=False)
+    pitch = _intelligence.generate_deal_pitch(deal, all_deals)
+    return _ok(pitch)
