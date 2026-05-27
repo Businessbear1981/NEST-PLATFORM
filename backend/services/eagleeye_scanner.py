@@ -35,6 +35,11 @@ from datetime import datetime
 from typing import Any
 
 from agents._claude import complete
+from services.operator_intelligence import (
+    OperatorIntelligence,
+    OPERATOR_DATABASE,
+    MULTIFAMILY_MARKET_BENCHMARKS,
+)
 
 
 SIGNAL_TYPES = {
@@ -371,6 +376,73 @@ class EagleEyeScanner:
             signal["routed_solutions"] = solutions
 
         return signals
+
+    # ── Operator-Targeted Scanning ───────────────────────────────
+
+    def scan_operator(self, operator_key: str) -> dict:
+        """Run a targeted scan on a specific operator using OperatorIntelligence.
+
+        Combines operator portfolio analysis with EagleEye signal detection
+        for a complete picture of financing opportunities.
+        """
+        oi = OperatorIntelligence()
+        portfolio = oi.scan_operator_portfolio(operator_key)
+        if not portfolio.get("success"):
+            return portfolio
+
+        # Enrich with EagleEye signal detection on each known property
+        operator = OPERATOR_DATABASE.get(operator_key, {})
+        enriched_signals = []
+        for prop in operator.get("known_properties", []):
+            prop_data = {
+                "occupancy_pct": prop.get("occupancy", 0.85),
+                "loan_maturity_months": prop.get("loan_maturity_months", 24),
+                "dscr": prop.get("dscr", 1.3),
+                "construction_complete": prop.get("status") != "new_development",
+                "has_bridge_loan": prop.get("status") in ("expansion_planned",),
+            }
+            signals = self.detect_signals(prop_data)
+            if signals:
+                enriched_signals.append({
+                    "property": prop["name"],
+                    "location": prop.get("location", ""),
+                    "signals": signals,
+                })
+
+        portfolio["eagleeye_signals"] = enriched_signals
+        return portfolio
+
+    def scan_all_operators(self) -> dict:
+        """Scan all tracked operators and rank by pipeline value."""
+        oi = OperatorIntelligence()
+        results = []
+        for key in OPERATOR_DATABASE:
+            scan = oi.scan_operator_portfolio(key)
+            if scan.get("success"):
+                results.append({
+                    "operator_key": key,
+                    "operator_name": scan["operator"],
+                    "relationship_status": scan["relationship_status"],
+                    "total_pipeline_usd": scan["total_estimated_pipeline_usd"],
+                    "known_opportunities": len(scan["known_opportunities"]),
+                    "cross_sell_count": len(scan["cross_sell_opportunities"]),
+                })
+
+        results.sort(key=lambda r: r["total_pipeline_usd"], reverse=True)
+        return {
+            "scan_timestamp": datetime.utcnow().isoformat(),
+            "operators_tracked": len(results),
+            "total_pipeline_usd": sum(r["total_pipeline_usd"] for r in results),
+            "operators": results,
+        }
+
+    def get_market_benchmarks(self) -> dict:
+        """Return current multifamily market benchmarks for the intelligence engine."""
+        return {
+            "source": "NEST Operator Intelligence",
+            "as_of": datetime.utcnow().isoformat(),
+            "benchmarks": MULTIFAMILY_MARKET_BENCHMARKS,
+        }
 
     def _scan_source(self, source: str, sector: str, config: dict, markets: list[str] = None) -> list[dict]:
         """Scan a specific data source for a sector."""

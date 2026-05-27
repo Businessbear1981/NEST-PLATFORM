@@ -8,6 +8,8 @@ from datetime import datetime
 import threading
 from services.deals import DealsRegistry
 from services.eagleeye_intelligence import EagleEyeIntelligence
+from services.operator_intelligence import OperatorIntelligence
+from services.eagleeye_scanner import EagleEyeScanner
 
 eagleeye_bp = Blueprint("eagleeye", __name__)
 
@@ -16,6 +18,8 @@ _scout_runs = []
 _lock = threading.Lock()
 _deals = DealsRegistry()
 _intelligence = EagleEyeIntelligence()
+_operator_intel = OperatorIntelligence()
+_scanner = EagleEyeScanner()
 
 # Seed some realistic signals
 _signals = [
@@ -317,3 +321,59 @@ def intelligence_pitch():
     all_deals = _deals.list_active(blind=False)
     pitch = _intelligence.generate_deal_pitch(deal, all_deals)
     return _ok(pitch)
+
+
+# ── Operator Intelligence ─────────────────────────────────────────
+
+@eagleeye_bp.route("/operators", methods=["GET"])
+def list_operators():
+    """List all tracked operators with summary data."""
+    result = _scanner.scan_all_operators()
+    return _ok(result)
+
+
+@eagleeye_bp.route("/operators/<operator_key>", methods=["GET"])
+def get_operator(operator_key):
+    """Full portfolio scan for a specific operator."""
+    result = _scanner.scan_operator(operator_key)
+    if not result.get("success"):
+        return _err(result.get("error", "Operator not found"), 404)
+    return _ok(result)
+
+
+@eagleeye_bp.route("/operators/<operator_key>/pitch", methods=["GET"])
+def get_operator_pitch(operator_key):
+    """Generate an operator-specific pitch package."""
+    result = _operator_intel.generate_operator_pitch(operator_key)
+    if not result.get("success"):
+        return _err(result.get("error", "Operator not found"), 404)
+    return _ok(result)
+
+
+@eagleeye_bp.route("/operators/by-signal", methods=["GET"])
+def operators_by_signal():
+    """Find operators matching a specific signal type."""
+    signal_type = request.args.get("signal")
+    if not signal_type:
+        return _err("Provide 'signal' query param (construction_maturing, occupancy_below_benchmark, refi_opportunity, expansion_planned, distressed)")
+    results = _operator_intel.find_operators_by_signal(signal_type)
+    if results and isinstance(results[0], dict) and not results[0].get("success", True):
+        return _err(results[0].get("error", "Unknown signal type"))
+    return _ok({"signal_type": signal_type, "operators": results, "total": len(results)})
+
+
+@eagleeye_bp.route("/operators/learning-loop", methods=["POST"])
+def operator_learning_loop():
+    """Run self-learning loop across deals and docs for action items."""
+    deals = _deals.list_active(blind=False)
+    body = request.get_json() or {}
+    docs = body.get("docs", [])
+    result = _operator_intel.self_learning_loop(deals, docs)
+    return _ok(result)
+
+
+@eagleeye_bp.route("/benchmarks/multifamily", methods=["GET"])
+def multifamily_benchmarks():
+    """Return current multifamily market benchmarks."""
+    result = _scanner.get_market_benchmarks()
+    return _ok(result)
