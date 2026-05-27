@@ -11,12 +11,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const DEAL_TYPES = [
-  { value: "ma_acquisition", label: "M&A Acquisition", description: "Bond financing a merger or acquisition" },
-  { value: "construction", label: "Construction & Development", description: "New construction — senior living, multifamily, hospital" },
+  { value: "ma_acquisition", label: "M&A Acquisition", description: "Financing a merger or acquisition — bond, bank, or equity" },
+  { value: "construction", label: "Construction & Development", description: "New construction or substantial rehabilitation" },
   { value: "working_capital", label: "Working Capital", description: "Operating liquidity for an existing business" },
   { value: "equipment", label: "Equipment Finance", description: "Asset-backed financing matched to useful life" },
   { value: "real_estate", label: "Real Estate Acquisition", description: "Acquisition of stabilized real estate" },
-  { value: "refunding", label: "Refunding", description: "Refinancing existing bond debt at lower rates" },
+  { value: "refunding", label: "Refunding / Refinancing", description: "Refinancing existing debt at better terms" },
+  { value: "equity_raise", label: "Equity Raise / Capital Raise", description: "Equity placement — sponsor, LP, co-invest, or public" },
+  { value: "ci_lending", label: "C&I Lending", description: "Commercial & industrial term loan or revolver" },
+  { value: "bridge", label: "Bridge Financing", description: "Short-term bridge to permanent financing or sale" },
+  { value: "mezzanine", label: "Mezzanine / Subordinated Debt", description: "Junior capital — mezz, second lien, preferred equity" },
+  { value: "general_advisory", label: "General Advisory", description: "Evaluate the deal — we recommend the right capital solution" },
 ];
 
 const SECTORS = [
