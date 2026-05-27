@@ -13,105 +13,99 @@ type NavSection = {
 
 const DESK_NAV: NavSection[] = [
   {
-    label: 'ORCA',
+    label: 'COMMAND',
     items: [
       { label: 'Dashboard', href: '/dashboard' },
       { label: 'Bernard', href: '/admin/bernard' },
-      { label: 'Firm Review', href: '/admin/firm-review' },
+      { label: 'Pipeline', href: '/admin/deals' },
     ],
   },
   {
-    label: 'BOND DESK',
+    label: 'ORIGINATION',
+    items: [
+      { label: 'EagleEye Scout', href: '/admin/eagleeye' },
+      { label: 'Find Me', href: '/admin/eagleeye' },
+      { label: 'Operators', href: '/admin/eagleeye' },
+      { label: 'Heat Map', href: '/admin/ma' },
+      { label: 'Bullseye Pitch', href: '/admin/marketing' },
+      { label: 'Boxing Out', href: '/admin/construction' },
+    ],
+  },
+  {
+    label: 'INTAKE',
     items: [
       { label: 'Deal Entry', href: '/admin/bond-desk' },
-      { label: 'Deals', href: '/admin/deals' },
-      { label: 'Bond Intel', href: '/admin/bond-intel' },
-      { label: 'Modeling', href: '/admin/modeling' },
+      { label: 'Preflight Q&A', href: '/admin/credit' },
+      { label: 'Roots — Doc Upload', href: '/docs' },
+      { label: 'Doc Readiness', href: '/docs' },
     ],
   },
   {
-    label: 'CREDIT',
+    label: 'ANALYSIS',
     items: [
-      { label: 'Underwriting', href: '/admin/credit' },
+      { label: 'Credit / Underwriting', href: '/admin/credit' },
+      { label: 'Credit Policy', href: '/admin/compliance' },
+      { label: 'Modeling Studio', href: '/admin/modeling' },
+      { label: 'Feasibility Assembly', href: '/admin/modeling' },
       { label: 'Risk / Sentinel', href: '/admin/risk' },
-    ],
-  },
-  {
-    label: 'RATING',
-    items: [
-      { label: 'Mirror Agents', href: '/admin/rating' },
     ],
   },
   {
     label: 'STRUCTURING',
     items: [
-      { label: 'Studio', href: '/admin/structuring' },
+      { label: 'Bond Desk', href: '/admin/bond-desk' },
+      { label: 'Bond Intel', href: '/admin/bond-intel' },
+      { label: 'Pricing / Spreads', href: '/admin/structuring' },
+      { label: 'Enhancement', href: '/admin/surety' },
+      { label: 'Covenants', href: '/admin/compliance' },
     ],
   },
   {
-    label: 'DOCUMENTS',
+    label: 'RATING',
     items: [
-      { label: 'Vault', href: '/docs' },
-    ],
-  },
-  {
-    label: 'COMPLIANCE',
-    items: [
-      { label: 'NightVision', href: '/admin/compliance' },
-      { label: 'Forensic', href: '/admin/forensic' },
-    ],
-  },
-  {
-    label: 'ENHANCEMENT',
-    items: [
-      { label: 'Surety', href: '/admin/surety' },
+      { label: 'Rating Desk', href: '/admin/rating' },
+      { label: 'S&P / Moodys Package', href: '/admin/rating' },
     ],
   },
   {
     label: 'PLACEMENT',
     items: [
       { label: 'Hawkeye', href: '/admin/placement' },
-      { label: 'Lenders', href: '/admin/lenders' },
+      { label: 'Investor Book', href: '/admin/placement' },
+      { label: 'Bridge / Lenders', href: '/admin/lenders' },
+      { label: 'Private Placement', href: '/admin/placement' },
     ],
   },
   {
-    label: 'CONSTRUCTION',
+    label: 'CLOSING',
     items: [
-      { label: 'Draws & Tracker', href: '/admin/construction' },
+      { label: 'Document Checklist', href: '/docs' },
+      { label: 'Legal / Atticus', href: '/admin/licensing' },
+      { label: 'Cost Estimate / PO', href: '/admin/operations' },
+    ],
+  },
+  {
+    label: 'MONITORING',
+    items: [
+      { label: 'Surveillance', href: '/admin/surveillance' },
+      { label: 'Construction Draws', href: '/admin/construction' },
+      { label: 'Ramp Monitor', href: '/admin/construction' },
+      { label: 'NightVision', href: '/admin/compliance' },
+      { label: 'EMMA / Disclosure', href: '/admin/emma' },
+    ],
+  },
+  {
+    label: 'AUDIT & FEASIBILITY',
+    items: [
+      { label: 'Feasibility Desk', href: '/admin/modeling' },
+      { label: 'Audit Desk', href: '/admin/forensic' },
     ],
   },
   {
     label: 'OPERATIONS',
     items: [
-      { label: 'Admin', href: '/admin/operations' },
-      { label: 'Blockchain', href: '/admin/blockchain' },
-    ],
-  },
-  {
-    label: 'SURVEILLANCE',
-    items: [
-      { label: 'Refunding', href: '/admin/surveillance' },
-    ],
-  },
-  {
-    label: 'EAGLE EYE',
-    items: [
-      { label: 'Scout', href: '/admin/eagleeye' },
-      { label: 'M&A Intel', href: '/admin/ma' },
-      { label: 'Marketing', href: '/admin/marketing' },
-    ],
-  },
-  {
-    label: 'TREASURY',
-    items: [
-      { label: 'Fund', href: '/fund' },
-      { label: 'Ramp / Cards', href: '/admin/treasury' },
-    ],
-  },
-  {
-    label: 'INTELLIGENCE',
-    items: [
-      { label: 'EMMA', href: '/admin/emma' },
+      { label: 'Treasury / Fund', href: '/fund' },
+      { label: 'Firm Review', href: '/admin/firm-review' },
       { label: 'AI Tools', href: '/admin/ai-tools' },
       { label: 'Agents', href: '/agents/vector' },
     ],
