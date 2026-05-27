@@ -37,6 +37,7 @@ import TreasuryPage from "./pages/v4/TreasuryPage";
 import EMMAPage from "./pages/v4/EMMAPage";
 import DealInputPage from "./pages/v4/DealInputPage";
 import DealsPage from "./pages/v4/DealsPage";
+import RootsUploadPage from "./pages/v4/RootsUploadPage";
 
 function BondCommandPage(props: any) {
   return (
@@ -87,6 +88,7 @@ function Router() {
       <Route path={"/emma"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><EMMAPage /></main>}</Route>
       <Route path={"/deal-input-v4"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><DealInputPage /></main>}</Route>
       <Route path={"/deals"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><DealsPage /></main>}</Route>
+      <Route path={"/upload"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><RootsUploadPage /></main>}</Route>
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

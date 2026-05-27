@@ -35,7 +35,7 @@ const NAV_SECTIONS = [
     label: "EXECUTION",
     items: [
       { label: "Placement", href: "/hawkeye", icon: Target },
-      { label: "Documents", href: "/roots", icon: TreePine },
+      { label: "Doc Upload", href: "/upload", icon: TreePine },
       { label: "Construction", href: "/construction", icon: Building2 },
       { label: "Treasury", href: "/treasury", icon: Landmark },
     ],
