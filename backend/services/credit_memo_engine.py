@@ -137,6 +137,15 @@ class CreditMemoEngine:
         if not units:
             return {"error": "No unit data provided", "generated_at": datetime.utcnow().isoformat()}
 
+        # Handle dict-of-dicts format (WAJ_UNIT_DATA keyed by type name)
+        if isinstance(units, dict):
+            unit_list = []
+            for type_name, data in units.items():
+                entry = dict(data)
+                entry["type"] = type_name
+                unit_list.append(entry)
+            return self._build_unit_stack_from_aggregated(unit_list)
+
         # Detect format: list of individual units vs. aggregated type dicts
         if isinstance(units[0], dict) and "count" in units[0]:
             return self._build_unit_stack_from_aggregated(units)

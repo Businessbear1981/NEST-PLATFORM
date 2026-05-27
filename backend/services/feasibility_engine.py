@@ -165,7 +165,19 @@ class FeasibilityEngine:
         Returns:
             Per-covenant pass/fail with specific values and overall status.
         """
+        # Handle both raw feasibility data and processed output
         years_data = forecast.get("years", {})
+        if not years_data and "forecast" in forecast:
+            raw = forecast["forecast"]
+            years_data = {
+                y: {
+                    "dscr": d.get("dscr", 0),
+                    "days_cash_on_hand": d.get("days_cash", d.get("days_cash_on_hand", 0)),
+                    "revenue": d.get("revenue", 0),
+                    "expenses": d.get("expenses", 0),
+                }
+                for y, d in raw.items()
+            }
         results: dict[str, dict] = {}
         all_pass = True
 
