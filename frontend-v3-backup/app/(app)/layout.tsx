@@ -23,9 +23,9 @@ const DESK_NAV: NavSection[] = [
   {
     label: 'ORIGINATION',
     items: [
-      { label: 'EagleEye Scout', href: '/admin/eagleeye' },
-      { label: 'Find Me', href: '/admin/eagleeye' },
-      { label: 'Operators', href: '/admin/eagleeye' },
+      { label: 'EagleEye Scout', href: '/eagleeye' },
+      { label: 'Find Me', href: '/eagleeye' },
+      { label: 'Operators', href: '/eagleeye' },
       { label: 'Heat Map', href: '/admin/ma' },
       { label: 'Bullseye Pitch', href: '/admin/marketing' },
       { label: 'Boxing Out', href: '/admin/construction' },
@@ -127,13 +127,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('nest_token')
-    if (!token) { router.push('/login'); return }
-    try {
-      const user = JSON.parse(localStorage.getItem('nest_user') || '{}')
-      setRole(user.role || 'client')
-      setUserName(user.name || user.email || '')
-    } catch { setRole('client') }
+    // Auto-login as admin for demo
+    setRole('admin')
+    setUserName('Sean Gilmore')
   }, [router])
 
   function logout() {
