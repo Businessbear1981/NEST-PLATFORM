@@ -1,9 +1,8 @@
 """Full deal lifecycle routes — CRUD, bond structure, refi, covenants, checklist, memo.
 
-Backed by Supabase. Falls back to in-memory if DB is not configured.
+Backed by Supabase. Supabase is required — no in-memory fallback.
 """
 import json
-import threading
 import uuid as _uuid
 from flask import Blueprint, jsonify, request, current_app
 from datetime import datetime
@@ -11,20 +10,9 @@ from models.deal import new_deal, compute_readiness_score, DEAL_STATUSES
 from models.bond import new_bond_structure, new_series
 from models.refi import new_refi_cycle
 from services.auth import require_auth
-
-try:
-    from services.database import db
-except ImportError:
-    db = None
+from services.database import db
 
 deals_bp = Blueprint("deals", __name__)
-
-# In-memory fallback (only used when Supabase is not configured)
-_lock = threading.RLock()
-_deals = {}
-_bonds = {}
-_refis = {}
-_covenants = {}
 
 
 def _ts():
@@ -40,7 +28,7 @@ def _err(msg, code=400):
 
 
 def _use_db():
-    return db and db.configured
+    return True  # In-memory fallback removed — Supabase required
 
 
 # ── Supabase <-> Deal model mapping ──────────────────────────────
@@ -131,60 +119,6 @@ def _map_status(status):
         "closed": "closed",
     }
     return mapping.get(status, status)
-
-
-# ── Seed (in-memory fallback only) ───────────────────────────────
-
-def _seed():
-    seeds = [
-        {
-            "name": "Life Star Pointe Loop",
-            "project": {
-                "name": "Life Star Pointe Loop",
-                "address": "426 Pointe Loop Blvd",
-                "city": "Kissimmee", "state": "FL", "zip": "34747",
-                "asset_type": "senior_living", "project_type": "greenfield",
-                "total_project_cost_usd": 231_000_000,
-                "units": 364, "description": "364-unit IL/AL/MC campus"
-            },
-            "sponsor": {
-                "entity_name": "Life Star Senior Living LLC",
-                "contact_name": "Development Team", "track_record_projects": 8,
-            },
-        },
-        {
-            "name": "Meridian Cove",
-            "project": {
-                "name": "Meridian Cove Mixed-Use",
-                "city": "Tampa", "state": "FL",
-                "asset_type": "mixed_use", "project_type": "greenfield",
-                "total_project_cost_usd": 142_000_000,
-                "units": 280, "description": "280 units + 45K SF retail"
-            },
-            "sponsor": {"entity_name": "Meridian Development Group"},
-        },
-        {
-            "name": "Palmetto Ridge",
-            "project": {
-                "name": "Palmetto Ridge Industrial",
-                "city": "Lakeland", "state": "FL",
-                "asset_type": "industrial", "project_type": "shovel_ready",
-                "total_project_cost_usd": 78_000_000,
-                "square_footage": 425_000,
-                "description": "425K SF Class A industrial / cold storage"
-            },
-            "sponsor": {"entity_name": "Palmetto Industrial Partners"},
-        },
-    ]
-    with _lock:
-        for s in seeds:
-            d = new_deal(s["name"], s.get("project"), s.get("sponsor"))
-            d["status"] = "underwriting"
-            _deals[d["id"]] = d
-
-
-if not (_use_db()):
-    _seed()
 
 
 # ── Deal CRUD ───────────────────────────────────────────────────

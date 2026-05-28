@@ -89,6 +89,9 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     init_request_logging(app)
 
+    from services.database import db
+    db.require_configured()
+
     engine = FundEngine()
     app.config["FUND_ENGINE"] = engine
     app.config["DEALS"] = DealsRegistry()
@@ -183,15 +186,14 @@ def create_app():
 
     @app.get("/api/metrics")
     def metrics():
-        from routes.deals import _deals, _bonds, _lock
-        with _lock:
-            deal_count = len(_deals)
-            active = sum(1 for d in _deals.values() if d["status"] != "closed")
-            total_pipeline = sum(
-                d.get("project", {}).get("total_project_cost_usd", 0)
-                for d in _deals.values() if d["status"] != "closed"
-            )
-            bond_count = len(_bonds)
+        from services.database import db
+        import datetime
+        rows = db.select("deals") or []
+        deal_count = len(rows)
+        active = sum(1 for r in rows if r.get("status") != "closed")
+        total_pipeline = sum(float(r.get("bond_face", 0)) for r in rows if r.get("status") != "closed")
+        bond_rows = db.select("bond_structures") or []
+        bond_count = len(bond_rows)
         return jsonify({
             "success": True,
             "data": {
@@ -202,7 +204,7 @@ def create_app():
                 "agents_active": 16,
                 "agents_total": len(__import__("agents.desk_registry", fromlist=["get_all_agents"]).get_all_agents()),
             },
-            "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.utcnow().isoformat(),
         })
 
     is_serverless = os.environ.get("VERCEL") == "1"

@@ -25,6 +25,14 @@ class DatabaseService:
     def configured(self):
         return self._configured
 
+    def require_configured(self):
+        """Call at app startup. Raises if Supabase is not configured."""
+        if not self._configured:
+            raise RuntimeError(
+                "SUPABASE_URL and SUPABASE_SERVICE_KEY must be set. "
+                "NEST requires Supabase for all persistence."
+            )
+
     def _headers(self):
         return {
             "apikey": self.key,
