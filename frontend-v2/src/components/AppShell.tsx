@@ -3,57 +3,101 @@ import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
   BarChart3, Building2, Briefcase, Radio, Activity,
+  Gauge, GitBranch, Megaphone, Swords, Inbox,
+  Upload, CheckCircle2, CreditCard, LineChart,
+  FlaskConical, AlertTriangle, DollarSign, Tag,
+  Send, HandCoins, FileText, Gavel, Calculator,
+  Binoculars, Moon, Database, HardHat, ClipboardList,
+  Search, Wallet, Cpu,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
 const NAV_SECTIONS = [
   {
-    label: "OVERVIEW",
+    label: "COMMAND",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
-      { label: "Active Deals", href: "/deals", icon: Building2 },
+      { label: "Dashboard", href: "/dashboard", icon: Gauge },
+      { label: "Pipeline", href: "/deals", icon: GitBranch },
       { label: "Bernard", href: "/bernard", icon: Bot },
     ],
   },
   {
     label: "ORIGINATION",
     items: [
-      { label: "New Deal", href: "/deal-input-v4", icon: Briefcase },
       { label: "EagleEye", href: "/eagleeye-v2", icon: Eye },
+      { label: "M&A Intel", href: "/ma", icon: Search },
+      { label: "Bullseye Pitch", href: "/marketing", icon: Megaphone },
+      { label: "Boxing Out", href: "/boxing-out", icon: Swords },
+    ],
+  },
+  {
+    label: "INTAKE",
+    items: [
+      { label: "Deal Entry", href: "/deal-input-v4", icon: Inbox },
+      { label: "Roots — Docs", href: "/upload", icon: TreePine },
+      { label: "Preflight", href: "/preflight", icon: CheckCircle2 },
+    ],
+  },
+  {
+    label: "ANALYSIS",
+    items: [
+      { label: "Credit", href: "/credit", icon: CreditCard },
+      { label: "Modeling", href: "/modeling", icon: LineChart },
+      { label: "Feasibility", href: "/feasibility", icon: FlaskConical },
+      { label: "Risk", href: "/risk", icon: AlertTriangle },
     ],
   },
   {
     label: "STRUCTURING",
     items: [
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark },
-      { label: "Credit & Rating", href: "/credit", icon: Scale },
-      { label: "Rating Submission", href: "/rating", icon: BarChart3 },
-      { label: "Enhancement", href: "/surety", icon: FileCheck },
+      { label: "Bond Intel", href: "/bond-intel", icon: Activity },
+      { label: "Enhancement", href: "/surety", icon: Shield },
+      { label: "Pricing", href: "/pricing", icon: Tag },
     ],
   },
   {
-    label: "EXECUTION",
+    label: "RATING",
     items: [
-      { label: "Placement", href: "/hawkeye", icon: Target },
-      { label: "Doc Upload", href: "/upload", icon: TreePine },
-      { label: "Construction", href: "/construction", icon: Building2 },
-      { label: "Treasury", href: "/treasury", icon: Landmark },
+      { label: "Rating Desk", href: "/rating", icon: BarChart3 },
     ],
   },
   {
-    label: "ADMINISTRATION",
+    label: "PLACEMENT",
     items: [
-      { label: "Covenants", href: "/covenants", icon: Scale },
-      { label: "Surveillance", href: "/surveillance", icon: Eye },
-      { label: "Compliance", href: "/nightvision", icon: Shield },
-      { label: "Trustee", href: "/trustee", icon: Users },
+      { label: "Hawkeye", href: "/hawkeye", icon: Target },
+      { label: "Lenders", href: "/lenders", icon: HandCoins },
+    ],
+  },
+  {
+    label: "CLOSING",
+    items: [
+      { label: "Documents", href: "/documents", icon: FileText },
+      { label: "Legal / Atticus", href: "/atticus", icon: Gavel },
+      { label: "Cost Estimate", href: "/cost-estimate", icon: Calculator },
+    ],
+  },
+  {
+    label: "MONITORING",
+    items: [
+      { label: "Surveillance", href: "/surveillance", icon: Binoculars },
+      { label: "NightVision", href: "/nightvision", icon: Moon },
+      { label: "EMMA", href: "/emma", icon: Database },
+      { label: "Construction", href: "/construction", icon: HardHat },
+    ],
+  },
+  {
+    label: "AUDIT & FEASIBILITY",
+    items: [
+      { label: "Feasibility Desk", href: "/feasibility-desk", icon: ClipboardList },
+      { label: "Audit Desk", href: "/audit-desk", icon: FileCheck },
     ],
   },
   {
     label: "SYSTEM",
     items: [
-      { label: "EMMA", href: "/emma", icon: BarChart3 },
-      { label: "Agents", href: "/agents/platform", icon: Bot },
+      { label: "Treasury", href: "/treasury", icon: Wallet },
+      { label: "AI Tools", href: "/agents/platform", icon: Cpu },
       { label: "Admin", href: "/admin", icon: Lock },
     ],
   },
