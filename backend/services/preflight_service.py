@@ -332,10 +332,31 @@ def _create_deal_from_preflight(session_id: str, structured: dict) -> str | None
     result = db.insert("deals", record)
 
     if result and isinstance(result, list) and len(result) > 0:
-        return result[0].get("id")
-    if result and isinstance(result, dict):
-        return result.get("id")
-    return None
+        deal_id = result[0].get("id")
+    elif result and isinstance(result, dict):
+        deal_id = result.get("id")
+    else:
+        deal_id = None
+
+    # Auto-trigger credit engine if we have financials
+    financials = {
+        "noi": params.get("noi_trailing") or params.get("noi_projected") or 0,
+        "ebitda": params.get("ebitda", 0),
+        "debt_service": params.get("debt_service", 0),
+        "total_debt": params.get("total_debt") or params.get("bond_amount", 0),
+        "project_value": params.get("appraised_value") or params.get("project_value", 0),
+        "equity": params.get("equity_contribution") or params.get("equity", 0),
+        "interest_expense": (params.get("debt_service", 0) or 0) * 0.6,
+    }
+    if deal_id and any(float(v) > 0 for v in financials.values() if v):
+        try:
+            from services.credit_engine import CreditEngine
+            engine = CreditEngine()
+            engine.run_and_persist(deal_id, financials)
+        except Exception:
+            pass  # Credit engine failure shouldn't block deal creation
+
+    return deal_id
 
 
 def _public_view(session: dict, last_response: str | None) -> dict:

@@ -3,6 +3,7 @@
 JP Morgan commercial credit benchmarks hardcoded throughout.
 Jacaranda Trace PLOM (Series 2025, $231M, Florida LGFC) is the structural template.
 """
+import json
 import math
 
 # ── JP Morgan Benchmarks ────────────────────────────────────────
@@ -365,6 +366,82 @@ class CreditEngine:
             "client_annual_savings_at_maturity": round(client_annual_savings),
             "cycles_per_year": round(cycles / max(term_years, 1), 1),
             "days_between_cycles": round(days_between),
+        }
+
+    def run_and_persist(self, deal_id: str, deal_data: dict) -> dict:
+        """Compute all credit metrics, persist to Supabase, and return results.
+
+        Inserts a row into credit_analyses and updates the deal's risk_grade.
+
+        Args:
+            deal_id:   UUID of the deal record in Supabase.
+            deal_data: Financial inputs (noi, debt_service, total_debt, etc.).
+
+        Returns:
+            Combined dict of metrics, grade, and stress results.
+        """
+        from services.database import db
+
+        # 1. Compute metrics
+        metrics = self.compute_metrics(deal_data)
+
+        # 2. Derive grade and score from metrics
+        grade = metrics.get("obligor_grade", "BB")
+        score = metrics.get("overall_score", 0)
+        score_breakdown = metrics.get("score_breakdown", {})
+
+        # 3. Run stress scenarios
+        stress_input = dict(deal_data)
+        stress_input.setdefault("noi", deal_data.get("noi", 0))
+        stress_input.setdefault("debt_service", deal_data.get("debt_service", 1))
+        stress_results = self.run_stress_scenarios(stress_input)
+
+        # 4. Build credit_analyses row
+        noi = deal_data.get("noi", 0)
+        ebitda = deal_data.get("ebitda", noi)
+        debt_service = deal_data.get("debt_service", 0)
+        total_debt = deal_data.get("total_debt", 0)
+        project_value = deal_data.get("project_value", 0)
+        equity = deal_data.get("equity", 0)
+        interest_expense = deal_data.get("interest_expense", debt_service * 0.6 if debt_service else 0)
+
+        analysis_row = {
+            "deal_id": deal_id,
+            "noi": noi,
+            "ebitda": ebitda,
+            "debt_service": debt_service,
+            "total_debt": total_debt,
+            "project_value": project_value,
+            "equity": equity,
+            "interest_expense": interest_expense,
+            "dscr": metrics.get("dscr"),
+            "ltv": metrics.get("ltv"),
+            "cf_leverage": metrics.get("cash_flow_leverage"),
+            "bs_leverage": metrics.get("balance_sheet_leverage"),
+            "d_ebitda": metrics.get("debt_to_ebitda"),
+            "icr": metrics.get("interest_coverage"),
+            "debt_yield": round(noi / total_debt * 100, 3) if total_debt > 0 else None,
+            "grade": grade,
+            "score": score,
+            "score_breakdown": json.dumps(score_breakdown),
+            "lgd_bare": metrics.get("lgd_bare"),
+            "lgd_surety": metrics.get("lgd_with_surety"),
+            "lgd_dual_wrap": metrics.get("lgd_dual_wrap"),
+            "stress_results": json.dumps(stress_results),
+            "run_by": "maxwell",
+        }
+
+        # 5. Insert into credit_analyses
+        db.insert("credit_analyses", analysis_row)
+
+        # 6. Update deal's risk_grade
+        db.update("deals", {"risk_grade": grade}, {"id": deal_id})
+
+        return {
+            "metrics": metrics,
+            "grade": grade,
+            "score": score,
+            "stress_results": stress_results,
         }
 
     def _determine_grade(self, dscr, ltv, cf_lev, bs_lev, d_ebitda, icr):
