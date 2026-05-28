@@ -1,13 +1,16 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   Loader2, Users, Target, FileText, BookOpen, Send, DollarSign,
   CheckCircle2, Calendar, MessageSquare, TrendingUp, Building2,
   Flame, ThermometerSun, Snowflake, Plus, Phone, ClipboardList,
   BarChart3, ArrowRight, X, RefreshCw, Mail, Eye, AlertTriangle,
+  Shield, Receipt, ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { skipToken } from "@tanstack/react-query";
+
+const API = 'http://localhost:8000';
 
 /* ─── Formatting ─── */
 function money(val: number) {
@@ -364,6 +367,100 @@ export default function HawkeyePlacementScout({
     onSuccess: () => orderBookQuery.refetch(),
   });
   const allocateMutation = trpc.hawkeye.allocate.useMutation();
+
+  /* ─── Bernard REST API state ─── */
+  const [scenarios, setScenarios] = useState<any>(null);
+  const [scenariosLoading, setScenariosLoading] = useState(false);
+  const [costs, setCosts] = useState<any>(null);
+  const [costsLoading, setCostsLoading] = useState(false);
+  const [purchaseOrder, setPurchaseOrder] = useState<any>(null);
+  const [poLoading, setPoLoading] = useState(false);
+  const [readiness, setReadiness] = useState<any>(null);
+  const [readinessLoading, setReadinessLoading] = useState(false);
+
+  const buildDealPayload = useCallback(() => {
+    const o = DEMO_OFFERINGS.find((x) => x.id === selectedOffering) ?? DEMO_OFFERINGS[0];
+    return {
+      id: dealId || o.id,
+      name: o.name,
+      totalRaise: o.totalRaise,
+      rating: o.rating,
+      coupon: o.coupon,
+      spread: o.spread,
+      status: o.status,
+      targetClose: o.targetClose,
+      tranches: o.tranches,
+      subscribed: o.subscribed,
+    };
+  }, [dealId, selectedOffering]);
+
+  const fetchScenarios = useCallback(async () => {
+    setScenariosLoading(true);
+    try {
+      const res = await fetch(`${API}/api/bernard/scenarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deal: buildDealPayload() }),
+      });
+      const json = await res.json();
+      setScenarios(json.data ?? json);
+    } catch (e) {
+      console.error("Bernard scenarios error:", e);
+    } finally {
+      setScenariosLoading(false);
+    }
+  }, [buildDealPayload]);
+
+  const fetchCosts = useCallback(async () => {
+    setCostsLoading(true);
+    try {
+      const res = await fetch(`${API}/api/bernard/costs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deal: buildDealPayload() }),
+      });
+      const json = await res.json();
+      setCosts(json.data ?? json);
+    } catch (e) {
+      console.error("Bernard costs error:", e);
+    } finally {
+      setCostsLoading(false);
+    }
+  }, [buildDealPayload]);
+
+  const fetchPurchaseOrder = useCallback(async () => {
+    setPoLoading(true);
+    try {
+      const res = await fetch(`${API}/api/bernard/po`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deal: buildDealPayload() }),
+      });
+      const json = await res.json();
+      setPurchaseOrder(json.data ?? json);
+    } catch (e) {
+      console.error("Bernard PO error:", e);
+    } finally {
+      setPoLoading(false);
+    }
+  }, [buildDealPayload]);
+
+  const fetchReadiness = useCallback(async () => {
+    setReadinessLoading(true);
+    try {
+      const res = await fetch(`${API}/api/bernard/readiness`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deal: buildDealPayload() }),
+      });
+      const json = await res.json();
+      setReadiness(json.data ?? json);
+    } catch (e) {
+      console.error("Bernard readiness error:", e);
+    } finally {
+      setReadinessLoading(false);
+    }
+  }, [buildDealPayload]);
 
   const offering = DEMO_OFFERINGS.find((o) => o.id === selectedOffering) ?? DEMO_OFFERINGS[0];
 
@@ -778,6 +875,117 @@ export default function HawkeyePlacementScout({
               <FileText size={24} className="mx-auto text-slate-600" />
               <p className="mt-2 font-mono text-[0.62rem] text-slate-500">
                 Click "Generate Teaser" to create an AI-powered investor teaser for {offering.name.split(" — ")[0]}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ═══ Section 4: Bernard Intelligence Panel ═══ */}
+      <div className="rounded-2xl border border-[#C4A048]/25 bg-black/30 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
+            <BarChart3 size={15} className="text-[#C4A048]" /> Bernard — Deal Intelligence
+          </h2>
+          <span className="font-mono text-[0.52rem] text-slate-500">
+            {offering.name.split(" — ")[0]}
+          </span>
+        </div>
+
+        {/* Four action buttons */}
+        <div className="mt-4 grid grid-cols-4 gap-3">
+          <Button
+            onClick={fetchScenarios}
+            disabled={scenariosLoading}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-fuchsia-300/25 bg-fuchsia-500/8 px-3 py-2.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-fuchsia-200 hover:bg-fuchsia-500/15"
+          >
+            {scenariosLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <TrendingUp size={12} />}
+            Bond Scenarios
+          </Button>
+          <Button
+            onClick={fetchCosts}
+            disabled={costsLoading}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-amber-300/25 bg-amber-500/8 px-3 py-2.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-amber-200 hover:bg-amber-500/15"
+          >
+            {costsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <DollarSign size={12} />}
+            Cost Estimate
+          </Button>
+          <Button
+            onClick={fetchPurchaseOrder}
+            disabled={poLoading}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-300/25 bg-emerald-500/8 px-3 py-2.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-emerald-200 hover:bg-emerald-500/15"
+          >
+            {poLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Receipt size={12} />}
+            Purchase Order
+          </Button>
+          <Button
+            onClick={fetchReadiness}
+            disabled={readinessLoading}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-cyan-300/25 bg-cyan-500/8 px-3 py-2.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-cyan-200 hover:bg-cyan-500/15"
+          >
+            {readinessLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Shield size={12} />}
+            Readiness
+          </Button>
+        </div>
+
+        {/* Results grid — renders whichever panels have data */}
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          {/* Scenarios panel */}
+          {scenarios && (
+            <div className="rounded-xl border border-fuchsia-300/15 bg-black/20 p-4">
+              <p className="flex items-center gap-1.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-fuchsia-200">
+                <TrendingUp size={11} /> Bond Structure Scenarios
+              </p>
+              <pre className="mt-2 max-h-[260px] overflow-y-auto whitespace-pre-wrap font-mono text-[0.65rem] leading-5 text-slate-300">
+                {typeof scenarios === "string" ? scenarios : JSON.stringify(scenarios, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {/* Costs panel */}
+          {costs && (
+            <div className="rounded-xl border border-amber-300/15 bg-black/20 p-4">
+              <p className="flex items-center gap-1.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-amber-200">
+                <DollarSign size={11} /> Cost Estimate
+              </p>
+              <pre className="mt-2 max-h-[260px] overflow-y-auto whitespace-pre-wrap font-mono text-[0.65rem] leading-5 text-slate-300">
+                {typeof costs === "string" ? costs : JSON.stringify(costs, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {/* Purchase Order panel */}
+          {purchaseOrder && (
+            <div className="rounded-xl border border-emerald-300/15 bg-black/20 p-4">
+              <p className="flex items-center gap-1.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-emerald-200">
+                <Receipt size={11} /> Purchase Order
+              </p>
+              <pre className="mt-2 max-h-[260px] overflow-y-auto whitespace-pre-wrap font-mono text-[0.65rem] leading-5 text-slate-300">
+                {typeof purchaseOrder === "string" ? purchaseOrder : JSON.stringify(purchaseOrder, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {/* Readiness panel */}
+          {readiness && (
+            <div className="rounded-xl border border-cyan-300/15 bg-black/20 p-4">
+              <p className="flex items-center gap-1.5 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-cyan-200">
+                <Shield size={11} /> Readiness Assessment
+              </p>
+              <pre className="mt-2 max-h-[260px] overflow-y-auto whitespace-pre-wrap font-mono text-[0.65rem] leading-5 text-slate-300">
+                {typeof readiness === "string" ? readiness : JSON.stringify(readiness, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        {/* Empty state when no Bernard data loaded */}
+        {!scenarios && !costs && !purchaseOrder && !readiness && (
+          <div className="mt-4 flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.01] py-6">
+            <div className="text-center">
+              <BarChart3 size={20} className="mx-auto text-slate-600" />
+              <p className="mt-2 font-mono text-[0.58rem] text-slate-500">
+                Run Bernard analysis on {offering.name.split(" — ")[0]} — scenarios, costs, PO, or readiness
               </p>
             </div>
           </div>

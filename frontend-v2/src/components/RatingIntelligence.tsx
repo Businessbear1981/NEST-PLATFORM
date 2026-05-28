@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle, Clock, FileText, RadioTower, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { MoodysReconFeed } from "./MoodysReconFeed";
 import SPReconFeed from "./SPReconFeed";
 import MethodologyVersionDiff from "./MethodologyVersionDiff";
+
+const API = "http://localhost:8000";
 
 interface RatingAction {
   id: string;
@@ -98,9 +100,52 @@ const DEMO_CREDIT_MEMOS: CreditMemo[] = [
 ];
 
 export default function RatingIntelligence() {
+  const [liveActions, setLiveActions] = useState<RatingAction[]>([]);
+  const [ratingAnalysis, setRatingAnalysis] = useState<Record<string, unknown> | null>(null);
   const [selectedAction, setSelectedAction] = useState<RatingAction | null>(DEMO_RATING_ACTIONS[0]);
   const [memoDraft, setMemoDraft] = useState("No memo draft routed yet.");
   const [reconPulse, setReconPulse] = useState(0);
+
+  // Fetch deal scores from EagleEye intelligence
+  useEffect(() => {
+    fetch(`${API}/api/eagleeye/intelligence/scores`)
+      .then((res) => res.json())
+      .then((json) => {
+        const scores = json.data ?? json;
+        if (Array.isArray(scores) && scores.length > 0) {
+          const mapped: RatingAction[] = scores.map((s: Record<string, unknown>, idx: number) => ({
+            id: (s.id as string) ?? `live-${idx}`,
+            issuer: (s.issuer as string) ?? (s.deal_name as string) ?? "Unknown",
+            agency: (s.agency as "Moody's" | "S&P") ?? "Moody's",
+            date: new Date((s.date as string) ?? Date.now()),
+            action: (s.action as RatingAction["action"]) ?? "affirm",
+            oldRating: (s.old_rating as string) ?? (s.oldRating as string) ?? "NR",
+            newRating: (s.new_rating as string) ?? (s.newRating as string) ?? (s.rating as string) ?? "NR",
+            outlook: (s.outlook as RatingAction["outlook"]) ?? "stable",
+            rationale: (s.rationale as string) ?? "",
+            affectedBonds: (s.affected_bonds as string[]) ?? (s.affectedBonds as string[]) ?? [],
+          }));
+          setLiveActions(mapped);
+          setSelectedAction(mapped[0]);
+        }
+      })
+      .catch(() => {/* fall back to demo data */});
+  }, []);
+
+  // Request S&P/Moody's rating analysis from intel engine
+  useEffect(() => {
+    fetch(`${API}/api/intel-engine/rating`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ financials: {} }),
+    })
+      .then((res) => res.json())
+      .then((json) => setRatingAnalysis(json.data ?? json))
+      .catch(() => {/* rating analysis optional */});
+  }, []);
+  // Live data wins when available, otherwise fall back to demo
+  const ratingActions = liveActions.length > 0 ? liveActions : DEMO_RATING_ACTIONS;
+
   const reconEvents = [
     "Moody's office-watch update received",
     "S&P hospitality stress trigger received",
@@ -150,7 +195,7 @@ export default function RatingIntelligence() {
           <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
               <p className="text-slate-500">Actions</p>
-              <p className="text-lg font-semibold text-cyan-100">{DEMO_RATING_ACTIONS.length}</p>
+              <p className="text-lg font-semibold text-cyan-100">{ratingActions.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
               <p className="text-slate-500">Memos</p>
@@ -199,7 +244,7 @@ export default function RatingIntelligence() {
             <Card className="h-fit border-border p-4 lg:col-span-1">
               <h2 className="mb-3 text-sm font-semibold text-foreground">Recent Actions</h2>
               <div className="space-y-2">
-                {DEMO_RATING_ACTIONS.map((action) => (
+                {ratingActions.map((action) => (
                   <button
                     key={action.id}
                     onClick={() => setSelectedAction(action)}
@@ -328,6 +373,15 @@ export default function RatingIntelligence() {
               Use the Actions tab to route a rating event, then return here to verify the visible state change. Moody's, S&P, and methodology feeds each maintain their own acknowledgement/routing state.
             </p>
           </Card>
+
+          {ratingAnalysis && (
+            <Card className="mt-4 border-amber-300/20 bg-amber-400/5 p-6">
+              <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-amber-200">Intel Engine — S&P / Moody&apos;s Rating Analysis</p>
+              <pre className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-muted-foreground whitespace-pre-wrap font-mono">
+                {JSON.stringify(ratingAnalysis, null, 2)}
+              </pre>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

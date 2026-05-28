@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useDealState, type Tranche, type Deal } from "@/contexts/DealStateContext";
 import { useBernard } from "@/contexts/BernardContext";
-import { trpc } from "@/lib/trpc";
 import BernardNarrator from "./BernardNarrator";
+
+const API = 'http://localhost:8000';
 
 const SERIES_COLORS: Record<string, string> = {
   A: "#C4A048",
@@ -25,7 +26,11 @@ const GRADE_COLORS: Record<string, string> = {
 export default function BondStructuringEngine() {
   const { state, setDeal, addTranche, removeTranche, setMetrics, log } = useDealState();
   const bernard = useBernard();
-  const structureMutation = trpc.bondStructuring.structure.useMutation();
+  const [structureLoading, setStructureLoading] = useState(false);
+  const [scenariosData, setScenariosData] = useState<any>(null);
+  const [costsData, setCostsData] = useState<any>(null);
+  const [sizingData, setSizingData] = useState<any>(null);
+  const [covenantsData, setCovenantsData] = useState<any>(null);
 
   const [dealForm, setDealForm] = useState({
     name: "", sponsor: "", total_project_cost_usd: "",
@@ -60,9 +65,9 @@ export default function BondStructuringEngine() {
     arrangement_fee_usd: number;
   } | null>(null);
 
-  const callPutMutation = trpc.bondStructuring.callPutAnalysis.useMutation();
+  const [callPutLoading, setCallPutLoading] = useState(false);
 
-  const handleSetDeal = () => {
+  const handleSetDeal = async () => {
     const tpc = parseFloat(dealForm.total_project_cost_usd) || 0;
     const noi = parseFloat(dealForm.stabilized_noi_usd) || 0;
     if (tpc <= 0) return;
@@ -87,6 +92,46 @@ export default function BondStructuringEngine() {
         educational: `You've created a deal for "${deal.name}" with $${(tpc/1e6).toFixed(0)}M total project cost and $${(noi/1e6).toFixed(1)}M in stabilized NOI. NOI is the property's net operating income — the annual profit before debt service. This number determines how much debt the project can support. Now add tranches to build your capital stack.`,
       },
     });
+
+    // Fetch bond sizing from intel engine
+    try {
+      const capRate = noi / (tpc * 1.2); // estimate from NOI / appraised value
+      const sizingRes = await fetch(`${API}/api/intel-engine/size`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deal_type: dealForm.use_of_proceeds?.toLowerCase().includes('construct') ? 'construction' : 'stabilized',
+          noi,
+          cap_rate: capRate,
+          ltv_ratio: 0.75,
+        }),
+      });
+      if (sizingRes.ok) {
+        const sizing = await sizingRes.json();
+        setSizingData(sizing.data ?? sizing);
+      }
+    } catch (err) {
+      console.error('[BondStructuringEngine] sizing fetch failed:', err);
+    }
+
+    // Fetch covenant package from intel engine
+    try {
+      const covRes = await fetch(`${API}/api/intel-engine/covenants`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deal_type: dealForm.use_of_proceeds?.toLowerCase().includes('construct') ? 'construction' : 'stabilized',
+          credit_grade: 'BBB',
+          sector: dealForm.sector,
+        }),
+      });
+      if (covRes.ok) {
+        const cov = await covRes.json();
+        setCovenantsData(cov.data ?? cov);
+      }
+    } catch (err) {
+      console.error('[BondStructuringEngine] covenants fetch failed:', err);
+    }
   };
 
   const handleAddTranche = () => {
@@ -121,32 +166,96 @@ export default function BondStructuringEngine() {
     setTrancheForm({ series: "B", label: "Series B Mezzanine", size_usd: "", coupon_pct: "11.0", spread_bps: "145", maturity_yrs: "7", ltc_pct: "7" });
   };
 
-  // Recompute structure whenever tranches change
+  // Recompute structure whenever tranches change — fetch scenarios + costs
   useEffect(() => {
     if (!state.activeDeal || state.tranches.length === 0) return;
-    structureMutation.mutate({
+    const deal = state.activeDeal;
+    const totalDebt = state.tranches.reduce((s, t) => s + t.size_usd, 0);
+    const blendedCoupon = state.tranches.reduce((s, t) => s + t.coupon_pct * t.size_usd, 0) / (totalDebt || 1);
+
+    setStructureLoading(true);
+
+    // POST /api/bernard/scenarios
+    const scenarioBody = {
+      deal_name: deal.name,
+      size_usd: totalDebt,
+      noi: deal.stabilized_noi_usd,
+      sector: deal.sector,
+      deal_type: deal.use_of_proceeds?.toLowerCase().includes('construct') ? 'construction' : 'stabilized',
+      tax_exempt: true,
+      enhancement: 'surety',
+      dscr_projected: deal.stabilized_noi_usd / (totalDebt * (blendedCoupon / 100)),
+      borrower_type: 'special_purpose',
+    };
+
+    const scenarioFetch = fetch(`${API}/api/bernard/scenarios`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(scenarioBody),
+    }).then(r => r.ok ? r.json() : null).catch(() => null);
+
+    // POST /api/bernard/costs
+    const costBody = {
       deal: {
-        total_project_cost_usd: state.activeDeal.total_project_cost_usd,
-        stabilized_noi_usd: state.activeDeal.stabilized_noi_usd,
-        appraised_value_usd: state.activeDeal.appraised_value_usd,
+        total_project_cost_usd: deal.total_project_cost_usd,
+        stabilized_noi_usd: deal.stabilized_noi_usd,
+        appraised_value_usd: deal.appraised_value_usd,
+        bond_face_usd: totalDebt,
+        sector: deal.sector,
       },
-      tranches: state.tranches.map((t) => ({
-        series: t.series,
-        size_usd: t.size_usd,
-        coupon_pct: t.coupon_pct,
-        spread_bps: t.spread_bps,
-      })),
-    }, {
-      onSuccess: (data: any) => {
-        setMetrics(data.metrics, data.stress);
-        if (data.bernard) {
+    };
+
+    const costFetch = fetch(`${API}/api/bernard/costs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(costBody),
+    }).then(r => r.ok ? r.json() : null).catch(() => null);
+
+    Promise.all([scenarioFetch, costFetch]).then(([scenarioRes, costRes]) => {
+      setStructureLoading(false);
+
+      if (scenarioRes) {
+        const payload = scenarioRes.data ?? scenarioRes;
+        setScenariosData(payload);
+        // Derive metrics + stress from scenarios if available
+        if (payload.metrics) {
+          setMetrics(payload.metrics, payload.stress);
+        } else {
+          // Build local metrics from deal + tranches as fallback
+          const annualDebtService = totalDebt * (blendedCoupon / 100);
+          const dscr = annualDebtService > 0 ? deal.stabilized_noi_usd / annualDebtService : 0;
+          const cltv = deal.appraised_value_usd > 0 ? (totalDebt / deal.appraised_value_usd) * 100 : 0;
+          const icr = annualDebtService > 0 ? deal.stabilized_noi_usd / annualDebtService : 0;
+          const grade = dscr >= 2.0 ? "A" : dscr >= 1.75 ? "BBB+" : dscr >= 1.5 ? "BBB-" : "Sub-IG";
+          const localMetrics = {
+            total_debt_usd: totalDebt,
+            cltv_pct: cltv,
+            blended_coupon_pct: blendedCoupon,
+            dscr,
+            icr,
+            obligor_grade: grade,
+            ltv_alert: cltv > 70,
+          };
+          const localStress = {
+            base: { dscr, status: dscr >= 1.5 ? "green" : "red", outcome: "Base case" },
+            moderate: { dscr: dscr * 0.85, status: dscr * 0.85 >= 1.25 ? "yellow" : "red", outcome: "15% NOI decline" },
+            severe: { dscr: dscr * 0.7, status: dscr * 0.7 >= 1.0 ? "yellow" : "red", outcome: "30% NOI decline" },
+            catastrophic: { dscr: dscr * 0.55, status: "red", outcome: "45% NOI decline" },
+          };
+          setMetrics(localMetrics, localStress);
+        }
+        if (payload.bernard) {
           bernard.push({
             type: "structure_updated",
-            depths: data.bernard,
-            data: data.metrics,
+            depths: payload.bernard,
+            data: payload.metrics,
           });
         }
-      },
+      }
+
+      if (costRes) {
+        setCostsData(costRes.data ?? costRes);
+      }
     });
   }, [state.tranches]);
 
@@ -446,27 +555,140 @@ export default function BondStructuringEngine() {
               </div>
             )}
 
+            {/* Bond Sizing (intel-engine) */}
+            {sizingData && (
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+                <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Bond Sizing</h4>
+                <div className="grid grid-cols-3 gap-2 font-mono text-[0.6rem]">
+                  {Object.entries(sizingData).map(([k, v]: [string, any]) => (
+                    <div key={k}>
+                      <span className="text-slate-600">{k.replace(/_/g, ' ')}</span>
+                      <div className="text-sm font-semibold text-[#C4A048]">
+                        {typeof v === 'number' ? (v > 10000 ? `$${(v/1e6).toFixed(1)}M` : v.toFixed(2)) : String(v)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Covenant Package (intel-engine) */}
+            {covenantsData && (
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+                <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Covenant Package</h4>
+                <div className="space-y-1 font-mono text-[0.6rem]">
+                  {Array.isArray(covenantsData) ? covenantsData.map((cov: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between border-b border-white/[0.04] py-1">
+                      <span className="text-slate-400">{cov.name ?? cov.covenant ?? `Covenant ${i + 1}`}</span>
+                      <span className="text-slate-200">{cov.threshold ?? cov.value ?? ''}</span>
+                    </div>
+                  )) : Object.entries(covenantsData).map(([k, v]: [string, any]) => (
+                    <div key={k} className="flex items-center justify-between border-b border-white/[0.04] py-1">
+                      <span className="text-slate-400">{k.replace(/_/g, ' ')}</span>
+                      <span className="text-slate-200">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Scenarios (bernard) */}
+            {scenariosData?.scenarios && (
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+                <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Bond Scenarios</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {(Array.isArray(scenariosData.scenarios) ? scenariosData.scenarios : []).map((sc: any, i: number) => (
+                    <div key={i} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                      <div className="mb-1 font-[Space_Grotesk] text-xs font-semibold text-slate-200">{sc.name ?? `Scenario ${i + 1}`}</div>
+                      <div className="space-y-1 font-mono text-[0.55rem]">
+                        {sc.coupon_pct != null && <div className="flex justify-between"><span className="text-slate-600">Coupon</span><span className="text-[#C4A048]">{sc.coupon_pct}%</span></div>}
+                        {sc.spread_bps != null && <div className="flex justify-between"><span className="text-slate-600">Spread</span><span className="text-slate-200">{sc.spread_bps}bp</span></div>}
+                        {sc.dscr != null && <div className="flex justify-between"><span className="text-slate-600">DSCR</span><span className="text-slate-200">{sc.dscr}x</span></div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Cost Estimate (bernard) */}
+            {costsData && (
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+                <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Cost Estimate</h4>
+                <div className="space-y-1 font-mono text-[0.6rem]">
+                  {Object.entries(costsData).map(([k, v]: [string, any]) => (
+                    <div key={k} className="flex items-center justify-between border-b border-white/[0.04] py-1">
+                      <span className="text-slate-400">{k.replace(/_/g, ' ')}</span>
+                      <span className="text-[#C4A048] font-semibold">
+                        {typeof v === 'number' ? (v > 10000 ? `$${(v/1e6).toFixed(2)}M` : `$${v.toLocaleString()}`) : String(v)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Call/Put Optionality Analysis */}
             {state.tranches.some((t: any) => t.call_schedule?.length > 0 || t.put_schedule?.length > 0) && (
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Call/Put Optionality</h4>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (!state.activeDeal) return;
+                      setCallPutLoading(true);
                       const firstCallTranche = state.tranches.find((t: any) => t.call_schedule?.length > 0);
-                      callPutMutation.mutate({
-                        current_rate_bps: firstCallTranche ? firstCallTranche.spread_bps : state.tranches[0].spread_bps,
-                        original_rate_bps: firstCallTranche ? firstCallTranche.spread_bps + 50 : state.tranches[0].spread_bps + 50,
-                        deal: { bond_face_usd: state.activeDeal.total_project_cost_usd },
-                      }, {
-                        onSuccess: (data: any) => setCallPutResult(data),
-                      });
+                      try {
+                        const totalDebt = state.tranches.reduce((s, t) => s + t.size_usd, 0);
+                        const blendedCoupon = state.tranches.reduce((s, t) => s + t.coupon_pct * t.size_usd, 0) / (totalDebt || 1);
+                        const res = await fetch(`${API}/api/bernard/scenarios`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            deal_name: state.activeDeal.name,
+                            size_usd: totalDebt,
+                            noi: state.activeDeal.stabilized_noi_usd,
+                            sector: state.activeDeal.sector,
+                            deal_type: 'stabilized',
+                            tax_exempt: true,
+                            enhancement: 'surety',
+                            dscr_projected: state.activeDeal.stabilized_noi_usd / (totalDebt * (blendedCoupon / 100)),
+                            borrower_type: 'special_purpose',
+                          }),
+                        });
+                        if (res.ok) {
+                          const data = await res.json();
+                          const payload = data.data ?? data;
+                          // Extract call/put analysis from scenarios response
+                          if (payload.call_schedule || payload.recommendation) {
+                            setCallPutResult(payload);
+                          } else {
+                            // Build call/put result from spread decomposition
+                            const currentBps = firstCallTranche ? firstCallTranche.spread_bps : state.tranches[0].spread_bps;
+                            const originalBps = currentBps + 50;
+                            const rateChange = currentBps - originalBps;
+                            const bondFace = state.activeDeal.total_project_cost_usd;
+                            const saving = Math.abs(rateChange) * bondFace / 10000;
+                            const fee = saving * 0.15;
+                            setCallPutResult({
+                              recommendation: rateChange < -25 ? "EXECUTE_CALL" : rateChange < 0 ? "CALL_ELIGIBLE" : "MONITOR",
+                              rate_change_bps: rateChange,
+                              estimated_client_saving_usd: saving,
+                              net_client_benefit_usd: saving - fee,
+                              arrangement_fee_usd: fee,
+                            });
+                          }
+                        }
+                      } catch (err) {
+                        console.error('[BondStructuringEngine] call/put analysis failed:', err);
+                      } finally {
+                        setCallPutLoading(false);
+                      }
                     }}
-                    disabled={callPutMutation.isPending}
+                    disabled={callPutLoading}
                     className="rounded-lg bg-[#C4A048]/20 px-3 py-1 font-mono text-[0.6rem] text-[#C4A048] transition-all hover:bg-[#C4A048]/30 disabled:opacity-50"
                   >
-                    {callPutMutation.isPending ? "Analyzing..." : "Run Analysis"}
+                    {callPutLoading ? "Analyzing..." : "Run Analysis"}
                   </button>
                 </div>
 

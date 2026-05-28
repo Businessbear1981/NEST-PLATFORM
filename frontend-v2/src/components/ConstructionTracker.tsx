@@ -2,9 +2,12 @@
 Design philosophy: Bloomberg Terminal x Spider-Verse institutional command cockpit.
 Construction Tracker monitors project milestones, permits, inspections, and schedule variance.
 */
+import { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle2, Clock, TrendingDown, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+const API = "http://localhost:8000";
 
 export interface ConstructionMilestone {
   milestoneId: string;
@@ -46,9 +49,43 @@ function getVarianceClass(variance: number): string {
 
 export default function ConstructionTracker({
   dealId,
-  milestones,
+  milestones: propMilestones,
   onMilestoneUpdate,
 }: ConstructionTrackerProps) {
+  const [liveMilestones, setLiveMilestones] = useState<ConstructionMilestone[]>([]);
+  const [readiness, setReadiness] = useState<Record<string, unknown> | null>(null);
+
+  // Fetch deal pipeline from EagleEye and extract milestones for this deal
+  useEffect(() => {
+    fetch(`${API}/api/eagleeye/pipeline`)
+      .then((res) => res.json())
+      .then((json) => {
+        const deals = json.data ?? json;
+        const deal = Array.isArray(deals)
+          ? deals.find((d: Record<string, unknown>) => d.deal_id === dealId || d.id === dealId)
+          : null;
+        if (deal?.milestones && Array.isArray(deal.milestones)) {
+          setLiveMilestones(deal.milestones);
+        }
+      })
+      .catch(() => {/* fall back to props */});
+  }, [dealId]);
+
+  // Fetch construction readiness from Bernard
+  useEffect(() => {
+    fetch(`${API}/api/bernard/readiness`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deal_id: dealId }),
+    })
+      .then((res) => res.json())
+      .then((json) => setReadiness(json.data ?? json))
+      .catch(() => {/* readiness optional */});
+  }, [dealId]);
+
+  // Live data wins when available, otherwise fall back to props
+  const milestones = liveMilestones.length > 0 ? liveMilestones : propMilestones;
+
   const totalProgress = (milestones.reduce((sum, m) => sum + m.percentComplete, 0) / milestones.length).toFixed(0);
   const criticalPathMilestones = milestones.filter((m) => m.isCriticalPath);
   const behindSchedule = milestones.filter((m) => m.daysAhead < -5).length;
@@ -259,6 +296,23 @@ export default function ConstructionTracker({
           </div>
         </CardContent>
       </Card>
+
+      {/* Bernard Construction Readiness */}
+      {readiness && (
+        <Card className="construction-readiness-card border-cyan-900/50 bg-cyan-950/20">
+          <CardHeader>
+            <CardTitle className="text-sm font-mono text-cyan-400 flex items-center gap-2">
+              <Zap size={16} />
+              Bernard Readiness Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre className="text-xs text-slate-300 whitespace-pre-wrap font-mono">
+              {JSON.stringify(readiness, null, 2)}
+            </pre>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Critical Path Alert */}
       {criticalPathMilestones.some((m) => m.daysAhead < 0) && (
