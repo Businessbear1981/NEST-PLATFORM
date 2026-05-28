@@ -348,13 +348,29 @@ def _create_deal_from_preflight(session_id: str, structured: dict) -> str | None
         "equity": params.get("equity_contribution") or params.get("equity", 0),
         "interest_expense": (params.get("debt_service", 0) or 0) * 0.6,
     }
+    credit_result = None
     if deal_id and any(float(v) > 0 for v in financials.values() if v):
         try:
             from services.credit_engine import CreditEngine
             engine = CreditEngine()
-            engine.run_and_persist(deal_id, financials)
+            credit_result = engine.run_and_persist(deal_id, financials)
         except Exception:
             pass  # Credit engine failure shouldn't block deal creation
+
+    # Auto-trigger risk scoring + bond structuring
+    if credit_result:
+        try:
+            from agents.sentinel import SentinelAgent
+            sentinel = SentinelAgent()
+            sentinel.run_and_persist(deal_id, financials, credit_result)
+        except Exception:
+            pass
+
+        try:
+            from services.structuring_service import compute_and_persist
+            compute_and_persist(deal_id, financials, credit_result)
+        except Exception:
+            pass
 
     return deal_id
 
