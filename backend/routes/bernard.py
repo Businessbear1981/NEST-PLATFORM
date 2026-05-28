@@ -1,8 +1,10 @@
-"""Bernard — the NEST action engine. Find-me, pitch, cost estimate, PO."""
+"""Bernard — the NEST action engine. Find-me, pitch, cost estimate, PO, preflight intake."""
+import uuid
 from flask import Blueprint, jsonify, request
 from datetime import datetime
 from services.bernard_findme import BernardFindMe
 from services.pitch_generator import PitchGenerator
+import services.preflight_service as preflight
 
 bernard_bp = Blueprint("bernard", __name__)
 _bernard = BernardFindMe()
@@ -68,3 +70,31 @@ def assess_readiness():
     deal = body.get("deal", body)
     result = _pitch.assess_readiness(deal)
     return _ok(result)
+
+
+# ── Preflight — Conversational Deal Intake (Stage 0) ─────────────────────────
+
+@bernard_bp.route("/preflight/start", methods=["POST"])
+def start_preflight():
+    body = request.get_json(silent=True) or {}
+    session_id = str(uuid.uuid4())
+    result = preflight.start_session(session_id, body.get("context", ""))
+    return _ok(result)
+
+
+@bernard_bp.route("/preflight/<session_id>/message", methods=["POST"])
+def preflight_message(session_id):
+    body = request.get_json(silent=True) or {}
+    message = body.get("message", "")
+    if not message:
+        return _err("message is required")
+    result = preflight.continue_session(session_id, message)
+    return _ok(result)
+
+
+@bernard_bp.route("/preflight/<session_id>", methods=["GET"])
+def get_preflight(session_id):
+    session = preflight.get_session(session_id)
+    if not session:
+        return _err("Session not found", 404)
+    return _ok(session)
