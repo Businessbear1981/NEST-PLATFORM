@@ -34,7 +34,7 @@ import LenderCommandCenter from "./components/LenderCommandCenter";
 import RiskCommandCenter from "./components/RiskCommandCenter";
 import MarketingStudio from "./components/MarketingStudio";
 import ModelingStudio from "./components/ModelingStudio";
-import RootsDocumentVault from "./components/RootsDocumentVault";
+import { RootsDocumentVault } from "./components/RootsDocumentVault";
 import BernardPage from "./pages/v4/BernardPage";
 import CreditUWPage from "./pages/v4/CreditUWPage";
 import TrusteePage from "./pages/v4/TrusteePage";
