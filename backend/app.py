@@ -81,6 +81,12 @@ from routes.preflight import preflight_bp
 from routes.client_portal import client_portal_bp
 from routes.bd import bd_bp
 from routes.bernard import bernard_bp
+from routes.contacts import contacts_bp
+from routes.outreach import outreach_bp
+from routes.surety_universe import surety_universe_bp
+from routes.naics import naics_bp
+from routes.intake_brainstorm import intake_brainstorm_bp
+from routes.study import study_bp
 
 
 def create_app():
@@ -170,6 +176,9 @@ def create_app():
     app.register_blueprint(intel_engine_bp, url_prefix="/api/intel")
     app.register_blueprint(workflow_bp, url_prefix="/api/workflow")
     app.register_blueprint(counterparties_bp, url_prefix="/api/counterparties")
+    app.register_blueprint(contacts_bp, url_prefix="/api/contacts")
+    app.register_blueprint(outreach_bp, url_prefix="/api/outreach")
+    app.register_blueprint(surety_universe_bp, url_prefix="/api/surety-universe")
     app.register_blueprint(mirror_bp, url_prefix="/api/rating")
     app.register_blueprint(v2_compat_bp, url_prefix="/api")
     app.register_blueprint(deal_flow_bp, url_prefix="/api/deal-flow")
@@ -178,6 +187,9 @@ def create_app():
     app.register_blueprint(client_portal_bp, url_prefix="/api/client")
     app.register_blueprint(bd_bp, url_prefix="/api/bd")
     app.register_blueprint(bernard_bp, url_prefix="/api/bernard")
+    app.register_blueprint(naics_bp, url_prefix="/api/naics")
+    app.register_blueprint(intake_brainstorm_bp, url_prefix="/api/intake-brainstorm")
+    app.register_blueprint(study_bp, url_prefix="/api/study")
 
     # Seed EMMA with real bond structures on startup
     from services.emma_seed_data import seed_emma_database

@@ -3,7 +3,7 @@
  * Documents auto-classify into the correct slot in the deal package.
  * Shows % completeness toward credit readiness.
  */
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,8 +35,17 @@ type UploadedDoc = {
   uploaded_at: string;
 };
 
+type DealSummary = {
+  id: string;
+  name: string;
+  status?: string;
+  project?: { name?: string; city?: string; state?: string; asset_type?: string; total_project_cost_usd?: number };
+};
+
 export default function RootsUploadPage() {
-  const [dealId] = useState("jacaranda-2026");
+  const [deals, setDeals] = useState<DealSummary[]>([]);
+  const [selectedDealId, setSelectedDealId] = useState("");
+  const [dealsLoading, setDealsLoading] = useState(true);
   const [uploads, setUploads] = useState<UploadedDoc[]>([]);
   const [completeness, setCompleteness] = useState<any>(null);
   const [dealFinancials, setDealFinancials] = useState<any>(null);
@@ -45,13 +54,36 @@ export default function RootsUploadPage() {
   const [lastNarration, setLastNarration] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Load deals created in Deal Input — the same persisted records, no silo.
+  useEffect(() => {
+    fetch(`${API}/api/deals`, { credentials: "include" })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && Array.isArray(d.data)) {
+          setDeals(d.data);
+          setSelectedDealId(prev => prev || (d.data[0]?.id ?? ""));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setDealsLoading(false));
+  }, []);
+
+  // Switching deals resets the per-deal ingestion view.
+  useEffect(() => {
+    setUploads([]);
+    setCompleteness(null);
+    setDealFinancials(null);
+    setLastNarration(null);
+  }, [selectedDealId]);
+
   const processFile = useCallback(async (file: File) => {
+    if (!selectedDealId) return;
     setUploading(true);
     try {
       // Read file as text (for PDFs this would need server-side parsing)
       const text = await file.text();
 
-      const res = await fetch(`${API}/api/docs/ingest/${dealId}/ingest`, {
+      const res = await fetch(`${API}/api/docs/ingest/${selectedDealId}/ingest`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, filename: file.name }),
@@ -77,7 +109,9 @@ export default function RootsUploadPage() {
     } finally {
       setUploading(false);
     }
-  }, [dealId]);
+  }, [selectedDealId]);
+
+  const selectedDeal = deals.find(d => d.id === selectedDealId);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -110,6 +144,30 @@ export default function RootsUploadPage() {
               and assigns it to the correct slot in the deal package. Credit readiness advances
               as documents are ingested.
             </p>
+
+            {/* Deal selector — the same deals created in Deal Input */}
+            <div className="mt-4">
+              <label className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-slate-500">Active Deal</label>
+              <select
+                value={selectedDealId}
+                onChange={(e) => setSelectedDealId(e.target.value)}
+                disabled={dealsLoading || deals.length === 0}
+                className="mt-1 w-full max-w-md rounded-lg border border-emerald-300/25 bg-[#030A06] px-3 py-2 font-mono text-sm text-emerald-100 focus:border-emerald-400 focus:outline-none disabled:opacity-50"
+              >
+                {dealsLoading && <option>Loading deals…</option>}
+                {!dealsLoading && deals.length === 0 && <option value="">No deals yet — create one in Deal Input</option>}
+                {deals.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}{d.project?.city ? ` — ${d.project.city}, ${d.project.state ?? ""}` : ""}{d.status ? ` · ${d.status}` : ""}
+                  </option>
+                ))}
+              </select>
+              {selectedDeal?.project?.total_project_cost_usd ? (
+                <p className="mt-1 font-mono text-[0.55rem] text-slate-500">
+                  {selectedDeal.project.asset_type?.replace(/_/g, " ")} · TPC ${selectedDeal.project.total_project_cost_usd.toLocaleString()}
+                </p>
+              ) : null}
+            </div>
           </div>
           <div className="flex flex-col items-center justify-center">
             <div className="text-center">
@@ -126,21 +184,28 @@ export default function RootsUploadPage() {
 
       {/* Drop Zone */}
       <div
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragOver={(e) => { if (selectedDealId) { e.preventDefault(); setDragOver(true); } }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className={`rounded-2xl border-2 border-dashed p-12 text-center cursor-pointer transition-all ${
-          dragOver
-            ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+        onClick={() => { if (selectedDealId) fileInputRef.current?.click(); }}
+        className={`rounded-2xl border-2 border-dashed p-12 text-center transition-all ${
+          !selectedDealId
+            ? "border-slate-800 bg-[#0D2218]/20 cursor-not-allowed opacity-60"
+            : dragOver
+            ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_30px_rgba(16,185,129,0.15)] cursor-pointer"
             : uploading
-            ? "border-[#C4A048] bg-[#C4A048]/5 animate-pulse"
-            : "border-slate-700 bg-[#0D2218]/30 hover:border-slate-500"
+            ? "border-[#C4A048] bg-[#C4A048]/5 animate-pulse cursor-pointer"
+            : "border-slate-700 bg-[#0D2218]/30 hover:border-slate-500 cursor-pointer"
         }`}
       >
         <input ref={fileInputRef} type="file" multiple accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.txt"
           onChange={handleFileSelect} className="hidden" />
-        {uploading ? (
+        {!selectedDealId ? (
+          <div>
+            <p className="text-lg text-slate-300 font-semibold">Select a deal to begin</p>
+            <p className="text-sm text-slate-500 mt-1">Choose a deal above — or create one in Deal Input — then upload its document package here.</p>
+          </div>
+        ) : uploading ? (
           <div>
             <p className="text-lg text-[#C4A048] font-semibold">Bernard is analyzing...</p>
             <p className="text-sm text-slate-400 mt-1">Classifying document, extracting financials</p>

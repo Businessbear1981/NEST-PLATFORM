@@ -28,13 +28,6 @@ import AboutNest from "./components/AboutNest";
 import SignalIntelligenceFeed from "./components/SignalIntelligenceFeed";
 import EagleEyeV2 from "./components/EagleEyeV2";
 import AppShell from "./components/AppShell";
-import BoxingOutTracker from "./components/BoxingOutTracker";
-import BondIntelligence from "./components/BondIntelligence";
-import LenderCommandCenter from "./components/LenderCommandCenter";
-import RiskCommandCenter from "./components/RiskCommandCenter";
-import MarketingStudio from "./components/MarketingStudio";
-import ModelingStudio from "./components/ModelingStudio";
-import { RootsDocumentVault } from "./components/RootsDocumentVault";
 import BernardPage from "./pages/v4/BernardPage";
 import CreditUWPage from "./pages/v4/CreditUWPage";
 import TrusteePage from "./pages/v4/TrusteePage";
@@ -46,6 +39,16 @@ import DealInputPage from "./pages/v4/DealInputPage";
 import DealsPage from "./pages/v4/DealsPage";
 import RootsUploadPage from "./pages/v4/RootsUploadPage";
 import ClientDashboardPage from "./pages/v4/ClientDashboardPage";
+import StudyPage from "./pages/v4/StudyPage";
+// Phase 1 — wire previously-orphaned intelligence modules (real backend fetches)
+import BondIntelligence from "./components/BondIntelligence";
+import ModelingStudio from "./components/ModelingStudio";
+import ForensicAudit from "./components/ForensicAudit";
+import RiskCommandCenter from "./components/RiskCommandCenter";
+import LenderCommandCenter from "./components/LenderCommandCenter";
+import CentralNervousSystem from "./components/CentralNervousSystem";
+import MarketingStudio from "./components/MarketingStudio";
+import InstitutionalDashboard from "./components/InstitutionalDashboard";
 
 function BondCommandPage(props: any) {
   return (
@@ -53,23 +56,6 @@ function BondCommandPage(props: any) {
           style={{ background: "radial-gradient(circle at 12% 4%, rgba(34,211,238,0.20), transparent 28rem), radial-gradient(circle at 84% 9%, rgba(251,191,36,0.16), transparent 25rem), linear-gradient(135deg,#02050a 0%,#07101a 50%,#04070d 100%)" }}>
       <BondCommandCenter dealId={props.params?.dealId ?? "dec80007-947f-4310-9aef-7313d0945cf8"} />
     </main>
-  );
-}
-
-/* Placeholder page for modules under construction */
-function ModulePlaceholder({ title, apiEndpoint }: { title: string; apiEndpoint: string }) {
-  return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center space-y-6 text-center">
-      <div className="rounded-2xl border border-cyan-400/20 bg-[#060E1A] px-12 py-10 shadow-[0_0_60px_rgba(34,211,238,0.08)]">
-        <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-cyan-300/60 mb-3">NEST Operating Framework</div>
-        <h1 className="text-3xl font-bold text-slate-100 mb-2" style={{ fontFamily: "Cormorant Garamond, serif" }}>{title}</h1>
-        <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent my-4" />
-        <p className="text-slate-400 text-sm max-w-md">Module under construction. Backend API wiring in progress.</p>
-        <div className="mt-4 inline-block rounded-lg border border-slate-700 bg-slate-900/50 px-4 py-2 font-mono text-xs text-slate-500">
-          API → {apiEndpoint}
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -116,22 +102,16 @@ function Router() {
       <Route path={"/upload"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><RootsUploadPage /></main>}</Route>
       <Route path={"/client"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ClientDashboardPage /></main>}</Route>
       <Route path={"/client/:dealId"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ClientDashboardPage /></main>}</Route>
-      {/* V3 Module Routes */}
-      <Route path={"/boxing-out"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><BoxingOutTracker /></main>}</Route>
+      {/* Phase 1 — orphaned intelligence modules wired to routes */}
       <Route path={"/bond-intel"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><BondIntelligence /></main>}</Route>
-      <Route path={"/lenders"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><LenderCommandCenter /></main>}</Route>
-      <Route path={"/risk"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><RiskCommandCenter /></main>}</Route>
-      <Route path={"/marketing"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><MarketingStudio /></main>}</Route>
       <Route path={"/modeling"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModelingStudio /></main>}</Route>
-      <Route path={"/documents"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><RootsDocumentVault /></main>}</Route>
-      {/* Placeholder Module Routes — Backend APIs built, frontend pending */}
-      <Route path={"/feasibility"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Feasibility Analysis" apiEndpoint="/api/feasibility" /></main>}</Route>
-      <Route path={"/feasibility-desk"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Feasibility Desk" apiEndpoint="/api/feasibility/desk" /></main>}</Route>
-      <Route path={"/audit-desk"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Audit Desk" apiEndpoint="/api/audit" /></main>}</Route>
-      <Route path={"/cost-estimate"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Cost Estimation Engine" apiEndpoint="/api/cost-estimate" /></main>}</Route>
-      <Route path={"/atticus"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Atticus — Legal & Compliance" apiEndpoint="/api/atticus" /></main>}</Route>
-      <Route path={"/pricing"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Pricing Desk" apiEndpoint="/api/pricing" /></main>}</Route>
-      <Route path={"/preflight"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ModulePlaceholder title="Pre-Flight Checklist" apiEndpoint="/api/preflight" /></main>}</Route>
+      <Route path={"/forensic"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><ForensicAudit /></main>}</Route>
+      <Route path={"/risk"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><RiskCommandCenter /></main>}</Route>
+      <Route path={"/lenders"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><LenderCommandCenter /></main>}</Route>
+      <Route path={"/ai-tools"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><CentralNervousSystem /></main>}</Route>
+      <Route path={"/marketing"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><MarketingStudio /></main>}</Route>
+      <Route path={"/institutional"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><InstitutionalDashboard /></main>}</Route>
+      <Route path={"/study"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><StudyPage /></main>}</Route>
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

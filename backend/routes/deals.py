@@ -614,6 +614,47 @@ def generate_memo(deal_id):
     return _ok(result)
 
 
+# ── Latest Credit / Structure / Risk Reads ──────────────────────
+
+@deals_bp.route("/<deal_id>/credit", methods=["GET"])
+@require_auth()
+def get_deal_credit(deal_id):
+    results = db.select("credit_analyses", {
+        "deal_id": f"eq.{deal_id}",
+        "order": "created_at.desc",
+        "limit": "1",
+    })
+    if results:
+        return _ok(results[0])
+    return _ok(None)
+
+
+@deals_bp.route("/<deal_id>/structure", methods=["GET"])
+@require_auth()
+def get_deal_structure(deal_id):
+    rows = db.select("bond_structures", {
+        "deal_id": f"eq.{deal_id}",
+        "order": "created_at.desc",
+        "limit": "1",
+    })
+    if not rows:
+        return _ok(None)
+    return _ok(rows[0])
+
+
+@deals_bp.route("/<deal_id>/risk", methods=["GET"])
+@require_auth()
+def get_deal_risk(deal_id):
+    results = db.select("risk_scores", {
+        "deal_id": f"eq.{deal_id}",
+        "order": "created_at.desc",
+        "limit": "1",
+    })
+    if results:
+        return _ok(results[0])
+    return _ok(None)
+
+
 # ── Pipeline Metrics ────────────────────────────────────────────
 
 @deals_bp.route("/pipeline", methods=["GET"])

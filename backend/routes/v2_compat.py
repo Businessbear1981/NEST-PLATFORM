@@ -48,22 +48,52 @@ def signals_latest():
 
 @v2_compat_bp.get("/signals/query")
 def signals_query():
-    return _ok({"signals": [], "note": "Use /api/market/signals for live data"})
+    """Forwards to /api/eagleeye/signals (real Supabase-backed data)."""
+    from services.eagleeye_service import eagleeye
+    status_filter = request.args.get("status")
+    signals = eagleeye.list_signals(status=status_filter)
+    return _ok({
+        "signals": signals,
+        "total": len(signals),
+        "hot": sum(1 for s in signals if s.get("status") == "hot"),
+        "warm": sum(1 for s in signals if s.get("status") == "warm"),
+    })
 
 
 @v2_compat_bp.get("/signals/stats")
 def signals_stats():
-    return _ok({"total": 0, "by_type": {}})
+    """Forwards to real EagleEye stats."""
+    from services.eagleeye_service import eagleeye
+    signals = eagleeye.list_signals()
+    by_type: dict[str, int] = {}
+    for s in signals:
+        t = s.get("signal_type") or s.get("category") or "unknown"
+        by_type[t] = by_type.get(t, 0) + 1
+    return _ok({"total": len(signals), "by_type": by_type})
 
 
 @v2_compat_bp.get("/signals/alerts")
 def signals_alerts():
-    return _ok({"alerts": []})
+    """Forwards to high-priority EagleEye signals as alerts."""
+    from services.eagleeye_service import eagleeye
+    signals = eagleeye.list_signals(status="hot")
+    return _ok({"alerts": signals, "total": len(signals)})
 
 
 @v2_compat_bp.get("/signals/related")
 def signals_related():
-    return _ok({"related": []})
+    """Returns signals related to a given signal_id by sector/region."""
+    from services.eagleeye_service import eagleeye
+    signal_id = request.args.get("signal_id") or request.args.get("id")
+    if not signal_id:
+        return _ok({"related": []})
+    all_signals = eagleeye.list_signals()
+    target = next((s for s in all_signals if str(s.get("id")) == str(signal_id)), None)
+    if not target:
+        return _ok({"related": []})
+    sector = target.get("sector")
+    related = [s for s in all_signals if s.get("sector") == sector and str(s.get("id")) != str(signal_id)]
+    return _ok({"related": related[:10]})
 
 
 @v2_compat_bp.get("/signals/vector/latest")

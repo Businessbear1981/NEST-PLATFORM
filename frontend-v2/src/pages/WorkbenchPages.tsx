@@ -2,7 +2,7 @@
 Design philosophy for this file: Bloomberg Terminal x Spider-Verse institutional command cockpit.
 These routed workbench pages must preserve every NEST module as a docked institutional capability, showing role-specific command surfaces rather than placeholder routes.
 */
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
   ArrowLeft,
@@ -39,11 +39,13 @@ const cnsLayerRows = [
   ["Deterministic Execution Backend", "RBAC, workflow state, APIs, databases, queues, approvals, audit logs, retention", "Code decides what runs, who can see it, and what record is written"],
 ] as const;
 
-const dashboardCards = [
-  ["Document Nervous System", "18 lanes", "Evidence graph, document vault, OCR, approvals, and retained records.", "/roots"],
-  ["Rating / Grading Room", "74% ready", "Bond grade, feasibility, credit memo, risk flags, and missing-item schedule.", "/rating-intelligence"],
-  ["Surety & Insurance", "A path", "SuretyScout, underwriting packet, insurance evidence, and provider handoff.", "/insurance-surety"],
-  ["Bond Desk", "$173M demo", "Market pricing, call/put review, M&A locator, placement book, and investor follow-up.", "/bond-desk"],
+// Module deep-link cards. All hrefs verified against App.tsx route table.
+// Metric column is rendered live from the dashboard-level fetches (see DashboardPage).
+const dashboardCardSpec = [
+  { name: "EagleEye V2", href: "/eagleeye-v2", copy: "Signal sourcing across EMMA, EDGAR, FINRA. Geographic intelligence map. Promote to Deal." },
+  { name: "Roots", href: "/roots", copy: "Stage 1 document ingestion. NAICS-driven document checklist. Feasibility study slotting." },
+  { name: "Bond Desk", href: "/bond-desk", copy: "Sizing, structuring, call/put schedules. NAICS-derived bond type. Cost of Issuance + NEST P&L views." },
+  { name: "New Deal", href: "/deal-input-v4", copy: "Stage 0 intake. Triggers Bernard Intake Brainstorm with NAICS rules and credit benchmarks." },
 ] as const;
 
 const portalRows = [
@@ -133,66 +135,69 @@ function WorkbenchShell({
   );
 }
 
+type DashMetrics = { total_deals?: number; active_deals?: number; total_pipeline_usd?: number; agents_active?: number; agents_total?: number; bond_structures?: number };
+type DashWarChest = { aum_usd?: number; lc_capacity_usd?: number; lc_phase?: string; ytd_return_pct?: number };
+type DashEagleStats = { total_signals?: number; hot?: number; warm?: number; total_prospects?: number };
+type DashDeal = { id?: string; name?: string; state?: string; bond_face?: number; status?: string; risk_grade?: string };
+type DashPipeline = { total_pipeline_usd?: number; deal_count?: number; by_status?: Record<string, number> };
+
 export function DashboardPage() {
-  const { isAuthenticated } = useAuth();
-  const dealsQuery = trpc.deals.list.useQuery(undefined, { enabled: isAuthenticated });
-  const approvalsQuery = trpc.approvals.listPending.useQuery(undefined, { enabled: isAuthenticated });
-  const targetsQuery = trpc.mTargets.list.useQuery(undefined, { enabled: isAuthenticated });
+  const [metrics, setMetrics] = useState<DashMetrics | null>(null);
+  const [warChest, setWarChest] = useState<DashWarChest | null>(null);
+  const [eagleStats, setEagleStats] = useState<DashEagleStats | null>(null);
+  const [deals, setDeals] = useState<DashDeal[]>([]);
+  const [pipeline, setPipeline] = useState<DashPipeline | null>(null);
+  const [token, setToken] = useState<string>("");
 
-  const deals = dealsQuery.data ?? [];
-  const approvals = approvalsQuery.data ?? [];
-  const targets = targetsQuery.data ?? [];
-  const activeDealId = deals[0]?.id ?? 0;
-  const activeBondInput = useMemo(() => ({ dealId: activeDealId }), [activeDealId]);
-  const bondsQuery = trpc.bonds.listByDeal.useQuery(activeBondInput, { enabled: isAuthenticated && activeDealId > 0 });
-  const activeBonds = bondsQuery.data ?? [];
+  useEffect(() => {
+    if (typeof window !== "undefined") setToken(localStorage.getItem("nest_token") || "");
+  }, []);
 
-  const portfolioFaceValue = useMemo(
-    () => deals.reduce((sum, deal) => sum + numberFromMoneyLike(deal.amount), 0),
-    [deals]
-  );
-  const activeBondFaceValue = useMemo(
-    () => activeBonds.reduce((sum, bond) => sum + numberFromMoneyLike(bond.size), 0),
-    [activeBonds]
-  );
+  useEffect(() => {
+    const h = token ? { Authorization: `Bearer ${token}` } : undefined;
+    fetch("/api/metrics", { headers: h }).then(r => r.json()).then(d => { if (d.success) setMetrics(d.data); }).catch(() => {});
+    fetch("/api/fund/hft/war-chest", { headers: h }).then(r => r.json()).then(d => { if (d.success) setWarChest(d.data); }).catch(() => {});
+    fetch("/api/eagleeye/stats").then(r => r.json()).then(d => { if (d.success) setEagleStats(d.data); }).catch(() => {});
+    fetch("/api/deals", { headers: h }).then(r => r.json()).then(d => { if (d.success) setDeals((d.data as DashDeal[]) || []); }).catch(() => {});
+    fetch("/api/deals/pipeline", { headers: h }).then(r => r.json()).then(d => { if (d.success) setPipeline(d.data); }).catch(() => {});
+  }, [token]);
 
-  const livePortfolioMetrics = useMemo(
-    () => [
-      { label: "Portfolio deals", value: String(deals.length), detail: isAuthenticated ? "tRPC deals.list live count" : "Sign in to hydrate backend pipeline", icon: Activity },
-      { label: "Bond face value", value: activeBondFaceValue > 0 ? formatCompactCurrency(activeBondFaceValue) : formatCompactCurrency(portfolioFaceValue), detail: activeBondFaceValue > 0 ? "Active-deal bond tranches" : "Portfolio deal amount proxy", icon: CircleDollarSign },
-      { label: "Pending approvals", value: String(approvals.length), detail: approvals.length ? "Human gates awaiting action" : "No pending human gates", icon: ShieldCheck },
-      { label: "M&A targets", value: String(targets.length), detail: targets.length ? "Merlin target scorecards loaded" : "Target universe ready", icon: Target },
-    ],
-    [activeBondFaceValue, approvals.length, deals.length, isAuthenticated, portfolioFaceValue, targets.length]
-  );
+  const livePortfolioMetrics = useMemo(() => [
+    { label: "Active Deals", value: String(metrics?.active_deals ?? deals.length), detail: `${metrics?.total_deals ?? deals.length} total in pipeline`, icon: Activity },
+    { label: "Pipeline Value", value: formatCompactCurrency(pipeline?.total_pipeline_usd ?? metrics?.total_pipeline_usd ?? 0), detail: "Sum of active deal face amounts", icon: CircleDollarSign },
+    { label: "HFT War Chest", value: formatCompactCurrency(warChest?.aum_usd ?? 0), detail: warChest?.lc_phase ? `LC ${warChest.lc_phase} · ${formatCompactCurrency(warChest.lc_capacity_usd || 0)} capacity` : "Treasury arbitrage + Agency MBS basis", icon: ShieldCheck },
+    { label: "EagleEye Signals", value: String(eagleStats?.total_signals ?? 0), detail: `${eagleStats?.hot ?? 0} hot · ${eagleStats?.warm ?? 0} warm · ${eagleStats?.total_prospects ?? 0} prospects`, icon: Target },
+  ], [metrics, warChest, eagleStats, deals, pipeline]);
 
   const statusRows = useMemo(() => {
+    if (pipeline?.by_status) {
+      return Object.entries(pipeline.by_status).map(([status, count]) => ({ status, count }));
+    }
     const counts = new Map<string, number>();
-    for (const deal of deals) counts.set(deal.status ?? "draft", (counts.get(deal.status ?? "draft") ?? 0) + 1);
+    for (const d of deals) counts.set(d.status ?? "intake", (counts.get(d.status ?? "intake") ?? 0) + 1);
     return Array.from(counts.entries()).map(([status, count]) => ({ status, count }));
-  }, [deals]);
+  }, [deals, pipeline]);
+
+  const realDeals = useMemo(() => deals.filter(d => {
+    const name = (d.name || "").toLowerCase();
+    return !name.includes("test") && !name.includes("patch") && !name.includes("lookup");
+  }).slice(0, 6), [deals]);
 
   return (
     <WorkbenchShell
       icon={Activity}
-      eyebrow="Institutional dashboard"
-      title="Live portfolio command view across documents, grading, surety, and placement."
-      lede="The dashboard proves the redesign is not deleting systems. It reorganizes every preserved capability into synchronized institutional desks and hydrates the top line from the backend where authenticated data exists."
+      eyebrow="NEST Command Dashboard"
+      title="Live portfolio. Real-time deal pipeline, EagleEye signals, treasury war chest."
+      lede="Active deals, pipeline value, and signal flow read from the backend. Click any module card to drill in."
     >
-      {!isAuthenticated ? (
-        <section className="mb-4 rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100">
-          Backend portfolio metrics are protected. <a className="underline decoration-amber-200/60 underline-offset-4" href={getLoginUrl()}>Sign in</a> to view live tRPC deal, approval, bond, and M&A counts.
-        </section>
-      ) : null}
-
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" aria-label="Live portfolio metrics">
         {livePortfolioMetrics.map(({ label, value, detail, icon: Icon }) => (
-          <article key={label} className="rounded-2xl border border-cyan-300/20 bg-[#06101a]/85 p-4 shadow-[0_0_36px_rgba(34,211,238,0.08)]">
-            <div className="flex items-center justify-between gap-3 text-cyan-100">
-              <span className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-cyan-200/80">{label}</span>
-              <Icon size={16} />
+          <article key={label} className="rounded-2xl border border-[#C4A048]/20 bg-[#0D2218]/80 p-4 shadow-[0_0_36px_rgba(196,160,72,0.08)]">
+            <div className="flex items-center justify-between gap-3 text-amber-100">
+              <span className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-amber-200/80">{label}</span>
+              <Icon size={16} className="text-[#C4A048]" />
             </div>
-            <strong className="mt-3 block font-mono text-3xl text-white">{value}</strong>
+            <strong className="mt-3 block font-mono text-3xl text-[#C4A048]">{value}</strong>
             <p className="mt-2 text-sm text-slate-300">{detail}</p>
           </article>
         ))}
@@ -200,33 +205,49 @@ export function DashboardPage() {
 
       <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="workbench-card-grid">
-          {dashboardCards.map(([name, metric, copy, href]) => (
+          {dashboardCardSpec.map(({ name, href, copy }) => (
             <Link className="workbench-card module-link-card" href={href} key={name}>
               <span>{name}</span>
-              <strong>{metric}</strong>
+              <strong className="text-[#C4A048]">Open →</strong>
               <p>{copy}</p>
-              <em>Open working module →</em>
+              <em>Active module</em>
             </Link>
           ))}
         </div>
-        <aside className="rounded-2xl border border-amber-300/25 bg-[#080d14]/88 p-4">
-          <p className="kicker"><TrendingUp size={14} /> Deal status rail</p>
+        <aside className="rounded-2xl border border-[#C4A048]/25 bg-[#0D2218]/80 p-4">
+          <p className="kicker text-[#C4A048]"><TrendingUp size={14} /> Deal status rail</p>
           <div className="mt-3 grid gap-2">
-            {(statusRows.length ? statusRows : [{ status: "intake", count: 0 }, { status: "underwriting", count: 0 }, { status: "closing", count: 0 }]).map(({ status, count }) => (
+            {(statusRows.length ? statusRows : [{ status: "intake", count: 0 }, { status: "active", count: 0 }, { status: "closed", count: 0 }]).map(({ status, count }) => (
               <div key={status} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 font-mono text-sm">
                 <span className="uppercase tracking-[0.12em] text-slate-300">{status}</span>
-                <strong className="text-amber-200">{count}</strong>
+                <strong className="text-[#C4A048]">{count}</strong>
               </div>
             ))}
           </div>
-          <Link href="/operations/deals" className="mt-4 inline-flex rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100">Open deal pipeline →</Link>
+          <Link href="/deals" className="mt-4 inline-flex rounded-xl border border-[#C4A048]/30 bg-[#C4A048]/10 px-3 py-2 text-sm text-[#C4A048]">Open deal pipeline →</Link>
         </aside>
       </section>
 
-      <section className="workbench-wide-panel">
-        <h2>Preservation operating rule</h2>
-        <p>Every feature must state what it ingests, what decision it supports, who approves the result, and what record is retained. That rule converts breadth into institutional governance.</p>
-      </section>
+      {realDeals.length > 0 && (
+        <section className="mt-6">
+          <p className="kicker text-[#C4A048] mb-3"><Landmark size={14} /> Active deals</p>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {realDeals.map(d => (
+              <Link key={d.id || d.name} href={d.id ? `/operations/deal/${d.id}` : "/deals"} className="rounded-2xl border border-white/[0.06] bg-[#0D2218]/60 hover:border-[#C4A048]/30 transition-colors p-4">
+                <p className="font-[Cormorant_Garamond] text-lg text-amber-100">{d.name}</p>
+                <div className="mt-2 flex items-center justify-between font-mono text-xs">
+                  <span className="text-slate-400">{d.state || "—"}</span>
+                  <span className="text-[#C4A048]">{formatCompactCurrency(d.bond_face || 0)}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-2 font-mono text-[0.55rem] uppercase tracking-wider">
+                  <span className="rounded border border-[#C4A048]/30 bg-[#C4A048]/10 text-[#C4A048] px-1.5 py-0.5">{d.status || "intake"}</span>
+                  {d.risk_grade && <span className="rounded border border-emerald-400/30 bg-emerald-400/10 text-emerald-200 px-1.5 py-0.5">{d.risk_grade}</span>}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </WorkbenchShell>
   );
 }

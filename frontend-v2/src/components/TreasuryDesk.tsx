@@ -115,7 +115,7 @@ interface Overview {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-const API = 'http://localhost:8000';
+const API = "/api/treasury";
 
 async function fetchData<T>(path: string): Promise<T | null> {
   try {
@@ -156,28 +156,20 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
   const [rebate, setRebate] = useState<Rebate | null>(null);
   const [nestCosts, setNestCosts] = useState<NestSoftCosts | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
-  const [warChest, setWarChest] = useState<Record<string, unknown> | null>(null);
-  const [treasuryMonitor, setTreasuryMonitor] = useState<Record<string, unknown> | null>(null);
-  const [marketSignals, setMarketSignals] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      // ── Treasury deal endpoints ──
-      fetchData<Overview>(`/api/treasury/${dealId}/overview`).then(setOverview),
-      fetchData<Transaction[]>(`/api/treasury/${dealId}/transactions`).then((d) => setTransactions(d ?? [])),
-      fetchData<VirtualCard[]>(`/api/treasury/${dealId}/cards`).then((d) => setCards(d ?? [])),
-      fetchData<BudgetLine[]>(`/api/treasury/${dealId}/budget`).then((d) => setBudgetLines(d ?? [])),
-      fetchData<PrefundEvent[]>(`/api/treasury/${dealId}/draws`).then((d) => setPrefunds(d ?? [])),
-      fetchData<Reconciliation[]>(`/api/treasury/${dealId}/reconciliation`).then((d) => setRecon(d ?? [])),
-      fetchData<Rebate>(`/api/treasury/${dealId}/rebate`).then(setRebate),
-      fetchData<NestSoftCosts>("/api/treasury/nest/soft-costs").then(setNestCosts),
-      fetchData<Portfolio>("/api/treasury/portfolio").then(setPortfolio),
-      // ── Cross-platform endpoints ──
-      fetchData<Record<string, unknown>>("/api/fund/hft/war-chest").then(setWarChest),
-      fetchData<Record<string, unknown>>("/api/treasury/monitor").then(setTreasuryMonitor),
-      fetchData<Record<string, unknown>>("/api/market/signals/latest").then(setMarketSignals),
+      fetchData<Overview>(`/${dealId}/overview`).then(setOverview),
+      fetchData<Transaction[]>(`/${dealId}/transactions`).then((d) => setTransactions(d ?? [])),
+      fetchData<VirtualCard[]>(`/${dealId}/cards`).then((d) => setCards(d ?? [])),
+      fetchData<BudgetLine[]>(`/${dealId}/budget`).then((d) => setBudgetLines(d ?? [])),
+      fetchData<PrefundEvent[]>(`/${dealId}/draws`).then((d) => setPrefunds(d ?? [])),
+      fetchData<Reconciliation[]>(`/${dealId}/reconciliation`).then((d) => setRecon(d ?? [])),
+      fetchData<Rebate>(`/${dealId}/rebate`).then(setRebate),
+      fetchData<NestSoftCosts>("/nest/soft-costs").then(setNestCosts),
+      fetchData<Portfolio>("/portfolio").then(setPortfolio),
     ]).finally(() => setLoading(false));
   }, [dealId]);
 

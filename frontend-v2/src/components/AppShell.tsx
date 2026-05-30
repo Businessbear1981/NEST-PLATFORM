@@ -3,101 +3,68 @@ import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
   BarChart3, Building2, Briefcase, Radio, Activity,
-  Gauge, GitBranch, Megaphone, Swords, Inbox,
-  Upload, CheckCircle2, CreditCard, LineChart,
-  FlaskConical, AlertTriangle, DollarSign, Tag,
-  Send, HandCoins, FileText, Gavel, Calculator,
-  Binoculars, Moon, Database, HardHat, ClipboardList,
-  Search, Wallet, Cpu,
+  GraduationCap,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
 const NAV_SECTIONS = [
   {
-    label: "COMMAND",
-    items: [
-      { label: "Dashboard", href: "/dashboard", icon: Gauge },
-      { label: "Pipeline", href: "/deals", icon: GitBranch },
-      { label: "Bernard", href: "/bernard", icon: Bot },
-    ],
-  },
-  {
     label: "ORIGINATION",
     items: [
+      { label: "New Deal", href: "/deal-input-v4", icon: Briefcase },
       { label: "EagleEye", href: "/eagleeye-v2", icon: Eye },
-      { label: "M&A Intel", href: "/ma", icon: Search },
-      { label: "Bullseye Pitch", href: "/marketing", icon: Megaphone },
-      { label: "Boxing Out", href: "/boxing-out", icon: Swords },
+      { label: "Roots", href: "/roots", icon: TreePine },
     ],
   },
   {
-    label: "INTAKE",
+    label: "OVERVIEW",
     items: [
-      { label: "Deal Entry", href: "/deal-input-v4", icon: Inbox },
-      { label: "Roots — Docs", href: "/upload", icon: TreePine },
-      { label: "Preflight", href: "/preflight", icon: CheckCircle2 },
-    ],
-  },
-  {
-    label: "ANALYSIS",
-    items: [
-      { label: "Credit", href: "/credit", icon: CreditCard },
-      { label: "Modeling", href: "/modeling", icon: LineChart },
-      { label: "Feasibility", href: "/feasibility", icon: FlaskConical },
-      { label: "Risk", href: "/risk", icon: AlertTriangle },
+      { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
+      { label: "Active Deals", href: "/deals", icon: Building2 },
+      { label: "Bernard", href: "/bernard", icon: Bot },
     ],
   },
   {
     label: "STRUCTURING",
     items: [
       { label: "Bond Desk", href: "/bond-desk", icon: Landmark },
-      { label: "Bond Intel", href: "/bond-intel", icon: Activity },
-      { label: "Enhancement", href: "/surety", icon: Shield },
-      { label: "Pricing", href: "/pricing", icon: Tag },
+      { label: "Bond Intel", href: "/bond-intel", icon: BarChart3 },
+      { label: "Modeling", href: "/modeling", icon: Activity },
+      { label: "Credit & Rating", href: "/credit", icon: Scale },
+      { label: "Rating Submission", href: "/rating", icon: BarChart3 },
+      { label: "Enhancement", href: "/surety", icon: FileCheck },
     ],
   },
   {
-    label: "RATING",
+    label: "EXECUTION",
     items: [
-      { label: "Rating Desk", href: "/rating", icon: BarChart3 },
+      { label: "Placement", href: "/hawkeye", icon: Target },
+      { label: "Lenders", href: "/lenders", icon: Users },
+      { label: "Doc Upload", href: "/upload", icon: TreePine },
+      { label: "Construction", href: "/construction", icon: Building2 },
+      { label: "Treasury", href: "/treasury", icon: Landmark },
     ],
   },
   {
-    label: "PLACEMENT",
+    label: "ADMINISTRATION",
     items: [
-      { label: "Hawkeye", href: "/hawkeye", icon: Target },
-      { label: "Lenders", href: "/lenders", icon: HandCoins },
-    ],
-  },
-  {
-    label: "CLOSING",
-    items: [
-      { label: "Documents", href: "/documents", icon: FileText },
-      { label: "Legal / Atticus", href: "/atticus", icon: Gavel },
-      { label: "Cost Estimate", href: "/cost-estimate", icon: Calculator },
-    ],
-  },
-  {
-    label: "MONITORING",
-    items: [
-      { label: "Surveillance", href: "/surveillance", icon: Binoculars },
-      { label: "NightVision", href: "/nightvision", icon: Moon },
-      { label: "EMMA", href: "/emma", icon: Database },
-      { label: "Construction", href: "/construction", icon: HardHat },
-    ],
-  },
-  {
-    label: "AUDIT & FEASIBILITY",
-    items: [
-      { label: "Feasibility Desk", href: "/feasibility-desk", icon: ClipboardList },
-      { label: "Audit Desk", href: "/audit-desk", icon: FileCheck },
+      { label: "Covenants", href: "/covenants", icon: Scale },
+      { label: "Risk / Sentinel", href: "/risk", icon: Shield },
+      { label: "Forensic", href: "/forensic", icon: ClipboardCheck },
+      { label: "Surveillance", href: "/surveillance", icon: Eye },
+      { label: "Compliance", href: "/nightvision", icon: Shield },
+      { label: "Trustee", href: "/trustee", icon: Users },
     ],
   },
   {
     label: "SYSTEM",
     items: [
-      { label: "Treasury", href: "/treasury", icon: Wallet },
-      { label: "AI Tools", href: "/agents/platform", icon: Cpu },
+      { label: "HFT Fund", href: "/institutional", icon: Landmark },
+      { label: "Marketing", href: "/marketing", icon: Briefcase },
+      { label: "AI Tools", href: "/ai-tools", icon: Radio },
+      { label: "EMMA", href: "/emma", icon: BarChart3 },
+      { label: "Study", href: "/study", icon: GraduationCap },
+      { label: "Agents", href: "/agents/platform", icon: Bot },
       { label: "Admin", href: "/admin", icon: Lock },
     ],
   },
@@ -112,7 +79,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-r border-white/10 bg-[#040810]">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 border-b border-white/10 px-4 py-4">
-          <NestMark className="h-7 w-7" />
+          <NestMark size={28} />
           <div>
             <p className="font-[Cormorant_Garamond] text-lg font-semibold tracking-[0.14em] text-[#C4A048]">NEST</p>
             <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-slate-500">Command Platform</p>

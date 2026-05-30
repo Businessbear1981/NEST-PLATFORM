@@ -67,15 +67,18 @@ class EagleEyeService:
 
     def create_scout(self, name: str, criteria: dict, sources: list[str]) -> dict:
         """Save a new Scout profile to Supabase `scouts` table."""
+        # Match migration 002 schema exactly:
+        # id uuid, name text, criteria jsonb, sources text[], is_active bool,
+        # last_run_at timestamptz, total_signals_found integer, created_at timestamptz
         scout = {
-            "id": f"scout_{uuid.uuid4().hex[:12]}",
+            "id": str(uuid.uuid4()),
             "name": name,
             "criteria": criteria,
             "sources": sources,
-            "status": "active",
+            "is_active": True,
             "created_at": datetime.utcnow().isoformat(),
             "last_run_at": None,
-            "signal_count": 0,
+            "total_signals_found": 0,
         }
         saved = db.insert("scouts", scout)
         if saved:

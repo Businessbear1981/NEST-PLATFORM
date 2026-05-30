@@ -116,6 +116,7 @@ def compute_and_persist(deal_id: str, deal_data: dict, credit_result: dict) -> d
     available  -= waterfall_b
     surplus     = max(0.0, available)
 
+    # In-memory result returned to caller (flat, easy for the agent chain to read)
     structure = {
         "deal_id":          deal_id,
         "credit_grade":     grade,
@@ -144,14 +145,69 @@ def compute_and_persist(deal_id: str, deal_data: dict, credit_result: dict) -> d
         "structured_at":    datetime.now(timezone.utc).isoformat(),
     }
 
+    # Schema-correct row for bond_structures (migration 002):
+    #   par_amount, series jsonb[], capital_stack jsonb, blended_coupon,
+    #   weighted_avg_life, all_in_tic, waterfall jsonb, dsrf,
+    #   capitalized_interest, cost_of_issuance
+    series_payload = [
+        {
+            "label": "A",
+            "face_amount_usd": round(a_amount),
+            "ltc_pct": round(A_LTC * 100, 1),
+            "coupon_rate_pct": round(a_coupon * 100, 2),
+            "annual_ds_usd": round(ds_a),
+            "rating_target": grade,
+            "is_io": True,
+        },
+        {
+            "label": "B",
+            "face_amount_usd": round(b_amount),
+            "cltv_pct": round(CLTV * 100, 1),
+            "coupon_rate_pct": round(b_coupon * 100, 2),
+            "annual_ds_usd": round(ds_b),
+            "rating_target": "B",
+            "is_io": False,
+        },
+    ]
+    capital_stack_payload = {
+        "senior_a": round(a_amount),
+        "sub_b": round(b_amount),
+        "equity": round(equity),
+        "total_capitalization": round(tpc),
+        "arrangement_fee_usd": round(par_value * 0.025),
+        "placement_fee_usd": round(par_value * 0.0075),
+        "cost_of_issuance_usd": round(par_value * 0.025),
+    }
+    waterfall_payload = {
+        "annual_ds_a": round(waterfall_a),
+        "dsrf_replenishment": round(dsrf_replen),
+        "annual_ds_b": round(waterfall_b),
+        "surplus": round(surplus),
+        "available_noi": round(noi),
+    }
+
+    db_row = {
+        "deal_id": deal_id,
+        "par_amount": round(par_value),
+        "series": json.dumps(series_payload),
+        "capital_stack": json.dumps(capital_stack_payload),
+        "blended_coupon": round(blended * 100, 3),
+        "weighted_avg_life": float(deal_data.get("tenor_years", 10)),  # placeholder until amort engine
+        "all_in_tic": round(blended * 100 + 0.25, 3),  # +25bp amortized fees
+        "waterfall": json.dumps(waterfall_payload),
+        "dsrf": round(dsrf),
+        "capitalized_interest": round(ds_a * 1.5),  # 18 months IO
+        "cost_of_issuance": round(par_value * 0.025),
+    }
+
     if _db and _db.configured and deal_id:
         try:
-            _db.insert("bond_structures", {
-                **structure,
-                # serialise nested values for Supabase jsonb columns
-                "structured_at": structure["structured_at"],
-            })
-        except Exception:
-            pass
+            _db.insert("bond_structures", db_row)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(
+                "structuring_service: bond_structures insert failed for deal %s: %s",
+                deal_id, e,
+            )
 
     return structure

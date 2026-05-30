@@ -7,7 +7,7 @@ import {
   RefreshCw, ChevronLeft, ChevronRight, AlertTriangle,
   Eye, X, ExternalLink, Flag, Search, Filter,
   CheckCircle2, XCircle, ArrowRight, Link2, Brain,
-  ChevronDown, Bell,
+  ChevronDown, Bell, Send,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { api } from "@/lib/api";
@@ -67,50 +67,6 @@ interface SignalAlert {
   state: string | null;
   status: string;
   created_at: string;
-}
-
-// ── EagleEye REST API ──────────────────────────────────────────
-
-const API = 'http://localhost:8000';
-
-interface PipelineData {
-  deals: any[];
-  deal_count: number;
-  total_pipeline_usd: number;
-  patterns: any[];
-}
-
-interface IntelligenceReport {
-  deal_count: number;
-  average_attractiveness: number;
-  patterns: any[];
-  ranked_scores: any[];
-  bond_angles: any[];
-}
-
-interface OperatorData {
-  name: string;
-  [key: string]: unknown;
-}
-
-interface BenchmarkData {
-  [key: string]: unknown;
-}
-
-interface PitchData {
-  capital_solutions: any[];
-  pitch_points: string[];
-  competitive_advantages: string[];
-}
-
-async function eagleFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    ...options,
-  });
-  const json = await res.json();
-  // Backend wraps in {success, data} or returns flat — handle both
-  return json.data ?? json;
 }
 
 // ── Constants ───────────────────────────────────────────────────
@@ -249,6 +205,40 @@ function setLastSeenAt(ts: string) {
 
 // ── Signal Card ─────────────────────────────────────────────────
 
+/**
+ * Promote-to-Deal handler.
+ *
+ * ADR-0002 INVARIANT: This MUST NOT insert into the `deals` table. EagleEye
+ * only navigates the founder to the Deal Input surface with prefilled fields
+ * via URL query params. The actual `deals` insert happens when the founder
+ * clicks Submit on Deal Input. Deal Input is the single front door.
+ */
+function promoteSignalToDeal(signal: SignalEvent) {
+  // Derive prefill fields from the signal. Payload may carry naics/sector/size.
+  const payload = (signal.payload || {}) as Record<string, unknown>;
+  const naics = String(payload.naics ?? "");
+  const sector = String(payload.sector ?? "");
+  const estimatedSizeRaw = payload.estimated_size ?? payload.size ?? signal.value;
+  const estimatedSize =
+    estimatedSizeRaw === null || estimatedSizeRaw === undefined || estimatedSizeRaw === ""
+      ? ""
+      : String(estimatedSizeRaw);
+
+  const params = new URLSearchParams();
+  params.set("from_signal", signal.id);
+  if (naics) params.set("naics", naics);
+  if (signal.state) params.set("state", signal.state);
+  if (sector) params.set("sector", sector);
+  if (signal.entity_name) params.set("entity", signal.entity_name);
+  if (estimatedSize) params.set("estimated_size", estimatedSize);
+  params.set("source", "eagleeye");
+
+  // Same-window navigation — Deal Input lives in the same SPA.
+  // Using window.location.assign avoids importing wouter's useLocation
+  // into this file just for this one handler (no new dep pattern).
+  window.location.assign(`/deal-input-v4?${params.toString()}`);
+}
+
 function SignalCard({
   signal,
   onClick,
@@ -264,6 +254,12 @@ function SignalCard({
   const sev = SEVERITY_CONFIG[signal.severity] || SEVERITY_CONFIG.info;
   const catColor = CATEGORY_COLOR[signal.category] || CATEGORY_COLOR.entity;
   const statusCfg = STATUS_CONFIG[signal.status];
+
+  const handlePromote = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    promoteSignalToDeal(signal);
+  };
 
   return (
     <motion.button
@@ -324,6 +320,22 @@ function SignalCard({
           )}
           <span className="font-mono text-[0.5rem] text-slate-600">
             {timeAgo(signal.captured_at)}
+          </span>
+          {/* Promote to Deal — ADR-0002: navigation only, NEVER inserts into deals.
+              Rendered as a span (role=button) because the outer card is itself a
+              <button>; nesting <button> in <button> is invalid HTML. */}
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label="Promote signal to Deal Input"
+            title="Promote to Deal — prefills Deal Input"
+            onClick={handlePromote}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") handlePromote(e);
+            }}
+            className="inline-flex items-center gap-1 rounded border border-[#C4A048]/40 bg-[#C4A048]/10 px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-wider text-[#C4A048] hover:bg-[#C4A048]/20 hover:border-[#C4A048]/60 transition cursor-pointer select-none"
+          >
+            <Send size={9} /> Promote
           </span>
         </div>
       </div>
@@ -833,6 +845,240 @@ function NewSignalsBanner({
   );
 }
 
+// ── Find Similar Deals Panel (Bernard + EagleEye learning loop) ─────────────
+
+function FindSimilarPanel() {
+  const [docText, setDocText] = useState("");
+  const [sector, setSector] = useState("senior_living");
+  const [state, setState] = useState("FL");
+  const [sizeMin, setSizeMin] = useState("50000000");
+  const [sizeMax, setSizeMax] = useState("300000000");
+  const [findResult, setFindResult] = useState<any>(null);
+  const [findLoading, setFindLoading] = useState(false);
+  const [pipeline, setPipeline] = useState<any>(null);
+  const [pipelineLoading, setPipelineLoading] = useState(true);
+
+  // Auto-load the EagleEye operator learning loop on mount → live pipeline aggregate
+  useEffect(() => {
+    fetch("/api/eagleeye/operators/learning-loop", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ docs: [] }),
+    })
+      .then((r) => r.json())
+      .then((j) => setPipeline(j?.data ?? j))
+      .catch(() => setPipeline({ error: "learning-loop failed" }))
+      .finally(() => setPipelineLoading(false));
+  }, []);
+
+  async function runFindSimilar() {
+    setFindLoading(true);
+    try {
+      const r = await fetch("/api/bernard/find-similar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          document_text: docText || undefined,
+          sector,
+          state,
+          size_min: Number(sizeMin) || 0,
+          size_max: Number(sizeMax) || 0,
+        }),
+      });
+      const j = await r.json();
+      setFindResult(j?.data ?? j);
+    } catch (e: any) {
+      setFindResult({ error: e?.message || "find-similar failed" });
+    } finally {
+      setFindLoading(false);
+    }
+  }
+
+  const actionItems: any[] = pipeline?.action_items ?? [];
+  const pipelineTotalUSD = actionItems.reduce((sum, a) => {
+    const m = (a.description || "").match(/\$([\d,]+)/);
+    return sum + (m ? parseInt(m[1].replace(/,/g, ""), 10) : 0);
+  }, 0);
+  const fmtUSD = (n: number) => {
+    if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
+    if (n >= 1e6) return `$${(n / 1e6).toFixed(0)}M`;
+    return `$${n.toLocaleString()}`;
+  };
+  const comps: any[] = findResult?.emma_comps ?? [];
+  const matchedSignals: any[] = findResult?.eagleeye_signals ?? [];
+  const extracted = findResult?.extracted_from_document ?? {};
+
+  return (
+    <div className="rounded-xl border border-amber-400/20 bg-gradient-to-r from-[#0a1f16]/80 via-[#0b0f14]/80 to-[#0a1f16]/80 backdrop-blur px-5 py-4 mb-4">
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <div>
+          <div className="font-mono text-[0.5rem] uppercase tracking-[0.18em] text-amber-300/70 mb-1">
+            EAGLEEYE × BERNARD · LIVE PIPELINE
+          </div>
+          <h2
+            className="text-xl font-semibold text-amber-200/90"
+            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          >
+            Find similar deals — feed a doc or set parameters
+          </h2>
+        </div>
+        <div className="text-right">
+          <div className="font-mono text-[0.5rem] uppercase tracking-[0.18em] text-slate-400">
+            Aggregate pipeline
+          </div>
+          <div className="font-mono text-2xl text-amber-200" style={{ textShadow: "0 0 18px rgba(196,160,72,0.45)" }}>
+            {pipelineLoading ? "—" : fmtUSD(pipelineTotalUSD)}
+          </div>
+          <div className="font-mono text-[0.55rem] text-slate-400">
+            {actionItems.length} deals · {pipeline?.docs_processed ?? 0} docs
+          </div>
+        </div>
+      </div>
+
+      {/* Find Similar input row */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-2 mb-3">
+        <input
+          value={docText}
+          onChange={(e) => setDocText(e.target.value)}
+          placeholder="Paste a bond OS, CIM, or term-sheet excerpt..."
+          className="md:col-span-3 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-slate-100 text-sm placeholder:text-slate-500 focus:outline-none focus:border-amber-400/40"
+        />
+        <select
+          value={sector}
+          onChange={(e) => setSector(e.target.value)}
+          className="px-2 py-2 rounded-lg bg-black/40 border border-white/10 text-slate-100 text-xs font-mono"
+        >
+          <option value="senior_living">senior_living</option>
+          <option value="healthcare_services">healthcare</option>
+          <option value="hospitality">hospitality</option>
+          <option value="data_centers">data_centers</option>
+          <option value="real_estate">real_estate</option>
+        </select>
+        <input
+          value={state}
+          onChange={(e) => setState(e.target.value.toUpperCase())}
+          placeholder="State (FL)"
+          maxLength={2}
+          className="px-2 py-2 rounded-lg bg-black/40 border border-white/10 text-slate-100 text-sm font-mono"
+        />
+        <button
+          onClick={runFindSimilar}
+          disabled={findLoading}
+          className="px-3 py-2 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 text-xs font-mono uppercase tracking-wider hover:bg-amber-400/30 disabled:opacity-50"
+        >
+          {findLoading ? "Searching…" : "Find similar"}
+        </button>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+        <input
+          value={sizeMin}
+          onChange={(e) => setSizeMin(e.target.value)}
+          placeholder="Size min ($)"
+          className="px-2 py-1.5 rounded-lg bg-black/40 border border-white/5 text-slate-300 text-xs font-mono"
+        />
+        <input
+          value={sizeMax}
+          onChange={(e) => setSizeMax(e.target.value)}
+          placeholder="Size max ($)"
+          className="px-2 py-1.5 rounded-lg bg-black/40 border border-white/5 text-slate-300 text-xs font-mono"
+        />
+      </div>
+
+      {/* Pipeline action items (always shown) */}
+      {!pipelineLoading && actionItems.length > 0 && (
+        <div className="mb-4">
+          <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-slate-400 mb-1.5">
+            Live pipeline · action items
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+            {actionItems.slice(0, 8).map((a, i) => (
+              <div
+                key={i}
+                className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-mono text-[0.7rem] text-amber-200 truncate">{a.deal_name}</div>
+                  <span
+                    className={`shrink-0 text-[0.5rem] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      a.priority === "high"
+                        ? "bg-rose-500/20 text-rose-200 border border-rose-400/30"
+                        : "bg-cyan-500/20 text-cyan-200 border border-cyan-400/30"
+                    }`}
+                  >
+                    {a.priority}
+                  </span>
+                </div>
+                <div className="font-mono text-[0.62rem] text-slate-400 mt-0.5 line-clamp-2">
+                  {a.description}
+                </div>
+                <div className="font-mono text-[0.58rem] text-cyan-300 mt-1 truncate">
+                  → {a.action}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Find-similar results */}
+      {findResult && !findResult.error && (
+        <div className="border-t border-white/[0.06] pt-3 mt-2">
+          {Object.keys(extracted || {}).length > 0 && (
+            <div className="mb-2 font-mono text-[0.6rem] text-slate-400">
+              Extracted from document: <span className="text-amber-200">{JSON.stringify(extracted).slice(0, 200)}</span>
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-slate-400 mb-1.5">
+                EMMA comps ({comps.length})
+              </div>
+              {comps.length === 0 && (
+                <div className="font-mono text-[0.7rem] text-slate-500">No comps matched.</div>
+              )}
+              {comps.map((c, i) => (
+                <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 mb-2">
+                  <div className="font-mono text-[0.7rem] text-amber-200">{c.borrower || c.issuer}</div>
+                  <div className="font-mono text-[0.62rem] text-slate-400">
+                    {c.sector} · {c.state} · ${(c.par_amount / 1e6).toFixed(0)}M ·{" "}
+                    {c.ratings?.sp || c.ratings?.moodys || "NR"}
+                  </div>
+                  <div className="font-mono text-[0.58rem] text-cyan-300 mt-0.5">
+                    coupon {c.coupon_rate}% · {c.amortization}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-slate-400 mb-1.5">
+                EagleEye matched signals ({matchedSignals.length})
+              </div>
+              {matchedSignals.length === 0 && (
+                <div className="font-mono text-[0.7rem] text-slate-500">
+                  No active signals match yet — run a scout to populate.
+                </div>
+              )}
+              {matchedSignals.map((s, i) => (
+                <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 mb-2">
+                  <div className="font-mono text-[0.7rem] text-amber-200">{s.title || s.entity || s.id}</div>
+                  <div className="font-mono text-[0.62rem] text-slate-400">
+                    {s.sector} · {s.state} · {s.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {findResult?.error && (
+        <div className="mt-2 font-mono text-[0.7rem] text-rose-300">
+          {findResult.error}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Component ──────────────────────────────────────────────
 
 export default function EagleEyeV2() {
@@ -847,62 +1093,6 @@ export default function EagleEyeV2() {
   const [revealedAt, setRevealedAt] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const listRef = useRef<HTMLDivElement>(null);
-
-  // ── EagleEye REST API state ────────────────────────────────
-  const [pipeline, setPipeline] = useState<PipelineData | null>(null);
-  const [intelligence, setIntelligence] = useState<IntelligenceReport | null>(null);
-  const [operators, setOperators] = useState<OperatorData[]>([]);
-  const [benchmarks, setBenchmarks] = useState<BenchmarkData | null>(null);
-  const [selectedPitch, setSelectedPitch] = useState<PitchData | null>(null);
-  const [pitchLoading, setPitchLoading] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
-
-  // Fetch pipeline + intelligence + operators + benchmarks on mount + poll
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchEagleEyeData() {
-      try {
-        const [pipelineRes, intelRes, opsRes, benchRes] = await Promise.allSettled([
-          eagleFetch<PipelineData>('/api/eagleeye/pipeline'),
-          eagleFetch<IntelligenceReport>('/api/eagleeye/intelligence/report'),
-          eagleFetch<OperatorData[]>('/api/eagleeye/operators'),
-          eagleFetch<BenchmarkData>('/api/eagleeye/benchmarks/multifamily'),
-        ]);
-
-        if (cancelled) return;
-
-        if (pipelineRes.status === 'fulfilled') setPipeline(pipelineRes.value);
-        if (intelRes.status === 'fulfilled') setIntelligence(intelRes.value);
-        if (opsRes.status === 'fulfilled') setOperators(Array.isArray(opsRes.value) ? opsRes.value : []);
-        if (benchRes.status === 'fulfilled') setBenchmarks(benchRes.value);
-        setApiError(null);
-      } catch (err: any) {
-        if (!cancelled) setApiError(err.message || 'EagleEye API unreachable');
-      }
-    }
-
-    fetchEagleEyeData();
-    const interval = setInterval(fetchEagleEyeData, POLL_INTERVAL);
-    return () => { cancelled = true; clearInterval(interval); };
-  }, []);
-
-  // Fetch pitch for a specific deal
-  const fetchPitch = useCallback(async (dealId: string) => {
-    setPitchLoading(true);
-    setSelectedPitch(null);
-    try {
-      const pitch = await eagleFetch<PitchData>('/api/eagleeye/intelligence/pitch', {
-        method: 'POST',
-        body: JSON.stringify({ deal_id: dealId }),
-      });
-      setSelectedPitch(pitch);
-    } catch {
-      // Silent fail — pitch is supplementary
-    } finally {
-      setPitchLoading(false);
-    }
-  }, []);
 
   // Build query params
   const filterParams = useMemo(() => {
@@ -1072,6 +1262,8 @@ export default function EagleEyeV2() {
 
   return (
     <div className="space-y-0">
+      {/* ── Find Similar Deals + Pipeline (Bernard + EagleEye learning loop) ── */}
+      <FindSimilarPanel />
       {/* ── AI Command Strip ────────────────────────────────── */}
       <div className="rounded-xl border border-white/[0.06] bg-gradient-to-r from-[#0a1f16]/80 via-[#060E1A]/80 to-[#0a1f16]/80 backdrop-blur px-5 py-3 mb-4">
         <div className="flex items-center justify-between">
@@ -1094,19 +1286,6 @@ export default function EagleEyeV2() {
               <span className="text-slate-400">
                 <span className="text-white font-semibold">{stats?.total ?? 0}</span> signals tracked
               </span>
-              {pipeline && (
-                <span className="text-cyan-300">
-                  <span className="font-semibold">{pipeline.deal_count}</span> deals ·{' '}
-                  <span className="font-semibold text-amber-200" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                    ${(pipeline.total_pipeline_usd / 1_000_000).toFixed(0)}M
-                  </span>{' '}pipeline
-                </span>
-              )}
-              {intelligence && (
-                <span className="text-emerald-300">
-                  Attractiveness: <span className="font-semibold">{(intelligence.average_attractiveness * 100).toFixed(0)}%</span>
-                </span>
-              )}
               {highPriorityCount > 0 && (
                 <span className="text-amber-300">
                   <span className="font-semibold">{highPriorityCount}</span> high priority
@@ -1361,251 +1540,6 @@ export default function EagleEyeV2() {
           onStateFilter={handleMapFilter}
         />
       </div>
-
-      {/* ── Pipeline Deals + Intelligence ─────────────────── */}
-      {pipeline && pipeline.deals.length > 0 && (
-        <div className="mt-4 space-y-4">
-          {/* Pipeline Deals Grid */}
-          <div className="rounded-xl border border-white/[0.06] bg-black/25 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Building2 size={13} className="text-cyan-300" />
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  Active Pipeline — {pipeline.deal_count} deals
-                </span>
-              </div>
-              <span className="font-mono text-[0.58rem] text-amber-200" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                ${(pipeline.total_pipeline_usd / 1_000_000).toFixed(1)}M total
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {pipeline.deals.slice(0, 9).map((deal: any, i: number) => (
-                <div
-                  key={deal.id || deal.deal_id || i}
-                  className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:bg-white/[0.04] transition cursor-pointer"
-                  onClick={() => fetchPitch(deal.id || deal.deal_id || String(i))}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-mono text-[0.68rem] font-semibold text-white truncate">
-                        {deal.name || deal.project_name || deal.entity_name || `Deal ${i + 1}`}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        {deal.state && (
-                          <span className="font-mono text-[0.5rem] text-slate-500 flex items-center gap-0.5">
-                            <MapPin size={8} /> {deal.state}
-                          </span>
-                        )}
-                        {deal.sector && (
-                          <span className="rounded bg-cyan-400/10 border border-cyan-400/20 px-1.5 py-0.5 font-mono text-[0.44rem] uppercase tracking-wider text-cyan-300">
-                            {deal.sector}
-                          </span>
-                        )}
-                        {deal.status && (
-                          <span className="rounded bg-emerald-400/10 border border-emerald-400/20 px-1.5 py-0.5 font-mono text-[0.44rem] uppercase tracking-wider text-emerald-300">
-                            {deal.status}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {(deal.amount || deal.total_usd || deal.value) && (
-                      <span className="font-mono text-[0.62rem] font-semibold text-amber-200 shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                        ${((deal.amount || deal.total_usd || deal.value) / 1_000_000).toFixed(1)}M
-                      </span>
-                    )}
-                  </div>
-                  {deal.attractiveness_score != null && (
-                    <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 h-1 rounded-full bg-white/5 overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400"
-                          style={{ width: `${Math.min(deal.attractiveness_score * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span className="font-mono text-[0.48rem] text-slate-500">
-                        {(deal.attractiveness_score * 100).toFixed(0)}%
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Intelligence Patterns */}
-          {intelligence && intelligence.patterns.length > 0 && (
-            <div className="rounded-xl border border-white/[0.06] bg-black/25 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Brain size={13} className="text-violet-300" />
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  Intelligence Patterns
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {intelligence.patterns.map((pattern: any, i: number) => (
-                  <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
-                    <p className="font-mono text-[0.62rem] font-semibold text-white">
-                      {pattern.name || pattern.label || pattern.type || `Pattern ${i + 1}`}
-                    </p>
-                    {pattern.description && (
-                      <p className="font-mono text-[0.56rem] text-slate-400 mt-1 line-clamp-2">
-                        {pattern.description}
-                      </p>
-                    )}
-                    {pattern.confidence != null && (
-                      <span className="inline-block mt-1.5 rounded bg-violet-400/10 border border-violet-400/20 px-1.5 py-0.5 font-mono text-[0.44rem] text-violet-300">
-                        {(pattern.confidence * 100).toFixed(0)}% confidence
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Tracked Operators */}
-          {operators.length > 0 && (
-            <div className="rounded-xl border border-white/[0.06] bg-black/25 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Shield size={13} className="text-emerald-300" />
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  Tracked Operators
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {operators.map((op: any, i: number) => (
-                  <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                    <p className="font-mono text-[0.62rem] font-semibold text-white">
-                      {op.name || `Operator ${i + 1}`}
-                    </p>
-                    {op.portfolio_count != null && (
-                      <p className="font-mono text-[0.48rem] text-slate-500 mt-0.5">
-                        {op.portfolio_count} properties
-                      </p>
-                    )}
-                    {op.market_share != null && (
-                      <p className="font-mono text-[0.48rem] text-amber-300 mt-0.5">
-                        {(op.market_share * 100).toFixed(1)}% market share
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Benchmarks */}
-          {benchmarks && (
-            <div className="rounded-xl border border-white/[0.06] bg-black/25 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <BarChart3 size={13} className="text-amber-300" />
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  Multifamily Benchmarks
-                </span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {Object.entries(benchmarks).slice(0, 8).map(([key, val]) => (
-                  <div key={key} className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-                    <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">
-                      {key.replace(/_/g, ' ')}
-                    </p>
-                    <p className="font-mono text-sm font-semibold text-amber-100" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                      {typeof val === 'number'
-                        ? val > 1000 ? `$${(val / 1000).toFixed(1)}K` : val.toFixed(2)
-                        : String(val)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Pitch Detail (when a deal is clicked) */}
-          <AnimatePresence>
-            {(pitchLoading || selectedPitch) && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-4"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Zap size={13} className="text-amber-300" />
-                    <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-amber-200">
-                      Pitch Intelligence
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setSelectedPitch(null)}
-                    className="text-slate-500 hover:text-white transition"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-                {pitchLoading ? (
-                  <div className="flex items-center gap-2">
-                    <RefreshCw size={11} className="animate-spin text-amber-400/60" />
-                    <span className="font-mono text-[0.56rem] text-amber-300/60">Generating pitch...</span>
-                  </div>
-                ) : selectedPitch && (
-                  <div className="space-y-3">
-                    {selectedPitch.pitch_points.length > 0 && (
-                      <div>
-                        <p className="font-mono text-[0.52rem] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Pitch Points</p>
-                        <ul className="space-y-1">
-                          {selectedPitch.pitch_points.map((pt, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <ArrowRight size={9} className="text-amber-300 mt-0.5 shrink-0" />
-                              <span className="font-mono text-[0.58rem] text-slate-300">{pt}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {selectedPitch.competitive_advantages.length > 0 && (
-                      <div>
-                        <p className="font-mono text-[0.52rem] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Competitive Advantages</p>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedPitch.competitive_advantages.map((adv, i) => (
-                            <span key={i} className="rounded bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 font-mono text-[0.52rem] text-emerald-300">
-                              {adv}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {selectedPitch.capital_solutions.length > 0 && (
-                      <div>
-                        <p className="font-mono text-[0.52rem] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Capital Solutions</p>
-                        <div className="space-y-1.5">
-                          {selectedPitch.capital_solutions.map((sol: any, i: number) => (
-                            <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                              <span className="font-mono text-[0.58rem] text-white">
-                                {typeof sol === 'string' ? sol : sol.name || sol.type || JSON.stringify(sol)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-
-      {/* API connection error banner */}
-      {apiError && !pipeline && (
-        <div className="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 px-4 py-2.5 flex items-center gap-2">
-          <AlertTriangle size={12} className="text-red-400 shrink-0" />
-          <span className="font-mono text-[0.58rem] text-red-300">
-            EagleEye API: {apiError} — signal feed still active via tRPC
-          </span>
-        </div>
-      )}
 
       {/* ── Signal Detail Sheet ─────────────────────────────── */}
       <SignalDetailSheet

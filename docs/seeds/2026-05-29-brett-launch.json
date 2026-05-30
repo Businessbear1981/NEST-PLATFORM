@@ -1,0 +1,144 @@
+{
+  "campaign": "Britehorn BD-Sponsorship Launch",
+  "target_ship_date": "2026-05-29",
+  "framing": "platform engagement (BD-sponsorship), not transactional deal pitch — deals are proof of pipeline",
+  "primary_contact": "brett@britehorn.com",
+  "campaign_reference": "project_brett_outreach.md",
+  "contacts": [
+    {
+      "type": "firm",
+      "external_id": "britehorn_securities",
+      "name": "Britehorn Securities",
+      "doing_business_as": "Britehorn",
+      "firm_type": "broker_dealer",
+      "finra_bd_number": "36402",
+      "hq_address": "1401 Lawrence Street, Suite 1600, Denver CO 80202",
+      "secondary_offices": ["Delray Beach, FL"],
+      "website": "britehorn.com",
+      "platform_model": "platform broker-dealer hosting 40+ outside-banker registered reps under their license",
+      "affiliated_ib": "Britehorn Partners",
+      "serves_as": ["broker_dealer", "placement_partner", "bd_sponsor"],
+      "track_record_summary": "Thin public M&A track record. Disclosed deals: Requordit (Aug 2025), specialty sauce manufacturer. ~6 deals tracked through Sep 2025. Zero publicly visible healthcare/biotech deals.",
+      "sector_fit_flag": "Sector mismatch on HBO2 (biotech) — surface this in the pitch as honest framing, not hide"
+    },
+    {
+      "type": "firm",
+      "external_id": "britehorn_partners",
+      "name": "Britehorn Partners",
+      "firm_type": "investment_bank",
+      "parent_or_affiliate_firm": "britehorn_securities",
+      "hq_address": "1401 Lawrence Street, Suite 1600, Denver CO 80202",
+      "serves_as": ["investment_bank"]
+    },
+    {
+      "type": "person",
+      "external_id": "brett_story",
+      "name": "Brett Story",
+      "title": "Founding Partner",
+      "firm_id": "britehorn_securities",
+      "email": "brett@britehorn.com",
+      "linkedin": "linkedin.com/in/brettstory",
+      "background_notes": "Recovering lawyer. University of Miami School of Law. ~20yr M&A/IB experience. Started LoHi Merchant Bank, acquired Andrews Securities Oct 2017, rebranded Britehorn.",
+      "serves_as": ["bd_principal", "placement_partner_rep", "bd_sponsor_contact"]
+    },
+    {
+      "type": "person",
+      "external_id": "bobbi_armstrong",
+      "name": "Bobbi Babitz Armstrong",
+      "title": "Co-Founder, Partner",
+      "firm_id": "britehorn_securities",
+      "serves_as": ["bd_principal"]
+    },
+    {
+      "type": "person",
+      "external_id": "steve_gaynor",
+      "name": "Steve Gaynor",
+      "title": "Partner",
+      "firm_id": "britehorn_securities",
+      "joined": "2022-01",
+      "serves_as": ["bd_principal"]
+    },
+    {
+      "type": "person",
+      "external_id": "andrew_hurry",
+      "name": "Andrew Hurry",
+      "title": "Partner",
+      "firm_id": "britehorn_securities",
+      "serves_as": ["bd_principal"]
+    },
+    {
+      "type": "person",
+      "external_id": "natalia_story",
+      "name": "Natalia Story",
+      "title": "Director of Compliance & Marketing",
+      "firm_id": "britehorn_securities",
+      "background_notes": "Likely Brett's spouse — family-run leadership pattern",
+      "serves_as": ["bd_compliance_officer", "bd_compliance_liaison"]
+    }
+  ],
+  "deal_counterparty_assignments": [
+    {
+      "deal_name_or_id": "Jacaranda Trace",
+      "role": "placement_partner",
+      "contact_external_id": "britehorn_securities",
+      "rep_contact_external_id": "brett_story",
+      "compliance_contact_external_id": "natalia_story",
+      "status": "pending_response",
+      "engagement_basis": "BD-sponsorship platform engagement"
+    },
+    {
+      "deal_name_or_id": "Convivial St. Petersburg",
+      "role": "placement_partner",
+      "contact_external_id": "britehorn_securities",
+      "rep_contact_external_id": "brett_story",
+      "compliance_contact_external_id": "natalia_story",
+      "status": "candidate",
+      "notes": "Not in tomorrow's 3-asset launch — follow on if Brett engages"
+    },
+    {
+      "deal_name_or_id": "HBO2 Therapeutics",
+      "role": "placement_partner",
+      "contact_external_id": "britehorn_securities",
+      "rep_contact_external_id": "brett_story",
+      "compliance_contact_external_id": "natalia_story",
+      "status": "pending_response",
+      "engagement_basis": "BD-sponsorship + sell-side / minority financing flexibility",
+      "sector_fit_flag": "Brett has no public biotech track record — pitch as proof of NEST pipeline, not as expectation of Brett executing biotech deals"
+    },
+    {
+      "deal_name_or_id": "Celebrity Crush",
+      "role": "placement_partner",
+      "contact_external_id": "britehorn_securities",
+      "rep_contact_external_id": "brett_story",
+      "compliance_contact_external_id": "natalia_story",
+      "status": "pending_response",
+      "engagement_basis": "Seed / Series A capital raise"
+    }
+  ],
+  "outreach_events": [
+    {
+      "kind": "bd_sponsorship_pitch",
+      "scheduled_at": "2026-05-29",
+      "channel": "email",
+      "to_contact_external_id": "brett_story",
+      "from_contact_name": "Sean Gilmore",
+      "subject_line_intent": "BD-sponsorship platform engagement — 3 deals attached as proof of pipeline",
+      "framing_notes": "Pitch is platform engagement (Britehorn hosts NEST under their BD), NOT 'buy these deals.' Three deals attached as evidence of an active pipeline, not as transactional asks. Acknowledge healthcare/biotech sector fit gap on HBO2 in the cover.",
+      "attachments": [
+        "HBO2 sell-side bundle (landing SPA, leave-behind PDF, term sheets, CFIUS memo, financial model, data-room extract)",
+        "Celebrity Crush (pitch deck PPTX, institutional financial model MD, Series A investment recommendations MD)",
+        "Jacaranda Trace institutional teaser (source library: model, audited financials, credit memo, capital memo, lender memos, master deck, EMMA disclosure)"
+      ],
+      "source_directories": [
+        "C:\\Users\\sgill\\Downloads\\sellside_unzip\\ (HBO2 + Celebrity Crush + cinematic-acquisition-pitch engine)",
+        "C:\\Users\\sgill\\Downloads\\Jacaranda_*.{xlsx,pdf} + ArdanEdge_Jacaranda_SourceModel.json"
+      ],
+      "expected_response_window_days": 7
+    }
+  ],
+  "downstream_relationship_intent": {
+    "near_term": "Sean enrolls as registered rep at Britehorn Securities post Series 7+24+63 — sponsorship structure",
+    "deal_economics_pattern": "Sean's brokerage commissions through Britehorn = personal income from Britehorn. NEST Advisors LLC collects Advisory Fee (Engagement Retainer + Arrangement Fee + Trail Fee) on the same engagement. Britehorn keeps share of brokerage per engagement letter.",
+    "compliance_supervisory_state": "Britehorn compliance program supervises Sean's brokerage activity. NEST advisory operates under its own supervisory state."
+  }
+}

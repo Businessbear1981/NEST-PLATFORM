@@ -87,7 +87,59 @@ def submit_deal():
         return err(f"Missing required fields: {', '.join(missing)}")
 
     result = roots_service.submit_deal(body)
-    return ok(result)
+
+    # Compile the Roots submission into a real Deal row in the deals table.
+    # Workflow: intake docs → Roots submission → automatic Deal creation.
+    deal_id = None
+    try:
+        import json as _json
+        from services.database import db
+        if db.configured:
+            project = {
+                "name": body.get("project_name"),
+                "asset_type": body.get("asset_type"),
+                "city": body.get("city"),
+                "state": body.get("state"),
+                "total_project_cost_usd": float(body.get("loan_amount_usd") or 0),
+                "units": body.get("units"),
+                "sector": body.get("sector"),
+            }
+            sponsor = {
+                "name": body.get("sponsor_name") or body.get("contact_name"),
+                "contact_name": body.get("contact_name"),
+                "contact_email": body.get("contact_email"),
+                "contact_phone": body.get("contact_phone"),
+            }
+            row = {
+                "name": body.get("project_name"),
+                "status": "pipeline",
+                "state": body.get("state"),
+                "market": body.get("city"),
+                "deal_type": body.get("asset_type", "bond"),
+                "bond_face": float(body.get("loan_amount_usd") or 0),
+                "readiness_score": 0,
+                "checklist": "{}",
+                "notes": _json.dumps({
+                    "project": project,
+                    "sponsor": sponsor,
+                    "team": {},
+                    "slug": (body.get("project_name") or "").lower().replace(" ", "-"),
+                    "source": "roots_submission",
+                    "roots_submission_id": (result or {}).get("id"),
+                }),
+            }
+            insert_result = db.insert("deals", row)
+            if insert_result:
+                row0 = insert_result[0] if isinstance(insert_result, list) else insert_result
+                deal_id = row0.get("id")
+    except Exception as e:
+        # Don't fail the Roots submission if deal compile fails — log and proceed
+        import logging
+        logging.getLogger(__name__).warning(
+            "roots.submit_deal: deal compile failed: %s", e,
+        )
+
+    return ok({**(result or {}), "deal_id": deal_id, "compiled_to_deal": deal_id is not None})
 
 
 @roots_bp.route("/api/roots/submissions", methods=["GET"])

@@ -216,6 +216,16 @@ class IntelligenceEngine:
         # Pricing
         pricing = PRICING_BENCHMARKS.get(credit_grade, PRICING_BENCHMARKS["BB"])
 
+        # Build full bond structure from all form inputs (Operating Framework §6, §7, §10, §13)
+        bond_structure_full = self._build_bond_structure(
+            inputs=inputs,
+            principal=round(bond_amount),
+            credit_grade=credit_grade,
+        )
+        # Re-compute DSCR using the actual computed coupon (not the 8.5% placeholder)
+        actual_annual_ds = sum(r["total_ds"] for r in bond_structure_full["amort_schedule"][:1]) if bond_structure_full["amort_schedule"] else annual_debt_service
+        dscr = ebitda / actual_annual_ds if actual_annual_ds else dscr
+
         return {
             "use_case": "ma_acquisition",
             "sector": sector,
@@ -238,15 +248,7 @@ class IntelligenceEngine:
                 "equity_pct_of_ev": round(sponsor_pct * 100, 1),
             },
             "sources_and_uses": {"sources": sources, "uses": uses, "balanced": abs(total_sources - total_uses) < 1},
-            "bond_structure": {
-                "type": "taxable_senior_secured",
-                "principal": round(bond_amount),
-                "tenor_years": 7,
-                "coupon_range": pricing["coupon_range"],
-                "spread_range_bps": pricing["spread_bps"],
-                "amortization": "18mo_io_then_1pct_annual_then_bullet",
-                "call_schedule": {"nc_years": 3, "step_down_premium": True, "par_call_after_year": 5},
-            },
+            "bond_structure": bond_structure_full,
             "reserves": {
                 "dsrf": round(dsrf),
                 "dsrf_type": "MADS",
@@ -268,6 +270,229 @@ class IntelligenceEngine:
             "readiness_flags": self._ma_readiness_flags(inputs, dscr, total_leverage, leverage_data),
             "generated_at": datetime.utcnow().isoformat(),
         }
+
+    # ── Full Bond Structure Builder (Operating Framework §6, §7, §10, §13) ──
+
+    # UST benchmark curve — overridden by FRED snapshot when caller passes ust_curve in inputs
+    _UST_FALLBACK = {2: 3.98, 3: 3.91, 5: 4.05, 7: 4.20, 10: 4.61, 15: 4.55, 20: 4.55, 30: 4.52}
+    _SPREAD_BPS_BY_GRADE = {
+        "AAA": 30, "AA+": 40, "AA": 50, "AA-": 65,
+        "A+": 70, "A": 80, "A-": 95,
+        "BBB+": 110, "BBB": 130, "BBB-": 180,
+        "BB+": 280, "BB": 350, "BB-": 450,
+        "B+": 550, "B": 650, "B-": 750,
+    }
+    # Enhancement → (uplifted rating, premium bps)
+    _ENHANCEMENT_TABLE = {
+        "none": (None, 0),
+        "bond_insurance": ("AA", 50),
+        "cash_collateralized_lc": ("AAA", 30),
+        "federal_guarantee": ("AAA", 20),
+        "surety": ("BBB+", 100),
+        "loc": ("A", 100),
+    }
+
+    def _nearest_ust(self, ust_curve: dict, tenor: int) -> float:
+        if tenor in ust_curve:
+            return ust_curve[tenor]
+        nearest = min(ust_curve.keys(), key=lambda k: abs(k - tenor))
+        return ust_curve[nearest]
+
+    def _build_amort_schedule(self, principal: float, coupon_pct: float, years: int, atype: str) -> list[dict]:
+        """Year-by-year debt service schedule. Returns [] for 'custom' (user-supplied)."""
+        if years <= 0 or principal <= 0:
+            return []
+        r = coupon_pct / 100.0
+        schedule = []
+        balance = principal
+
+        def row(y, beg, ppmt, interest, end):
+            return {
+                "year": y,
+                "beginning_balance": round(beg),
+                "principal_payment": round(ppmt),
+                "interest_payment": round(interest),
+                "total_ds": round(ppmt + interest),
+                "ending_balance": round(end),
+            }
+
+        if atype == "level_debt_service":
+            annual_ds = principal * r / (1 - (1 + r) ** -years) if r > 0 else principal / years
+            for y in range(1, years + 1):
+                interest = balance * r
+                ppmt = annual_ds - interest
+                new_bal = max(0, balance - ppmt)
+                schedule.append(row(y, balance, ppmt, interest, new_bal))
+                balance = new_bal
+        elif atype == "bullet":
+            for y in range(1, years + 1):
+                interest = balance * r
+                ppmt = 0 if y < years else balance
+                new_bal = balance - ppmt
+                schedule.append(row(y, balance, ppmt, interest, new_bal))
+                balance = new_bal
+        elif atype == "io_then_amort":
+            io_years = min(2, max(1, years - 1))
+            amort_years = max(1, years - io_years)
+            amort_ds = principal * r / (1 - (1 + r) ** -amort_years) if r > 0 else principal / amort_years
+            for y in range(1, years + 1):
+                interest = balance * r
+                if y <= io_years:
+                    ppmt = 0
+                else:
+                    ppmt = max(0, amort_ds - interest)
+                new_bal = max(0, balance - ppmt)
+                schedule.append(row(y, balance, ppmt, interest, new_bal))
+                balance = new_bal
+        elif atype == "ascending":
+            # Linear ramp 60% → 140% of straight-line principal
+            straight = principal / years
+            scales = [0.6 + 0.8 * ((y - 1) / max(1, years - 1)) for y in range(1, years + 1)]
+            scale_sum = sum(scales) or 1
+            normalized = [s * (years / scale_sum) for s in scales]
+            for i, y in enumerate(range(1, years + 1)):
+                interest = balance * r
+                ppmt = min(balance, straight * normalized[i])
+                new_bal = max(0, balance - ppmt)
+                schedule.append(row(y, balance, ppmt, interest, new_bal))
+                balance = new_bal
+        elif atype == "serial_with_term":
+            # First half serial, term balloon at maturity
+            serial_years = max(1, years // 2)
+            serial_principal = principal * 0.5
+            serial_per_year = serial_principal / serial_years
+            term_principal = principal - serial_principal  # bullet at maturity
+            for y in range(1, years + 1):
+                interest = balance * r
+                if y <= serial_years:
+                    ppmt = serial_per_year
+                elif y == years:
+                    ppmt = term_principal
+                else:
+                    ppmt = 0
+                new_bal = max(0, balance - ppmt)
+                schedule.append(row(y, balance, ppmt, interest, new_bal))
+                balance = new_bal
+        else:  # 'custom' or unknown
+            return []
+        return schedule
+
+    def _build_bond_structure(self, inputs: dict, principal: float, credit_grade: str) -> dict:
+        """Assemble the full bond structure dict from all form inputs.
+
+        Reads every parametric input from the Bond Desk form (bond type, tax-exempt,
+        muni, amortization, tenor, optionality, enhancement) and produces:
+          - coupon math (UST + spread, tax-exempt adjustment)
+          - amortization schedule (year-by-year debt service)
+          - call schedule (NC period + premium step-down OR par call after)
+          - put schedule (investor put right, if elected)
+          - enhancement impact (rating uplift + premium cost)
+          - blended all-in TIC (coupon + amortized fees + enhancement)
+
+        Operating Framework refs: §6 Bond Structure by Security, §7 Amortization Patterns,
+        §10 Calls/Puts/Optionality, §13 Credit Enhancement, §15 Pricing.
+        """
+        bond_type = inputs.get("bond_type", "taxable_senior_secured")
+        tax_exempt = inputs.get("tax_exempt", bond_type.startswith("tax_exempt") or bond_type == "governmental")
+        muni = inputs.get("muni", bond_type == "governmental")
+        amort_type = inputs.get("amort_type", "io_then_amort")
+        tenor_years = int(inputs.get("tenor_years", 7))
+        nc_period = int(inputs.get("nc_period", 3))
+        par_call_after = inputs.get("par_call_after", True)
+        put_option = inputs.get("put_option", False)
+        enhancement = inputs.get("enhancement", "none")
+
+        # 1. Coupon math — UST benchmark + grade spread, tax-exempt adjustment
+        ust_curve = inputs.get("ust_curve") or self._UST_FALLBACK
+        ust_rate = self._nearest_ust(ust_curve, tenor_years)
+        spread_bps = self._SPREAD_BPS_BY_GRADE.get(credit_grade, 200)
+        taxable_coupon = ust_rate + spread_bps / 100.0
+        # Tax-exempt bonds trade at ~65% of taxable-equivalent (24% blended fed+state)
+        coupon = taxable_coupon * 0.65 if tax_exempt else taxable_coupon
+        taxable_equivalent_yield = coupon / 0.65 if tax_exempt else coupon
+
+        # 2. Enhancement — rating uplift + premium cost
+        enh_rating, enh_premium_bps = self._ENHANCEMENT_TABLE.get(enhancement, (None, 0))
+        all_in_coupon = coupon + enh_premium_bps / 100.0
+        rating_after = enh_rating if enh_rating else credit_grade
+
+        # 3. Amortization schedule — Operating Framework §7
+        amort_schedule = self._build_amort_schedule(principal, all_in_coupon, tenor_years, amort_type)
+
+        # 4. Weighted-average life — sum(year × principal_payment) / total principal
+        wal = sum(r["year"] * r["principal_payment"] for r in amort_schedule) / principal if (amort_schedule and principal > 0) else tenor_years
+
+        # 5. Call schedule — Operating Framework §10
+        call_schedule = {
+            "nc_years": nc_period,
+            "par_call_after_year": nc_period if par_call_after else nc_period + 3,
+            "premium_schedule": [] if par_call_after else [
+                {"year": nc_period + 1, "premium_pct": 102.0, "make_whole_spread_bps": 50},
+                {"year": nc_period + 2, "premium_pct": 101.0, "make_whole_spread_bps": 35},
+                {"year": nc_period + 3, "premium_pct": 100.5, "make_whole_spread_bps": 25},
+            ],
+            "type": "par_call" if par_call_after else "step_down_premium",
+        }
+
+        # 6. Put schedule — investor put right (§10)
+        put_schedule = None
+        if put_option:
+            put_year = max(3, tenor_years // 2)
+            put_schedule = {
+                "has_put": True,
+                "put_years": [put_year],
+                "put_premium_pct": 100.0,
+                "note": f"Investor may put at par on the {put_year}-year anniversary",
+            }
+
+        # 7. All-in TIC (rough): coupon + amortized upfront fees
+        upfront_fees_bps = 250  # structuring 2.5% + placement 0.75% blended over tenor
+        all_in_tic = all_in_coupon + (upfront_fees_bps / 100.0) / max(1, tenor_years)
+
+        # 8. Reserves at floor (DSRF = MADS)
+        mads = max((r["total_ds"] for r in amort_schedule), default=principal * all_in_coupon / 100.0)
+
+        return {
+            "type": bond_type,
+            "tax_exempt": tax_exempt,
+            "muni": muni,
+            "principal": round(principal),
+            "tenor_years": tenor_years,
+            "weighted_avg_life": round(wal, 2),
+            "coupon_pct": round(coupon, 3),
+            "all_in_coupon_pct": round(all_in_coupon, 3),
+            "all_in_tic_pct": round(all_in_tic, 3),
+            "taxable_equivalent_yield_pct": round(taxable_equivalent_yield, 3),
+            "ust_benchmark_pct": round(ust_rate, 3),
+            "ust_benchmark_tenor": tenor_years,
+            "spread_bps": spread_bps,
+            "amortization": amort_type,
+            "amort_schedule": amort_schedule,
+            "call_schedule": call_schedule,
+            "put_schedule": put_schedule,
+            "enhancement": {
+                "type": enhancement,
+                "rating_before": credit_grade,
+                "rating_after": rating_after,
+                "uplift_notches": self._rating_distance(credit_grade, rating_after) if enh_rating else 0,
+                "premium_bps": enh_premium_bps,
+                "annual_premium_usd": round(principal * enh_premium_bps / 10000),
+            } if enhancement != "none" else None,
+            "reserves": {
+                "dsrf_basis": "MADS",
+                "dsrf_amount": round(mads),
+            },
+        }
+
+    @staticmethod
+    def _rating_distance(before: str, after: str) -> int:
+        """Notches of uplift from `before` rating to `after` rating. Positive = uplift."""
+        ladder = ["D", "C", "CC", "CCC-", "CCC", "CCC+", "B-", "B", "B+", "BB-", "BB", "BB+",
+                  "BBB-", "BBB", "BBB+", "A-", "A", "A+", "AA-", "AA", "AA+", "AAA"]
+        try:
+            return ladder.index(after) - ladder.index(before)
+        except ValueError:
+            return 0
 
     # ── Universal Bond Sizing ─────────────────────────────────
 

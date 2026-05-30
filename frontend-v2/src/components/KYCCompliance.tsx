@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
-
-const API = 'http://localhost:8000';
+import React, { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, FileCheck2, Shield, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -138,59 +136,6 @@ export function KYCCompliance() {
   const [auditLog, setAuditLog] = useState<string[]>([
     'KYC cockpit loaded with investor profiles, ownership records, and sanctions-review queues.',
   ]);
-
-  // Fetch compliance data from backend
-  useEffect(() => {
-    const fetchCompliance = async () => {
-      try {
-        const res = await fetch(`${API}/api/nightvision/compliance`);
-        if (!res.ok) throw new Error(`compliance ${res.status}`);
-        const json = await res.json();
-        const data = json.data ?? json;
-        if (data.profiles?.length) {
-          const parsed: KYCProfile[] = data.profiles.map((p: any) => ({
-            ...p,
-            createdDate: new Date(p.createdDate ?? p.created_date),
-            verificationDate: p.verificationDate ?? p.verification_date ? new Date(p.verificationDate ?? p.verification_date) : undefined,
-            expiryDate: new Date(p.expiryDate ?? p.expiry_date),
-          }));
-          setProfiles(parsed);
-          setSelectedProfileId(parsed[0].id);
-        }
-        if (data.beneficialOwners?.length || data.beneficial_owners?.length) {
-          setBeneficialOwners(data.beneficialOwners ?? data.beneficial_owners);
-        }
-        if (data.sanctionsHits?.length || data.sanctions_hits?.length) {
-          const hits = (data.sanctionsHits ?? data.sanctions_hits).map((h: any) => ({
-            ...h,
-            dateDetected: new Date(h.dateDetected ?? h.date_detected),
-          }));
-          setSanctionsHits(hits);
-        }
-      } catch {
-        // Keep demo data on failure
-      }
-    };
-    fetchCompliance();
-  }, []);
-
-  // Fetch covenant monitoring data from backend
-  useEffect(() => {
-    const fetchCovenants = async () => {
-      try {
-        const res = await fetch(`${API}/api/nightvision/covenants`);
-        if (!res.ok) throw new Error(`covenants ${res.status}`);
-        const json = await res.json();
-        const data = json.data ?? json;
-        if (data.auditLog?.length || data.audit_log?.length) {
-          setAuditLog((prev) => [...(data.auditLog ?? data.audit_log), ...prev].slice(0, 6));
-        }
-      } catch {
-        // Keep demo data on failure
-      }
-    };
-    fetchCovenants();
-  }, []);
 
   const selectedProfile = profiles.find((profile) => profile.id === selectedProfileId) ?? profiles[0];
   const selectedOwners = beneficialOwners.filter((owner) => owner.profileId === selectedProfile?.id);
