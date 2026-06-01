@@ -112,3 +112,17 @@ NEST Backend:  8000
 NEST Frontend: 8100
 (CreditFix uses 3000/5000 — do not collide)
 ```
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `BusinessBear1981/NEST-ADVISORS-V3`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo. `CONTEXT.md` and `docs/adr/` at the root. See `docs/agents/domain.md`.
