@@ -8,6 +8,11 @@ __pycache__/
 node_modules/
 .next/
 
+# Build output
+dist/
+build/
+*.bak
+
 # Env
 .env
 .env.local
@@ -23,3 +28,6 @@ Thumbs.db
 
 # Uploads
 backend/uploads/
+
+# External reference dumps (kept locally, not in repo)
+docs/reference/ECC-main/
