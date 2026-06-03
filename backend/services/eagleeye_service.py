@@ -85,8 +85,11 @@ class EagleEyeService:
             if isinstance(saved, list):
                 return saved[0]
             return saved
-        # DB not configured — return in-memory object so callers always get a dict
-        return scout
+        # Raise loudly instead of lying about success — db.insert already logs the underlying error.
+        raise RuntimeError(
+            f"Failed to persist scout '{name}' — see db.insert error log. "
+            "Likely cause: scouts table missing (migration 002 not applied) or Supabase write rejected."
+        )
 
     def create_scout_from_deal(self, deal_id: str) -> dict:
         """Read a deal from Supabase, extract its sector/size/location, build a scout."""

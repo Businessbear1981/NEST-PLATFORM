@@ -434,9 +434,15 @@ class SuretyUniverseService:
                     summary["contacts_created"] += 1
                     summary["providers"][provider_name] = row.get("id")
                 else:
-                    # DB not configured — log but don't fail.
+                    # db.insert returned None — it already logged the underlying
+                    # Postgres error. Surface the skip with the provider name so
+                    # the API caller can see why the seed didn't fully apply.
                     summary["contacts_skipped"] += 1
                     summary["providers"][provider_name] = None
+                    summary["warnings"].append(
+                        f"contacts.create_contact returned None for '{provider_name}' — "
+                        "see db.insert error log (likely missing contacts table)"
+                    )
 
         return summary
 
