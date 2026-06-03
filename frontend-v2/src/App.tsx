@@ -6,8 +6,37 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
+import { useEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+
+// Dev-mode auto-login. The frontend has no visible /login page, but every
+// backend endpoint is `@require_auth()`. Without a token in localStorage,
+// every fetch silently fails — pages render their empty shell and look like
+// "demo data". This hook grabs an admin token on first load so the existing
+// `fetch(..., { headers: { Authorization: \`Bearer \${token}\` } })` calls
+// throughout the app actually return real data.
+function useAutoLogin() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("nest_token")) return; // already authed
+    fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "admin@nest.local", password: "Admin123!" }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        const tok = d?.token || d?.data?.token;
+        if (tok) {
+          localStorage.setItem("nest_token", tok);
+          // Force a re-render so every page's existing token useEffect picks it up
+          window.dispatchEvent(new Event("storage"));
+        }
+      })
+      .catch(() => {});
+  }, []);
+}
 import Home from "./pages/Home";
 import { AgentsPage, ArchitecturePage, DashboardPage, PortalsPage } from "./pages/WorkbenchPages";
 import { OperationsDealsPage, OperationsDealDetailPage } from "./pages/OperationsPages";
@@ -119,6 +148,7 @@ function Router() {
 }
 
 function App() {
+  useAutoLogin();
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
