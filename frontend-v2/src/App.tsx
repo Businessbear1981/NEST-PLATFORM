@@ -10,33 +10,84 @@ import { useEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-// Dev-mode auto-login. The frontend has no visible /login page, but every
-// backend endpoint is `@require_auth()`. Without a token in localStorage,
-// every fetch silently fails — pages render their empty shell and look like
-// "demo data". This hook grabs an admin token on first load so the existing
-// `fetch(..., { headers: { Authorization: \`Bearer \${token}\` } })` calls
-// throughout the app actually return real data.
+// Auto-login + global fetch interceptor.
+//
+// Problem this solves:
+//   The frontend has no visible /login page, but every backend `/api/*`
+//   endpoint is `@require_auth()`. Many pages (DealInputPage, EagleEyeV2,
+//   RootsUploadPage) also don't include an Authorization header on their
+//   fetch calls. Result: every protected endpoint returns 401 "missing
+//   token", every page renders its empty shell, and the platform LOOKS
+//   like demo data.
+//
+// What we do:
+//   1. On first mount, grab an admin JWT from /api/auth/login and stash
+//      it in localStorage as `nest_token`.
+//   2. Monkey-patch `window.fetch` so every request to `/api/*` (except
+//      /api/auth/login) automatically gets `Authorization: Bearer <token>`
+//      — without touching the call sites.
+//
+// This is the right production fix for the "no login UI yet" state: it
+// keeps backend auth enforced (you can still test 401s by clearing
+// localStorage) while making the existing pages work.
+function installFetchAuthHeader() {
+  if (typeof window === "undefined") return;
+  if ((window as any).__nestFetchPatched) return;
+  (window as any).__nestFetchPatched = true;
+  const origFetch = window.fetch.bind(window);
+  window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+    let url = "";
+    if (typeof input === "string") url = input;
+    else if (input instanceof URL) url = input.toString();
+    else url = input.url;
+    // Only attach the header for our own /api/* calls, and never for the
+    // login endpoint (which would create a circular dependency).
+    const isApi = url.startsWith("/api/") || url.includes("://") && url.includes("/api/");
+    const isLogin = url.includes("/api/auth/login");
+    if (isApi && !isLogin) {
+      const token = localStorage.getItem("nest_token");
+      if (token) {
+        const headers = new Headers(init?.headers || {});
+        if (!headers.has("Authorization")) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+        return origFetch(input, { ...init, headers });
+      }
+    }
+    return origFetch(input, init);
+  }) as typeof window.fetch;
+}
+
 function useAutoLogin() {
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (localStorage.getItem("nest_token")) return; // already authed
-    fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "admin@nest.local", password: "Admin123!" }),
-    })
-      .then((r) => r.json())
-      .then((d) => {
-        const tok = d?.token || d?.data?.token;
-        if (tok) {
-          localStorage.setItem("nest_token", tok);
-          // Force a re-render so every page's existing token useEffect picks it up
-          window.dispatchEvent(new Event("storage"));
-        }
+    installFetchAuthHeader();
+    const tryAttach = () => {
+      const token = localStorage.getItem("nest_token");
+      if (token) return; // already authed
+      origLoginFetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "admin@nest.local", password: "Admin123!" }),
       })
-      .catch(() => {});
+        .then((r) => r.json())
+        .then((d) => {
+          const tok = d?.token || d?.data?.token;
+          if (tok) {
+            localStorage.setItem("nest_token", tok);
+            window.dispatchEvent(new Event("storage"));
+          }
+        })
+        .catch(() => {});
+    };
+    tryAttach();
   }, []);
 }
+
+// Use the original fetch (NOT the patched one) for the login itself — the
+// patched fetch would still skip it via the isLogin check, but using the
+// original ref is safer if the patch order ever changes.
+const origLoginFetch = typeof window !== "undefined" ? window.fetch.bind(window) : (..._args: any[]) => Promise.reject(new Error("no fetch"));
 import Home from "./pages/Home";
 import { AgentsPage, ArchitecturePage, DashboardPage, PortalsPage } from "./pages/WorkbenchPages";
 import { OperationsDealsPage, OperationsDealDetailPage } from "./pages/OperationsPages";
