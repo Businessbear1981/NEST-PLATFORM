@@ -302,6 +302,17 @@ def intelligence_pitch():
 
     all_deals = _deals.list_active(blind=False)
     pitch = _intelligence.generate_deal_pitch(deal, all_deals)
+
+    # Attach a World Labs 3D property world if address is available
+    address = deal.get("address") or deal.get("location") or ""
+    if address:
+        from services.world_labs import generate_property_world
+        pitch["world_labs"] = generate_property_world(
+            address=address,
+            deal_name=deal.get("name", ""),
+            asset_class=deal.get("asset_class") or deal.get("sector", ""),
+        )
+
     return _ok(pitch)
 
 

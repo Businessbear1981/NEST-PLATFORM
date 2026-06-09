@@ -11,6 +11,7 @@ from typing import Optional
 
 from services.jimmy_lee import JIMMY_LEE_SYSTEM_PROMPT, count_words, estimate_read_time
 from agents._claude import complete, ClaudeUnavailable
+from services.email_service import send_outreach
 
 
 FOLLOW_UP_PLAYBOOK = {
@@ -232,6 +233,18 @@ class AriaAgent:
             )
             error = str(e)
 
+        # Auto-send if we have a real contact email
+        send_result = None
+        if contact and "@" in contact and reply:
+            first_name = name.split()[0] if name else "there"
+            send_result = send_outreach(
+                to_email=contact,
+                to_name=name,
+                subject=f"RE: {project_type or 'Your inquiry'} — NEST Advisors",
+                draft_content=reply,
+                lead_id=lead_id,
+            )
+
         return {
             "lead_id": lead_id,
             "classification": classification,
@@ -239,5 +252,28 @@ class AriaAgent:
                 "content": reply,
                 "error": error,
             },
+            "email_sent": send_result,
             "received_at": datetime.utcnow().isoformat() + "Z",
         }
+
+    def send_follow_up(self, lead_id: str, attempt: int) -> dict:
+        """Generate and send a follow-up email for a lead."""
+        with self._lock:
+            lead = self._leads.get(lead_id)
+        if not lead:
+            raise ValueError(f"lead {lead_id} not found")
+
+        draft = self.generate_follow_up(lead_id, attempt)
+        contact = lead.get("contact", "")
+
+        send_result = None
+        if contact and "@" in contact:
+            send_result = send_outreach(
+                to_email=contact,
+                to_name=lead.get("name", ""),
+                subject=draft.get("subject") or f"Following up — NEST Advisors",
+                draft_content=draft.get("content", ""),
+                lead_id=lead_id,
+            )
+
+        return {**draft, "email_sent": send_result}

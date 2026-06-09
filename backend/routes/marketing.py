@@ -74,20 +74,39 @@ def history_one(gen_id: str):
 @marketing_bp.post("/outreach")
 @require_auth("admin")
 def outreach():
-    """Aria-backed: draft and (symbolically) send an outreach email."""
+    """Aria-backed: draft or send a follow-up email. send=true fires SendGrid."""
     body = request.get_json(silent=True) or {}
     lead_id = body.get("lead_id")
     attempt = int(body.get("attempt", 1))
+    should_send = bool(body.get("send", False))
     if not lead_id:
         return jsonify({"error": "lead_id required"}), 400
     try:
-        draft = _aria().generate_follow_up(lead_id, attempt)
+        if should_send:
+            result = _aria().send_follow_up(lead_id, attempt)
+        else:
+            result = _aria().generate_follow_up(lead_id, attempt)
+            result["sent"] = False
     except KeyError:
         return jsonify({"error": "lead_not_found"}), 404
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    draft["sent"] = bool(body.get("send", False))
-    return jsonify(draft)
+    return jsonify(result)
+
+
+@marketing_bp.post("/outreach/send/<lead_id>")
+@require_auth("admin")
+def outreach_send(lead_id: str):
+    """Directly send the next follow-up for a lead via SendGrid."""
+    body = request.get_json(silent=True) or {}
+    attempt = int(body.get("attempt", 1))
+    try:
+        result = _aria().send_follow_up(lead_id, attempt)
+    except KeyError:
+        return jsonify({"error": "lead_not_found"}), 404
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify(result)
 
 
 @marketing_bp.post("/proposal")

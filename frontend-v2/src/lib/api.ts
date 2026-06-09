@@ -330,6 +330,26 @@ export const ratingEsg = {
     nestFetch("/api/rating-esg/rma/benchmark", { method: "POST", body: JSON.stringify(params) }),
 };
 
+// ── Trustee ───────────────────────────────────────────────────
+export const trustee = {
+  dealTasks: (dealId: string, phase?: string) =>
+    nestFetch(`/api/trustee/deals/${dealId}/tasks${phase ? `?phase=${phase}` : ""}`),
+  allTasks: (phase?: string) =>
+    nestFetch(`/api/trustee/tasks${phase ? `?phase=${phase}` : ""}`),
+  getTask: (taskId: string) =>
+    nestFetch(`/api/trustee/tasks/${taskId}`),
+  updateTask: (taskId: string, updates: Record<string, unknown>) =>
+    nestFetch(`/api/trustee/tasks/${taskId}`, {
+      method: "PATCH",
+      body: JSON.stringify(updates),
+    }),
+  addDealTask: (dealId: string, data: Record<string, unknown>) =>
+    nestFetch(`/api/trustee/deals/${dealId}/tasks`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+};
+
 // ── Metrics ──────────────────────────────────────────────────
 export const metrics = {
   platform: () => nestFetch("/api/metrics"),
@@ -499,11 +519,22 @@ export const counterparties = {
   feasibility: (sector: string) => nestFetch(`/api/counterparties/feasibility/${sector}`),
 };
 
+// ── World Labs ────────────────────────────────────────────────
+export const worldLabs = {
+  propertyWorld: (data: Record<string, unknown>) =>
+    nestFetch("/api/world-labs/property", { method: "POST", body: JSON.stringify(data) }),
+  teaserWorld: (data: Record<string, unknown>) =>
+    nestFetch("/api/world-labs/teaser", { method: "POST", body: JSON.stringify(data) }),
+  worldStatus: (worldId: string) =>
+    nestFetch(`/api/world-labs/worlds/${worldId}`),
+};
+
 export const api = {
   auth, deals, fund, agents, market, bondTools, risk,
   modeling, maxwell, architect, pricing, insurance, roots, metrics,
   powerstrip, bondWorkflow, eagleeye, hawkeye, ratingEsg, bondStructuring,
   signals, desks, bernard, intel, mirrorAgents, emma, workflow, counterparties,
+  trustee, worldLabs,
 };
 
 export default api;

@@ -87,6 +87,8 @@ from routes.surety_universe import surety_universe_bp
 from routes.naics import naics_bp
 from routes.intake_brainstorm import intake_brainstorm_bp
 from routes.study import study_bp
+from routes.trustee import trustee_bp
+from routes.world_labs import world_labs_bp
 
 
 def create_app():
@@ -190,6 +192,8 @@ def create_app():
     app.register_blueprint(naics_bp, url_prefix="/api/naics")
     app.register_blueprint(intake_brainstorm_bp, url_prefix="/api/intake-brainstorm")
     app.register_blueprint(study_bp, url_prefix="/api/study")
+    app.register_blueprint(trustee_bp, url_prefix="/api/trustee")
+    app.register_blueprint(world_labs_bp, url_prefix="/api/world-labs")
 
     # Seed EMMA with real bond structures on startup
     from services.emma_seed_data import seed_emma_database

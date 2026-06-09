@@ -21,8 +21,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+from services.database import DatabaseService
 
-# ── Investor Database ──────────────────────────────────────────
+
+# ── Investor Database (seed data — loaded to Supabase on first run) ────
 
 INVESTOR_DATABASE: dict[str, list[dict[str, Any]]] = {
     "family_offices": [
@@ -365,8 +367,51 @@ class HawkeyePlacement:
     Connects every deal to the right capital source."""
 
     def __init__(self) -> None:
-        self._investors = dict(INVESTOR_DATABASE)
-        self._pipeline: dict[str, dict] = {}  # deal_id -> placement tracking
+        self._db = DatabaseService()
+        self._investors = self._load_investors()
+
+    def _load_investors(self) -> dict[str, list[dict]]:
+        """Load investors from Supabase; seed from constants if empty."""
+        rows = self._db.select("investors", filters={"active": True}) or []
+        if not rows:
+            self._seed_investors()
+            rows = self._db.select("investors", filters={"active": True}) or []
+        result: dict[str, list[dict]] = {k: [] for k in INVESTOR_DATABASE}
+        for row in rows:
+            cat = row.get("category", "other")
+            if cat not in result:
+                result[cat] = []
+            result[cat].append({
+                "name": row.get("name", ""),
+                "aum_usd": row.get("aum_usd", 0),
+                "sectors": row.get("sectors") or [],
+                "min_check": row.get("min_check", 0),
+                "max_check": row.get("max_check", 0),
+                "preferences": row.get("preferences") or [],
+                "geography": row.get("geography", "national"),
+                "contact_approach": row.get("contact_approach", "direct"),
+                "rates": row.get("rates", ""),
+                "note": row.get("note", ""),
+            })
+        return result
+
+    def _seed_investors(self) -> None:
+        """Insert INVESTOR_DATABASE into Supabase on first run."""
+        for category, investors in INVESTOR_DATABASE.items():
+            for inv in investors:
+                self._db.insert("investors", {
+                    "name": inv["name"],
+                    "category": category,
+                    "aum_usd": inv.get("aum_usd"),
+                    "min_check": inv.get("min_check"),
+                    "max_check": inv.get("max_check"),
+                    "sectors": inv.get("sectors", []),
+                    "preferences": inv.get("preferences", []),
+                    "geography": inv.get("geography", "national"),
+                    "contact_approach": inv.get("contact_approach", "direct"),
+                    "rates": inv.get("rates"),
+                    "note": inv.get("note"),
+                })
 
     # ── 1. Match Investors ─────────────────────────────────────
 
@@ -678,33 +723,22 @@ class HawkeyePlacement:
     # ── 4. Track Placement ─────────────────────────────────────
 
     def track_placement(self, deal_id: str) -> dict:
-        """Return placement pipeline status for a deal.
-
-        Args:
-            deal_id: Unique deal identifier.
-
-        Returns:
-            Pipeline status with investors contacted, NDAs, IOIs, commitments.
-        """
-        pipeline = self._pipeline.get(deal_id)
-        if not pipeline:
-            # Initialize empty pipeline
-            pipeline = {
+        """Return placement pipeline status for a deal."""
+        rows = self._db.select("placement_pipeline", filters={"deal_id": deal_id}) or []
+        if rows:
+            pipeline = rows[0]
+        else:
+            pipeline = self._db.insert("placement_pipeline", {
                 "deal_id": deal_id,
                 "status": "not_started",
                 "investors_contacted": [],
                 "ndas_executed": [],
                 "iois_received": [],
                 "commitments": [],
-                "book_coverage_pct": 0,
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat(),
-            }
-            self._pipeline[deal_id] = pipeline
+            }) or {}
 
-        # Calculate book coverage
-        total_committed = sum(c.get("amount", 0) for c in pipeline.get("commitments", []))
-        deal_size = pipeline.get("deal_size", 0)
+        total_committed = sum(c.get("amount", 0) for c in pipeline.get("commitments") or [])
+        deal_size = pipeline.get("deal_size") or 0
 
         return {
             "deal_id": deal_id,
@@ -740,53 +774,46 @@ class HawkeyePlacement:
     def update_placement(
         self, deal_id: str, event_type: str, data: dict
     ) -> dict:
-        """Update placement pipeline with a new event.
-
-        Args:
-            deal_id: Unique deal identifier.
-            event_type: One of contacted, nda, ioi, commitment, status.
-            data: Event data (investor_name, amount, etc.).
-
-        Returns:
-            Updated pipeline status.
-        """
-        if deal_id not in self._pipeline:
-            self._pipeline[deal_id] = {
-                "deal_id": deal_id,
-                "status": "active",
-                "deal_size": data.get("deal_size", 0),
-                "investors_contacted": [],
-                "ndas_executed": [],
-                "iois_received": [],
-                "commitments": [],
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat(),
-            }
-
-        pipeline = self._pipeline[deal_id]
+        """Update placement pipeline with a new event and persist to Supabase."""
+        current = self.track_placement(deal_id)
+        detail = current.get("detail", {})
         timestamp = datetime.utcnow().isoformat()
-        pipeline["updated_at"] = timestamp
-
         event_entry = {**data, "timestamp": timestamp}
 
+        updates: dict[str, Any] = {}
+
         if event_type == "contacted":
-            pipeline["investors_contacted"].append(event_entry)
-            if pipeline["status"] == "not_started":
-                pipeline["status"] = "marketing"
+            lst = list(detail.get("investors_contacted") or [])
+            lst.append(event_entry)
+            updates["investors_contacted"] = lst
+            updates["status"] = "marketing"
         elif event_type == "nda":
-            pipeline["ndas_executed"].append(event_entry)
-            pipeline["status"] = "due_diligence"
+            lst = list(detail.get("ndas_executed") or [])
+            lst.append(event_entry)
+            updates["ndas_executed"] = lst
+            updates["status"] = "due_diligence"
         elif event_type == "ioi":
-            pipeline["iois_received"].append(event_entry)
-            pipeline["status"] = "indications"
+            lst = list(detail.get("iois_received") or [])
+            lst.append(event_entry)
+            updates["iois_received"] = lst
+            updates["status"] = "indications"
         elif event_type == "commitment":
-            pipeline["commitments"].append(event_entry)
-            pipeline["status"] = "committed"
+            lst = list(detail.get("commitments") or [])
+            lst.append(event_entry)
+            updates["commitments"] = lst
+            updates["status"] = "committed"
         elif event_type == "status":
-            pipeline["status"] = data.get("status", pipeline["status"])
+            updates["status"] = data.get("status", current.get("status", "not_started"))
             for key in ("cim_distributed", "mgmt_presentations", "pricing_call_scheduled", "closing_scheduled"):
                 if key in data:
-                    pipeline[key] = data[key]
+                    updates[key] = data[key]
+
+        if updates:
+            rows = self._db.select("placement_pipeline", filters={"deal_id": deal_id}) or []
+            if rows:
+                self._db.update("placement_pipeline", rows[0]["id"], updates)
+            else:
+                self._db.insert("placement_pipeline", {"deal_id": deal_id, **updates})
 
         return self.track_placement(deal_id)
 
