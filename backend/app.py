@@ -209,7 +209,7 @@ def create_app():
         socketio = SocketIO(
             app,
             cors_allowed_origins=Config.FRONTEND_ORIGIN,
-            async_mode="threading",
+            async_mode="gevent",
         )
         register_fund_socket_events(socketio, engine, auth)
         app.config["SOCKETIO"] = socketio
