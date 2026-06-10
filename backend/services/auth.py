@@ -77,13 +77,6 @@ class AuthService:
         ]
         for email, pw, role, name, client_id in seeds:
             self._create_local(email=email, password=pw, role=role, name=name, client_id=client_id)
-            # Mirror to Supabase GoTrue so users survive server restarts
-            if self._use_supabase:
-                try:
-                    self._supabase_signup(email, pw, name, role)
-                except AuthError as e:
-                    if e.status != 409:  # 409 = already exists — that's fine
-                        pass
 
     # ---------- local (in-memory) ----------
 

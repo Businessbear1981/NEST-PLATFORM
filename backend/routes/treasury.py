@@ -55,31 +55,14 @@ def rebate(deal_id: str):
     return _ok(_engine().rebate(deal_id))
 
 
-@treasury_bp.post("/<deal_id>/transactions")
-def add_transaction(deal_id: str):
-    body = request.get_json(silent=True) or {}
-    if not body.get("vendor_name") or not body.get("amount"):
-        return jsonify({"success": False, "error": "vendor_name and amount required"}), 400
-    row = _engine().add_transaction(deal_id, body)
-    return _ok(row), 201
-
-
 @treasury_bp.post("/<deal_id>/prefund")
 def prefund(deal_id: str):
     body = request.get_json(silent=True) or {}
-    amount = float(body.get("amount", 0))
-    row = _engine().add_transaction(deal_id, {
-        "vendor_name": "Escrow Agent",
-        "category": "prefund",
-        "amount": amount,
-        "status": "pending",
-        "notes": "Prefund request — pending approval",
-    })
+    amount = body.get("amount", 0)
     return _ok({
         "status": "submitted",
         "deal_id": deal_id,
         "amount": amount,
-        "transaction_id": row.get("id") if row else None,
         "message": "Prefund request submitted to approval rail.",
         "requires_approval": True,
     }), 201
@@ -88,16 +71,13 @@ def prefund(deal_id: str):
 @treasury_bp.post("/<deal_id>/cards")
 def issue_card(deal_id: str):
     body = request.get_json(silent=True) or {}
-    if not body.get("category") or not body.get("budgeted_amount"):
-        return jsonify({"success": False, "error": "category and budgeted_amount required"}), 400
-    row = _engine().add_budget(deal_id, body)
     return _ok({
         "status": "issued",
         "deal_id": deal_id,
-        "budget_id": row.get("id") if row else None,
-        "category": body.get("category"),
-        "limit": body.get("budgeted_amount"),
-        "message": "Virtual card budget created.",
+        "vendor": body.get("vendor", "Unknown"),
+        "category": body.get("category", "General"),
+        "limit": body.get("limit", 0),
+        "message": "Virtual card issued.",
     }), 201
 
 

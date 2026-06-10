@@ -1,21 +1,17 @@
 """
-NEST Treasury Engine — Ramp P-Card live/DB adapter.
-RAMP_MODE=live  → call Ramp API (Ramp token required)
-RAMP_MODE=db    → read/write Supabase treasury_transactions + treasury_budgets
-Default: db (no random data — real DB state or empty)
+NEST Treasury Engine — Ramp P-Card mock/live adapter.
+Generates realistic data mirroring Ramp's API schema.
+Switch via RAMP_MODE=mock|live env var.
 """
 
 from __future__ import annotations
 
 import os
+import random
 from datetime import datetime, timedelta
 from typing import Any
 
-from services.database import DatabaseService
-
-_MODE = os.environ.get("RAMP_MODE", "db")
-_RAMP_TOKEN = os.environ.get("RAMP_API_TOKEN", "")
-_RAMP_BASE = "https://demo-api.ramp.com/developer/v1"
+_MODE = os.environ.get("RAMP_MODE", "mock")
 
 # ── Budget categories for a $487M construction project ────────────────
 BUDGET_CATEGORIES = [
@@ -35,7 +31,7 @@ BUDGET_CATEGORIES = [
 
 TOTAL_BUDGET = sum(c["budgeted"] for c in BUDGET_CATEGORIES)  # $487M
 
-# ── Vendor roster — MCC codes per Ramp schema ─────────────────────────
+# ── Vendor roster for virtual cards ───────────────────────────────────
 VENDORS = [
     {"name": "Turner Construction", "category_id": "cat_gc", "mcc": "1520"},
     {"name": "Skanska USA", "category_id": "cat_gc", "mcc": "1520"},
@@ -57,7 +53,7 @@ VENDORS = [
     {"name": "Hilton Hotels", "category_id": "cat_te", "mcc": "7011"},
 ]
 
-# ── NEST pre-close soft costs (actual planned spend, not generated) ────
+# ── NEST pre-close soft costs ─────────────────────────────────────────
 NEST_SOFT_COSTS = [
     {"vendor": "Moody's Investors Service", "category": "Rating & Grading", "amount": 850_000, "date": "2025-11-15"},
     {"vendor": "S&P Global Ratings", "category": "Rating & Grading", "amount": 720_000, "date": "2025-12-01"},
@@ -76,99 +72,95 @@ def _ts(offset_days: int = 0) -> str:
     return (datetime.utcnow() - timedelta(days=offset_days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _cat_by_name(name: str) -> str:
-    """Map vendor_name → category_id using VENDORS roster."""
-    for v in VENDORS:
-        if v["name"] == name:
-            return v["category_id"]
-    return "cat_consulting"
-
-
-def _mcc_by_name(name: str) -> str:
-    for v in VENDORS:
-        if v["name"] == name:
-            return v["mcc"]
-    return "7392"
+def _id(prefix: str, n: int) -> str:
+    return f"{prefix}_{n:04d}"
 
 
 class TreasuryEngine:
-    """Live DB-backed treasury engine. Reads Supabase; no random data."""
+    """Generates Ramp-schema mock data for a deal. Stateless — every call rebuilds from seed."""
 
     def __init__(self) -> None:
-        self._db = DatabaseService()
+        self._seed = 42
 
     # ── Public API ────────────────────────────────────────────────────
 
     def overview(self, deal_id: str) -> dict[str, Any]:
+        cards = self.cards(deal_id)
         txns = self.transactions(deal_id)
-        budgets = self._db.select("treasury_budgets", filters={"deal_id": deal_id}) or []
-        total_loaded = sum(b.get("budgeted_amount", 0) for b in budgets)
-        total_spent = sum(t.get("amount", 0) for t in txns)
-        cards_active = len({t.get("card_id") for t in txns if t.get("card_id")})
         rebate = self.rebate(deal_id)
+        total_spent = sum(t["amount"] for t in txns)
+        total_loaded = sum(pf["amount"] for pf in self.prefund_history(deal_id))
         return {
             "deal_id": deal_id,
             "total_budget": TOTAL_BUDGET,
             "total_loaded": total_loaded,
-            "total_spent": round(total_spent, 2),
-            "available_balance": round(total_loaded - total_spent, 2),
+            "total_spent": total_spent,
+            "available_balance": total_loaded - total_spent,
             "escrow_source": "Client prefunded escrow — auto-pay on statement cycle",
-            "active_cards": cards_active,
+            "active_cards": len([c for c in cards if c["state"] == "ACTIVE"]),
             "total_transactions": len(txns),
             "rebate_accrued": rebate["accrued"],
-            "receipt_match_rate": self._receipt_match_rate(txns),
+            "receipt_match_rate": 0.973,
         }
 
     def transactions(self, deal_id: str) -> list[dict[str, Any]]:
-        rows = self._db.select("treasury_transactions", filters={"deal_id": deal_id}) or []
-        result = []
-        for row in rows:
-            cat_id = row.get("category") or _cat_by_name(row.get("vendor_name", ""))
-            cat_name = next((c["name"] for c in BUDGET_CATEGORIES if c["id"] == cat_id), cat_id)
-            result.append({
-                "id": row.get("id"),
-                "card_id": row.get("card_id"),
-                "merchant_name": row.get("vendor_name"),
-                "merchant_category_code": row.get("mcc") or _mcc_by_name(row.get("vendor_name", "")),
-                "amount": float(row.get("amount", 0)),
-                "currency": row.get("currency", "USD"),
-                "state": row.get("status", "settled").upper(),
-                "memo": f"{cat_name} — {row.get('vendor_name', '')}",
-                "category": {"id": cat_id, "name": cat_name},
-                "accounting_categories": [{"id": f"ac_{cat_id}", "name": f"Construction — {cat_name}"}],
-                "created_at": row.get("transaction_date") or row.get("created_at"),
-                "notes": row.get("notes"),
-                "covenant_compliant": row.get("covenant_compliant", True),
+        rng = random.Random(self._seed)
+        txns: list[dict[str, Any]] = []
+        for i in range(240):
+            vendor = rng.choice(VENDORS)
+            cat = next(c for c in BUDGET_CATEGORIES if c["id"] == vendor["category_id"])
+            base = {
+                "cat_gc": (800_000, 4_200_000),
+                "cat_arch": (50_000, 400_000),
+                "cat_legal": (25_000, 180_000),
+                "cat_rating": (75_000, 250_000),
+                "cat_audit": (30_000, 120_000),
+                "cat_insurance": (40_000, 350_000),
+                "cat_permits": (5_000, 80_000),
+                "cat_hosting": (2_000, 24_000),
+                "cat_te": (500, 8_000),
+                "cat_consulting": (20_000, 150_000),
+                "cat_enviro": (10_000, 90_000),
+                "cat_contingency": (10_000, 200_000),
+            }.get(vendor["category_id"], (1_000, 50_000))
+            amount = round(rng.uniform(base[0], base[1]), 2)
+            days_ago = rng.randint(1, 180)
+            has_receipt = rng.random() < 0.973
+            txns.append({
+                "id": _id("txn", i),
+                "card_id": _id("card", VENDORS.index(vendor)),
+                "merchant_name": vendor["name"],
+                "merchant_category_code": vendor["mcc"],
+                "amount": amount,
+                "currency": "USD",
+                "state": rng.choice(["CLEARED", "CLEARED", "CLEARED", "PENDING"]),
+                "receipts": [{"id": _id("rcpt", i), "receipt_url": f"/receipts/{_id('rcpt', i)}.pdf"}] if has_receipt else [],
+                "memo": f"{cat['name']} — {vendor['name']}",
+                "category": {"id": vendor["category_id"], "name": cat["name"]},
+                "accounting_categories": [{"id": f"ac_{vendor['category_id']}", "name": f"Construction — {cat['name']}"}],
+                "created_at": _ts(days_ago),
+                "settled_at": _ts(days_ago - 2) if rng.random() < 0.9 else None,
             })
-        result.sort(key=lambda t: str(t.get("created_at") or ""), reverse=True)
-        return result
+        txns.sort(key=lambda t: t["created_at"], reverse=True)
+        return txns
 
     def cards(self, deal_id: str) -> list[dict[str, Any]]:
-        budgets = self._db.select("treasury_budgets", filters={"deal_id": deal_id}) or []
-        if not budgets:
-            return []
-        txns = self.transactions(deal_id)
-        spent_by_card: dict[str, float] = {}
-        for t in txns:
-            cid = t.get("card_id") or ""
-            if cid:
-                spent_by_card[cid] = spent_by_card.get(cid, 0) + t["amount"]
-        result = []
-        for b in budgets:
-            card_id = b.get("card_id") or b.get("id")
-            cat_id = b.get("category", "")
-            cat_name = next((c["name"] for c in BUDGET_CATEGORIES if c["id"] == cat_id), cat_id)
-            limit = float(b.get("budgeted_amount", 0))
-            spent = round(spent_by_card.get(card_id, 0), 2)
+        rng = random.Random(self._seed + 1)
+        result: list[dict[str, Any]] = []
+        for i, vendor in enumerate(VENDORS):
+            cat = next(c for c in BUDGET_CATEGORIES if c["id"] == vendor["category_id"])
+            limit = cat["budgeted"] // max(1, sum(1 for v in VENDORS if v["category_id"] == vendor["category_id"]))
+            spent = round(limit * rng.uniform(0.15, 0.55), 2)
             result.append({
-                "id": card_id,
-                "display_name": f"{cat_name}",
+                "id": _id("card", i),
+                "display_name": f"{vendor['name']} — {cat['name']}",
                 "card_program_id": "prog_nest_001",
-                "state": "ACTIVE" if b.get("active", True) else "SUSPENDED",
+                "last_four": f"{rng.randint(1000, 9999)}",
+                "state": "ACTIVE",
                 "spending_restrictions": {
-                    "amount": limit,
+                    "amount": float(limit),
                     "interval": "TOTAL",
-                    "categories": b.get("mcc_restrictions") or [],
+                    "categories": [vendor["mcc"]],
                     "blocked_categories": [],
                 },
                 "total_spent": spent,
@@ -179,87 +171,58 @@ class TreasuryEngine:
 
     def budget(self, deal_id: str) -> list[dict[str, Any]]:
         txns = self.transactions(deal_id)
-        budgets = self._db.select("treasury_budgets", filters={"deal_id": deal_id}) or []
         spent_by_cat: dict[str, float] = {}
         for t in txns:
             cid = t["category"]["id"]
             spent_by_cat[cid] = spent_by_cat.get(cid, 0) + t["amount"]
 
-        budgeted_by_cat: dict[str, float] = {}
-        for b in budgets:
-            cat_id = b.get("category", "")
-            budgeted_by_cat[cat_id] = budgeted_by_cat.get(cat_id, 0) + float(b.get("budgeted_amount", 0))
-
-        result = []
+        draws = self.prefund_history(deal_id)
+        drawn_total = sum(pf["amount"] for pf in draws)
+        result: list[dict[str, Any]] = []
         for cat in BUDGET_CATEGORIES:
             spent = round(spent_by_cat.get(cat["id"], 0), 2)
-            budgeted = budgeted_by_cat.get(cat["id"]) or cat["budgeted"]
-            remaining = round(budgeted - spent, 2)
-            pct_used = round((spent / budgeted * 100), 1) if budgeted > 0 else 0
-            variance_pct = round(((spent / max(budgeted, 1)) - 1) * 100, 1)
-            status = "red" if pct_used > 90 else "amber" if pct_used > 70 else "green"
+            drawn = round(drawn_total * (cat["budgeted"] / TOTAL_BUDGET), 2)
+            remaining = round(cat["budgeted"] - spent, 2)
+            variance_pct = round(((spent / max(drawn, 1)) - 1) * 100, 1) if drawn > 0 else 0
+            status = "red" if variance_pct > 5 else "amber" if variance_pct > 0 else "green"
             result.append({
                 "category_id": cat["id"],
                 "category_name": cat["name"],
-                "budgeted": budgeted,
+                "budgeted": cat["budgeted"],
+                "drawn": drawn,
                 "spent": spent,
                 "remaining": remaining,
-                "pct_used": pct_used,
                 "variance_pct": variance_pct,
                 "status": status,
             })
         return result
 
     def prefund_history(self, deal_id: str) -> list[dict[str, Any]]:
-        rows = (
-            self._db.select("treasury_transactions", filters={"deal_id": deal_id}) or []
-        )
-        prefunds = [r for r in rows if r.get("category") in ("Prefund", "cat_prefund", "prefund")]
-        if prefunds:
-            return [
-                {
-                    "id": r.get("id"),
-                    "deal_id": deal_id,
-                    "amount": float(r.get("amount", 0)),
-                    "funded_at": r.get("transaction_date") or r.get("created_at"),
-                    "card_program_id": "prog_nest_001",
-                    "status": r.get("status", "funded"),
-                }
-                for r in prefunds
-            ]
-        # No prefunds recorded yet — return planned draw schedule (not random)
         return [
-            {
-                "id": f"pf_planned_{i}",
-                "deal_id": deal_id,
-                "amount": amt,
-                "funded_at": None,
-                "card_program_id": "prog_nest_001",
-                "status": "planned",
-            }
+            {"id": _id("pf", i), "deal_id": deal_id, "draw_id": _id("draw", i),
+             "amount": amt, "funded_at": _ts(180 - i * 30),
+             "card_program_id": "prog_nest_001", "status": "funded",
+             "approval_id": _id("appr", i)}
             for i, amt in enumerate([
                 8_200_000, 9_400_000, 11_800_000, 10_600_000, 12_100_000, 8_900_000,
             ])
         ]
 
     def reconciliation(self, deal_id: str) -> list[dict[str, Any]]:
-        prefunds = [p for p in self.prefund_history(deal_id) if p["status"] != "planned"]
+        prefunds = self.prefund_history(deal_id)
         txns = self.transactions(deal_id)
-        if not prefunds:
-            return []
-        result = []
-        used: set[str] = set()
+        rng = random.Random(self._seed + 3)
+        result: list[dict[str, Any]] = []
         for pf in prefunds:
-            matched = [t for t in txns if t["id"] not in used][:40]
-            for t in matched:
-                used.add(t["id"])
-            matched_total = sum(t["amount"] for t in matched)
+            matched_txns = [t for t in rng.sample(txns, min(40, len(txns)))]
+            matched_total = sum(t["amount"] for t in matched_txns)
             result.append({
                 "prefund_id": pf["id"],
+                "draw_id": pf["draw_id"],
                 "draw_amount": pf["amount"],
                 "matched_spend": round(matched_total, 2),
                 "unreconciled": round(pf["amount"] - matched_total, 2),
-                "transaction_count": len(matched),
+                "transaction_count": len(matched_txns),
                 "status": "reconciled" if abs(pf["amount"] - matched_total) < 50_000 else "pending",
             })
         return result
@@ -267,10 +230,9 @@ class TreasuryEngine:
     def rebate(self, deal_id: str) -> dict[str, Any]:
         txns = self.transactions(deal_id)
         total_spend = sum(t["amount"] for t in txns)
-        rate = 0.015  # 1.5% Ramp rebate
+        rate = 0.015  # 1.5%
         accrued = round(total_spend * rate, 2)
-        days_active = max(1, self._days_active(txns))
-        projected_annual = round(accrued * (365 / days_active), 2) if days_active < 365 else accrued
+        projected_annual = round(accrued * (365 / 180), 2)
         return {
             "deal_id": deal_id,
             "rate": rate,
@@ -302,18 +264,17 @@ class TreasuryEngine:
         }
 
     def portfolio(self) -> dict[str, Any]:
-        """Portfolio-wide treasury economics across all active deals."""
+        """Portfolio-wide treasury economics across all deals."""
         nest = self.nest_soft_costs()
-        all_deals = self._db.select("deals") or []
-        active_deal_ids = [d["id"] for d in all_deals if d.get("status") not in ("closed", "archived")]
+        deals = ["deal-1", "deal-2", "deal-3"]
         total_spend = 0.0
         total_rebate = 0.0
-        for deal_id in active_deal_ids:
-            r = self.rebate(deal_id)
+        for d in deals:
+            r = self.rebate(d)
             total_spend += r["total_eligible_spend"]
             total_rebate += r["accrued"]
         return {
-            "active_deals": len(active_deal_ids),
+            "active_deals": len(deals),
             "total_managed_spend": round(total_spend, 2),
             "total_rebate_accrued": round(total_rebate, 2),
             "nest_soft_cost_rebate": nest["rebate_earned"],
@@ -324,51 +285,3 @@ class TreasuryEngine:
                 "misallocation_risk_reduction": "97.3% auto-categorized",
             },
         }
-
-    def add_transaction(self, deal_id: str, data: dict[str, Any]) -> dict[str, Any]:
-        payload = {
-            "deal_id": deal_id,
-            "vendor_name": data["vendor_name"],
-            "category": data.get("category", _cat_by_name(data["vendor_name"])),
-            "mcc": data.get("mcc", _mcc_by_name(data["vendor_name"])),
-            "amount": float(data["amount"]),
-            "currency": data.get("currency", "USD"),
-            "transaction_date": data.get("transaction_date") or datetime.utcnow().strftime("%Y-%m-%d"),
-            "card_id": data.get("card_id"),
-            "status": data.get("status", "settled"),
-            "covenant_compliant": data.get("covenant_compliant", True),
-            "notes": data.get("notes"),
-        }
-        return self._db.insert("treasury_transactions", payload)
-
-    def add_budget(self, deal_id: str, data: dict[str, Any]) -> dict[str, Any]:
-        payload = {
-            "deal_id": deal_id,
-            "category": data["category"],
-            "budgeted_amount": float(data["budgeted_amount"]),
-            "spent_amount": 0.0,
-            "card_id": data.get("card_id"),
-            "mcc_restrictions": data.get("mcc_restrictions", []),
-            "active": True,
-        }
-        return self._db.insert("treasury_budgets", payload)
-
-    # ── Internal helpers ──────────────────────────────────────────────
-
-    def _receipt_match_rate(self, txns: list[dict]) -> float:
-        if not txns:
-            return 0.0
-        with_receipt = sum(1 for t in txns if t.get("notes"))
-        return round(with_receipt / len(txns), 3)
-
-    def _days_active(self, txns: list[dict]) -> int:
-        dates = [str(t.get("created_at") or "")[:10] for t in txns if t.get("created_at")]
-        if len(dates) < 2:
-            return 1
-        dates.sort()
-        try:
-            d0 = datetime.strptime(dates[0], "%Y-%m-%d")
-            d1 = datetime.strptime(dates[-1], "%Y-%m-%d")
-            return max(1, (d1 - d0).days)
-        except ValueError:
-            return 180

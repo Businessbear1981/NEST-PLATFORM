@@ -315,67 +315,6 @@ class SentinelAgent:
         """Full Sentinel run on a single deal."""
         return self.score_deal(deal_id, deal_data, signals)
 
-    def run_and_persist(self, deal_id: str, deal_data: dict, credit_result: dict) -> dict:
-        """Score risk across all 7 dimensions, persist to risk_scores, and return scores.
-
-        Pulls enriched signals from credit_result so the scoring reflects the
-        credit engine's computed metrics (DSCR, LTV, D/EBITDA, etc.).
-
-        Args:
-            deal_id:       UUID of the deal record in Supabase.
-            deal_data:     Raw financial inputs from preflight (noi, debt_service, …).
-            credit_result: Return value from CreditEngine.run_and_persist().
-
-        Returns:
-            Dict with overall_score, dimension scores, grade, and alerts.
-        """
-        # Merge credit metrics into deal_data so scoring methods can see them
-        metrics = credit_result.get("metrics", {}) if credit_result else {}
-        enriched = dict(deal_data)
-        enriched.setdefault("dscr", metrics.get("dscr", deal_data.get("dscr", 1.5)))
-        enriched.setdefault("ltv", metrics.get("ltv", deal_data.get("ltv", 65)))
-        enriched.setdefault("debt_to_ebitda", metrics.get("debt_to_ebitda", deal_data.get("debt_to_ebitda", 5.0)))
-
-        result = self.score_deal(deal_id, enriched)
-
-        dim = result.get("dimension_scores", {})
-
-        # Collect high-risk alerts
-        alerts = []
-        for dim_name, dim_data in dim.items():
-            if dim_data.get("score", 0) >= 50:
-                alerts.append({
-                    "dimension": dim_name,
-                    "score": dim_data["score"],
-                    "level": dim_data.get("level", "yellow"),
-                    "factors": dim_data.get("top_factors", []),
-                })
-
-        grade = result.get("risk_level", "green")
-
-        row = {
-            "deal_id": deal_id,
-            "overall_score": result.get("composite_score", 0),
-            "credit_risk": dim.get("credit_risk", {}).get("score", 0),
-            "market_risk": dim.get("market_risk", {}).get("score", 0),
-            "construction_risk": dim.get("construction_risk", {}).get("score", 0),
-            "legal_risk": dim.get("regulatory_risk", {}).get("score", 0),
-            "operational_risk": dim.get("operational_risk", {}).get("score", 0),
-            "environmental_risk": dim.get("environmental_risk", {}).get("score", 0),
-            "political_risk": dim.get("sponsor_risk", {}).get("score", 0),
-            "grade": grade,
-            "alerts": alerts,
-        }
-
-        if _db and _db.configured and deal_id:
-            try:
-                import json as _json
-                _db.insert("risk_scores", {**row, "alerts": _json.dumps(alerts)})
-            except Exception:
-                pass
-
-        return row
-
 
 # Singleton
 sentinel = SentinelAgent()

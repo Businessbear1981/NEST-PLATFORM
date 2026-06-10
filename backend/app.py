@@ -80,17 +80,6 @@ from routes.doc_ingestion import doc_ingestion_bp
 from routes.preflight import preflight_bp
 from routes.client_portal import client_portal_bp
 from routes.bd import bd_bp
-from routes.bernard import bernard_bp
-from routes.contacts import contacts_bp
-from routes.outreach import outreach_bp
-from routes.surety_universe import surety_universe_bp
-from routes.naics import naics_bp
-from routes.intake_brainstorm import intake_brainstorm_bp
-from routes.study import study_bp
-from routes.trustee import trustee_bp
-from routes.world_labs import world_labs_bp
-from routes.construction import construction_bp
-from routes.surveillance import surveillance_bp
 
 
 def create_app():
@@ -98,9 +87,6 @@ def create_app():
     app.config.from_object(Config)
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     init_request_logging(app)
-
-    from services.database import db
-    db.require_configured()
 
     engine = FundEngine()
     app.config["FUND_ENGINE"] = engine
@@ -180,9 +166,6 @@ def create_app():
     app.register_blueprint(intel_engine_bp, url_prefix="/api/intel")
     app.register_blueprint(workflow_bp, url_prefix="/api/workflow")
     app.register_blueprint(counterparties_bp, url_prefix="/api/counterparties")
-    app.register_blueprint(contacts_bp, url_prefix="/api/contacts")
-    app.register_blueprint(outreach_bp, url_prefix="/api/outreach")
-    app.register_blueprint(surety_universe_bp, url_prefix="/api/surety-universe")
     app.register_blueprint(mirror_bp, url_prefix="/api/rating")
     app.register_blueprint(v2_compat_bp, url_prefix="/api")
     app.register_blueprint(deal_flow_bp, url_prefix="/api/deal-flow")
@@ -190,14 +173,6 @@ def create_app():
     app.register_blueprint(preflight_bp, url_prefix="/api/preflight")
     app.register_blueprint(client_portal_bp, url_prefix="/api/client")
     app.register_blueprint(bd_bp, url_prefix="/api/bd")
-    app.register_blueprint(bernard_bp, url_prefix="/api/bernard")
-    app.register_blueprint(naics_bp, url_prefix="/api/naics")
-    app.register_blueprint(intake_brainstorm_bp, url_prefix="/api/intake-brainstorm")
-    app.register_blueprint(study_bp, url_prefix="/api/study")
-    app.register_blueprint(trustee_bp, url_prefix="/api/trustee")
-    app.register_blueprint(world_labs_bp, url_prefix="/api/world-labs")
-    app.register_blueprint(construction_bp, url_prefix="/api/construction")
-    app.register_blueprint(surveillance_bp, url_prefix="/api/surveillance")
 
     # Seed EMMA with real bond structures on startup
     from services.emma_seed_data import seed_emma_database
@@ -206,14 +181,15 @@ def create_app():
 
     @app.get("/api/metrics")
     def metrics():
-        from services.database import db
-        import datetime
-        rows = db.select("deals") or []
-        deal_count = len(rows)
-        active = sum(1 for r in rows if r.get("status") != "closed")
-        total_pipeline = sum(float(r.get("bond_face", 0)) for r in rows if r.get("status") != "closed")
-        bond_rows = db.select("bond_structures") or []
-        bond_count = len(bond_rows)
+        from routes.deals import _deals, _bonds, _lock
+        with _lock:
+            deal_count = len(_deals)
+            active = sum(1 for d in _deals.values() if d["status"] != "closed")
+            total_pipeline = sum(
+                d.get("project", {}).get("total_project_cost_usd", 0)
+                for d in _deals.values() if d["status"] != "closed"
+            )
+            bond_count = len(_bonds)
         return jsonify({
             "success": True,
             "data": {
@@ -224,7 +200,7 @@ def create_app():
                 "agents_active": 16,
                 "agents_total": len(__import__("agents.desk_registry", fromlist=["get_all_agents"]).get_all_agents()),
             },
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
         })
 
     is_serverless = os.environ.get("VERCEL") == "1"
@@ -233,7 +209,7 @@ def create_app():
         socketio = SocketIO(
             app,
             cors_allowed_origins=Config.FRONTEND_ORIGIN,
-            async_mode="gevent",
+            async_mode="threading",
         )
         register_fund_socket_events(socketio, engine, auth)
         app.config["SOCKETIO"] = socketio

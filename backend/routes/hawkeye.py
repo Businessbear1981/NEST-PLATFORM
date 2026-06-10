@@ -149,22 +149,12 @@ def generate_teaser():
     )
 
     result = plugin_hub.route("investor_teaser", prompt)
-
-    from services.world_labs import generate_teaser_world
-    world = generate_teaser_world(
-        deal_name=deal_name,
-        location=f"{asset_type}, {state}",
-        deal_type=asset_type,
-        size_usd=float(deal_size),
-    )
-
     teaser = {
         "id": f"teaser_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
         "dealId": deal_id,
         "dealName": deal_name,
         "content": result.get("content", "") if result.get("success") else "Teaser generation unavailable",
         "tool_used": result.get("tool", "none"),
-        "world_labs": world,
         "generatedAt": datetime.utcnow().isoformat(),
     }
 

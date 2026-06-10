@@ -1,22 +1,5 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "outputDirectory": ".next",
-  "regions": ["pdx1"],
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://happy-dream-production-3527.up.railway.app/api/:path*"
-    }
-  ],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://nestadvisors.tech"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_API_URL": "https://nestadvisors.tech"
-    }
-  }
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

@@ -6,24 +6,11 @@ never supabase or boto3 directly. This makes the Supabase -> AWS RDS migration
 a config change, not a rewrite.
 """
 import os
-import logging
 import httpx
 from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
-log = logging.getLogger(__name__)
-
-
-def _log_pg_error(op: str, table: str, exc: Exception):
-    """Surface the real Postgres/Supabase error instead of swallowing it."""
-    detail = ""
-    if isinstance(exc, httpx.HTTPStatusError):
-        try:
-            detail = exc.response.text[:500]
-        except Exception:
-            pass
-    log.error("db.%s(%s) FAILED: %s%s", op, table, exc, (" | " + detail) if detail else "")
 
 
 class DatabaseService:
@@ -37,14 +24,6 @@ class DatabaseService:
     @property
     def configured(self):
         return self._configured
-
-    def require_configured(self):
-        """Call at app startup. Raises if Supabase is not configured."""
-        if not self._configured:
-            raise RuntimeError(
-                "SUPABASE_URL and SUPABASE_SERVICE_KEY must be set. "
-                "NEST requires Supabase for all persistence."
-            )
 
     def _headers(self):
         return {
@@ -70,40 +49,34 @@ class DatabaseService:
             r = httpx.get(self._api(table), headers=headers, params=params or {}, timeout=10)
             r.raise_for_status()
             return r.json()
-        except Exception as exc:
-            _log_pg_error("select", table, exc)
+        except Exception:
             return [] if not single else None
 
     def insert(self, table, data):
         """INSERT row(s). Returns inserted row(s)."""
         if not self._configured:
-            log.error("db.insert(%s) FAILED: Supabase not configured", table)
             return None
         try:
             r = httpx.post(self._api(table), headers=self._headers(), json=data, timeout=10)
             r.raise_for_status()
             return r.json()
-        except Exception as exc:
-            _log_pg_error("insert", table, exc)
+        except Exception:
             return None
 
     def update(self, table, match, data):
         """UPDATE rows matching filter. match = {"id": "eq.xxx"}"""
         if not self._configured:
-            log.error("db.update(%s) FAILED: Supabase not configured", table)
             return None
         try:
             r = httpx.patch(self._api(table), headers=self._headers(), params=match, json=data, timeout=10)
             r.raise_for_status()
             return r.json()
-        except Exception as exc:
-            _log_pg_error("update", table, exc)
+        except Exception:
             return None
 
     def upsert(self, table, data):
         """UPSERT (insert or update on conflict)."""
         if not self._configured:
-            log.error("db.upsert(%s) FAILED: Supabase not configured", table)
             return None
         headers = self._headers()
         headers["Prefer"] = "resolution=merge-duplicates,return=representation"
@@ -111,21 +84,18 @@ class DatabaseService:
             r = httpx.post(self._api(table), headers=headers, json=data, timeout=10)
             r.raise_for_status()
             return r.json()
-        except Exception as exc:
-            _log_pg_error("upsert", table, exc)
+        except Exception:
             return None
 
     def delete(self, table, match):
         """DELETE rows matching filter."""
         if not self._configured:
-            log.error("db.delete(%s) FAILED: Supabase not configured", table)
             return None
         try:
             r = httpx.delete(self._api(table), headers=self._headers(), params=match, timeout=10)
             r.raise_for_status()
             return True
-        except Exception as exc:
-            _log_pg_error("delete", table, exc)
+        except Exception:
             return False
 
     # ── Domain Helpers ──────────────────────────────────────────

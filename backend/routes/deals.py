@@ -1,8 +1,9 @@
 """Full deal lifecycle routes — CRUD, bond structure, refi, covenants, checklist, memo.
 
-Backed by Supabase. Supabase is required — no in-memory fallback.
+Backed by Supabase. Falls back to in-memory if DB is not configured.
 """
 import json
+import threading
 import uuid as _uuid
 from flask import Blueprint, jsonify, request, current_app
 from datetime import datetime
@@ -10,9 +11,20 @@ from models.deal import new_deal, compute_readiness_score, DEAL_STATUSES
 from models.bond import new_bond_structure, new_series
 from models.refi import new_refi_cycle
 from services.auth import require_auth
-from services.database import db
+
+try:
+    from services.database import db
+except ImportError:
+    db = None
 
 deals_bp = Blueprint("deals", __name__)
+
+# In-memory fallback (only used when Supabase is not configured)
+_lock = threading.RLock()
+_deals = {}
+_bonds = {}
+_refis = {}
+_covenants = {}
 
 
 def _ts():
@@ -28,7 +40,7 @@ def _err(msg, code=400):
 
 
 def _use_db():
-    return True  # In-memory fallback removed — Supabase required
+    return db and db.configured
 
 
 # ── Supabase <-> Deal model mapping ──────────────────────────────
@@ -119,6 +131,60 @@ def _map_status(status):
         "closed": "closed",
     }
     return mapping.get(status, status)
+
+
+# ── Seed (in-memory fallback only) ───────────────────────────────
+
+def _seed():
+    seeds = [
+        {
+            "name": "Life Star Pointe Loop",
+            "project": {
+                "name": "Life Star Pointe Loop",
+                "address": "426 Pointe Loop Blvd",
+                "city": "Kissimmee", "state": "FL", "zip": "34747",
+                "asset_type": "senior_living", "project_type": "greenfield",
+                "total_project_cost_usd": 231_000_000,
+                "units": 364, "description": "364-unit IL/AL/MC campus"
+            },
+            "sponsor": {
+                "entity_name": "Life Star Senior Living LLC",
+                "contact_name": "Development Team", "track_record_projects": 8,
+            },
+        },
+        {
+            "name": "Meridian Cove",
+            "project": {
+                "name": "Meridian Cove Mixed-Use",
+                "city": "Tampa", "state": "FL",
+                "asset_type": "mixed_use", "project_type": "greenfield",
+                "total_project_cost_usd": 142_000_000,
+                "units": 280, "description": "280 units + 45K SF retail"
+            },
+            "sponsor": {"entity_name": "Meridian Development Group"},
+        },
+        {
+            "name": "Palmetto Ridge",
+            "project": {
+                "name": "Palmetto Ridge Industrial",
+                "city": "Lakeland", "state": "FL",
+                "asset_type": "industrial", "project_type": "shovel_ready",
+                "total_project_cost_usd": 78_000_000,
+                "square_footage": 425_000,
+                "description": "425K SF Class A industrial / cold storage"
+            },
+            "sponsor": {"entity_name": "Palmetto Industrial Partners"},
+        },
+    ]
+    with _lock:
+        for s in seeds:
+            d = new_deal(s["name"], s.get("project"), s.get("sponsor"))
+            d["status"] = "underwriting"
+            _deals[d["id"]] = d
+
+
+if not (_use_db()):
+    _seed()
 
 
 # ── Deal CRUD ───────────────────────────────────────────────────
@@ -612,47 +678,6 @@ def generate_memo(deal_id):
     context = {"deal": d, "bond": bond, "memo_type": memo_type}
     result = morgan.generate(content_type, context)
     return _ok(result)
-
-
-# ── Latest Credit / Structure / Risk Reads ──────────────────────
-
-@deals_bp.route("/<deal_id>/credit", methods=["GET"])
-@require_auth()
-def get_deal_credit(deal_id):
-    results = db.select("credit_analyses", {
-        "deal_id": f"eq.{deal_id}",
-        "order": "created_at.desc",
-        "limit": "1",
-    })
-    if results:
-        return _ok(results[0])
-    return _ok(None)
-
-
-@deals_bp.route("/<deal_id>/structure", methods=["GET"])
-@require_auth()
-def get_deal_structure(deal_id):
-    rows = db.select("bond_structures", {
-        "deal_id": f"eq.{deal_id}",
-        "order": "created_at.desc",
-        "limit": "1",
-    })
-    if not rows:
-        return _ok(None)
-    return _ok(rows[0])
-
-
-@deals_bp.route("/<deal_id>/risk", methods=["GET"])
-@require_auth()
-def get_deal_risk(deal_id):
-    results = db.select("risk_scores", {
-        "deal_id": f"eq.{deal_id}",
-        "order": "created_at.desc",
-        "limit": "1",
-    })
-    if results:
-        return _ok(results[0])
-    return _ok(None)
 
 
 # ── Pipeline Metrics ────────────────────────────────────────────

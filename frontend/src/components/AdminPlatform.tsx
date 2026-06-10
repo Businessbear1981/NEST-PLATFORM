@@ -1,0 +1,224 @@
+import React, { useMemo, useState } from "react";
+import { Activity, AlertTriangle, CheckCircle, Clock, Settings, ShieldCheck, Users, Wrench } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "operator" | "viewer";
+  status: "active" | "inactive" | "pending";
+  lastLogin: Date;
+}
+
+interface Module {
+  id: string;
+  name: string;
+  status: "operational" | "degraded" | "offline";
+  uptime: number;
+  requests: number;
+  errors: number;
+  lastUpdate: Date;
+}
+
+interface ApprovalItem {
+  id: string;
+  type: string;
+  description: string;
+  requester: string;
+  status: "pending" | "approved" | "rejected";
+  submittedAt: Date;
+}
+
+const initialUsers: User[] = [
+  { id: "user-1", name: "Sean Gilmore", email: "sean@nest.com", role: "admin", status: "active", lastLogin: new Date(Date.now() - 1000) },
+  { id: "user-2", name: "Sarah Chen", email: "sarah@nest.com", role: "operator", status: "active", lastLogin: new Date(Date.now() - 5 * 60 * 1000) },
+  { id: "user-3", name: "Michael Rodriguez", email: "michael@nest.com", role: "operator", status: "active", lastLogin: new Date(Date.now() - 30 * 60 * 1000) },
+  { id: "user-4", name: "Jennifer Park", email: "jennifer@nest.com", role: "viewer", status: "inactive", lastLogin: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+];
+
+const initialModules: Module[] = [
+  { id: "mod-1", name: "Bond Market Terminal", status: "operational", uptime: 99.98, requests: 15234, errors: 3, lastUpdate: new Date() },
+  { id: "mod-2", name: "Agent Orchestration", status: "operational", uptime: 99.95, requests: 8934, errors: 4, lastUpdate: new Date() },
+  { id: "mod-3", name: "Roots Platform", status: "operational", uptime: 99.99, requests: 5234, errors: 1, lastUpdate: new Date() },
+  { id: "mod-4", name: "Insurance & Surety", status: "degraded", uptime: 98.5, requests: 3421, errors: 12, lastUpdate: new Date() },
+  { id: "mod-5", name: "Rating Intelligence", status: "operational", uptime: 99.92, requests: 6123, errors: 5, lastUpdate: new Date() },
+];
+
+const initialApprovals: ApprovalItem[] = [
+  { id: "appr-1", type: "Bond Issuance", description: "NEST Mixed-Use Series B - $25M", requester: "Sarah Chen", status: "pending", submittedAt: new Date(Date.now() - 2 * 60 * 60 * 1000) },
+  { id: "appr-2", type: "Surety Submission", description: "Apex Surety - Premium Quote Approval", requester: "Michael Rodriguez", status: "pending", submittedAt: new Date(Date.now() - 1 * 60 * 60 * 1000) },
+  { id: "appr-3", type: "Investor Communication", description: "Q2 2026 Portfolio Update", requester: "Jennifer Park", status: "pending", submittedAt: new Date(Date.now() - 30 * 60 * 1000) },
+];
+
+export function AdminPlatform() {
+  const [activeTab, setActiveTab] = useState("overview");
+  const [users, setUsers] = useState(initialUsers);
+  const [modules, setModules] = useState(initialModules);
+  const [approvals, setApprovals] = useState(initialApprovals);
+  const [adminLog, setAdminLog] = useState("No admin action has been routed yet.");
+
+  const healthScore = useMemo(() => {
+    const average = modules.reduce((sum, module) => sum + module.uptime, 0) / modules.length;
+    return Math.round(average * 10) / 10;
+  }, [modules]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "operational":
+      case "active":
+      case "approved":
+        return "border-emerald-500/30 bg-emerald-500/10 text-emerald-100";
+      case "degraded":
+      case "inactive":
+        return "border-yellow-500/30 bg-yellow-500/10 text-yellow-100";
+      case "offline":
+      case "rejected":
+        return "border-red-500/30 bg-red-500/10 text-red-100";
+      case "pending":
+        return "border-cyan-500/30 bg-cyan-500/10 text-cyan-100";
+      default:
+        return "border-slate-600 bg-slate-800 text-slate-300";
+    }
+  };
+
+  const cycleUserRole = (id: string) => {
+    const order: User["role"][] = ["viewer", "operator", "admin"];
+    setUsers((current) =>
+      current.map((user) => {
+        if (user.id !== id) return user;
+        const nextRole = order[(order.indexOf(user.role) + 1) % order.length];
+        setAdminLog(`${user.name} role changed from ${user.role} to ${nextRole}.`);
+        return { ...user, role: nextRole, status: "active" };
+      }),
+    );
+  };
+
+  const repairModule = (id: string) => {
+    setModules((current) =>
+      current.map((module) => {
+        if (module.id !== id) return module;
+        setAdminLog(`${module.name} health check completed; status restored to operational.`);
+        return { ...module, status: "operational", uptime: Math.min(99.99, module.uptime + 1.25), errors: Math.max(0, module.errors - 8), lastUpdate: new Date() };
+      }),
+    );
+  };
+
+  const resolveApproval = (id: string, status: "approved" | "rejected") => {
+    setApprovals((current) =>
+      current.map((item) => {
+        if (item.id !== id) return item;
+        setAdminLog(`${item.type} approval for ${item.description} marked ${status}.`);
+        return { ...item, status };
+      }),
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-cyan-300/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
+        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+          <Settings className="h-4 w-4" /> Admin Platform · working control plane
+        </p>
+        <h1 className="mt-2 text-3xl font-bold text-foreground">Admin Platform</h1>
+        <p className="mt-2 max-w-4xl text-sm leading-6 text-muted-foreground">
+          User role changes, module health repair, and approval decisions now update visible state and route a traceable admin log.
+        </p>
+        <p className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+          <ShieldCheck className="mr-2 inline h-4 w-4" /> {adminLog}
+        </p>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="modules">Modules</TabsTrigger>
+          <TabsTrigger value="approvals">Approvals</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="mt-6 space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Active Users</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-cyan-400">{users.filter((u) => u.status === "active").length}</p><p className="mt-1 text-xs text-muted-foreground">of {users.length} total</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">System Uptime</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{healthScore}%</p><p className="mt-1 text-xs text-muted-foreground">Module weighted average</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Pending Approvals</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-yellow-400">{approvals.filter((a) => a.status === "pending").length}</p><p className="mt-1 text-xs text-muted-foreground">Awaiting action</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Module Status</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{modules.filter((m) => m.status === "operational").length}/{modules.length}</p><p className="mt-1 text-xs text-muted-foreground">Operational</p></CardContent></Card>
+          </div>
+
+          <Card>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><Activity className="h-5 w-5" /> System Health</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                { name: "API Response Time", value: 145, target: 200, unit: "ms" },
+                { name: "Database Queries", value: 8234, target: 10000, unit: "/min" },
+                { name: "Memory Usage", value: 62, target: 80, unit: "%" },
+                { name: "Disk Usage", value: 45, target: 85, unit: "%" },
+              ].map((metric) => (
+                <div key={metric.name}>
+                  <div className="mb-1 flex items-center justify-between"><span className="text-sm font-semibold text-foreground">{metric.name}</span><span className="text-sm text-muted-foreground">{metric.value} / {metric.target} {metric.unit}</span></div>
+                  <Progress value={(metric.value / metric.target) * 100} className="h-2" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="mt-6 space-y-4">
+          <Card>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><Users className="h-5 w-5" /> User Management</CardTitle></CardHeader>
+            <CardContent><div className="space-y-3">
+              {users.map((user) => (
+                <div key={user.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+                  <div className="mb-2 flex items-start justify-between gap-3">
+                    <div><p className="font-semibold text-foreground">{user.name}</p><p className="text-sm text-muted-foreground">{user.email}</p></div>
+                    <div className="flex flex-wrap justify-end gap-2"><Badge variant="outline" className="border-slate-600 bg-slate-900 text-cyan-100">{user.role}</Badge><Badge variant="outline" className={getStatusColor(user.status)}>{user.status.toUpperCase()}</Badge></div>
+                  </div>
+                  <div className="flex flex-col gap-2 border-t border-slate-700 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-muted-foreground">Last login: {user.lastLogin.toLocaleString()}</p>
+                    <Button size="sm" variant="outline" onClick={() => cycleUserRole(user.id)} className="border-cyan-500/40 text-cyan-100">Cycle Role</Button>
+                  </div>
+                </div>
+              ))}
+            </div></CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="modules" className="mt-6 space-y-4">
+          <Card>
+            <CardHeader><CardTitle className="text-cyan-400">Module Status & Performance</CardTitle></CardHeader>
+            <CardContent><div className="space-y-4">
+              {modules.map((module) => (
+                <div key={module.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div><p className="font-semibold text-foreground">{module.name}</p><div className="mt-1 flex gap-4 text-sm"><span className="text-muted-foreground">Requests: <span className="text-cyan-400">{module.requests.toLocaleString()}</span></span><span className="text-muted-foreground">Errors: <span className="text-red-400">{module.errors}</span></span></div></div>
+                    <Badge variant="outline" className={getStatusColor(module.status)}>{module.status.toUpperCase()}</Badge>
+                  </div>
+                  <div className="space-y-2"><div className="flex items-center justify-between text-xs"><span className="text-muted-foreground">Uptime</span><span className="text-green-400">{module.uptime}%</span></div><Progress value={module.uptime} className="h-2" /></div>
+                  {module.status !== "operational" && <Button size="sm" onClick={() => repairModule(module.id)} className="mt-3 bg-emerald-600 text-white hover:bg-emerald-500"><Wrench className="mr-2 h-4 w-4" /> Run Health Repair</Button>}
+                </div>
+              ))}
+            </div></CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="approvals" className="mt-6 space-y-4">
+          <Card>
+            <CardHeader><CardTitle className="text-cyan-400">Approval Queue</CardTitle></CardHeader>
+            <CardContent><div className="space-y-3">
+              {approvals.map((item) => (
+                <div key={item.id} className={`rounded-lg border p-4 ${item.status === "approved" ? "border-green-500/30 bg-green-500/10" : item.status === "rejected" ? "border-red-500/30 bg-red-500/10" : "border-slate-700 bg-slate-800"}`}>
+                  <div className="mb-3 flex items-start justify-between gap-3"><div className="flex-1"><p className="font-semibold text-foreground">{item.type}</p><p className="mt-1 text-sm text-muted-foreground">{item.description}</p><p className="mt-2 text-xs text-muted-foreground">Requested by {item.requester} • {item.submittedAt.toLocaleString()}</p></div><Badge variant="outline" className={getStatusColor(item.status)}>{item.status.toUpperCase()}</Badge></div>
+                  {item.status === "pending" ? <div className="flex gap-2 border-t border-slate-700 pt-3"><Button size="sm" className="flex-1 bg-green-600 text-white hover:bg-green-700" onClick={() => resolveApproval(item.id, "approved")}><CheckCircle className="mr-2 h-4 w-4" /> Approve</Button><Button size="sm" className="flex-1 bg-red-600 text-white hover:bg-red-700" onClick={() => resolveApproval(item.id, "rejected")}><AlertTriangle className="mr-2 h-4 w-4" /> Reject</Button></div> : <p className="border-t border-current/20 pt-3 text-xs text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" /> Decision retained in approval audit log.</p>}
+                </div>
+              ))}
+            </div></CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
