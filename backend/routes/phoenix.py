@@ -79,13 +79,20 @@ def get_timeline(deal_id: str):
 @phoenix_bp.put("/deals/<deal_id>/timeline/<milestone_id>")
 def update_milestone(deal_id: str, milestone_id: str):
     body = request.get_json(silent=True) or {}
-    tl = _engine().timeline(deal_id)
+    tl = _engine().update_milestone(deal_id, milestone_id, body.get("status", "complete"))
     if not tl:
         return jsonify({"success": False, "error": "not_found"}), 404
-    for ms in tl["milestones"]:
-        if ms["id"] == milestone_id:
-            ms["status"] = body.get("status", ms["status"])
     return _ok(tl)
+
+
+# ── Radar — promote signal to Phoenix deal ────────────────────────────
+
+@phoenix_bp.post("/radar/promote/<signal_id>")
+def promote_signal(signal_id: str):
+    result = _engine().promote_to_deal(signal_id)
+    if result.get("error"):
+        return jsonify({"success": False, "error": result["error"]}), 404
+    return _ok(result), 201
 
 
 # ── Bond handoff ──────────────────────────────────────────────────────
