@@ -1,0 +1,1 @@
+web: cd backend && gunicorn -k gevent -w 1 --bind 0.0.0.0:$PORT --timeout 120 --worker-connections 1000 app:app
