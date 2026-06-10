@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS base
+FROM python:3.11-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -24,4 +24,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -fsS http://localhost:${PORT}/api/health || exit 1
 
-CMD ["sh", "-c", "gunicorn -k eventlet -w 1 --bind 0.0.0.0:${PORT} --timeout 120 app:app"]
+CMD ["sh", "-c", "gunicorn -k gevent -w 1 --bind 0.0.0.0:${PORT} --timeout 120 --worker-connections 1000 app:app"]
