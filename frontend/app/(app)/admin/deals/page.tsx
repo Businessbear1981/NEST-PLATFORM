@@ -30,6 +30,33 @@ export default function DealsPage() {
 
   return (
     <div>
+      {/* Cinematic Hero */}
+      <section style={{
+        position: 'relative', overflow: 'hidden',
+        borderRadius: '1.8rem',
+        border: '1px solid rgba(196,160,72,0.25)',
+        background: '#060E1A',
+        padding: '28px 32px',
+        marginBottom: 28,
+        boxShadow: '0 0 85px rgba(196,160,72,0.11)',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(circle at 12% 14%, rgba(196,160,72,0.17), transparent 34%), radial-gradient(circle at 86% 4%, rgba(45,107,61,0.15), transparent 30%), linear-gradient(135deg, rgba(15,23,42,0.76), rgba(2,6,23,0.96))',
+        }} />
+        <div style={{ position: 'relative' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#C4A048', marginBottom: 12 }}>
+            NEST Advisors · Bond Origination Desk
+          </div>
+          <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 42, fontWeight: 900, color: '#fff', margin: '0 0 12px', letterSpacing: '-0.01em' }}>
+            Active Deals
+          </h1>
+          <p style={{ color: '#94a3b8', fontSize: 13, lineHeight: 1.7, maxWidth: 600 }}>
+            Live deal pipeline across all capital structures. Track status, bond sizing, and placement from intake to close.
+          </p>
+        </div>
+      </section>
+
       <h1 className="serif" style={{ fontSize: 36, color: 'var(--gold)', marginBottom: 8 }}>Deal Pipeline</h1>
       <p className="sage" style={{ fontSize: 13, marginBottom: 24 }}>Active deals across all pipeline stages.</p>
 

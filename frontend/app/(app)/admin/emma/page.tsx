@@ -11,7 +11,7 @@ export default function EMMAPage() {
   const [template, setTemplate] = useState<any>(null)
   const [sectors, setSectors] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'search' | 'templates' | 'comps' | 'parse' | 'stats'>('search')
+  const [activeTab, setActiveTab] = useState<'search' | 'templates' | 'parse' | 'stats'>('search')
   const [osText, setOsText] = useState('')
   const [parseResult, setParseResult] = useState<any>(null)
 
@@ -66,7 +66,6 @@ export default function EMMAPage() {
       <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 24, color: '#C4A048', marginBottom: 4 }}>EMMA Intelligence Layer</h1>
       <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#2D4A35', marginBottom: 20 }}>Electronic Municipal Market Access — Every muni bond ever issued, structured, rated, insured, and funded</p>
 
-      {/* Tab Bar */}
       <div style={{ display: 'flex', gap: 2, marginBottom: 20, borderBottom: '1px solid rgba(196,160,72,0.1)', paddingBottom: 8 }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
