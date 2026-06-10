@@ -58,36 +58,43 @@ function installFetchAuthHeader() {
   }) as typeof window.fetch;
 }
 
-function useAutoLogin() {
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    installFetchAuthHeader();
-    const tryAttach = () => {
-      const token = localStorage.getItem("nest_token");
-      if (token) return; // already authed
-      origLoginFetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "admin@nest.local", password: "Admin123!" }),
+// Use the original fetch (NOT the patched one) for the login itself.
+const origLoginFetch = typeof window !== "undefined" ? window.fetch.bind(window) : (..._args: any[]) => Promise.reject(new Error("no fetch"));
+
+// CRITICAL: install the fetch patch at module-evaluation time, NOT inside a
+// useEffect. React effect order runs children before parents, so child page
+// effects fire `fetch("/api/...")` BEFORE App's useEffect runs — meaning
+// without this, the very first page-load fetch escapes unpatched and fails
+// with 401. Patching here ensures every fetch from the moment React mounts
+// goes through the interceptor.
+if (typeof window !== "undefined") {
+  installFetchAuthHeader();
+  // Kick off auto-login on script load too — same reason as above. If a
+  // page fires before login completes, the interceptor still attaches the
+  // header on subsequent fetches once the token lands in localStorage.
+  if (!localStorage.getItem("nest_token")) {
+    origLoginFetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "admin@nest.local", password: "Admin123!" }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        const tok = d?.token || d?.data?.token;
+        if (tok) {
+          localStorage.setItem("nest_token", tok);
+          window.dispatchEvent(new Event("storage"));
+        }
       })
-        .then((r) => r.json())
-        .then((d) => {
-          const tok = d?.token || d?.data?.token;
-          if (tok) {
-            localStorage.setItem("nest_token", tok);
-            window.dispatchEvent(new Event("storage"));
-          }
-        })
-        .catch(() => {});
-    };
-    tryAttach();
-  }, []);
+      .catch(() => {});
+  }
 }
 
-// Use the original fetch (NOT the patched one) for the login itself — the
-// patched fetch would still skip it via the isLogin check, but using the
-// original ref is safer if the patch order ever changes.
-const origLoginFetch = typeof window !== "undefined" ? window.fetch.bind(window) : (..._args: any[]) => Promise.reject(new Error("no fetch"));
+function useAutoLogin() {
+  // Component-level hook is now a no-op — the work happens at module load.
+  // Kept so existing App() call site doesn't break.
+  useEffect(() => {}, []);
+}
 import Home from "./pages/Home";
 import { AgentsPage, ArchitecturePage, DashboardPage, PortalsPage } from "./pages/WorkbenchPages";
 import { OperationsDealsPage, OperationsDealDetailPage } from "./pages/OperationsPages";
@@ -120,6 +127,7 @@ import DealsPage from "./pages/v4/DealsPage";
 import RootsUploadPage from "./pages/v4/RootsUploadPage";
 import ClientDashboardPage from "./pages/v4/ClientDashboardPage";
 import StudyPage from "./pages/v4/StudyPage";
+import PhoenixDesk from "./components/PhoenixDesk";
 // Phase 1 — wire previously-orphaned intelligence modules (real backend fetches)
 import BondIntelligence from "./components/BondIntelligence";
 import ModelingStudio from "./components/ModelingStudio";
@@ -192,6 +200,7 @@ function Router() {
       <Route path={"/marketing"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><MarketingStudio /></main>}</Route>
       <Route path={"/institutional"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><InstitutionalDashboard /></main>}</Route>
       <Route path={"/study"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><StudyPage /></main>}</Route>
+      <Route path={"/phoenix"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><PhoenixDesk /></main>}</Route>
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -9,15 +9,35 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function TreasuryPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [deals, setDeals] = useState<any[]>([]);
+  const [selectedDealId, setSelectedDealId] = useState<string>("deal-1");
   const [overview, setOverview] = useState<any>(null);
   const [budget, setBudget] = useState<any[]>([]);
   const [rebate, setRebate] = useState<any>(null);
 
+  // Load deal list on mount
   useEffect(() => {
-    fetch("/api/treasury/deal-1/overview").then(r => r.json()).then(d => d.success && setOverview(d.data)).catch(() => {});
-    fetch("/api/treasury/deal-1/budget").then(r => r.json()).then(d => d.success && setBudget(d.data)).catch(() => {});
-    fetch("/api/treasury/deal-1/rebate").then(r => r.json()).then(d => d.success && setRebate(d.data)).catch(() => {});
+    fetch("/api/deals")
+      .then(r => r.json())
+      .then(d => {
+        const list = d.data?.deals || d.data || [];
+        if (Array.isArray(list) && list.length > 0) {
+          setDeals(list);
+          setSelectedDealId(list[0].id);
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  // Load treasury data when deal changes
+  useEffect(() => {
+    if (!selectedDealId) return;
+    fetch(`/api/treasury/${selectedDealId}/overview`).then(r => r.json()).then(d => d.success && setOverview(d.data)).catch(() => {});
+    fetch(`/api/treasury/${selectedDealId}/budget`).then(r => r.json()).then(d => d.success && setBudget(d.data)).catch(() => {});
+    fetch(`/api/treasury/${selectedDealId}/rebate`).then(r => r.json()).then(d => d.success && setRebate(d.data)).catch(() => {});
+  }, [selectedDealId]);
+
+  const selectedDeal = deals.find(d => d.id === selectedDealId);
 
   return (
     <div className="space-y-6">
@@ -28,6 +48,20 @@ export default function TreasuryPage() {
             <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#C4A048]">Treasury Desk · Ramp Commercial Card Program</div>
             <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl" style={{ fontFamily: "Cormorant Garamond, serif" }}>Treasury Command</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">Ramp P-card program for construction draws, NEST soft costs (rating, legal, feasibility), arrangement fees, T&E for client meetings. 1.5% interchange rebate on all eligible spend.</p>
+            {deals.length > 0 && (
+              <div className="mt-4">
+                <label className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500 block mb-1">Active Deal</label>
+                <select
+                  value={selectedDealId}
+                  onChange={e => setSelectedDealId(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#C4A048]/50"
+                >
+                  {deals.map(d => (
+                    <option key={d.id} value={d.id}>{d.name || d.id}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
           {overview && (
             <div className="grid grid-cols-2 gap-3">
@@ -58,7 +92,11 @@ export default function TreasuryPage() {
         </TabsList>
 
         <TabsContent value="overview" className="mt-6 space-y-2">
-          {budget.map((cat: any) => (
+          {budget.length === 0 ? (
+            <Card className="border-slate-700 bg-[#0D2218]"><CardContent className="p-6 text-center text-slate-500 text-sm">
+              {selectedDeal ? `Loading budget for ${selectedDeal.name || selectedDealId}...` : "Select a deal above to load treasury data."}
+            </CardContent></Card>
+          ) : budget.map((cat: any) => (
             <Card key={cat.category_id} className="border-slate-700 bg-[#0D2218]">
               <CardContent className="p-3">
                 <div className="flex items-center justify-between mb-1">
@@ -122,7 +160,7 @@ export default function TreasuryPage() {
         </TabsContent>
 
         <TabsContent value="rebate" className="mt-6">
-          {rebate && (
+          {rebate ? (
             <Card className="border-emerald-500/20 bg-[#0D2218]">
               <CardHeader><CardTitle className="text-emerald-400 text-sm">1.5% Interchange Rebate</CardTitle></CardHeader>
               <CardContent>
@@ -133,6 +171,8 @@ export default function TreasuryPage() {
                 </div>
               </CardContent>
             </Card>
+          ) : (
+            <Card className="border-slate-700 bg-[#0D2218]"><CardContent className="p-6 text-center text-slate-500 text-sm">Loading rebate data...</CardContent></Card>
           )}
         </TabsContent>
       </Tabs>

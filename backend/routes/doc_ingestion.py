@@ -19,9 +19,47 @@ def _ok(data):
     return jsonify({"success": True, "data": data, "error": None, "timestamp": datetime.utcnow().isoformat()})
 
 
-# In-memory store for extracted deal data (Supabase in production)
+# In-memory cache (Supabase is the source of truth via document_extractions table)
 _deal_extractions: dict[str, list] = {}
 _deal_financials: dict[str, dict] = {}
+
+
+def _db():
+    from services.database import DatabaseService
+    return DatabaseService()
+
+
+def _load_extractions(deal_id: str) -> list:
+    """Load extractions from Supabase, fallback to in-memory cache."""
+    if deal_id in _deal_extractions:
+        return _deal_extractions[deal_id]
+    try:
+        rows = _db().select("document_extractions", {"deal_id": f"eq.{deal_id}"}) or []
+        extractions = []
+        for row in rows:
+            data = row.get("extracted_data") or {}
+            data["filename"] = row.get("source_filename", "")
+            data["doc_type"] = row.get("extraction_type", "")
+            extractions.append(data)
+        _deal_extractions[deal_id] = extractions
+        return extractions
+    except Exception:
+        return _deal_extractions.get(deal_id, [])
+
+
+def _persist_extraction(deal_id: str, extraction: dict, filename: str) -> None:
+    """Persist an extraction to Supabase document_extractions table."""
+    try:
+        _db().insert("document_extractions", {
+            "deal_id": deal_id,
+            "extraction_type": extraction.get("doc_type", "unknown"),
+            "extracted_data": extraction,
+            "confidence": float(extraction.get("confidence", 0.0)),
+            "source_filename": filename,
+            "extracted_at": datetime.utcnow().isoformat(),
+        })
+    except Exception:
+        pass  # In-memory cache is the fallback
 
 
 @doc_ingestion_bp.post("/<deal_id>/ingest")
@@ -62,8 +100,10 @@ def ingest_document(deal_id: str):
     extraction["filename"] = filename
     extraction["deal_id"] = deal_id
 
-    # Store extraction
-    _deal_extractions.setdefault(deal_id, []).append(extraction)
+    # Persist to Supabase + update in-memory cache
+    _persist_extraction(deal_id, extraction, filename)
+    existing = _load_extractions(deal_id)
+    _deal_extractions[deal_id] = existing + [extraction]
 
     # Rebuild combined deal financials from all docs
     combined = engine.build_deal_from_docs(_deal_extractions[deal_id])
@@ -105,8 +145,9 @@ def ingest_document(deal_id: str):
 @doc_ingestion_bp.get("/<deal_id>/financials")
 def get_deal_financials(deal_id: str):
     """Get the combined financial data extracted from all documents for a deal."""
-    combined = _deal_financials.get(deal_id, {})
-    extractions = _deal_extractions.get(deal_id, [])
+    extractions = _load_extractions(deal_id)
+    from services.doc_ingestion import DocIngestionEngine
+    combined = DocIngestionEngine().build_deal_from_docs(extractions) if extractions else _deal_financials.get(deal_id, {})
     coverage = _check_completeness(combined)
 
     return _ok({
@@ -123,7 +164,9 @@ def get_deal_financials(deal_id: str):
 @doc_ingestion_bp.get("/<deal_id>/missing")
 def get_missing_data(deal_id: str):
     """Show what financial data is still needed for this deal."""
-    combined = _deal_financials.get(deal_id, {})
+    extractions = _load_extractions(deal_id)
+    from services.doc_ingestion import DocIngestionEngine
+    combined = DocIngestionEngine().build_deal_from_docs(extractions) if extractions else _deal_financials.get(deal_id, {})
     coverage = _check_completeness(combined)
     return _ok(coverage)
 
@@ -134,7 +177,9 @@ def run_pipeline_from_docs(deal_id: str):
 
     Uses extracted financials as inputs to the intelligence engine.
     """
-    combined = _deal_financials.get(deal_id, {})
+    extractions = _load_extractions(deal_id)
+    from services.doc_ingestion import DocIngestionEngine
+    combined = DocIngestionEngine().build_deal_from_docs(extractions) if extractions else _deal_financials.get(deal_id, {})
     if not combined:
         return jsonify({"success": False, "error": "No documents ingested for this deal"}), 400
 
