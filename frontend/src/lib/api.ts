@@ -408,6 +408,25 @@ export const signals = {
     nestFetch(`/api/signals/vector/latest${dealId ? `?deal_id=${dealId}` : ""}`),
   vectorHistory: (limit?: number) =>
     nestFetch(`/api/signals/vector/history?limit=${limit || 50}`),
+  // ── Pipeline nodes (three-node signal engine) ──────────────
+  list: (params?: { desk?: string; grade?: string; limit?: number }) => {
+    const qs = params
+      ? "?" + new URLSearchParams(
+          Object.entries(params)
+            .filter(([, v]) => v != null)
+            .map(([k, v]) => [k, String(v)])
+        ).toString()
+      : "";
+    return nestFetch(`/api/signals${qs}`);
+  },
+  scan: (opts?: { max_signals?: number }) =>
+    nestFetch("/api/signals/scan", { method: "POST", body: JSON.stringify(opts ?? {}) }),
+  nodeStatus: () => nestFetch("/api/signals/node-status"),
+  action: (signalId: string, action: "approve" | "pass" | "watch") =>
+    nestFetch(`/api/signals/${signalId}/action`, {
+      method: "POST",
+      body: JSON.stringify({ action }),
+    }),
 };
 
 // ── V4 Operating Framework — Desk Registry + Bernard ────────

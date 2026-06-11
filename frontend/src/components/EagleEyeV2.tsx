@@ -10,7 +10,7 @@ import {
   ChevronDown, Bell,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { api } from "@/lib/api";
+import { api, signals as signalsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -804,6 +804,24 @@ export default function EagleEyeV2() {
   const queryClient = useQueryClient();
   const listRef = useRef<HTMLDivElement>(null);
 
+  // ── Three-node pipeline state ─────────────────────────────
+  const [nodeStatus, setNodeStatus] = useState<any>(null);
+  const [scanning, setScanning] = useState(false);
+
+  useEffect(() => {
+    signalsApi.nodeStatus().then((r: any) => setNodeStatus(r)).catch(() => {});
+  }, []);
+
+  const handleScan = async () => {
+    setScanning(true);
+    try {
+      await signalsApi.scan({ max_signals: 30 });
+      queryClient.invalidateQueries({ queryKey: ["signals"] });
+    } finally {
+      setScanning(false);
+    }
+  };
+
   // Build query params
   const filterParams = useMemo(() => {
     const params: Record<string, string> = {
@@ -972,6 +990,30 @@ export default function EagleEyeV2() {
 
   return (
     <div className="space-y-0">
+      {/* ── Three-Node Pipeline Status ───────────────────────── */}
+      <div className="rounded-xl border border-white/[0.06] bg-gradient-to-r from-[#0a1f16]/80 via-[#060E1A]/80 to-[#0a1f16]/80 backdrop-blur px-5 py-3 mb-4 flex items-center gap-6 flex-wrap">
+        {['Origination Scanner', 'Qualification Engine', 'Action Router'].map((name, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="font-mono text-[0.5rem] uppercase tracking-[0.14em] text-slate-500">
+              NODE {i + 1}
+            </span>
+            <span className="font-mono text-[0.62rem] font-semibold text-white">{name}</span>
+            <span className={`rounded border px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-wider ${nodeStatus ? 'text-emerald-300 bg-emerald-400/10 border-emerald-400/25' : 'text-slate-500 bg-slate-400/10 border-slate-400/25'}`}>
+              {nodeStatus ? 'ACTIVE' : 'CONNECTING'}
+            </span>
+          </div>
+        ))}
+        <Button
+          onClick={handleScan}
+          disabled={scanning}
+          variant="ghost"
+          className="h-7 gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 font-mono text-[0.56rem] uppercase tracking-wider text-slate-400 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 ml-auto"
+        >
+          {scanning ? <RefreshCw size={10} className="animate-spin" /> : <Zap size={10} />}
+          {scanning ? 'SCANNING...' : 'RUN SCAN'}
+        </Button>
+      </div>
+
       {/* ── AI Command Strip ────────────────────────────────── */}
       <div className="rounded-xl border border-white/[0.06] bg-gradient-to-r from-[#0a1f16]/80 via-[#060E1A]/80 to-[#0a1f16]/80 backdrop-blur px-5 py-3 mb-4">
         <div className="flex items-center justify-between">
