@@ -19,7 +19,7 @@ const NAV_SECTIONS = [
     label: "ORIGINATION",
     items: [
       { label: "New Deal", href: "/deal-input-v4", icon: Briefcase },
-      { label: "EagleEye", href: "/eagleeye", icon: Eye },
+      { label: "EagleEye V2", href: "/eagleeye", icon: Eye },
     ],
   },
   {

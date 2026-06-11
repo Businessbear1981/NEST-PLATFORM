@@ -22,7 +22,6 @@ import DucklingAgentFlow from "./DucklingAgentFlow";
 const PILLAR_TABS = [
   { value: "overview", label: "Overview", icon: Bot },
   { value: "eagleeye-v2", label: "EagleEye V2", icon: Zap },
-  { value: "eagleeye", label: "EagleEye", icon: Eye },
   { value: "roots", label: "Roots", icon: TrendingUp },
   { value: "bonddesk", label: "Bond Desk", icon: Layers3 },
   { value: "hawkeye", label: "Hawkeye", icon: Target },
@@ -157,7 +156,6 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
 
         {/* Full views */}
         <TabsContent value="eagleeye-v2" className="mt-4"><EagleEyeV2 /></TabsContent>
-        <TabsContent value="eagleeye" className="mt-4"><EagleEyeScoutDashboard /></TabsContent>
         <TabsContent value="roots" className="mt-4"><RootsWorkspace dealId={dealId} /></TabsContent>
         <TabsContent value="bonddesk" className="mt-4"><StructuringStudio dealId={dealId} /></TabsContent>
         <TabsContent value="hawkeye" className="mt-4"><HawkeyePlacementScout dealId={dealId} /></TabsContent>
