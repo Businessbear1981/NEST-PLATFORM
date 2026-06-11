@@ -23,6 +23,11 @@ $beUrl = ($be | Select-String "https://backend-[a-z0-9]+-ardan-edge-capital\.ver
 if (-not $beUrl) { throw "Backend deploy failed:`n$be" }
 Write-Host "  Backend: $beUrl" -ForegroundColor Green
 
+# 3. Keep the stable backend alias pointing at the new deployment
+Write-Host "`n[3/3] Re-aliasing backend-iota-sand-94.vercel.app..." -ForegroundColor Yellow
+vercel alias $beUrl backend-iota-sand-94.vercel.app | Out-Null
+Write-Host "  Alias updated." -ForegroundColor Green
+
 Write-Host "`n=== DONE ===" -ForegroundColor Cyan
 Write-Host "  Site:    https://nestadvisors.tech  (nest-platform, auto via GitHub)"
 Write-Host "  API:     https://backend-iota-sand-94.vercel.app"
