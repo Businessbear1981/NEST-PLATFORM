@@ -114,6 +114,7 @@ import BondArrangementEngine from "./components/BondArrangementEngine";
 import AboutNest from "./components/AboutNest";
 import SignalIntelligenceFeed from "./components/SignalIntelligenceFeed";
 import EagleEyeV2 from "./components/EagleEyeV2";
+import EagleEyeMain from "./components/EagleEyeMain";
 import AppShell from "./components/AppShell";
 import BernardPage from "./pages/v4/BernardPage";
 import CreditUWPage from "./pages/v4/CreditUWPage";
@@ -160,8 +161,8 @@ function Router() {
       <Route path={"/operations/deal/:dealId"} component={(props: any) => <OperationsDealDetailPage dealId={props.params.dealId} />} />
       <Route path={"/command-center"} component={BondCommandPage} />
       <Route path={"/command-center/:dealId"} component={BondCommandPage} />
-      <Route path={"/eagleeye"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><EagleEyeScoutDashboard /></main>}</Route>
-      <Route path={"/eagleeye-v2"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><EagleEyeV2 /></main>}</Route>
+      <Route path={"/eagleeye"}>{() => { window.location.replace("/eagleeye-v2"); return null; }}</Route>
+      <Route path={"/eagleeye-v2"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><EagleEyeMain /></main>}</Route>
       <Route path={"/signals"} component={() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><SignalIntelligenceFeed /></main>} />
       <Route path={"/roots"} component={RootsPage} />
       <Route path={"/bond-desk"} component={BondDeskPage} />
