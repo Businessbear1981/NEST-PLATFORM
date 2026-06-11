@@ -167,13 +167,9 @@ class EMMAEngine:
         if cached is not None:
             return cached
 
-        results = self._msrb_issuer_search(query)
-        source = "msrb"
-
-        if not results:
-            log.info("MSRB returned empty for %r — falling back to EDGAR", query)
-            results = self._edgar_os_search(query, sector)
-            source = "edgar"
+        # MSRB public API returns HTML, not JSON — go straight to EDGAR EFTS
+        results = self._edgar_os_search(query, sector)
+        source = "edgar"
 
         self._cache_set(cache_key, results)
         log.info("EMMA bond search %r: %d results from %s", query, len(results), source)
@@ -227,14 +223,19 @@ class EMMAEngine:
             return []
 
     def _edgar_os_search(self, query: str, sector: str = None) -> list[dict]:
-        """Search SEC EDGAR for Official Statements as fallback."""
+        """Search SEC EDGAR full-text for Official Statements.
+
+        Note: EDGAR EFTS returns 0 hits when filtering by forms=OS + date range.
+        Workaround: include "official statement" in the query text to narrow to
+        muni bond filings without relying on the broken forms filter.
+        """
         try:
+            edgar_q = f'"{query}" "official statement"'
             with httpx.Client(timeout=self._client_timeout) as c:
                 r = c.get(
                     EDGAR_SEARCH_URL,
                     params={
-                        "q": query,
-                        "forms": "OS",
+                        "q": edgar_q,
                         "dateRange": "custom",
                         "startdt": "2022-01-01",
                         "enddt": "2026-12-31",
