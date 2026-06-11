@@ -35,8 +35,8 @@ def test_list_deals(client, auth_header):
     data = resp.get_json()
     assert data["success"] is True
     assert isinstance(data["data"], list)
-    # Seed data creates 3 deals; prior tests may have added more
-    assert len(data["data"]) >= 3
+    # Platform starts empty — no fake seeds; prior tests may have created deals
+    assert len(data["data"]) >= 1
 
 
 def test_list_deals_filter_by_status(client, auth_header):
