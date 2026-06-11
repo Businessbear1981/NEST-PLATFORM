@@ -3,7 +3,7 @@ import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
   Scale, FileCheck, Users, ClipboardCheck, Lock,
   BarChart3, Building2, Briefcase, Radio, Activity,
-  GraduationCap,
+  GraduationCap, BrainCircuit,
 } from "lucide-react";
 import NestMark from "./NestMark";
 
@@ -54,6 +54,12 @@ const NAV_SECTIONS = [
       { label: "Surveillance", href: "/surveillance", icon: Eye },
       { label: "Compliance", href: "/nightvision", icon: Shield },
       { label: "Trustee", href: "/trustee", icon: Users },
+    ],
+  },
+  {
+    label: "INTELLIGENCE",
+    items: [
+      { label: "NISLE Engine", href: "/nisle", icon: BrainCircuit },
     ],
   },
   {

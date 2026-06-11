@@ -129,6 +129,7 @@ import RootsUploadPage from "./pages/v4/RootsUploadPage";
 import ClientDashboardPage from "./pages/v4/ClientDashboardPage";
 import StudyPage from "./pages/v4/StudyPage";
 import PhoenixDesk from "./components/PhoenixDesk";
+import NISTLEDashboard from "./components/NISTLEDashboard";
 // Phase 1 — wire previously-orphaned intelligence modules (real backend fetches)
 import BondIntelligence from "./components/BondIntelligence";
 import ModelingStudio from "./components/ModelingStudio";
@@ -202,6 +203,7 @@ function Router() {
       <Route path={"/institutional"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><InstitutionalDashboard /></main>}</Route>
       <Route path={"/study"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><StudyPage /></main>}</Route>
       <Route path={"/phoenix"}>{() => <main className="min-h-screen bg-[#03060b] px-4 py-6 text-slate-100 sm:px-8"><PhoenixDesk /></main>}</Route>
+      <Route path={"/nisle"}>{() => <main className="min-h-screen bg-[#030A06] px-0 py-0 text-slate-100"><NISTLEDashboard /></main>}</Route>
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -83,6 +83,7 @@ from routes.bd import bd_bp
 from routes.signals import signals_bp
 from routes.covenants import covenants_bp
 from routes.surveillance import surveillance_bp
+from routes.nisle import nisle_bp
 
 
 def create_app():
@@ -179,6 +180,17 @@ def create_app():
     app.register_blueprint(signals_bp, url_prefix="/api/signals")
     app.register_blueprint(covenants_bp, url_prefix="/api/covenants")
     app.register_blueprint(surveillance_bp, url_prefix="/api/surveillance")
+
+    # NISLE — NEST Intelligence Self-Learning Engine (DAPT-powered)
+    from services.nisle_engine import nisle as nisle_engine
+    app.config["NISLE"] = nisle_engine
+    app.register_blueprint(nisle_bp, url_prefix="/api/nisle")
+    # Prime NISLE with default signals on startup
+    try:
+        nisle_engine.run()
+        app.logger.info("NISLE primed — regime: %s", nisle_engine.status()["current_regime"])
+    except Exception as _nisle_exc:
+        app.logger.warning("NISLE prime failed (non-fatal): %s", _nisle_exc)
 
     # Seed EMMA with real bond structures on startup
     from services.emma_seed_data import seed_emma_database

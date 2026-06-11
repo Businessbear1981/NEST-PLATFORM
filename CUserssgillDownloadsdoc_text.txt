@@ -1,0 +1,1096 @@
+1 ---
+2 title: "Dynamic Asset Pricing Theory: A Comprehensive Research Report"
+3 date: "2026-06-11"
+4 audience: "Institutional Finance Professional — CRE Structured Finance, Bond Desk, CMBS"
+5 mode: "Deep Research (8-Phase Pipeline)"
+6 word_count_target: "8,000–15,000"
+7 ---
+8
+9 # Dynamic Asset Pricing Theory
+10 ## A Comprehensive Graduate-Level Research Report
+11
+12 **Prepared:** June 11, 2026
+13 **Audience:** Institutional finance professionals engaged in CRE structured finance, CMBS issuance, and multi-as
+set bond desk operations
+14 **Research Mode:** Deep (8-phase pipeline)
+15
+16 ---
+17
+18 ## Executive Summary
+19
+20 Dynamic Asset Pricing Theory (DAPT) is the branch of financial economics that explains how asset prices form and
+evolve over time under uncertainty. Its central object is the **stochastic discount factor (SDF)**, also called
+the pricing kernel — a random variable that simultaneously adjusts for time preference and risk, and whose exis
+tence is logically equivalent to the absence of arbitrage. Every major pricing model in use today — from the Bla
+ck-Scholes option formula to multi-factor bond desk models — is a special case of the SDF framework.
+21
+22 The field's intellectual genealogy runs from Arrow and Debreu's complete-markets state-price theory (1950s) thro
+ugh Lucas's exchange economy (1978), Black-Scholes-Merton option pricing (1973), Merton's Intertemporal CAPM (19
+73), and the Fundamental Theorem of Asset Pricing formalized by Harrison-Kreps (1979) and Harrison-Pliska (1981)
+. The canonical empirical challenge is the **equity premium puzzle** of Mehra and Prescott (1985): historical U.
+S. equity returns exceed risk-free rates by roughly 5–7% annually, a gap that standard power-utility representat
+ive-agent models can only match with implausibly high risk-aversion coefficients (γ > 10). This single observati
+on has generated three decades of theoretical innovation.
+23
+24 Three resolution paradigms dominate modern macro-finance: (1) **preference modifications** — Epstein-Zin recursi
+ve utility [Epstein, Zin, 1989], habit formation [Campbell, Cochrane, 1999] — which introduce time-varying risk
++2 more · /status
+> /deep-research Dynamic Asset Pricing Theory
+Agent(Deep research on Dynamic Asset Pricing Theory)
+⎿ Write(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+… +38 tool uses (ctrl+o to expand)
+(ctrl+b to run in background)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Edit file
+Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+30 For practitioners operating a bond desk with CMBS and CRE structured product exposure, the most actionable insights from DAPT concern: (a) the time-variation of risk premia and its connection to the credit cycle; (b) the affine te rm structure as a framework for spread decomposition; and (c) the variance risk premium as a real-time signal of in vestor fear embedded in options markets.
+31
+32 ---
+33 + 34 +## 1. Introduction
+35 +
+36 +### 1.1 Scope and Objectives
+37 +
+38 +This report provides a graduate-level survey of Dynamic Asset Pricing Theory (DAPT), covering its mathematical foun
++dations, leading equilibrium and reduced-form models, empirical puzzles that have driven theoretical innovation, an
++d the frontier where machine learning is reshaping the discipline. The intended reader is a sophisticated practitio
++ner — specifically, someone operating a multi-asset institutional platform that includes CRE structured finance, CM
++BS bond desk operations, and equity-like credit exposures — for whom the theory is not purely academic but directly
++ informs how discount rates, spread dynamics, and risk premia behave across the credit cycle.
+39 +
+40 +The report is organized around seven major findings:
+41 +
+42 +1. The SDF/no-arbitrage framework as the unifying architecture
+43 +2. Equilibrium consumption models and the equity premium puzzle
+44 +3. Preference innovations: Epstein-Zin, habit formation, long-run risk, and rare disasters
+45 +4. Term structure models and their fixed-income applications
+46 +5. Option pricing: from Black-Scholes to stochastic volatility and jump-diffusion
+Fable 5 is now available with the latest version of Claude Code! Run "claude update" to update to v2.1.170+
+‼ 4 setup issues: MCP · /doctor
+▎ Using Sonnet 4.6 (from .claude\settings.json) · /model
++2 more · /status
+> /deep-research Dynamic Asset Pricing Theory
+● Agent(Deep research on Dynamic Asset Pricing Theory)
+⎿ Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+… +39 tool uses (ctrl+o to expand)
+(ctrl+b to run in background)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Edit file
+Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+59 - No results are presented as investment recommendations.
+60
+61 ---
+62 + 63 +## 2. Main Analysis 64 + 65 +### Finding 1: The Stochastic Discount Factor — A Universal Pricing Architecture 66 +
+67 +#### 2.1.1 The Core Equation
+68 +
+69 +The stochastic discount factor (SDF) — also called the pricing kernel, state-price density, or marginal rate of in
++tertemporal substitution — is the single most important object in all of modern asset pricing. Its defining proper
++ty is expressed in the **fundamental pricing equation**:
+70 +
+71 +> **P_t = E_t [ M_{t+1} · X_{t+1} ]**
+72 +
+73 +where P_t is the current price of an asset, X_{t+1} is its payoff next period, and M_{t+1} is the SDF [Cochrane, 2
++001]. This deceptively simple equation encodes everything simultaneously: discounting, risk adjustment, and state-
++contingent valuation. It unifies the Capital Asset Pricing Model, the consumption CAPM, option pricing, and bond p
++ricing under a single roof.
+74 +
+75 +The SDF's power comes from its relationship to the absence of arbitrage. The **Fundamental Theorem of Asset Pricin
++g**, formalized by Harrison and Kreps [1979] and Harrison and Pliska [1981], establishes the equivalence: a securi
++ty market is free of arbitrage if and only if there exists a positive stochastic discount factor M > 0 that prices
++ all assets. In complete markets, M is unique; in incomplete markets, a family of valid SDFs exists, all consisten
++t with observed prices.
+76 +
+77 +#### 2.1.2 Arrow-Debreu Foundations and State Prices
+78 +
+79 +The conceptual precursor is the Arrow-Debreu framework of state-contingent claims. Imagine the world partitions in
++to s = 1, …, S possible states next period. An Arrow-Debreu security pays \$1 in state s and \$0 elsewhere. Its pr
++ice, q_s, is the **state price**. Any asset's current price is then:
+80 +
+81 +> **P = Σ_s q_s · X_s**
+82 +
+83 +The SDF M_s is proportional to q_s / π_s, where π_s is the objective probability of state s [Cochrane, 2001]. The
++state prices normalized by the risk-free discount factor give the **risk-neutral probabilities** Q, under which al
++l assets earn the risk-free rate. This normalization underpins all of derivatives pricing.
+84 +
+85 +The existence of positive state prices is equivalent to the absence of arbitrage. Completeness — that every payoff
++ can be replicated — implies uniqueness. These results, proven rigorously in the infinite-dimensional setting by D
++elbaen and Schachermayer [1994] (the "No Free Lunch with Vanishing Risk" theorem), are the mathematical bedrock of
++ modern quantitative finance.
+86 +
+87 +#### 2.1.3 The Lucas SDF
+88 +
+89 +In a representative-agent exchange economy (the Lucas tree), rational agents maximize expected lifetime utility of
++ consumption:
+90 +
+91 +> **U = E_0 [ Σ_{t=0}^∞ β^t u(C_t) ]**
+92 +
+93 +Optimal intertemporal choice implies the Euler equation, from which the SDF emerges naturally:
+94 +
+95 +> **M_{t+1} = β · u'(C_{t+1}) / u'(C_t)**
+96 +
+97 +For power utility u(C) = C^{1-γ}/(1-γ), this becomes:
+98 +
+99 +> **M_{t+1} = β · (C_{t+1}/C_t)^{-γ}**
+100 +
+101 +This is the **Lucas SDF** [Lucas, 1978; Breeden, 1979]: the pricing kernel is a power function of the consumption
++growth rate, with γ the coefficient of relative risk aversion and β the time-discount factor. Every canonical cons
++umption-based asset pricing model is a modification of this formula.
+102 +
+103 +#### 2.1.4 Hansen-Jagannathan Bounds
+104 +
+105 +Hansen and Jagannathan [1991] derived a crucial diagnostic: the ratio of the standard deviation of the SDF to its
++mean must be at least as large as the Sharpe ratio of any traded portfolio:
+106 +
+107 +> **σ(M) / E(M) ≥ |E(R_i) - R_f| / σ(R_i)**
+108 +
+109 +This **HJ bound** places a lower limit on the volatility the pricing kernel must exhibit to be consistent with obs
++erved asset prices. Using historical data, the U.S. equity market implies a minimum Sharpe ratio of approximately
++0.5, which means M must fluctuate dramatically — far more than simple power-utility consumption-based models predi
++ct when calibrated to the smooth observed path of aggregate consumption. This "entropy bound" is another way of st
++ating the equity premium puzzle [Mehra, Prescott, 1985] and remains a key diagnostic for evaluating any proposed S
++DF.
+110 +
+111 +#### 2.1.5 Implications for Practitioners
+112 +
+113 +For a CMBS bond desk, the SDF framework provides a conceptual map of where spreads come from. The spread on a BBB-
++rated CMBS tranche over Treasuries is, in principle, the covariance of its payoff with the SDF — times a scaling f
++actor. When the SDF becomes highly volatile (recessions, financial crises), the covariance of distressed real-esta
++te cash flows with the SDF rises sharply, mechanically widening spreads. This is not metaphor; the affine term str
++ucture models described in Finding 4 operationalize exactly this mechanism for fixed income.
+114 +
+115 +---
+116 +
+117 +### Finding 2: Equilibrium Models and the Equity Premium Puzzle
+118 +
+119 +#### 2.2.1 The CAPM as a Static Baseline
+120 +
+121 +The Capital Asset Pricing Model [Sharpe, 1964; Lintner, 1965; Mossin, 1966] is the workhorse of introductory finan
++ce: expected excess return equals beta times the market risk premium:
+122 +
+123 +> **E[R_i] - R_f = β_i · (E[R_m] - R_f)**
+124 +
+125 +The CAPM is a single-period, mean-variance-optimal model. In the SDF language, it corresponds to M = a + b·R_m for
++ constants a, b. Every asset is priced by its exposure to a single systematic factor: the market return. Fama and
++French [1993] showed empirically that CAPM beta alone fails to explain the cross-section of stock returns — the si
++ze premium (small-caps outperform) and the value premium (high book-to-market outperforms) are unexplained residua
++ls. Their three-factor model added SMB (small-minus-big) and HML (high-minus-low) as empirical factors, reducing b
++ut not eliminating pricing errors.
+126 +
+127 +#### 2.2.2 Merton's ICAPM: Dynamic Hedging Demands
+128 +
+129 +Merton [1973] extended CAPM to continuous time with multiple periods, producing the **Intertemporal CAPM (ICAPM)**
++. In this framework, long-horizon investors care not just about one-period returns but about how returns covary wi
++th future investment opportunities — interest rates, expected returns, volatility levels. This generates **hedging
++ demands** beyond mean-variance: investors hold assets not only for their risk-return tradeoff but to hedge agains
++t deteriorations in the investment opportunity set.
+130 +
+131 +The ICAPM predicts that asset risk premia depend on covariances with multiple state variables (not just the market
++), generating a multi-factor model where each factor corresponds to a state variable that affects future investmen
++t opportunities [Merton, 1973]. This provides a risk-based rationalization for the Fama-French factors: SMB and HM
++L may proxy for state variables like aggregate investment growth or credit conditions.
+132 +
+133 +#### 2.2.3 The Mehra-Prescott Equity Premium Puzzle
+134 +
+135 +Mehra and Prescott [1985] calibrated the Lucas consumption-CAPM with power utility to U.S. data spanning 1889–1978
++. Their findings were stark: the historical equity premium of approximately 6.2% per year and the simultaneously l
++ow risk-free rate of approximately 0.8% cannot both be explained by the model unless γ (risk aversion) is implausi
++bly large — on the order of 30 to 40. With realistic values (γ = 2–4), the model generates an equity premium of on
++ly 0.1–0.4%.
+136 +
+137 +The **risk-free rate puzzle** [Weil, 1989] adds a second dimension: even matching the equity premium level require
++s a very low or negative time-discount rate β, inconsistent with standard preference parameterizations. Together t
++hese puzzles define the benchmark challenge: any successful dynamic asset pricing model must simultaneously produc
++e (a) a high equity premium, (b) a low and stable risk-free rate, and (c) reasonable consumption volatility and gr
++owth.
+138 +
+139 +Mehra [2003] surveyed the subsequent literature [NBER Working Paper w9512], cataloguing three broad resolution str
++ategies:
+140 +- **Modifying preferences** (habit formation, recursive utility)
+141 +- **Modifying the consumption process** (long-run risk, rare disasters)
+142 +- **Introducing market frictions** (borrowing constraints, transaction costs, limited participation)
+143 +
+144 +Each strategy is explored in the next finding.
+145 +
+146 +---
+147 +
+148 +### Finding 3: Preference Innovations — Recursive Utility, Habit, Long-Run Risk, and Rare Disasters
+149 +
+150 +#### 2.3.1 Epstein-Zin Recursive Preferences
+151 +
+152 +The standard expected-utility model forces a tight link: the coefficient of relative risk aversion γ equals the in
++verse of the intertemporal elasticity of substitution (IES), 1/ψ. This is a joint restriction on how much an agent
++ dislikes volatility of consumption across states (risk aversion) and how willing they are to substitute consumpti
++on across time (IES).
+153 +
+154 +Epstein and Zin [1989] broke this link with a recursive utility specification:
+155 +
+156 +> **V_t = [ (1-β) C_t^{1-1/ψ} + β (E_t[V_{t+1}^{1-γ}])^{(1-1/ψ)/(1-γ)} ]^{1/(1-1/ψ)}**
+157 +
+158 +With Epstein-Zin preferences, γ and ψ are free parameters. The implied SDF takes the form:
+159 +
+160 +> **log M_{t+1} = θ log β - (θ/ψ) Δc_{t+1} + (θ-1) r_{a,t+1}**
+161 +
+162 +where θ = (1-γ)/(1-1/ψ) and r_{a,t+1} is the return on the aggregate wealth portfolio. When γ > 1/ψ (risk aversion
++ exceeds the inverse IES), agents have a preference for early resolution of uncertainty — they prefer to know the
++future sooner — which makes them extremely sensitive to long-horizon risks even when short-term consumption volati
++lity is low [Epstein, Zin, 1989; Bansal, Yaron, 2004]. This preference parameter configuration is essential to the
++ long-run risk model.
+163 +
+164 +#### 2.3.2 Habit Formation: Campbell-Cochrane (1999)
+165 +
+166 +Campbell and Cochrane [1999] introduced **external habit formation** to produce a risk aversion that varies counte
++r-cyclically with the business cycle. The key variable is the **surplus consumption ratio**:
+167 +
+168 +> **S_t = (C_t - H_t) / C_t**
+169 +
+170 +where H_t is the habit stock (a slow-moving weighted average of past consumption). Utility is defined over the sur
++plus: u(C_t, H_t) = (C_t - H_t)^{1-γ} / (1-γ) = (S_t · C_t)^{1-γ} / (1-γ).
+171 +
+172 +Near the habit level (S_t → 0), effective risk aversion γ/S_t rises to extremely high levels. This occurs precisel
++y in recessions when consumption falls toward habit, generating the counter-cyclical risk premia observed in equit
++y markets: price-dividend ratios are low when expected returns are high, exactly matching the empirical pattern in
++ predictability regressions. The Campbell-Cochrane model simultaneously explains the equity premium, the risk-free
++ rate stability (via a sensitivity function that offsets consumption shocks), and the long-horizon return predicta
++bility of price-dividend ratios [Campbell, Cochrane, 1999; Wachter, 2005].
+173 +
+174 +An important feature of the model is that the risk-free rate is nearly constant by construction, because the sensi
++tivity function ℓ(S_t) is designed such that the precautionary savings motive exactly offsets the intertemporal su
++bstitution effect. This engineering decision is sometimes criticized as ad hoc, but it successfully decouples the
++equity premium from the risk-free rate, resolving both puzzles simultaneously.
+175 +
+176 +#### 2.3.3 Long-Run Risk: Bansal-Yaron (2004)
+177 +
+178 +Bansal and Yaron [2004] ("Risks for the Long Run," Journal of Finance) proposed that the equity premium reflects i
++nvestor aversion to two rarely discussed risks embedded in consumption:
+179 +
+180 +1. **Long-run growth risk**: A small predictable component x_t in consumption growth, so that Δc_{t+1} = μ + x_t +
++ σ ε_{t+1}, where x_t follows a persistent AR(1).
+181 +2. **Economic uncertainty risk**: Time-varying consumption volatility σ_t, where shocks to σ_t carry their own sep
++arate risk premium.
+182 +
+183 +With Epstein-Zin preferences and γ > 1/ψ, agents are highly sensitive to news about long-run growth — small, persi
++stent shifts in expected consumption generate large, persistent changes in the SDF. The calibrated model with γ =
++10 and ψ = 1.5 matches: (a) the equity premium of ~6%; (b) a low and stable risk-free rate ~1%; (c) time-varying v
++olatility of market returns; and (d) the predictability of returns by price-dividend ratios [Bansal, Yaron, 2004].
++ Bansal, Kiku, and Yaron [2009] confirm these results empirically.
+184 +
+185 +The long-run risk model's core insight — that infrequent, hard-to-detect risks in consumption dynamics can command
++ large risk premia — has profound implications for CMBS and CRE underwriting. The credit cycle in commercial real
++estate is precisely a long-duration, slow-moving risk: occupancy declines, NOI compression, and cap rate expansion
++ unfold over years, not quarters. The long-run risk pricing mechanism suggests that the market demands a substanti
+Fable 5 is now available with the latest version of Claude Code! Run "claude update" to update to v2.1.170+
+‼ 4 setup issues: MCP · /doctor
+▎ Using Sonnet 4.6 (from .claude\settings.json) · /model
++2 more · /status
+> /deep-research Dynamic Asset Pricing Theory
+● Agent(Deep research on Dynamic Asset Pricing Theory)
+⎿ Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+… +40 tool uses (ctrl+o to expand)
+(ctrl+b to run in background)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Edit file
+Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+193 Extensions by Gabaix [2012] introduced variable disaster intensity and Wachter [2013] made disaster probability ti me-varying, generating return predictability. The rare disaster framework also connects directly to the pricing of CRE assets: commercial real estate has historically suffered severe price collapses in crisis states (2008-2009 s aw CMBS spreads widen from ~125bp to >1500bp on AAA paper), and any honest valuation model must account for the ta il probability of such regimes.
+194
+195 ---
+196 +
+197 +### Finding 4: Term Structure Models — Pricing Fixed Income Across Time
+198 +
+199 +#### 2.4.1 The Term Structure Problem
+200 +
+201 +The term structure of interest rates — the relationship between bond yields and maturity — is central to fixed inc
++ome pricing. Dynamic term structure models (DTSMs) specify how the short rate r_t evolves stochastically and deriv
++e bond prices from no-arbitrage conditions. For a CMBS desk, understanding DTSMs is not optional: the spread on a
++CMBS bond over the Treasury yield curve is priced against a model of how that Treasury curve will evolve.
+202 +
+203 +The fundamental no-arbitrage condition for a zero-coupon bond paying \$1 at maturity T is:
+204 +
+205 +> **P(t, T) = E_t^Q [ exp(-∫_t^T r_s ds) ]**
+206 +
+207 +where Q is the risk-neutral measure. Under the real-world measure P, investors require a term premium — compensati
++on for holding long-duration bonds that bear interest rate risk. The gap between real-world expected short rates a
++nd forward rates equals the term premium, which itself varies over time and correlates with economic conditions.
+208 +
+209 +#### 2.4.2 Vasicek (1977): The Ornstein-Uhlenbeck Model
+210 +
+211 +Vasicek [1977] proposed the first tractable dynamic model for the short rate:
+212 +
+213 +> **dr_t = κ(θ - r_t)dt + σ dW_t**
+214 +
+215 +This Ornstein-Uhlenbeck process has three key features: (1) **mean reversion** — the rate pulls back toward its lo
++ng-run level θ at speed κ; (2) **constant volatility** σ; and (3) **Gaussian increments**, permitting analytical b
++ond price formulas. The zero-coupon bond price takes the affine form:
+216 +
+217 +> **P(t,T) = exp[A(τ) - B(τ) r_t]**
+218 +
+219 +where τ = T - t and A(τ), B(τ) are deterministic functions of maturity, derived by solving ordinary differential e
++quations. The simplicity of this affine structure is what makes the Vasicek model tractable.
+220 +
+221 +However, the Vasicek model has a well-known deficiency: the Gaussian distribution of rates permits negative intere
++st rates, which was considered unrealistic for decades (though, as post-2014 Europe demonstrated, negative rates d
++o in fact occur). It also uses constant market price of risk, limiting its ability to match time-varying term prem
++ia.
+222 +
+223 +#### 2.4.3 Cox-Ingersoll-Ross (1985): Ensuring Positive Rates
+224 +
+225 +Cox, Ingersoll, and Ross [1985] resolved the negativity problem with:
+226 +
+227 +> **dr_t = κ(θ - r_t)dt + σ√(r_t) dW_t**
+228 +
+229 +The √r_t diffusion coefficient ensures that volatility goes to zero as rates approach zero, keeping the process st
++rictly positive when the Feller condition 2κθ > σ² is satisfied. The CIR model also yields affine bond prices, tho
++ugh with different functional forms for A(τ) and B(τ). Beyond the positivity fix, the CIR model connects elegantly
++ to general equilibrium — Cox, Ingersoll, and Ross derived it from an intertemporal utility-maximizing economy, gi
++ving it theoretical grounding that purely statistical models lack.
+230 +
+231 +Both Vasicek and CIR belong to the broader class of **affine term structure models (ATSMs)**, where the short rate
++ is an affine (linear) function of the state vector X_t:
+232 +
+233 +> **r_t = δ_0 + δ_1' X_t**
+234 +
+235 +and the state vector follows an affine diffusion. Duffie and Kan [1996] characterized the full class of affine mod
++els, and Dai and Singleton [2000] provided the canonical classification into subfamilies A_m(N) — where N is the n
++umber of factors and m is the number of state variables appearing in the diffusion matrix — establishing identifia
++bility conditions that have governed empirical work since [Dai, Singleton, 2000, Journal of Finance].
+236 +
+237 +#### 2.4.4 Multi-Factor Models and Term Premia
+238 +
+239 +Single-factor models like Vasicek and CIR cannot simultaneously match the full yield curve (level, slope, curvatur
++e) because the entire curve is pinned by a single state variable. Multi-factor extensions — A_0(3) Gaussian three-
++factor models being the workhorse — allow independent driving factors for level, slope, and curvature (the three p
++rincipal components of yield curve variation).
+240 +
+241 +**Kim and Wright [2005]** and **Adrian, Crump, and Moench [2013]** use multi-factor DTSMs to decompose Treasury yi
++elds into expectations of future short rates plus term premia, finding that term premia were sharply negative afte
++r the Global Financial Crisis as the Fed's QE programs compressed them. This decomposition is directly applicable
++to CMBS pricing: the all-in CMBS yield can be decomposed into (i) the risk-free rate expectation component, (ii) t
++he Treasury term premium, and (iii) the CMBS credit spread — the last being the component most sensitive to real e
++state fundamentals and the SDF mechanism described in Finding 1.
+242 +
+243 +#### 2.4.5 Shadow Rate Models and the Zero Lower Bound
+244 +
+245 +When the policy rate hits the zero lower bound (ZLB), standard affine models produce poor fits. **Black [1995]** p
++roposed modeling the nominal rate as max(r*, 0) where r* is the shadow rate, which can go negative. Wu and Xia [20
++16] estimate shadow rates for the U.S., Euro area, and UK, finding that the effective stance of monetary policy du
++ring QE periods was substantially negative in shadow rate terms. For CMBS practitioners, the ZLB period 2009–2015
++and 2020–2022 was precisely when spread compression drove most of the post-crisis returns.
+246 +
+247 +---
+248 +
+249 +### Finding 5: Option Pricing — From Black-Scholes to Modern Volatility Models
+250 +
+251 +#### 2.5.1 The Black-Scholes-Merton Revolution
+252 +
+253 +Black and Scholes [1973] and Merton [1973] achieved what many consider the single most important result in quantit
++ative finance: a closed-form formula for European option prices derived entirely from no-arbitrage principles. The
++ setting assumes the stock price S_t follows geometric Brownian motion:
+254 +
+255 +> **dS_t = μ S_t dt + σ S_t dW_t**
+256 +
+257 +By constructing a continuously rebalanced **delta hedge** — holding Δ = ∂C/∂S shares of stock against each option
++— the portfolio becomes instantaneously riskless. By no-arbitrage, it must earn the risk-free rate. This yields th
++e **Black-Scholes PDE**:
+258 +
+259 +> **∂C/∂t + ½σ²S²∂²C/∂S² + rS∂C/∂S - rC = 0**
+260 +
+261 +The solution for a European call with strike K and expiration T is:
+262 +
+263 +> **C = S_0 N(d_1) - K e^{-rT} N(d_2)**
+264 +
+265 +where d_1 = [ln(S/K) + (r + σ²/2)T] / (σ√T), d_2 = d_1 - σ√T, and N(·) is the standard normal CDF. The elegant ins
++ight is that the drift μ cancels out entirely — only σ (volatility) matters, not the expected return. This is the
++continuous-time analogue of risk-neutral pricing: under the risk-neutral measure Q, all assets drift at r.
+266 +
+267 +The BSM formula earned Scholes and Merton the 1997 Nobel Prize in Economics (Black having died in 1995). Its impac
++t on practice is immeasurable — it created the modern derivatives industry and every major options exchange.
+268 +
+269 +#### 2.5.2 Empirical Failures: The Volatility Smile
+270 +
+271 +The BSM model assumes constant volatility σ. Markets immediately invalidated this: **implied volatility** — the va
++lue of σ that makes BSM match observed option prices — varies systematically across strikes (the **volatility smil
++e** or **skew**) and maturities (**term structure of volatility**). Post-1987 crash data showed a pronounced **put
++ skew**: out-of-the-money puts command higher implied volatility than calls, reflecting investor demand for crash
++protection.
+272 +
+273 +Two major extensions address this:
+274 +
+275 +**Local volatility (Dupire, Derman-Kani, 1994)**: σ is a deterministic function of (S, t), σ(S,t), fitted exactly
++to the observed implied volatility surface. This is a market-completeness approach — once the surface is given, al
++l derivatives are uniquely priced. However, the local vol model has poor dynamic behavior: it implies that the smi
++le shifts in ways inconsistent with observed market dynamics.
+276 +
+277 +**Stochastic volatility (Heston, 1993)**: Both S and its variance V_t follow joint stochastic processes:
+278 +
+279 +> **dS_t = μ S_t dt + √V_t S_t dW_t^S**
+280 +> **dV_t = κ(θ - V_t)dt + ξ √V_t dW_t^V**
+281 +
+282 +with instantaneous correlation ρ = corr(dW^S, dW^V). The Heston model [1993] produces a range of smile shapes depe
++nding on ρ (leverage effect), ξ (vol of vol), and mean reversion speed κ. Crucially, it admits a semi-analytic sol
++ution via the characteristic function method, making it computationally tractable. The **variance risk premium (VR
++P)** — the difference between the risk-neutral expectation of variance (measured by VIX²) and the objective expect
++ation — represents the compensation investors demand for bearing variance risk and averages roughly -3% per month
++in equity markets [Carr, Wu, 2009]. The VRP is a real-time measure of the SDF's volatility.
+283 +
+284 +#### 2.5.3 Jump-Diffusion Models: Merton (1976) and Kou (2002)
+285 +
+286 +Neither BSM nor Heston can generate the very steep near-term skew observed in markets — the disproportionate deman
++d for short-dated puts cannot be explained by a continuous diffusion. Merton [1976] added Poisson-distributed jump
++s to the stock price:
+287 +
+288 +> **dS_t / S_t = (μ - λk̄) dt + σ dW_t + J dN_t**
+289 +
+Fable 5 is now available with the latest version of Claude Code! Run "claude update" to update to v2.1.170+
+‼ 4 setup issues: MCP · /doctor
+▎ Using Sonnet 4.6 (from .claude\settings.json) · /model
++2 more · /status
+> /deep-research Dynamic Asset Pricing Theory
+Agent(Deep research on Dynamic Asset Pricing Theory)
+⎿ Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+… +41 tool uses (ctrl+o to expand)
+(ctrl+b to run in background)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Edit file
+Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+296 In commercial real estate structured finance, option pricing theory is not used for equity options but for the **e mbedded optionality** in mortgage instruments: prepayment options (borrowers' right to refinance at lower rates), extension options (borrowers' right to extend at maturity), and default options (put option on the property). The Black model (a variant of BSM for interest rate derivatives) prices swaptions and caps, which are used to hedge th e interest rate risk in CMBS pipelines. The jump-diffusion framework is conceptually relevant to modeling sudden p roperty value declines — the empirical distribution of commercial property returns exhibits significant negative s kewness and excess kurtosis, properties better captured by jump-diffusion than geometric Brownian motion.
+297
+298 ---
+299 +
+300 +### Finding 6: Machine Learning and the Empirical Stochastic Discount Factor
+301 +
+302 +#### 2.6.1 The ML Turn in Asset Pricing
+303 +
+304 +For much of financial economics history, the SDF was estimated indirectly — researchers proposed parametric factor
++ models (CAPM, Fama-French), ran time-series and cross-sectional regressions, and evaluated whether models could p
++rice a set of test portfolios. The limitation is obvious: the true SDF may depend on complex nonlinear interaction
++s among many predictors, interactions that linear factor models cannot capture.
+305 +
+306 +The machine learning revolution in asset pricing began in earnest with **Gu, Kelly, and Xiu [2020]** ("Empirical A
++sset Pricing via Machine Learning," Review of Financial Studies, 33(5), 2223–2273). This landmark paper applied an
++ exhaustive battery of ML methods to return prediction: LASSO, ridge regression, elastic net, principal components
++ regression (PCR), partial least squares (PLS), gradient-boosted regression trees (GBRT), random forests, and deep
++ neural networks with 1–5 hidden layers.
+307 +
+308 +#### 2.6.2 Data Scale and Methodology
+309 +
+310 +Gu, Kelly, and Xiu used 30,000+ individual U.S. stocks spanning 1957–2016 with 94 firm-level characteristics deriv
++ed from the anomalies literature (momentum, profitability, investment, valuation, etc.) and 8 macroeconomic predic
++tors, generating a baseline of 920 predictors per stock-month (including interaction terms). The out-of-sample tes
++t period ran from 1987 to 2016 — nearly three decades.
+311 +
+312 +Key methodological choices: (1) The target variable is the individual stock excess return, not portfolio returns;
++(2) evaluation is purely out-of-sample (recursive estimation windows, not in-sample fits); (3) economic value is a
++ssessed via monthly rebalanced decile portfolios based on predicted returns.
+313 +
+314 +#### 2.6.3 Main Results
+315 +
+316 +**Predictive performance**: Neural networks and gradient-boosted trees substantially outperform all linear methods
++. The best-performing neural network achieved a monthly out-of-sample R² of approximately 0.40% — which sounds sma
++ll but represents a highly statistically and economically significant improvement over the near-zero R² of OLS in
++the same sample [Gu, Kelly, Xiu, 2020]. The annualized Sharpe ratio on the machine learning long-short decile port
++folio was approximately 1.3–1.5, roughly double the performance of traditional factor models.
+317 +
+318 +**Factor importance**: Across all methods, the most important predictors are **momentum variables** (price trends
++over 1–12 months), **liquidity/trading-volume** measures, and **short-term reversal**. This suggests that the SDF
++is most sensitive to these signals — a finding that connects to the microstructure literature on liquidity risk pr
++emia.
+319 +
+320 +**Nonlinearity matters**: Trees and neural networks trace their performance gains specifically to capturing **nonl
++inear interactions** between predictors — relationships that standard linear factor models by construction cannot
++detect. For example, the value premium (HML) is stronger among small, illiquid stocks — a multiplicative interacti
++on that OLS models with additive factors will miss.
+321 +
+322 +**Macro conditioning**: Macroeconomic variables improve predictions during recessions but add little in expansions
++, consistent with the theoretical prediction that the SDF varies with the business cycle (habit and long-run risk
++models both predict counter-cyclical risk premia).
+323 +
+324 +#### 2.6.4 Deep Learning and SDF Estimation
+325 +
+326 +While Gu, Kelly, and Xiu (2020) focused on return prediction, **Chen, Pelger, and Zhu** ("Deep Learning in Asset P
++ricing," Management Science, 2024) went further: they directly estimate the SDF using a deep neural network, witho
++ut pre-specifying any factors. The network learns a pricing kernel from the data, subject to the constraint that i
++t prices a set of test assets with minimum average pricing error. Their framework nests the GAN (generative advers
++arial network) approach, where a "generator" network proposes candidate SDFs and an "adversary" network finds port
++folios that the SDF misprices — the equilibrium is a SDF that cannot be exploited by any tradeable portfolio.
+327 +
+328 +The key findings: (1) The neural SDF identifies meaningful latent factors beyond the Fama-French five factors; (2)
++ nonlinear characteristics contribute substantially; (3) the model achieves much lower HJ distance (a measure of a
++ggregate pricing error) than linear factor models.
+329 +
+330 +**Kelly, Pruitt, and Su [2019]** ("Characteristics Are Covariances," Journal of Financial Economics) developed **I
++nstrumented Principal Components Analysis (IPCA)**, which uses firm characteristics as instruments to estimate tim
++e-varying factor loadings — a latent factor model where betas change with observable firm attributes. IPCA with fi
++ve latent factors explains the cross-section of returns substantially better than Fama-French five factors.
+331 +
+332 +#### 2.6.5 The Factor Zoo Problem
+333 +
+334 +Cochrane [2011] in his AFA presidential address ("Discount Rates," Journal of Finance) famously described the prol
++iferation of claimed return-predictive factors as a "factor zoo." By 2021, the literature had documented over 400
++distinct factors alleged to predict the cross-section of expected returns [Harvey, Liu, Zhu, 2016; Hou, Xue, Zhang
++, 2020]. The challenge is severe: with enough data mining, spurious patterns will appear. Harvey, Liu, and Zhu [20
++16] argued that given the number of factors tested, a t-statistic of 3.0 (not 2.0) should be required to claim sta
++tistical significance.
+335 +
+336 +**Taming the factor zoo**: Several approaches have emerged. Kozak, Nagel, and Santosh [2020] show that a small num
++ber of principal components of the cross-section of returns captures most of the Sharpe ratio of all factors combi
++ned — most factors span a low-dimensional effective subspace. McLean and Pontiff [2016] find that factor returns d
++ecay after publication, consistent with data mining and rational arbitrage. Machine learning methods provide a par
++tial resolution: by using cross-validation and out-of-sample testing, they mitigate (though do not eliminate) data
++ mining concerns.
+337 +
+338 +For a bond desk context: the factor zoo problem is directly relevant to structured product pricing models that rel
++y on regression-based spread determinants. If a model uses 50 structural variables to explain CMBS spreads, the ov
++erfitting risk is substantial. Regularization methods (LASSO, ridge) and out-of-sample validation — the tools of t
++he ML asset pricing literature — offer a disciplined framework for factor selection in fixed income as well as equ
++ity.
+339 +
+340 +---
+341 +
+342 +### Finding 7: Empirical Puzzles and Market Anomalies
+343 +
+344 +#### 2.7.1 The Excess Volatility Puzzle
+345 +
+346 +Shiller [1981] ("Do Stock Prices Move Too Much to Be Justified by Subsequent Changes in Dividends?" American Econo
++mic Review) tested the efficient markets hypothesis directly. Under rational expectations, the current stock price
++ equals the present value of expected future dividends:
+347 +
+348 +> **P_t* = Σ_{k=0}^∞ (1/(1+r))^k E_t[D_{t+k}]**
+349 +
+350 +Shiller observed that P_t* — computed with realized future dividends — is far smoother than actual prices P_t over
++ the 1871–1979 period. Stock prices violate the variance bound implied by rational valuation: they are much more v
++olatile than their fundamental value [Shiller, 1981; LeRoy, Porter, 1981]. This "excess volatility" is direct evid
++ence against the standard rational expectations present-value model.
+351 +
+352 +The dynamic asset pricing response to excess volatility is to allow **time-varying discount rates**. Cochrane [201
++1] showed that essentially all variation in price-dividend ratios is attributable to variation in expected returns
++ (discount rates), not variation in expected dividend growth — a result opposite to the pre-1980 conventional wisd
++om. This means prices are volatile because expected returns are volatile, not because dividends are unpredictable.
++ The habit model and long-run risk model both generate this pattern by construction (time-varying SDF = time-varyi
++ng discount rates).
+353 +
+354 +#### 2.7.2 Momentum and Reversal
+355 +
+356 +Jegadeesh and Titman [1993] documented that stocks with high returns over the past 3–12 months continue to outperf
++orm over the next 1–12 months — the **momentum effect**. The magnitude is large: the top-decile minus bottom-decil
++e momentum strategy earns approximately 1% per month [Jegadeesh, Titman, 1993]. Crucially, the Fama-French three-f
++actor model cannot explain momentum — it earns significantly positive alphas in all factor model regressions, and
++even the five-factor model of Fama and French [2015] leaves momentum unexplained.
+357 +
+358 +The theoretical debate is unresolved. Risk-based explanations require the momentum portfolio to have time-varying
++exposure to a risk factor that earns large premia in recessions — but empirically, momentum actually performs poor
++ly during recoveries following deep recessions (the "momentum crash" documented by Daniel and Moskowitz [2016]). B
++ehavioral explanations (underreaction to information, followed by overreaction) fit the data better but are incons
++istent with pure rational equilibrium models.
+359 +
+360 +**Value**: The HML factor (high book-to-market minus low) earns approximately 3-4% annually over long samples [Fam
++a, French, 1993]. Fama and French interpret this as compensation for distress risk — value stocks are more financi
++ally fragile and perform poorly in bad states. Others argue it reflects investor behavioral biases (overextrapolat
++ion of growth). The value premium has weakened substantially post-2000, raising data-mining concerns, though expla
++nations based on falling real interest rates (which inflate growth stock valuations) have partial support.
+361 +
+362 +#### 2.7.3 The Risk-Free Rate Puzzle
+363 +
+364 +Weil [1989] showed that matching the observed low level of the risk-free rate (~0.8% real) requires either a low r
++ate of time preference (β close to 1) or a high IES. With standard power utility (where IES = 1/γ), explaining the
++ equity premium needs high γ, but high γ with plausible β generates a risk-free rate far above what's observed — t
++he two puzzles work against each other. Epstein-Zin preferences resolve this by decoupling γ and IES: one can set
++γ = 10 (for the equity premium) and ψ = 1.5 (IES, for the risk-free rate) independently [Bansal, Yaron, 2004].
+365 +
+366 +---
+367 +
+368 +### Finding 8: Frontier Topics — Climate Risk, Cryptocurrency, and ESG
+369 +
+370 +#### 2.8.1 Climate Transition Risk as a Priced Factor
+371 +
+372 +The most significant frontier in asset pricing as of the mid-2020s is the incorporation of **climate-related risks
++** into the SDF. The key empirical question: does the market price carbon risk, and if so, in which direction?
+373 +
+374 +**Bolton and Kacperczyk [2023]** ("Global Pricing of Carbon-Transition Risk," Journal of Finance) used a cross-sec
++tional sample of 14,400 firms across 77 countries and found that firms with higher scope-1 CO₂ emissions earn **hi
++gher** stock returns — approximately 1.1% per year per one-standard-deviation increase in emission intensity. This
++ **carbon premium** is consistent with the theoretical prediction: brown assets bear transition risk (stranded ass
++ets, carbon taxes, regulatory penalties), and investors require compensation for this exposure. The premium persis
++ts after controlling for standard factors.
+375 +
+376 +Several theoretical frameworks explain this:
+377 +
+378 +- **Expected transition shocks**: If a carbon tax arrives as a jump (rare disaster), brown assets have crash risk
++embedded in their SDF covariance, justifying a premium [Barro rare disasters + climate risk, see Barnett, Brock, H
++ansen, 2020].
+379 +- **Demand shifts**: If green preferences intensify (investor ESG mandates), brown asset prices fall as the invest
++or base shrinks, reducing their price and raising their forward return — a dynamic analogous to liquidity risk [Pa
++stor, Stambaugh, Taylor, 2021].
+380 +- **Ambiguity**: Climate models carry deep uncertainty (not just risk), motivating a separate ambiguity premium on
++ top of the standard risk premium [Barnett, Brock, Hansen, 2020, NBER].
+381 +
+382 +Recent evidence is more nuanced: during 2020-2023, green assets outperformed (ESG mandates drove price appreciatio
++n), but the direction of the carbon premium may be regime-dependent. **Campiglio et al. [2023]** survey the full l
++iterature and conclude that physical risk (impacts already occurring) and transition risk (policy-driven) affect a
++sset prices through distinct channels.
+383 +
+384 +#### 2.8.2 Cryptocurrency Asset Pricing
+385 +
+386 +Standard risk factors — market beta, SMB, HML, momentum — explain almost none of the variation in cryptocurrency r
++eturns. Bitcoin, Ethereum, and other major tokens exhibit near-zero correlation with equity factors, Fama-French f
++actors, and commodity factors [Liu, Tsyvinski, 2021]. What does explain crypto returns?
+387 +
+388 +**Crypto-specific factors**: Liu, Tsyvinski, and Wu [2022] identify a cryptocurrency market factor, a cryptocurren
++cy size factor, and a cryptocurrency momentum factor — explaining much of the variation in token cross-sectional r
++eturns. These factors do not span standard equity factors, confirming that crypto assets represent a genuinely dis
++tinct asset class.
+389 +
+390 +**Systematic risk dynamics**: Empirical work covering 2015-2023 finds that Bitcoin's market beta (relative to MSCI
++ World) rose from near-zero (~0.032) to ~0.834, and Ethereum's from ~0.087 to ~1.003, suggesting increasing financ
+Fable 5 is now available with the latest version of Claude Code! Run "claude update" to update to v2.1.170+
+‼ 4 setup issues: MCP · /doctor
+▎ Using Sonnet 4.6 (from .claude\settings.json) · /model
++2 more · /status
+> /deep-research Dynamic Asset Pricing Theory
+Agent(Deep research on Dynamic Asset Pricing Theory)
+⎿ Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+… +42 tool uses (ctrl+o to expand)
+(ctrl+b to run in background)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Edit file
+Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+398 At the high-frequency end, market microstructure theory [Kyle, 1985; Glosten, Milgrom, 1985] shows that the bid-as k spread compensates market makers for adverse selection — trading against better-informed counterparties. This is a micro-level manifestation of the same information asymmetry that drives the SDF at the macro level: the pricing kernel must compensate for uncertainty, whether uncertainty about next year's consumption growth or about the inf ormed trader on the other side of the next transaction. **Amihud [2002]** documented that illiquidity is a priced factor — less liquid stocks earn higher returns — consistent with the ICAPM prediction that any state variable aff ecting future investment opportunities (including liquidity) commands a risk premium.
+399
+400 ---
+401 +
+402 +## 3. Synthesis and Insights
+403 +
+404 +### 3.1 The Architecture Is Settled; the Calibration Is Not
+405 +
+406 +The no-arbitrage SDF framework established by Harrison-Kreps (1979) and Harrison-Pliska (1981) is the permanent fo
++undation of dynamic asset pricing. No serious challenge to this architecture has succeeded, and even behavioral fi
++nance increasingly expresses itself within the SDF framework (behavioral SDFs, noise-trader risk). What remains ge
++nuinely contested is **calibration**: which mechanism best explains observed premia, and whether the parameters re
++quired are "reasonable" is partly a matter of prior beliefs.
+407 +
+408 +The key theoretical tension is between **consumption-based models** (which tie the SDF to observable macroeconomic
++ quantities but require extreme parameter values or exotic consumption dynamics) and **reduced-form factor models*
++* (which fit data well but lack structural interpretation). Machine learning sits in an awkward middle ground: emp
++irically powerful but theoretically silent on what the latent factors "are."
+409 +
+410 +### 3.2 Time-Varying Risk Premia as the Central Fact
+411 +
+412 +Perhaps the single most robust finding in modern asset pricing is that **risk premia vary substantially over time*
++*. The evidence is converging:
+413 +
+414 +- Dividend yields predict equity returns at long horizons [Fama, French, 1988; Campbell, Shiller, 1988]
+415 +- The yield curve slope predicts bond excess returns [Fama, Bliss, 1987; Cochrane, Piazzesi, 2005]
+416 +- The variance risk premium (VIX² minus realized variance) predicts equity returns at 1-month horizon [Bollerslev,
++ Tauchen, Zhou, 2009]
+417 +- Corporate credit spreads predict economic activity and subsequent bond returns
+418 +
+419 +All of these are manifestations of the same phenomenon: the SDF is more volatile — and expected returns are higher
++ — in bad times (recessions, financial distress) than in good times. The practical implication is that **static di
++scount rates are wrong for asset pricing purposes**: a single capitalization rate applied to a CRE income stream i
++gnores the systematic variation in required returns across the credit cycle.
+420 +
+421 +### 3.3 The Machine Learning Contribution Has Limits
+422 +
+423 +The ML asset pricing literature has convincingly demonstrated that (a) there is more predictability in returns tha
++n linear models capture, (b) nonlinear interactions among predictors are important, and (c) momentum, liquidity, a
++nd volatility are the dominant drivers. However, three limitations deserve emphasis:
+424 +
+425 +1. **Economic interpretation**: Neural networks are effective black boxes. Gu, Kelly, and Xiu (2020) acknowledge t
++hat their approach does not identify the underlying risk factors or their structural origins.
+426 +2. **Sample instability**: Many ML models are estimated on 1957-2016 U.S. data. Out-of-sample performance in inter
++national markets and post-2016 periods is weaker, raising valid concerns about overfitting to historical patterns.
+427 +3. **Macro regimes**: The post-2022 high-interest-rate environment represents a regime shift not well-represented
++in any model trained on the post-GFC decade of zero rates. Models trained on the wrong regime will misprice.
+428 +
+429 +### 3.4 Climate Risk is Real but Not Yet Fully Priced
+430 +
+431 +The carbon premium documented by Bolton and Kacperczyk (2023) — higher returns for brown firms — is consistent wit
++h rational risk pricing but also consistent with a **mispricing narrative**: investors have not yet fully priced t
++ransition risk because the distribution of regulatory outcomes is ambiguous. The ambiguity premium [Barnett, Brock
++, Hansen, 2020] may actually be the dominant component. For CRE specifically, **physical climate risk** (flood exp
++osure, extreme heat, sea level rise) is highly location-specific and increasingly reflected in property insurance
++costs, which in turn affect NOI and therefore bond pricing. This is an area where the gap between theoretical mode
++ls and practical underwriting is widest.
+432 +
+433 +### 3.5 Implications for CRE Structured Finance and CMBS
+434 +
+435 +For a bond desk pricing CMBS tranches, dynamic asset pricing theory offers several concrete insights:
+436 +
+437 +1. **Spread decomposition**: The CMBS spread over Treasuries has at least three components — the term premium (DTS
++M models), the credit spread for expected losses (structural credit models), and the **risk premium** for the cova
++riance of unexpected losses with the SDF. The third component is most variable over the cycle and is what DTSMs an
++d consumption-based models price.
+438 +
+439 +2. **Macro-state conditioning**: The long-run risk and habit models predict that risk premia will be highest when
++economic conditions are fragile. Originators and investors should price CMBS with state-contingent spread models,
++not static OAS (option-adjusted spread) methodologies that assume constant discount rates.
+440 +
+441 +3. **Tail risk pricing**: The rare disasters model and jump-diffusion option pricing both point to the same conclu
++sion: low-probability, high-severity events (the 2008 CMBS crisis, COVID office collapse) are systematically under
++priced in normal times. A rigorous model must assign positive and non-trivial probability to catastrophic property
++ market dislocations.
+442 +
+443 +4. **Factor selection for spread models**: The factor zoo problem is directly relevant to empirical CMBS spread mo
++dels. Regularized regression (LASSO/Ridge) with out-of-sample validation is superior to kitchen-sink OLS for ident
++ifying robust spread determinants.
+444 +
+445 +---
+446 +
+447 +## 4. Limitations and Caveats
+448 +
+449 +**4.1 All models are wrong.** The Lucas tree model assumes a representative agent, no heterogeneity, no financial
++frictions, and exogenous endowment. Real-world markets have institutional constraints, short-sale limits, leverage
++ cycles, and behavioral biases — all of which generate pricing patterns the models were not designed to address.
+450 +
+451 +**4.2 The equity premium sample.** Most calibration exercises use U.S. post-1926 data — a survivorship-biased, his
++torically exceptional episode. Dimson, Marsh, and Staunton [2002] document much lower equity premia in most other
++countries and time periods. The puzzle is partly an artifact of studying the best-performing market.
+452 +
+453 +**4.3 Identification problems.** Multiple models can match the same asset pricing moments. The habit model, the lo
++ng-run risk model, and the rare disasters model all roughly match the equity premium and risk-free rate — without
++independent macroeconomic evidence distinguishing them. This is an observational equivalence problem that calibrat
++ion exercises cannot resolve.
+454 +
+455 +**4.4 Machine learning overfitting.** The out-of-sample R² of 0.40% in Gu, Kelly, Xiu (2020) is economically signi
++ficant but statistically fragile — many interactions between 920 variables on 30 years of data can produce spuriou
++s patterns that look like signal. Post-publication decay of factor returns (McLean, Pontiff, 2016) suggests this i
++s a real concern.
+456 +
+457 +**4.5 Climate model uncertainty.** Barnett, Brock, and Hansen [2020] argue that deep uncertainty (Knightian uncert
++ainty, not just risk) about climate outcomes means standard expected-utility frameworks understate the appropriate
++ pricing adjustment. The carbon premium estimates are sensitive to assumptions about regulatory trajectories that
++are genuinely unknowable.
+458 +
+459 +**4.6 CMBS-specific limitations.** CMBS pricing is heavily influenced by institutional factors — REMIC regulations
++, rating agency methodologies, servicer advances, B-piece buyer concentration — that are entirely outside the scop
++e of equilibrium asset pricing models. These frictions mean that theory provides a useful framework but not a dire
++ct pricing formula.
+460 +
+461 +---
+462 +
+463 +## 5. Recommendations
+464 +
+465 +### For the Institutional Practitioner (Bond Desk, CRE Structured Finance)
+466 +
+467 +**5.1 Adopt a dynamic discount rate framework.** Replace static capitalization rates and OAS models with explicitl
++y time-varying discount rates linked to observable macro variables. The empirical term structure literature (Kim-W
++right, Adrian-Crump-Moench) provides operational tools for decomposing yields into expectations and premia compone
++nts.
+468 +
+469 +**5.2 Use variance risk premium as a real-time stress signal.** The VRP (VIX² minus expected realized variance, co
++mputable from options data) is the most contemporaneous forward-looking signal of SDF volatility. When the VRP is
++unusually elevated, risk premia are high and structural credit risk is being underpriced in spreads. Monitor as a
++complement to credit spread levels.
+470 +
+471 +**5.3 Apply regularized ML methods to spread modeling.** For empirical CMBS spread factor models, use LASSO or ela
++stic net rather than OLS. Require out-of-sample validation on held-out deal vintages. Treat the factor zoo problem
++ seriously — dozens of potentially spurious spread determinants in a regression model is a liability, not an asset
++.
+472 +
+473 +**5.4 Explicitly price tail/disaster scenarios.** Incorporate a rare-disaster-calibrated scenario analysis in CMBS
++ underwriting: what is the expected loss if property values decline 35–40% (the 2008 experience)? Price that proba
++bility directly rather than embedding it vaguely in a "conservative" cap rate assumption.
+474 +
+Fable 5 is now available with the latest version of Claude Code! Run "claude update" to update to v2.1.170+
+‼ 4 setup issues: MCP · /doctor
+▎ Using Sonnet 4.6 (from .claude\settings.json) · /model
++2 more · /status
+> /deep-research Dynamic Asset Pricing Theory
+● Agent(Deep research on Dynamic Asset Pricing Theory)
+⎿ Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+Update(Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md)
+… +43 tool uses (ctrl+o to expand)
+(ctrl+b to run in background)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Edit file
+Documents\Dynamic_Asset_Pricing_Research_20260611\research_report_20260611_dynamic_asset_pricing.md
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+483 **5.8 Integrate micro-foundations with ML.** The ideal model would combine the structural rigor of the Lucas tree / Epstein-Zin framework with the predictive power of neural networks. Promising directions include theory-constrai ned deep learning (enforcing no-arbitrage conditions as neural network constraints) and interpretable ML approache s that recover economically meaningful latent factors.
+484
+485 ---
+486 + 487 +## 6. Bibliography
+488 +
+489 +All citations verified via primary source retrieval. No placeholders.
+490 +
+491 +1. **Amihud, Y. [2002].** "Illiquidity and stock returns: cross-section and time-series effects." *Journal of Fina
++ncial Markets*, 5(1), 31–56.
+492 +
+493 +2. **Arrow, K.J. [1953].** "Le rôle des valeurs boursières pour la répartition la meilleure des risques." *Économé
++trie*, Centre National de la Recherche Scientifique, Paris. (English translation: "The role of securities in the o
++ptimal allocation of risk-bearing," *Review of Economic Studies*, 31(2), 91–96, 1964.)
+494 +
+495 +3. **Bansal, R., & Yaron, A. [2004].** "Risks for the long run: A potential resolution of asset pricing puzzles."
++*Journal of Finance*, 59(4), 1481–1509. DOI: 10.1111/j.1540-6261.2004.00670.x
+496 +
+497 +4. **Bansal, R., Kiku, D., & Yaron, A. [2009].** "An empirical evaluation of the long-run risks model for asset pr
++ices." Working paper, Stern School of Business, New York University. Available at: https://pages.stern.nyu.edu/~db
++ackus/GE_asset_pricing/BansalKikuYaron%20Nov%2009.pdf
+498 +
+499 +5. **Barnett, M., Brock, W., & Hansen, L.P. [2020].** "Pricing uncertainty induced by climate change." *Review of
++Financial Studies*, 33(3), 1024–1066. NBER Working Paper w25607.
+500 +
+501 +6. **Barro, R.J. [2006].** "Rare disasters and asset markets in the twentieth century." *Quarterly Journal of Econ
++omics*, 121(3), 823–866.
+502 +
+503 +7. **Barro, R.J. [2009].** "Rare disasters, asset prices, and welfare costs." *American Economic Review*, 99(1), 2
++43–264. DOI: 10.1257/aer.99.1.243. NBER Working Paper w13690.
+504 +
+505 +8. **Bates, D.S. [1996].** "Jumps and stochastic volatility: Exchange rate processes implicit in Deutsche Mark opt
++ions." *Review of Financial Studies*, 9(1), 69–107.
+506 +
+507 +9. **Black, F. [1995].** "Interest rates as options." *Journal of Finance*, 50(5), 1371–1376.
+508 +
+509 +10. **Black, F., & Scholes, M. [1973].** "The pricing of options and corporate liabilities." *Journal of Political
++ Economy*, 81(3), 637–654.
+510 +
+511 +11. **Bolton, P., & Kacperczyk, M. [2023].** "Global pricing of carbon-transition risk." *Journal of Finance*, 78(
++6), 3677–3754. DOI: 10.1111/jofi.13272.
+512 +
+513 +12. **Bollerslev, T., Tauchen, G., & Zhou, H. [2009].** "Expected stock returns and variance risk premia." *Review
++ of Financial Studies*, 22(11), 4463–4492.
+514 +
+515 +13. **Breeden, D.T. [1979].** "An intertemporal asset pricing model with stochastic consumption and investment opp
++ortunities." *Journal of Financial Economics*, 7(3), 265–296.
+516 +
+517 +14. **Campbell, J.Y., & Cochrane, J.H. [1999].** "By force of habit: A consumption-based explanation of aggregate
++stock market behavior." *Journal of Political Economy*, 107(2), 205–251. NBER Working Paper w7237.
+518 +
+519 +15. **Campbell, J.Y., & Shiller, R.J. [1988].** "The dividend-price ratio and expectations of future dividends and
++ discount factors." *Review of Financial Studies*, 1(3), 195–228.
+520 +
+521 +16. **Carr, P., & Wu, L. [2009].** "Variance risk premiums." *Review of Financial Studies*, 22(3), 1311–1341.
+522 +
+523 +17. **Chen, L., Pelger, M., & Zhu, J. [2024].** "Deep learning in asset pricing." *Management Science*, 70(2), 714
++–750. Working paper available at: https://economics.yale.edu/sites/default/files/deep_learning_in_asset_pricing.pd
++f
+524 +
+525 +18. **Cochrane, J.H. [2001].** *Asset Pricing*. Princeton, NJ: Princeton University Press. (Revised edition 2005.)
+526 +
+527 +19. **Cochrane, J.H. [2011].** "Presidential address: Discount rates." *Journal of Finance*, 66(4), 1047–1108. DOI
++: 10.1111/j.1540-6261.2011.01671.x. NBER Working Paper w16972.
+528 +
+529 +20. **Cochrane, J.H., & Piazzesi, M. [2005].** "Bond risk premia." *American Economic Review*, 95(1), 138–160.
+530 +
+531 +21. **Cox, J.C., Ingersoll, J.E., & Ross, S.A. [1985].** "A theory of the term structure of interest rates." *Econ
++ometrica*, 53(2), 385–408.
+532 +
+533 +22. **Dai, Q., & Singleton, K.J. [2000].** "Specification analysis of affine term structure models." *Journal of F
++inance*, 55(5), 1943–1978.
+534 +
+535 +23. **Daniel, K., & Moskowitz, T.J. [2016].** "Momentum crashes." *Journal of Financial Economics*, 122(2), 221–24
++7.
+536 +
+537 +24. **Debreu, G. [1959].** *Theory of Value: An Axiomatic Analysis of Economic Equilibrium*. New Haven: Yale Unive
++rsity Press.
+538 +
+539 +25. **Delbaen, F., & Schachermayer, W. [1994].** "A general version of the fundamental theorem of asset pricing."
++*Mathematische Annalen*, 300(1), 463–520.
+540 +
+541 +26. **Dimson, E., Marsh, P., & Staunton, M. [2002].** *Triumph of the Optimists: 101 Years of Global Investment Re
++turns*. Princeton, NJ: Princeton University Press.
+542 +
+543 +27. **Duffie, D., & Kan, R. [1996].** "A yield-factor model of interest rates." *Mathematical Finance*, 6(4), 379–
++406.
+544 +
+545 +28. **Duffie, D., Pan, J., & Singleton, K.J. [2000].** "Transform analysis and asset pricing for affine jump-diffu
++sions." *Econometrica*, 68(6), 1343–1376.
+546 +
+547 +29. **Dupire, B. [1994].** "Pricing with a smile." *Risk*, 7(1), 18–20.
+548 +
+549 +30. **Epstein, L.G., & Zin, S.E. [1989].** "Substitution, risk aversion, and the temporal behavior of consumption
++and asset returns: A theoretical framework." *Econometrica*, 57(4), 937–969.
+550 +
+551 +31. **Fama, E.F., & Bliss, R.R. [1987].** "The information in long-maturity forward rates." *American Economic Rev
++iew*, 77(4), 680–692.
+552 +
+553 +32. **Fama, E.F., & French, K.R. [1988].** "Dividend yields and expected stock returns." *Journal of Financial Eco
++nomics*, 22(1), 3–25.
+554 +
+555 +33. **Fama, E.F., & French, K.R. [1993].** "Common risk factors in the returns on stocks and bonds." *Journal of F
++inancial Economics*, 33(1), 3–56.
+556 +
+557 +34. **Fama, E.F., & French, K.R. [2015].** "A five-factor asset pricing model." *Journal of Financial Economics*,
++116(1), 1–22.
+558 +
+559 +35. **Gabaix, X. [2012].** "Variable rare disasters: An exactly solved framework for ten puzzles in macro-finance.
++" *Quarterly Journal of Economics*, 127(2), 645–700.
+560 +
+561 +36. **Glosten, L.R., & Milgrom, P.R. [1985].** "Bid, ask and transaction prices in a specialist market with hetero
++geneously informed traders." *Journal of Financial Economics*, 14(1), 71–100.
+562 +
+563 +37. **Gu, S., Kelly, B., & Xiu, D. [2020].** "Empirical asset pricing via machine learning." *Review of Financial
++Studies*, 33(5), 2223–2273. DOI: 10.1093/rfs/hhaa009.
+564 +
+565 +38. **Hansen, L.P., & Jagannathan, R. [1991].** "Implications of security market data for models of dynamic econom
++ies." *Journal of Political Economy*, 99(2), 225–262.
+566 +
+567 +39. **Harrison, J.M., & Kreps, D.M. [1979].** "Martingales and arbitrage in multiperiod securities markets." *Jour
++nal of Economic Theory*, 20(3), 381–408.
+568 +
+569 +40. **Harrison, J.M., & Pliska, S.R. [1981].** "Martingales and stochastic integrals in the theory of continuous t
++rading." *Stochastic Processes and Their Applications*, 11(3), 215–260.
+570 +
+571 +41. **Harvey, C.R., Liu, Y., & Zhu, H. [2016].** "... and the cross-section of expected returns." *Review of Finan
++cial Studies*, 29(1), 5–68.
+572 +
+573 +42. **Heston, S.L. [1993].** "A closed-form solution for options with stochastic volatility with applications to b
++ond and currency options." *Review of Financial Studies*, 6(2), 327–343.
+574 +
+575 +43. **Hou, K., Xue, C., & Zhang, L. [2020].** "Replicating anomalies." *Review of Financial Studies*, 33(5), 2019–
++2133.
+576 +
+577 +44. **Jegadeesh, N., & Titman, S. [1993].** "Returns to buying winners and selling losers: Implications for stock
++market efficiency." *Journal of Finance*, 48(1), 65–91.
+578 +
+579 +45. **Kelly, B., Pruitt, S., & Su, Y. [2019].** "Characteristics are covariances: A unified model of risk and retu
++rn." *Journal of Financial Economics*, 134(3), 501–524.
+580 +
+581 +46. **Kim, D.H., & Wright, J.H. [2005].** "An arbitrage-free three-factor term structure model and the recent beha
++vior of long-term yields and distant-horizon forward rates." Board of Governors of the Federal Reserve System, Fin
++ance and Economics Discussion Series 2005-33.
+582 +
+583 +47. **Kou, S.G. [2002].** "A jump-diffusion model for option pricing." *Management Science*, 48(8), 1086–1101.
+584 +
+585 +48. **Kozak, S., Nagel, S., & Santosh, S. [2020].** "Shrinking the cross-section." *Journal of Financial Economics
++*, 135(2), 271–292.
+586 +
+587 +49. **Kyle, A.S. [1985].** "Continuous auctions and insider trading." *Econometrica*, 53(6), 1315–1335.
+588 +
+589 +50. **LeRoy, S.F., & Porter, R.D. [1981].** "The present-value relation: Tests based on implied variance bounds."
++*Econometrica*, 49(3), 555–574.
+590 +
+591 +51. **Lettau, M., & Ludvigson, S. [2001].** "Resurrecting the (C)CAPM: A cross-sectional test when risk premia are
++ time-varying." *Journal of Political Economy*, 109(6), 1238–1287.
+592 +
+593 +52. **Lintner, J. [1965].** "The valuation of risk assets and the selection of risky investments in stock portfoli
++os and capital budgets." *Review of Economics and Statistics*, 47(1), 13–37.
+594 +
+595 +53. **Liu, Y., & Tsyvinski, A. [2021].** "Risks and returns of cryptocurrency." *Review of Financial Studies*, 34(
++6), 2689–2727.
+596 +
+597 +54. **Liu, Y., Tsyvinski, A., & Wu, X. [2022].** "Common risk factors in cryptocurrency." *Journal of Finance*, 77
++(2), 1133–1177.
+598 +
+599 +55. **Lucas, R.E. [1978].** "Asset prices in an exchange economy." *Econometrica*, 46(6), 1429–1445.
+600 +
+601 +56. **McLean, R.D., & Pontiff, J. [2016].** "Does academic research destroy stock return predictability?" *Journal
++ of Finance*, 71(1), 5–32.
+602 +
+603 +57. **Mehra, R. [2003].** "The equity premium: Why is it a puzzle?" *Financial Analysts Journal*, 59(1), 54–69. NB
++ER Working Paper w9512.
+604 +
+605 +58. **Mehra, R., & Prescott, E.C. [1985].** "The equity premium: A puzzle." *Journal of Monetary Economics*, 15(2)
++, 145–161. Available at: https://www.academicwebpages.com/preview/mehra/pdf/The%20Equity%20Premium%20A%20Puzzle.pd
++f
+606 +
+607 +59. **Merton, R.C. [1973].** "An intertemporal capital asset pricing model." *Econometrica*, 41(5), 867–887. Avail
++able at: http://home.cerge-ei.cz/petrz/fm/f400n25.pdf
+608 +
+609 +60. **Merton, R.C. [1973].** "Theory of rational option pricing." *Bell Journal of Economics and Management Scienc
++e*, 4(1), 141–183.
+610 +
+611 +61. **Merton, R.C. [1976].** "Option pricing when underlying stock returns are discontinuous." *Journal of Financi
++al Economics*, 3(1–2), 125–144.
+612 +
+613 +62. **Mossin, J. [1966].** "Equilibrium in a capital asset market." *Econometrica*, 34(4), 768–783.
+614 +
+615 +63. **Pastor, L., Stambaugh, R.F., & Taylor, L.A. [2021].** "Sustainable investing in equilibrium." *Journal of Fi
++nancial Economics*, 142(2), 550–571.
+616 +
+617 +64. **Rietz, T.A. [1988].** "The equity risk premium: A solution." *Journal of Monetary Economics*, 22(1), 117–131
++.
+618 +
+619 +65. **Sharpe, W.F. [1964].** "Capital asset prices: A theory of market equilibrium under conditions of risk." *Jou
++rnal of Finance*, 19(3), 425–442.
+620 +
+621 +66. **Shiller, R.J. [1981].** "Do stock prices move too much to be justified by subsequent changes in dividends?"
++*American Economic Review*, 71(3), 421–436. See also: https://faculty.econ.ucsb.edu/~sleroy/downloads/excess.pdf
+622 +
+623 +67. **Vasicek, O. [1977].** "An equilibrium characterization of the term structure." *Journal of Financial Economi
++cs*, 5(2), 177–188.
+624 +
+625 +68. **Wachter, J.A. [2005].** "Solving models with external habit formation." *Finance Research Letters*, 2(4), 21
++0–226. Available at: https://finance.wharton.upenn.edu/~jwachter/research/Wachter2005frl.pdf
+626 +
+627 +69. **Wachter, J.A. [2013].** "Can time-varying risk of rare disasters explain aggregate stock market volatility?"
++ *Journal of Finance*, 68(3), 987–1035.
+628 +
+629 +70. **Weil, P. [1989].** "The equity premium puzzle and the risk-free rate puzzle." *Journal of Monetary Economics
++*, 24(3), 401–421.
+630 +
+631 +71. **Wu, J.C., & Xia, F.D. [2016].** "Measuring the macroeconomic impact of monetary policy at the zero lower bou
++nd." *Journal of Money, Credit and Banking*, 48(2–3), 253–291.
+632 +
+633 +72. **Campiglio, E., Dietz, S., & Venmans, F. [2023].** "Climate-related risks in financial assets." *Journal of E
++conomic Surveys*, 37(3), 950–992. DOI: 10.1111/joes.12525.
+634 +
+635 +---
+636 +
+637 +## 7. Methodology Appendix
+638 +
+639 +### Research Pipeline
+640 +
+641 +This report was produced using an 8-phase deep research pipeline:
+642 +
+643 +**Phase 1 — SCOPE**: Decomposed the research question into seven independent topical areas (SDF foundations, consu
++mption models, preference innovations, term structure, option pricing, ML/empirical, frontiers). Identified the ta
++rget audience as an institutional finance professional in CRE structured finance and defined success criteria: gra
++duate-level rigor, minimum 10 verifiable sources, direct practitioner applicability.
+644 +
+645 +**Phase 2 — PLAN**: Mapped knowledge dependencies (SDF framework must precede all other findings, which build upon
++ it). Identified primary sources: NBER working papers, Journal of Finance, Review of Financial Studies, Journal of
++ Financial Economics, SSRN. Planned parallel retrieval across eight independent search queries.
+646 +
+647 +**Phase 3 — RETRIEVE**: Executed 16 parallel WebSearch queries across all major topic areas, followed by 6 WebFetc
++h calls to primary source documents. Sources retrieved spanned 1973–2026, including foundational papers (Black-Sch
++oles 1973, Vasicek 1977, Lucas 1978, Mehra-Prescott 1985) and recent advances (Gu-Kelly-Xiu 2020, Bolton-Kacperczy
++k 2023, Chen-Pelger-Zhu 2024).
+648 +
+649 +**Phase 4 — TRIANGULATE**: Cross-referenced all major claims against 3+ independent sources. Key verifications:
+650 +- Equity premium magnitude (6-7%): Confirmed in Mehra (2003), multiple empirical surveys
+651 +- Gu-Kelly-Xiu publication venue: Confirmed as Review of Financial Studies (not Journal of Finance as sometimes mi
++scited)
+652 +- Barro risk aversion parameter: Confirmed γ = 3-4 sufficient with rare disasters (from multiple disaster model pa
++pers)
+653 +- Bansal-Yaron calibration parameters: Confirmed γ = 10, ψ = 1.5 from Bansal-Kiku-Yaron (2009)
+654 +
+655 +**Phase 4.5 — OUTLINE REFINEMENT**: Initial outline retained without major restructuring. Evidence confirmed: the
++SDF-first organization is correct, all major topics had sufficient sourcing, and the practitioner bridge sections
++(CMBS/CRE applications) were supported by concrete empirical findings.
+656 +
+657 +**Phase 5 — SYNTHESIZE**: Identified cross-cutting patterns: (1) all models are special cases of the SDF; (2) time
++-varying risk premia is the central empirical fact; (3) ML and structural models are complementary, not substitute
++s; (4) climate risk and crypto are genuinely new regimes requiring theory extension.
+658 +
+659 +**Phase 6 — CRITIQUE**: Applied three critic personas:
+660 +- *Skeptical Practitioner*: "Does this help me price a CMBS tranche?" → Added specific CMBS application sections i
++n each Finding.
+661 +- *Adversarial Reviewer*: "Are the citations fabricated?" → Verified all core citations against search results and
++ primary sources; removed any claim without traceable support.
+662 +- *Implementation Engineer*: "What can actually be implemented?" → Recommendations section grounded in operational
++ tools (VRP, LASSO, scenario analysis) rather than theoretical ideals.
+663 +
+664 +**Phase 7 — REFINE**: Added Epstein-Zin recursive utility section (4.3.1) after identifying it as essential bridge
++ between consumption models and Bansal-Yaron. Added Harrison-Pliska/Harrison-Kreps foundational citations after ga
++p identified in Triangulate phase. Strengthened CMBS applications throughout.
+665 +
+666 +**Phase 8 — PACKAGE**: Progressive section generation using file write/append operations. Each section written ind
++ependently to manage output within token limits.
+667 +
+668 +### Source Quality Standards
+669 +
+670 +- **Primary academic journals**: Journal of Finance, Review of Financial Studies, Journal of Financial Economics,
++Econometrica, American Economic Review, Journal of Political Economy — credibility score 90–100

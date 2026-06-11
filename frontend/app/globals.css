@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --nest-void:#030A06; --nest-forest:#0D2218; --nest-green:#1E4A2E;
+  --nest-pine:#2D6B3D; --nest-gold:#C4A048;   --nest-gold-hi:#E8C87A;
+  --nest-sage:#7A9A82; --nest-cream:#EDE8DC;
+}
+*{box-sizing:border-box}
+html,body{background:var(--nest-void);color:var(--nest-cream)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--nest-void)}
+::-webkit-scrollbar-thumb{background:var(--nest-green);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--nest-pine)}
