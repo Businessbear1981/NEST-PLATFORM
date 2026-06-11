@@ -1,4 +1,20 @@
 {
-  "rootDirectory": "frontend",
-  "framework": "nextjs"
+  "regions": ["pdx1"],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://backend-iota-sand-94.vercel.app/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend-v2",
+      "routePrefix": "/",
+      "framework": "vite"
+    }
+  }
 }
