@@ -32,3 +32,5 @@ backend/uploads/
 # External reference dumps (kept locally, not in repo)
 docs/reference/ECC-main/
 rail_push.json
+
+.vercel
