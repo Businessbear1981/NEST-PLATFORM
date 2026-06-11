@@ -98,6 +98,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   actionable: { label: "Actionable", color: "text-amber-300", bg: "bg-amber-400/10", border: "border-amber-400/25" },
   acted_on: { label: "Acted On", color: "text-emerald-300", bg: "bg-emerald-400/10", border: "border-emerald-400/25" },
   dismissed: { label: "Dismissed", color: "text-slate-500", bg: "bg-slate-400/10", border: "border-slate-400/25" },
+  promoted: { label: "Promoted", color: "text-emerald-300", bg: "bg-emerald-400/10", border: "border-emerald-400/25" },
 };
 
 const SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"] as const;
@@ -210,11 +211,13 @@ function SignalCard({
   onClick,
   isSelected,
   isNew,
+  onPromote,
 }: {
   signal: SignalEvent;
   onClick: () => void;
   isSelected: boolean;
   isNew?: boolean;
+  onPromote?: (signalId: string) => void;
 }) {
   const Icon = TYPE_ICONS[signal.signal_type] || Activity;
   const sev = SEVERITY_CONFIG[signal.severity] || SEVERITY_CONFIG.info;
@@ -288,6 +291,23 @@ function SignalCard({
         <p className="mt-1.5 font-mono text-[0.62rem] text-slate-500 line-clamp-1">
           {String(signal.payload.description)}
         </p>
+      )}
+
+      {onPromote && (
+        <div className="mt-2 flex justify-end" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => onPromote(signal.id)}
+            disabled={signal.status === "promoted"}
+            className={`rounded border px-2.5 py-1 font-mono text-[0.5rem] uppercase tracking-wider transition-all ${
+              signal.status === "promoted"
+                ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-300 cursor-default"
+                : "border-amber-400/25 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20 hover:border-amber-400/40"
+            }`}
+          >
+            <ArrowRight size={9} className="inline mr-1" />
+            {signal.status === "promoted" ? "PROMOTED" : "PROMOTE TO PROSPECT"}
+          </button>
+        </div>
       )}
     </motion.button>
   );
@@ -982,6 +1002,17 @@ export default function EagleEyeV2() {
     statusMutation.mutate({ signalId, status });
   }, [statusMutation]);
 
+  const [promotedIds, setPromotedIds] = useState<Set<string>>(new Set());
+
+  const handlePromote = useCallback(async (signalId: string) => {
+    try {
+      await signalsApi.promote(signalId);
+      setPromotedIds((prev) => new Set(prev).add(signalId));
+    } catch (e) {
+      console.error("Promote failed", e);
+    }
+  }, []);
+
   const highPriorityCount = allSignals.filter(
     (s) => s.severity === "critical" || s.severity === "high",
   ).length;
@@ -1241,10 +1272,15 @@ export default function EagleEyeV2() {
                   {displaySignals.map((signal) => (
                     <SignalCard
                       key={signal.id}
-                      signal={signal}
+                      signal={
+                        promotedIds.has(signal.id)
+                          ? { ...signal, status: "promoted" }
+                          : signal
+                      }
                       onClick={() => setSelectedSignalId(signal.id)}
                       isSelected={selectedSignalId === signal.id}
                       isNew={!!(revealedAt && signal.captured_at > revealedAt)}
+                      onPromote={handlePromote}
                     />
                   ))}
                 </AnimatePresence>

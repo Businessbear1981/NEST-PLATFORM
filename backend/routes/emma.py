@@ -36,9 +36,51 @@ def search():
     cusip = request.args.get("cusip", "")
     state = request.args.get("state", "")
     sector = request.args.get("sector", "")
+    q = request.args.get("q", "")
     limit = int(request.args.get("limit", 20))
+    # If ?q= is provided, route through search_emma_bonds (real MSRB + EDGAR)
+    if q:
+        results = _engine().search_emma_bonds(q, sector=sector or None)
+        if state:
+            results = [r for r in results if (r.get("state") or "").upper() == state.upper()]
+        return _ok({"results": results[:limit], "count": min(len(results), limit), "source": "msrb_live"})
     results = _engine().search(issuer=issuer, cusip=cusip, state=state, sector=sector, limit=limit)
     return _ok({"results": results, "count": len(results)})
+
+
+@emma_bp.get("/bonds")
+def bonds():
+    """Bond search endpoint.
+
+    ?q=<query>  → call MSRB issuer search + EDGAR fallback (live)
+    (no query)  → return PARSED_BONDS seed database
+    """
+    q = request.args.get("q", "").strip()
+    sector = request.args.get("sector", "")
+    state = request.args.get("state", "")
+    limit = int(request.args.get("limit", 20))
+
+    if q:
+        results = _engine().search_emma_bonds(q, sector=sector or None)
+        if state:
+            results = [r for r in results if (r.get("state") or "").upper() == state.upper()]
+        return _ok({"results": results[:limit], "count": min(len(results), limit), "source": "msrb_live"})
+
+    # No query — return seed parsed bonds from emma_seed_data
+    from services.emma_engine import PARSED_BONDS
+    seed = PARSED_BONDS
+    if sector:
+        seed = [b for b in seed if b.get("sector") == sector]
+    if state:
+        seed = [b for b in seed if (b.get("state") or "").upper() == state.upper()]
+    return _ok({"results": seed[:limit], "count": min(len(seed), limit), "source": "parsed_bonds"})
+
+
+@emma_bp.get("/bonds/<cusip>")
+def bond_detail(cusip: str):
+    """Look up a specific CUSIP on EMMA SecurityView."""
+    result = _engine().get_bond_detail(cusip)
+    return _ok(result)
 
 
 @emma_bp.post("/parse")

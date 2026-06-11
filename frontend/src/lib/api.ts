@@ -74,6 +74,18 @@ export const market = {
   signals: () => nestFetch("/api/market/signals"),
 };
 
+// ── Bond Desk Pipeline ───────────────────────────────────────
+export const bondDesk = {
+  list: (filters?: { status?: string; stage?: string }) => {
+    const params = new URLSearchParams();
+    if (filters?.status) params.set("status", filters.status);
+    if (filters?.stage) params.set("stage", filters.stage);
+    const qs = params.toString();
+    return nestFetch(`/api/bond-tools/pipeline${qs ? `?${qs}` : ""}`);
+  },
+  get: (id: string) => nestFetch(`/api/bond-tools/pipeline/${id}`),
+};
+
 // ── Bond Tools (existing CreditEngine) ───────────────────────
 export const bondTools = {
   credit: (deal: Record<string, unknown>) =>
@@ -427,6 +439,25 @@ export const signals = {
       method: "POST",
       body: JSON.stringify({ action }),
     }),
+  promote: (signalId: string) =>
+    nestFetch(`/api/eagleeye/promote/${signalId}`, { method: "POST" }),
+};
+
+// ── Covenants ────────────────────────────────────────────────
+export const covenants = {
+  list: (filters?: { deal_name?: string; status?: string }) => {
+    const params = new URLSearchParams();
+    if (filters?.deal_name) params.set("deal_name", filters.deal_name);
+    if (filters?.status) params.set("status", filters.status);
+    const qs = params.toString();
+    return nestFetch(`/api/covenants/${qs ? `?${qs}` : ""}`);
+  },
+  detail: (id: string) => nestFetch(`/api/covenants/${id}`),
+  test: (packageId: string, financials?: Record<string, unknown>) =>
+    nestFetch("/api/covenants/test", {
+      method: "POST",
+      body: JSON.stringify({ package_id: packageId, financials: financials ?? {} }),
+    }),
 };
 
 // ── V4 Operating Framework — Desk Registry + Bernard ────────
@@ -520,11 +551,23 @@ export const counterparties = {
   feasibility: (sector: string) => nestFetch(`/api/counterparties/feasibility/${sector}`),
 };
 
+// ── Surveillance Desk ────────────────────────────────────────
+export const surveillance = {
+  pipeline: () => nestFetch("/api/surveillance/pipeline"),
+};
+
+// ── Construction Desk ────────────────────────────────────────
+export const construction = {
+  milestones: (dealId = "stpete-construction-2025") =>
+    nestFetch(`/api/phoenix/construction/${dealId}/milestones`),
+};
+
 export const api = {
-  auth, deals, fund, agents, market, bondTools, risk,
+  auth, deals, fund, agents, market, bondDesk, bondTools, risk,
   modeling, maxwell, architect, pricing, insurance, roots, metrics,
   powerstrip, bondWorkflow, eagleeye, hawkeye, ratingEsg, bondStructuring,
   signals, desks, bernard, intel, mirrorAgents, emma, workflow, counterparties,
+  covenants, surveillance, construction,
 };
 
 export default api;

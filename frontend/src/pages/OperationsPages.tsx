@@ -303,10 +303,8 @@ export function OperationsDealsPage() {
 }
 
 export function OperationsDealDetailPage({ dealId }: { dealId: string }) {
-  const numericDealId = Number.parseInt(dealId, 10);
-  const safeDealId = Number.isFinite(numericDealId) ? numericDealId : 0;
   const { isAuthenticated } = useAuth();
-  const dealQuery = trpc.deals.get.useQuery({ dealId: safeDealId }, { enabled: isAuthenticated && safeDealId > 0 });
+  const dealQuery = trpc.deals.get.useQuery({ dealId }, { enabled: isAuthenticated && !!dealId });
   const deal = dealQuery.data;
   const [activeWorkspace, setActiveWorkspace] = useState("capital-stack");
 

@@ -1,9 +1,115 @@
 """Bond grading, project audit, and bond optimization routes."""
+import threading
+import uuid as _uuid
 from flask import Blueprint, jsonify, request
 from datetime import datetime
 from services.auth import require_auth
 
 bond_tools_bp = Blueprint("bond_tools", __name__)
+
+# ── In-memory pipeline store (seeded with NEST live deals) ────────
+_pipeline_lock = threading.RLock()
+_pipeline: list = []
+
+
+def _seed_pipeline():
+    """Seed the pipeline with the 3 NEST live deals."""
+    return [
+        {
+            "id": "jacaranda-001",
+            "deal_name": "Jacaranda Trace",
+            "borrower": "Soparrow Capital / Arden Edge Capital",
+            "state": "FL",
+            "sector": "senior_living",
+            "par_amount": 231_000_000,
+            "coupon_rate": 5.75,
+            "maturity_years": 30,
+            "rating_moodys": "Baa1",
+            "rating_sp": "BBB+",
+            "status": "active",
+            "stage": "structuring",
+            "enhancement": "surety",
+            "enhancement_provider": "Hylant Insurance",
+            "dscr": 1.82,
+            "ltv": 55.8,
+            "created_at": datetime.utcnow().isoformat(),
+            # Fields for DealPipelineDashboard kanban
+            "name": "Jacaranda Trace",
+            "sponsor": "Soparrow Capital",
+            "total_project_cost_usd": 231_000_000,
+            "stabilized_noi_usd": 18_500_000,
+            "appraised_value_usd": 277_200_000,
+            "use_of_proceeds": "Ground-up senior living — 364-unit IL/AL/MC campus",
+            "phase": "structuring",
+            "grade": "BBB+",
+            "assignedPartners": ["Moody's", "Hylant"],
+            "lastActivity": "Series 2025 — $231M LGFC placement",
+        },
+        {
+            "id": "stpete-002",
+            "deal_name": "St. Pete Construction",
+            "borrower": "Arden Edge Capital",
+            "state": "FL",
+            "sector": "multifamily",
+            "par_amount": 172_500_000,
+            "coupon_rate": 6.25,
+            "maturity_years": 10,
+            "rating_moodys": "",
+            "rating_sp": "BBB",
+            "status": "active",
+            "stage": "structuring",
+            "enhancement": "surety",
+            "enhancement_provider": "Hylant Insurance",
+            "dscr": 1.65,
+            "ltv": 62.0,
+            "created_at": datetime.utcnow().isoformat(),
+            # Fields for DealPipelineDashboard kanban
+            "name": "St. Pete Construction",
+            "sponsor": "Arden Edge Capital",
+            "total_project_cost_usd": 172_500_000,
+            "stabilized_noi_usd": 14_200_000,
+            "appraised_value_usd": 207_000_000,
+            "use_of_proceeds": "Ground-up multifamily construction — St. Petersburg FL",
+            "phase": "structuring",
+            "grade": "BBB",
+            "assignedPartners": ["Hylant"],
+            "lastActivity": "$172.5M construction bond — structuring phase",
+        },
+        {
+            "id": "hbo2-003",
+            "deal_name": "HBO2 Equity",
+            "borrower": "Arden Edge Capital",
+            "state": "TX",
+            "sector": "mixed_use",
+            "par_amount": 155_000_000,
+            "coupon_rate": 7.5,
+            "maturity_years": 7,
+            "rating_moodys": "",
+            "rating_sp": "BB+",
+            "status": "active",
+            "stage": "placement",
+            "enhancement": "self-collateralized",
+            "enhancement_provider": "",
+            "dscr": 1.52,
+            "ltv": 68.5,
+            "created_at": datetime.utcnow().isoformat(),
+            # Fields for DealPipelineDashboard kanban
+            "name": "HBO2 Equity",
+            "sponsor": "Arden Edge Capital",
+            "total_project_cost_usd": 155_000_000,
+            "stabilized_noi_usd": 12_800_000,
+            "appraised_value_usd": 186_000_000,
+            "use_of_proceeds": "Mixed-use equity raise — Texas",
+            "phase": "placement",
+            "grade": "BB+",
+            "assignedPartners": ["Hawkeye"],
+            "lastActivity": "$155M equity — BD outreach active",
+        },
+    ]
+
+
+with _pipeline_lock:
+    _pipeline = _seed_pipeline()
 
 
 def _ts():
@@ -147,3 +253,33 @@ def stress_test_rates():
             "spread_widen": {"ig_spread_bps": rates.get("ig_spread", 1.12) * 100 + 50, "label": "Spread widening +50bps"},
         },
     })
+
+
+# ── Bond Desk Pipeline ─────────────────────────────────────────
+
+@bond_tools_bp.route("/pipeline", methods=["GET"])
+def bond_desk_pipeline():
+    """Return the Bond Desk deal pipeline (seeded with NEST live deals).
+
+    No auth required so the frontend Bond Desk module renders without
+    needing a valid session cookie.
+    """
+    status = request.args.get("status")
+    stage = request.args.get("stage")
+    with _pipeline_lock:
+        result = list(_pipeline)
+    if status:
+        result = [d for d in result if d.get("status") == status]
+    if stage:
+        result = [d for d in result if d.get("stage") == stage]
+    return _ok(result)
+
+
+@bond_tools_bp.route("/pipeline/<deal_id>", methods=["GET"])
+def bond_desk_pipeline_deal(deal_id):
+    """Return a single pipeline deal by id."""
+    with _pipeline_lock:
+        match = next((d for d in _pipeline if d["id"] == deal_id), None)
+    if not match:
+        return _err("Deal not found", 404)
+    return _ok(match)

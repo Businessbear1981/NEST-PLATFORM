@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import logging
 import statistics
+import time
 from datetime import datetime
 from typing import Any
 
@@ -31,8 +32,13 @@ from agents._claude import complete
 
 log = logging.getLogger(__name__)
 
-EMMA_SEARCH_URL = "https://emma.msrb.org"
-USER_AGENT = "NEST Advisors Platform sean@ardencapital.com"
+EMMA_BASE = "https://emma.msrb.org"
+EDGAR_SEARCH_URL = "https://efts.sec.gov/LATEST/search-index"
+USER_AGENT = "NEST-Advisors/1.0 contact@nestadvisors.ai"
+
+# 30-minute result cache: key → (timestamp, results)
+_search_cache: dict[str, tuple[float, list]] = {}
+_CACHE_TTL = 1800  # seconds
 
 # ── Bond Structure Schema ─────────────────────────────────────
 
@@ -130,8 +136,205 @@ class EMMAEngine:
 
     def __init__(self):
         self._client_timeout = 15
+        self._headers = {
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+        }
 
-    # ── Search ────────────────────────────────────────────────
+    # ── Cache helpers ─────────────────────────────────────────
+
+    def _cache_get(self, key: str) -> list | None:
+        entry = _search_cache.get(key)
+        if entry and (time.time() - entry[0]) < _CACHE_TTL:
+            log.debug("EMMA cache hit: %s", key)
+            return entry[1]
+        return None
+
+    def _cache_set(self, key: str, results: list) -> None:
+        _search_cache[key] = (time.time(), results)
+
+    # ── Real MSRB API Calls ───────────────────────────────────
+
+    def search_emma_bonds(self, query: str, sector: str = None) -> list[dict]:
+        """Search MSRB EMMA for real bond issues.
+
+        1. Calls MSRB issuer search API (GetIssuerSearchResults)
+        2. Falls back to SEC EDGAR official-statement search if MSRB returns empty
+        Returns normalized bond record dicts.
+        """
+        cache_key = f"bonds:{query}:{sector}"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+
+        results = self._msrb_issuer_search(query)
+        source = "msrb"
+
+        if not results:
+            log.info("MSRB returned empty for %r — falling back to EDGAR", query)
+            results = self._edgar_os_search(query, sector)
+            source = "edgar"
+
+        self._cache_set(cache_key, results)
+        log.info("EMMA bond search %r: %d results from %s", query, len(results), source)
+        return results
+
+    def _msrb_issuer_search(self, term: str) -> list[dict]:
+        """Call MSRB GetIssuerSearchResults and normalize to bond records."""
+        try:
+            url = f"{EMMA_BASE}/api/IssuerView/GetIssuerSearchResults"
+            with httpx.Client(timeout=self._client_timeout) as c:
+                r = c.get(url, params={"term": term, "pageSize": 10}, headers=self._headers)
+            if r.status_code != 200:
+                log.warning("MSRB issuer search HTTP %d for %r", r.status_code, term)
+                return []
+            # MSRB may return HTML on some paths — guard against it
+            ct = r.headers.get("content-type", "")
+            if "html" in ct:
+                log.warning("MSRB returned HTML (not JSON) for issuer search %r", term)
+                return []
+            data = r.json()
+            issuers = data if isinstance(data, list) else data.get("issuers", data.get("results", []))
+            bonds = []
+            for item in issuers:
+                issuer_name = (
+                    item.get("issuerName") or item.get("name") or item.get("IssuerName", "")
+                )
+                state_code = item.get("state") or item.get("stateCode") or item.get("StateCode", "")
+                issuer_id = item.get("issuerId") or item.get("id") or ""
+                emma_url = (
+                    f"{EMMA_BASE}/IssuerView/Index/{issuer_id}" if issuer_id
+                    else f"{EMMA_BASE}/Home/Search?q={term}"
+                )
+                bonds.append({
+                    "cusip": None,
+                    "issuer": issuer_name,
+                    "state": state_code,
+                    "par_amount": None,
+                    "coupon_rate": None,
+                    "maturity_date": None,
+                    "dated_date": None,
+                    "sector": None,
+                    "tax_status": None,
+                    "source": "msrb",
+                    "emma_url": emma_url,
+                    "issuer_id": issuer_id,
+                    "_raw": item,
+                })
+            return bonds
+        except Exception as e:
+            log.error("MSRB issuer search error: %s", e)
+            return []
+
+    def _edgar_os_search(self, query: str, sector: str = None) -> list[dict]:
+        """Search SEC EDGAR for Official Statements as fallback."""
+        try:
+            with httpx.Client(timeout=self._client_timeout) as c:
+                r = c.get(
+                    EDGAR_SEARCH_URL,
+                    params={
+                        "q": query,
+                        "forms": "OS",
+                        "dateRange": "custom",
+                        "startdt": "2022-01-01",
+                        "enddt": "2026-12-31",
+                    },
+                    headers={**self._headers, "Accept": "application/json"},
+                )
+            if r.status_code != 200:
+                log.warning("EDGAR OS search HTTP %d for %r", r.status_code, query)
+                return []
+            ct = r.headers.get("content-type", "")
+            if "html" in ct:
+                log.warning("EDGAR returned HTML (not JSON) for %r", query)
+                return []
+            data = r.json()
+            hits = data.get("hits", {}).get("hits", [])
+            bonds = []
+            for hit in hits:
+                src = hit.get("_source", {})
+                bonds.append({
+                    "cusip": None,
+                    "issuer": src.get("entity_name", src.get("issuer_name", "")),
+                    "state": src.get("state_of_inc", src.get("state", "")),
+                    "par_amount": None,
+                    "coupon_rate": None,
+                    "maturity_date": None,
+                    "dated_date": src.get("file_date"),
+                    "sector": sector,
+                    "tax_status": None,
+                    "source": "edgar",
+                    "emma_url": f"https://www.sec.gov/Archives/edgar/data/{src.get('entity_id', '')}/{src.get('file_name', '')}",
+                    "_raw": src,
+                })
+            return bonds
+        except Exception as e:
+            log.error("EDGAR OS search error: %s", e)
+            return []
+
+    def get_bond_detail(self, cusip: str) -> dict:
+        """Look up a specific CUSIP on EMMA SecurityView."""
+        cache_key = f"detail:{cusip}"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached[0] if cached else {}
+
+        try:
+            url = f"{EMMA_BASE}/SecurityView/Details/{cusip}"
+            with httpx.Client(timeout=self._client_timeout) as c:
+                r = c.get(url, headers=self._headers, follow_redirects=True)
+            if r.status_code != 200:
+                log.warning("EMMA SecurityView HTTP %d for CUSIP %s", r.status_code, cusip)
+                return {"cusip": cusip, "error": f"HTTP {r.status_code}", "emma_url": url}
+            ct = r.headers.get("content-type", "")
+            if "html" in ct:
+                # EMMA SecurityView returns HTML — extract key fields via text parsing
+                return self._parse_security_html(cusip, r.text, url)
+            data = r.json()
+            result = {
+                "cusip": cusip,
+                "issuer": data.get("issuerName") or data.get("issuer", ""),
+                "state": data.get("stateCode") or data.get("state", ""),
+                "coupon_rate": data.get("couponRate") or data.get("coupon"),
+                "maturity_date": data.get("maturityDate") or data.get("maturity"),
+                "par_amount": data.get("parAmount") or data.get("parValue"),
+                "tax_status": data.get("taxStatus") or data.get("taxTreatment"),
+                "source": "msrb",
+                "emma_url": url,
+            }
+            self._cache_set(cache_key, [result])
+            return result
+        except Exception as e:
+            log.error("EMMA get_bond_detail error for %s: %s", cusip, e)
+            return {"cusip": cusip, "error": str(e)}
+
+    def _parse_security_html(self, cusip: str, html: str, url: str) -> dict:
+        """Best-effort parse of EMMA SecurityView HTML page for key fields."""
+        import re
+        def _find(pattern, text, default=None):
+            m = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+            return m.group(1).strip() if m else default
+
+        result = {
+            "cusip": cusip,
+            "source": "msrb",
+            "emma_url": url,
+            "issuer": _find(r'issuer[^:]*:\s*<[^>]+>([^<]+)<', html),
+            "state": _find(r'state[^:]*:\s*<[^>]+>([A-Z]{2})<', html),
+            "coupon_rate": None,
+            "maturity_date": _find(r'maturity[^:]*:\s*<[^>]+>([^<]+)<', html),
+            "par_amount": None,
+        }
+        # Try to extract coupon as a float
+        coupon_str = _find(r'coupon[^:]*:\s*<[^>]+>([0-9.]+)%?<', html)
+        if coupon_str:
+            try:
+                result["coupon_rate"] = float(coupon_str)
+            except ValueError:
+                pass
+        return result
+
+    # ── Legacy search() — kept for /search and /poll routes ───
 
     def search(
         self,
@@ -141,39 +344,21 @@ class EMMAEngine:
         sector: str = "",
         limit: int = 20,
     ) -> list[dict]:
-        """Search EMMA for municipal bond issues.
+        """Search EMMA — routes to search_emma_bonds() for live MSRB data."""
+        query = cusip or issuer or sector or "revenue bond"
+        cache_key = f"search:{query}:{state}:{sector}"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached[:limit]
 
-        Uses EMMA public search. When MSRB subscription is active,
-        switches to the SOAP API for real-time data.
-        """
-        try:
-            params = {}
-            if cusip:
-                params["cusip"] = cusip
-            elif issuer:
-                params["issuerName"] = issuer
-            else:
-                params["issuerName"] = sector or "revenue bond"
+        results = self.search_emma_bonds(query, sector=sector or None)
 
-            if state:
-                params["state"] = state.upper()
+        # Apply state filter post-fetch if provided
+        if state:
+            results = [r for r in results if (r.get("state") or "").upper() == state.upper()]
 
-            with httpx.Client(timeout=self._client_timeout) as c:
-                r = c.get(
-                    f"{EMMA_SEARCH_URL}/api/v1/search",
-                    params=params,
-                    headers={"Accept": "application/json", "User-Agent": USER_AGENT},
-                )
-                if r.status_code == 200:
-                    data = r.json()
-                    results = data if isinstance(data, list) else data.get("results", [])
-                    return results[:limit]
-                else:
-                    log.warning("EMMA search returned %d", r.status_code)
-                    return []
-        except Exception as e:
-            log.error("EMMA search error: %s", e)
-            return []
+        self._cache_set(cache_key, results)
+        return results[:limit]
 
     # ── Official Statement Parser ─────────────────────────────
 

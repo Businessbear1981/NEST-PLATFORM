@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDealState, type Deal } from "@/contexts/DealStateContext";
 import { useBernard } from "@/contexts/BernardContext";
+import api from "@/lib/api";
 
 interface PipelineDeal {
   id: string;
@@ -26,43 +27,6 @@ const PHASES: { key: Deal["phase"]; label: string; color: string; glow: string }
   { key: "closing", label: "Closing", color: "border-emerald-500/30 bg-emerald-500/[0.06]", glow: "bg-emerald-400" },
 ];
 
-const DEMO_PIPELINE: PipelineDeal[] = [
-  {
-    id: "jacaranda-001", name: "Jacaranda Trace PLOM", sponsor: "Soparrow Capital",
-    total_project_cost_usd: 231_000_000, stabilized_noi_usd: 18_500_000,
-    appraised_value_usd: 277_200_000, use_of_proceeds: "Ground-up mixed use",
-    sector: "mixed_use", phase: "structuring", grade: "BBB+", dscr: 1.82,
-    assignedPartners: ["Moody's", "Hylant"], lastActivity: "Tranche B added — 2hr ago",
-  },
-  {
-    id: "meridian-002", name: "Meridian Health Campus", sponsor: "Arden Edge Capital",
-    total_project_cost_usd: 145_000_000, stabilized_noi_usd: 12_800_000,
-    appraised_value_usd: 174_000_000, use_of_proceeds: "Healthcare facility",
-    sector: "healthcare", phase: "sourcing", grade: undefined, dscr: undefined,
-    assignedPartners: [], lastActivity: "EagleEye flagged — 6hr ago",
-  },
-  {
-    id: "harbor-003", name: "Harbor Point Industrial", sponsor: "Soparrow Capital",
-    total_project_cost_usd: 89_000_000, stabilized_noi_usd: 9_200_000,
-    appraised_value_usd: 106_800_000, use_of_proceeds: "Industrial warehouse",
-    sector: "industrial", phase: "placement", grade: "A", dscr: 2.15,
-    assignedPartners: ["Moody's", "Hylant", "Hawkeye"], lastActivity: "Book 62% subscribed — 1hr ago",
-  },
-  {
-    id: "oakwood-004", name: "Oakwood Multifamily", sponsor: "Arden Edge Capital",
-    total_project_cost_usd: 67_000_000, stabilized_noi_usd: 5_800_000,
-    appraised_value_usd: 80_400_000, use_of_proceeds: "Multifamily development",
-    sector: "multifamily", phase: "structuring", grade: "BBB", dscr: 1.65,
-    assignedPartners: ["Hylant"], lastActivity: "Call option added — 4hr ago",
-  },
-  {
-    id: "summit-005", name: "Summit Office Tower", sponsor: "Soparrow Capital",
-    total_project_cost_usd: 178_000_000, stabilized_noi_usd: 14_200_000,
-    appraised_value_usd: 213_600_000, use_of_proceeds: "Class A office",
-    sector: "office", phase: "closing", grade: "BBB+", dscr: 1.78,
-    assignedPartners: ["Moody's", "Hylant", "Hawkeye"], lastActivity: "Final docs — 30min ago",
-  },
-];
 
 const GRADE_COLORS: Record<string, string> = {
   A: "text-emerald-400", "BBB+": "text-emerald-300", BBB: "text-cyan-400",
@@ -73,7 +37,16 @@ export default function DealPipelineDashboard() {
   const { setDeal, log } = useDealState();
   const bernard = useBernard();
   const [collapsed, setCollapsed] = useState(false);
-  const [pipeline] = useState<PipelineDeal[]>(DEMO_PIPELINE);
+  const [pipeline, setPipeline] = useState<PipelineDeal[]>([]);
+
+  useEffect(() => {
+    api.bondDesk
+      .list()
+      .then((data) => setPipeline(data as PipelineDeal[]))
+      .catch(() => {
+        // Silently keep empty on fetch failure — no console noise in production
+      });
+  }, []);
 
   const handleLoadDeal = (deal: PipelineDeal) => {
     setDeal({

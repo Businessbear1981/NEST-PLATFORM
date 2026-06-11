@@ -73,13 +73,13 @@ const deals = {
   list: q(["deals", "list"], () => api.deals.list()),
   get: {
     useQuery: (
-      input?: { dealId: number },
+      input?: { dealId: string },
       opts?: Partial<UseQueryOptions>,
     ) =>
       useQuery({
         queryKey: ["deals", "get", input?.dealId],
-        queryFn: () => api.deals.get(String(input?.dealId ?? 0)),
-        enabled: (input?.dealId ?? 0) > 0,
+        queryFn: () => api.deals.get(input?.dealId ?? ""),
+        enabled: !!(input?.dealId),
         ...opts,
       }),
   },
@@ -295,7 +295,7 @@ const draws = {
   }),
 };
 
-// ── Covenants (in-memory until backend route) ────────────────────
+// ── Covenants ────────────────────────────────────────────────────
 
 let _covenants: Array<Record<string, any>> = [];
 let _covenantSeq = 1;
@@ -305,8 +305,34 @@ const covenants = {
     useQuery: (input?: { dealId: number }, opts?: Partial<UseQueryOptions>) =>
       useQuery({
         queryKey: ["covenants", "listByDeal", input?.dealId],
-        queryFn: async () =>
-          _covenants.filter((c) => c.dealId === input?.dealId),
+        queryFn: async () => {
+          const dealId = input?.dealId ?? 0;
+          if (dealId > 0) {
+            try {
+              const res = await fetch(
+                `${import.meta.env.VITE_API_URL || ""}/api/deals/${dealId}/covenants`,
+                { credentials: "include" },
+              );
+              if (res.ok) {
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data)) {
+                  // Normalize backend shape to what CovenantsDashboard expects
+                  return json.data.map((c: any) => ({
+                    id: c.id,
+                    dealId: c.deal_id ?? dealId,
+                    type: c.covenant_type ?? c.metric ?? c.type ?? "DSCR",
+                    threshold: c.threshold_value != null ? String(c.threshold_value) : c.threshold,
+                    current: c.last_test_value != null ? String(c.last_test_value) : c.current,
+                    status: c.status === "green" ? "compliant" : c.status === "red" ? "breach" : c.status ?? "watch",
+                    lastChecked: c.last_test_date ?? c.lastChecked ?? null,
+                    createdAt: c.created_at ?? c.createdAt ?? new Date().toISOString(),
+                  }));
+                }
+              }
+            } catch { /* fall through to in-memory */ }
+          }
+          return _covenants.filter((c) => c.dealId === dealId);
+        },
         enabled: (input?.dealId ?? 0) > 0,
         ...opts,
       }),
@@ -343,6 +369,23 @@ const covenants = {
     }
     return c;
   }),
+};
+
+// ── Covenant Packages (Jacaranda Trace & tracked bonds) ─────────
+
+const covenantPackages = {
+  list: q(["covenantPackages", "list"], () => api.covenants.list()),
+  detail: {
+    useQuery: (input?: { id: string }, opts?: Partial<UseQueryOptions>) =>
+      useQuery({
+        queryKey: ["covenantPackages", "detail", input?.id],
+        queryFn: () => api.covenants.detail(input?.id ?? "cov-001"),
+        enabled: !!input?.id,
+        ...opts,
+      }),
+  },
+  test: m((input: { packageId: string; financials?: Record<string, unknown> }) =>
+    api.covenants.test(input.packageId, input.financials)),
 };
 
 // ── Power Strip ─────────────────────────────────────────────────

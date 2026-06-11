@@ -7,6 +7,7 @@ from services.auth import require_auth
 from datetime import datetime
 import json
 import threading
+import uuid
 
 from agents._claude import complete
 from services.eagleeye_scanner import EagleEyeScanner
@@ -182,6 +183,51 @@ def convert_to_deal(signal_id):
         sig["status"] = "converted"
 
     return _ok(deal_stub)
+
+
+@eagleeye_bp.route("/promote/<signal_id>", methods=["POST"])
+def promote_to_prospect(signal_id):
+    """Promote a signal to a deal prospect in the NEST pipeline."""
+    with _lock:
+        sig = next((s for s in _signals if s["id"] == signal_id), None)
+    if not sig:
+        return _err("Signal not found", 404)
+
+    if sig.get("status") == "promoted":
+        return _err("Signal already promoted", 409)
+
+    # Build a deal stub from the signal fields
+    deal = {
+        "id": str(uuid.uuid4()),
+        "name": sig.get("entity", sig.get("name", "Unknown")),
+        "source": "eagleeye_signal",
+        "signal_id": signal_id,
+        "sector": sig.get("naics", sig.get("signal_type", "unknown")),
+        "state": sig.get("state", ""),
+        "stage": "prospect",
+        "status": "intake",
+        "amount": sig.get("amount_usd", sig.get("par_amount", 0)),
+        "created_at": datetime.utcnow().isoformat(),
+        "grade": sig.get("grade", "WARM"),
+        "source_url": sig.get("edgar_url", ""),
+        "notes": sig.get("detail", sig.get("snippet", "")),
+        "eagleeye_score": sig.get("score", 0),
+    }
+
+    # Push into deals in-memory store
+    try:
+        from routes.deals import _deals, _lock as deals_lock
+        with deals_lock:
+            _deals[deal["id"]] = deal
+    except Exception:
+        pass  # Deals store unavailable — deal stub still returned
+
+    # Mark signal as promoted
+    with _lock:
+        sig["status"] = "promoted"
+        sig["promoted_deal_id"] = deal["id"]
+
+    return _ok({"deal": deal, "signal_id": signal_id})
 
 
 @eagleeye_bp.route("/find-similar", methods=["POST"])

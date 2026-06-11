@@ -133,58 +133,24 @@ def _map_status(status):
     return mapping.get(status, status)
 
 
-# ── Seed (in-memory fallback only) ───────────────────────────────
-
-def _seed():
-    seeds = [
-        {
-            "name": "Life Star Pointe Loop",
-            "project": {
-                "name": "Life Star Pointe Loop",
-                "address": "426 Pointe Loop Blvd",
-                "city": "Kissimmee", "state": "FL", "zip": "34747",
-                "asset_type": "senior_living", "project_type": "greenfield",
-                "total_project_cost_usd": 231_000_000,
-                "units": 364, "description": "364-unit IL/AL/MC campus"
-            },
-            "sponsor": {
-                "entity_name": "Life Star Senior Living LLC",
-                "contact_name": "Development Team", "track_record_projects": 8,
-            },
-        },
-        {
-            "name": "Meridian Cove",
-            "project": {
-                "name": "Meridian Cove Mixed-Use",
-                "city": "Tampa", "state": "FL",
-                "asset_type": "mixed_use", "project_type": "greenfield",
-                "total_project_cost_usd": 142_000_000,
-                "units": 280, "description": "280 units + 45K SF retail"
-            },
-            "sponsor": {"entity_name": "Meridian Development Group"},
-        },
-        {
-            "name": "Palmetto Ridge",
-            "project": {
-                "name": "Palmetto Ridge Industrial",
-                "city": "Lakeland", "state": "FL",
-                "asset_type": "industrial", "project_type": "shovel_ready",
-                "total_project_cost_usd": 78_000_000,
-                "square_footage": 425_000,
-                "description": "425K SF Class A industrial / cold storage"
-            },
-            "sponsor": {"entity_name": "Palmetto Industrial Partners"},
-        },
-    ]
-    with _lock:
-        for s in seeds:
-            d = new_deal(s["name"], s.get("project"), s.get("sponsor"))
-            d["status"] = "underwriting"
-            _deals[d["id"]] = d
+# In-memory store starts empty — real deals come from Supabase or user input.
+# EMMA comparable bonds live in services/emma_seed_data.py (real CUSIP data — do not remove).
 
 
-if not (_use_db()):
-    _seed()
+def _normalize_deal(d: dict) -> dict:
+    """Ensure the in-memory deal dict has flat top-level fields the frontend expects."""
+    project = d.get("project") or {}
+    sponsor = d.get("sponsor") or {}
+    # amount — prefer explicit flat field, fall back to project sub-object
+    if "amount" not in d:
+        d["amount"] = project.get("total_project_cost_usd", 0)
+    # issuer — prefer explicit flat field, fall back to sponsor entity name
+    if "issuer" not in d:
+        d["issuer"] = sponsor.get("entity_name", "")
+    # createdAt (camelCase) — what the frontend deal list renders
+    if "createdAt" not in d:
+        d["createdAt"] = d.get("created_at", "")
+    return d
 
 
 # ── Deal CRUD ───────────────────────────────────────────────────
@@ -205,6 +171,12 @@ def create_deal():
         return _ok(_row_to_deal(result[0] if isinstance(result, list) else result), 201)
 
     d = new_deal(name, body.get("project"), body.get("sponsor"))
+    # Attach flat fields the form provides directly
+    if "amount" in body:
+        d["amount"] = body["amount"]
+    if "issuer" in body:
+        d["issuer"] = body["issuer"]
+    _normalize_deal(d)
     with _lock:
         _deals[d["id"]] = d
     return _ok(d, 201)
@@ -223,10 +195,10 @@ def list_deals():
         return _ok([_row_to_deal(r) for r in (rows or [])])
 
     with _lock:
-        result = list(_deals.values())
+        result = [_normalize_deal(d) for d in _deals.values()]
     if status:
         result = [d for d in result if d["status"] == status]
-    result.sort(key=lambda d: d["created_at"], reverse=True)
+    result.sort(key=lambda d: d.get("created_at", ""), reverse=True)
     return _ok(result)
 
 
@@ -243,7 +215,7 @@ def get_deal(deal_id):
         d = _deals.get(deal_id)
     if not d:
         return _err("Deal not found", 404)
-    return _ok(d)
+    return _ok(_normalize_deal(d))
 
 
 @deals_bp.route("/<deal_id>", methods=["PATCH"])

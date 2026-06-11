@@ -106,6 +106,34 @@ def push_bond_handoff(deal_id: str):
     return _ok({**ho, "pushed": True, "message": "Deal pushed to Bond Desk."}), 201
 
 
+# ── Construction milestones ───────────────────────────────────────────
+
+@phoenix_bp.get("/construction/<deal_id>/milestones")
+def get_construction_milestones(deal_id: str):
+    """Return construction milestone tracker for a deal."""
+    deal_names = {
+        "stpete-construction-2025": "St. Pete Mixed-Use Tower 2025",
+    }
+    deal_name = deal_names.get(deal_id, f"Construction Deal {deal_id}")
+    data = {
+        "deal_id": deal_id,
+        "deal_name": deal_name,
+        "total_budget": 172_500_000,
+        "drawn_to_date": 64_800_000,
+        "completion_pct": 37.6,
+        "milestones": [
+            {"id": 1, "name": "Site Work & Foundation", "budget": 18_400_000, "drawn": 18_400_000, "status": "complete", "completion_date": "2025-08-15"},
+            {"id": 2, "name": "Structural Frame", "budget": 31_200_000, "drawn": 31_200_000, "status": "complete", "completion_date": "2025-11-30"},
+            {"id": 3, "name": "MEP Rough-In", "budget": 24_800_000, "drawn": 15_200_000, "status": "in_progress", "pct_complete": 61},
+            {"id": 4, "name": "Exterior Envelope", "budget": 19_600_000, "drawn": 0, "status": "pending"},
+            {"id": 5, "name": "Interior Finishes", "budget": 38_400_000, "drawn": 0, "status": "pending"},
+            {"id": 6, "name": "FF&E & Technology", "budget": 22_100_000, "drawn": 0, "status": "pending"},
+            {"id": 7, "name": "Punch List & CO", "budget": 18_000_000, "drawn": 0, "status": "pending"},
+        ],
+    }
+    return _ok(data)
+
+
 # ── Sourcing radar ────────────────────────────────────────────────────
 
 @phoenix_bp.get("/radar/feed")
