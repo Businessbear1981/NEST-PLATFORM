@@ -76,9 +76,10 @@ class DocumentRegistry:
         self._lock = threading.RLock()
         self._docs: dict[str, Document] = {}
         self._by_deal: dict[str, list[str]] = {}
-        self._storage_root = storage_root or os.path.join(
+        default_root = "/tmp/nest_uploads" if os.environ.get("VERCEL") else os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads"
         )
+        self._storage_root = storage_root or default_root
         os.makedirs(self._storage_root, exist_ok=True)
 
     # ---------- writes ----------
