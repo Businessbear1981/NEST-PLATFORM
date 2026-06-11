@@ -151,7 +151,7 @@ function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={"/"}>{() => { window.location.replace("/deals"); return null; }}</Route>
       <Route path={"/dashboard"} component={DashboardPage} />
       <Route path={"/architecture"} component={ArchitecturePage} />
       <Route path={"/portals"} component={PortalsPage} />
