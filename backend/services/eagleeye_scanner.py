@@ -31,10 +31,39 @@ Signal Types:
 Each signal gets scored, qualified, and routed to the right capital solution.
 """
 from __future__ import annotations
-from datetime import datetime
+import os
+import time
+from datetime import datetime, timezone
 from typing import Any
 
+import httpx
+
 from agents._claude import complete
+
+
+# ---------------------------------------------------------------------------
+# Module-level FRED cache: {"data": dict, "expires_at": float}
+# ---------------------------------------------------------------------------
+_fred_cache: dict = {}
+_FRED_TTL_SECONDS = 15 * 60  # 15 minutes
+
+
+def _fetch_fred_series(series_id: str, api_key: str) -> float:
+    """Fetch the latest observation for a FRED series. Returns float or raises."""
+    url = (
+        f"https://api.stlouisfed.org/fred/series/observations"
+        f"?series_id={series_id}&api_key={api_key}"
+        f"&sort_order=desc&limit=1&file_type=json"
+    )
+    resp = httpx.get(url, timeout=10)
+    resp.raise_for_status()
+    obs = resp.json().get("observations", [])
+    if not obs:
+        raise ValueError(f"No observations returned for {series_id}")
+    value_str = obs[0].get("value", ".")
+    if value_str == ".":
+        raise ValueError(f"FRED value is missing for {series_id}")
+    return float(value_str)
 
 
 SIGNAL_TYPES = {
@@ -170,6 +199,117 @@ SECTOR_SCANS = {
 
 class EagleEyeScanner:
     """Autonomous deal-finding machine across all capital types and sectors."""
+
+    # ------------------------------------------------------------------
+    # FRED — live rate context
+    # ------------------------------------------------------------------
+    def get_fred_market_context(self, state: str, sector: str) -> dict:
+        """
+        Pull live rate data from FRED and return a market context dict.
+        Results are cached for 15 minutes to avoid hammering the API.
+
+        Returns:
+            {
+                "ten_yr_treasury": float,
+                "mortgage_30yr":   float,
+                "cre_delinquency": float,
+                "fetched_at":      str (ISO 8601),
+            }
+        or {} on any error.
+        """
+        global _fred_cache
+        now = time.time()
+        if _fred_cache and now < _fred_cache.get("expires_at", 0):
+            return _fred_cache["data"]
+
+        api_key = os.environ.get("FRED_API_KEY", "")
+        if not api_key:
+            return {}
+
+        try:
+            ten_yr = _fetch_fred_series("DGS10", api_key)
+            mortgage_30 = _fetch_fred_series("MORTGAGE30US", api_key)
+            cre_delinq = _fetch_fred_series("DRCRLACBS", api_key)
+
+            data = {
+                "ten_yr_treasury": ten_yr,
+                "mortgage_30yr": mortgage_30,
+                "cre_delinquency": cre_delinq,
+                "fetched_at": datetime.now(timezone.utc).isoformat(),
+            }
+            _fred_cache = {"data": data, "expires_at": now + _FRED_TTL_SECONDS}
+            return data
+        except Exception:
+            return {}
+
+    # ------------------------------------------------------------------
+    # EDGAR — comparable filings search
+    # ------------------------------------------------------------------
+    def search_edgar_comparables(
+        self, sector: str, state: str, min_amount: int, max_amount: int
+    ) -> list[dict]:
+        """
+        Search EDGAR full-text for comparable filings by sector.
+
+        Returns up to 10 items:
+            [{"entity": str, "filing_date": str, "form_type": str,
+              "snippet": str, "source": "edgar"}, ...]
+        or [] on any error.
+        """
+        SECTOR_TERMS = {
+            "senior_living": '"senior living" OR "continuing care retirement"',
+            "healthcare": '"healthcare" OR "hospital" OR "medical"',
+            "multifamily": '"multifamily" OR "apartment" OR "residential"',
+            "data_centers": '"data center" OR "colocation"',
+            "industrial": '"industrial" OR "warehouse" OR "logistics"',
+        }
+        search_term = SECTOR_TERMS.get(sector, sector)
+
+        try:
+            resp = httpx.get(
+                "https://efts.sec.gov/LATEST/search-index",
+                params={
+                    "q": search_term,
+                    "forms": "S-11,424B3,1-A",
+                    "dateRange": "custom",
+                    "startdt": "2022-01-01",
+                    "enddt": "2026-06-01",
+                    "hits.hits._source.period_of_report": "true",
+                },
+                headers={"User-Agent": "NEST Advisors sean.gilmore@ardanedgecapital.com"},
+                timeout=15,
+            )
+            resp.raise_for_status()
+            body = resp.json()
+        except Exception:
+            return []
+
+        hits = body.get("hits", {}).get("hits", [])
+        results = []
+        for hit in hits[:10]:
+            src = hit.get("_source", {})
+            entity = (
+                src.get("entity_name")
+                or src.get("display_names", [""])[0]
+                or src.get("file_num", "Unknown Entity")
+            )
+            filing_date = src.get("period_of_report") or src.get("file_date", "")
+            form_type = src.get("form_type", "")
+            snippet = src.get("file_date", "") + " " + src.get("biz_location", "")
+            # richer snippet from description/excerpt if available
+            snippet = hit.get("highlight", {}).get("file_description_string", [snippet])
+            if isinstance(snippet, list):
+                snippet = " … ".join(snippet[:2])
+            results.append(
+                {
+                    "entity": str(entity),
+                    "filing_date": str(filing_date),
+                    "form_type": str(form_type),
+                    "snippet": str(snippet)[:300],
+                    "source": "edgar",
+                }
+            )
+        return results
 
     def full_scan(self, sectors: list[str] = None, markets: list[str] = None) -> dict:
         """Run a full scan across specified sectors and markets.

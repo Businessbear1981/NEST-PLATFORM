@@ -278,6 +278,8 @@ export const eagleeye = {
       method: "POST",
       body: JSON.stringify({ target }),
     }),
+  findSimilar: (deal: { borrower: string; sector: string; state: string; par_amount: number }) =>
+    nestFetch("/api/eagleeye/find-similar", { method: "POST", body: JSON.stringify(deal) }),
 };
 
 // ── Hawkeye ─────────────────────────────────────────────────

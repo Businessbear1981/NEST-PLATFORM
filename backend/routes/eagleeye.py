@@ -5,46 +5,48 @@ Pillar 1: Scans UCC filings, title reports, permits, EDGAR, market signals.
 from flask import Blueprint, jsonify, request
 from services.auth import require_auth
 from datetime import datetime
+import json
 import threading
-from services.auth import require_auth
+
+from agents._claude import complete
+from services.eagleeye_scanner import EagleEyeScanner
 
 eagleeye_bp = Blueprint("eagleeye", __name__)
 
-_signals = []
+_signals: list[dict] = []
 _scout_runs = []
 _lock = threading.Lock()
+_scanner = EagleEyeScanner()
 
-# Seed some realistic signals
-_signals = [
-    {
-        "id": "sig_1", "type": "ucc_filing", "source": "FL Secretary of State",
-        "entity": "Jacaranda Trace Holdings LLC", "amount_usd": 231_000_000,
-        "naics": "6232", "state": "FL", "county": "Ventura",
-        "detail": "UCC-1 filing — $231M blanket lien, senior living CCRC",
-        "score": 92, "status": "hot", "discoveredAt": "2026-05-10T14:22:00Z",
-    },
-    {
-        "id": "sig_2", "type": "permit", "source": "Maricopa County Permits",
-        "entity": "Meridian Cove Senior Living LLC", "amount_usd": 145_000_000,
-        "naics": "6232", "state": "AZ", "county": "Maricopa",
-        "detail": "Building permit issued — 220-unit assisted living, Phase I",
-        "score": 78, "status": "warm", "discoveredAt": "2026-05-08T09:15:00Z",
-    },
-    {
-        "id": "sig_3", "type": "edgar_filing", "source": "SEC EDGAR",
-        "entity": "Redwood Healthcare REIT", "amount_usd": 89_000_000,
-        "naics": "6231", "state": "WA", "county": "King",
-        "detail": "8-K filing — acquisition of 3 nursing care facilities",
-        "score": 65, "status": "warm", "discoveredAt": "2026-05-07T16:45:00Z",
-    },
-    {
-        "id": "sig_4", "type": "title_transfer", "source": "Orange County Recorder",
-        "entity": "Cascadia Development Partners", "amount_usd": 67_000_000,
-        "naics": "5311", "state": "CA", "county": "Orange",
-        "detail": "Title transfer — 14-acre commercial parcel, zoned mixed-use",
-        "score": 55, "status": "review", "discoveredAt": "2026-05-06T11:30:00Z",
-    },
-]
+
+def _seed_signals_from_edgar() -> None:
+    """Lazily populate _signals from EDGAR on first GET /signals request."""
+    global _signals
+    try:
+        raw = _scanner.search_edgar_comparables(
+            sector="senior_living", state="FL",
+            min_amount=25_000_000, max_amount=500_000_000
+        )
+        seeded = []
+        for i, item in enumerate(raw[:10], start=1):
+            seeded.append({
+                "id": f"sig_{i}",
+                "type": "edgar_filing",
+                "source": "SEC EDGAR",
+                "entity": item.get("entity", "Unknown"),
+                "amount_usd": 0,
+                "naics": "6232",
+                "state": "US",
+                "county": "",
+                "detail": item.get("snippet", "")[:200],
+                "score": max(10, 80 - i * 5),
+                "status": "warm",
+                "discoveredAt": item.get("filing_date", datetime.utcnow().isoformat()),
+            })
+        if seeded:
+            _signals = seeded
+    except Exception:
+        pass  # Leave _signals empty — caller handles gracefully
 
 
 def _ok(data, code=200):
@@ -61,6 +63,11 @@ def _err(msg, code=400):
 
 def list_signals():
     """All discovered deal signals, sorted by score."""
+    # Lazy seed from EDGAR on first call
+    with _lock:
+        if not _signals:
+            _seed_signals_from_edgar()
+
     status_filter = request.args.get("status")
     naics_filter = request.args.get("naics")
     with _lock:
@@ -175,6 +182,116 @@ def convert_to_deal(signal_id):
         sig["status"] = "converted"
 
     return _ok(deal_stub)
+
+
+@eagleeye_bp.route("/find-similar", methods=["POST"])
+def find_similar():
+    """
+    Find comparable transactions for a deal using EDGAR + FRED + Claude.
+
+    Body: {
+        "borrower":   str,
+        "sector":     str,   # senior_living | healthcare | multifamily | etc.
+        "state":      str,   # two-letter code
+        "par_amount": int,   # dollars
+        "naics_code": str    # optional
+    }
+    """
+    body = request.get_json() or {}
+    borrower = body.get("borrower", "").strip()
+    sector = body.get("sector", "").strip()
+    state = body.get("state", "").strip()
+    par_amount = body.get("par_amount")
+    naics_code = body.get("naics_code", "")
+
+    # Validate required fields
+    missing = [f for f, v in [("borrower", borrower), ("sector", sector),
+                               ("state", state), ("par_amount", par_amount)] if not v]
+    if missing:
+        return _err(f"Missing required fields: {', '.join(missing)}", 400)
+
+    try:
+        par_amount = int(par_amount)
+    except (TypeError, ValueError):
+        return _err("par_amount must be an integer", 400)
+
+    # 1 — EDGAR comparables
+    edgar_results = []
+    try:
+        edgar_results = _scanner.search_edgar_comparables(
+            sector=sector,
+            state=state,
+            min_amount=int(par_amount * 0.5),
+            max_amount=int(par_amount * 1.5),
+        )
+    except Exception:
+        pass
+
+    # 2 — FRED market context
+    market_ctx = {}
+    try:
+        market_ctx = _scanner.get_fred_market_context(state=state, sector=sector)
+    except Exception:
+        pass
+
+    ten_yr = market_ctx.get("ten_yr_treasury", "N/A")
+    mortgage_30 = market_ctx.get("mortgage_30yr", "N/A")
+    cre_delinq = market_ctx.get("cre_delinquency", "N/A")
+
+    # 3 — Ask Claude to rank + supplement to 5 comps
+    edgar_json = json.dumps(edgar_results, indent=2)
+    system_prompt = (
+        "You are a capital markets analyst at NEST Advisors. "
+        "Return ONLY valid JSON — no markdown fences, no commentary."
+    )
+    user_prompt = (
+        f"Given this deal:\n"
+        f"Borrower: {borrower}, Sector: {sector}, State: {state}, "
+        f"Amount: ${par_amount:,.0f}\n\n"
+        f"Market context: 10yr={ten_yr}%, 30yr mortgage={mortgage_30}%, "
+        f"CRE delinquency={cre_delinq}%\n\n"
+        f"EDGAR comparable filings found:\n{edgar_json}\n\n"
+        "Return exactly 5 comparable transactions as a JSON array. "
+        "Each item must have these keys: "
+        '"name" (str), "sector" (str), "state" (str), "amount" (int), '
+        '"similarity_score" (float 0-1), "rationale" (str, one sentence), '
+        '"source" ("edgar" or "market_intelligence"). '
+        "If fewer than 5 EDGAR results exist, supplement with market knowledge. "
+        "Sort by similarity_score descending."
+    )
+
+    comparables = []
+    try:
+        raw_response = complete(system_prompt, user_prompt, max_tokens=1024)
+        comparables = json.loads(raw_response)
+        if not isinstance(comparables, list):
+            raise ValueError("Response is not a list")
+    except Exception:
+        # Best-effort: convert EDGAR results directly
+        comparables = [
+            {
+                "name": r.get("entity", "Unknown"),
+                "sector": sector,
+                "state": state,
+                "amount": par_amount,
+                "similarity_score": 0.5,
+                "rationale": r.get("snippet", "EDGAR filing comparable."),
+                "source": "edgar",
+            }
+            for r in edgar_results[:5]
+        ]
+
+    return _ok({
+        "comparables": comparables[:5],
+        "market_context": market_ctx,
+        "query": {
+            "borrower": borrower,
+            "sector": sector,
+            "state": state,
+            "par_amount": par_amount,
+            "naics_code": naics_code,
+        },
+    })
 
 
 @eagleeye_bp.route("/ipo-readiness", methods=["POST"])

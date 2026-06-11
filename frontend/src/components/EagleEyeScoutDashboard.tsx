@@ -1,15 +1,15 @@
-import { useState, useMemo } from "react";
-import { Eye, Briefcase, Building2, Crosshair, Target, Search, Zap, MapPin, Loader2 } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Eye, Briefcase, Building2, Crosshair, Target, Search, MapPin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { trpc } from "@/lib/trpc";
+import api from "@/lib/api";
 import EagleEyeHeatMap from "./EagleEyeHeatMap";
 import EagleEyeSignalDetail from "./EagleEyeSignalDetail";
 import BullseyePitchEngine from "./BullseyePitchEngine";
 import BoxingOutTracker from "./BoxingOutTracker";
 import IPOReadinessDashboard from "./IPOReadinessDashboard";
 import {
-  DEMO_MA_SIGNALS, DEMO_CRE_SIGNALS, DEMO_BULLSEYE_PITCHES,
+  DEMO_BULLSEYE_PITCHES,
   DEMO_BOXINGOUT_PROSPECTS, DEMO_CONTENT_QUEUE,
   EagleEyeSignal, MASignal, CRESignal, STATUS_COLORS, formatMoney,
 } from "@/shared/eagleEyeDemo";
@@ -139,11 +139,49 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
   const [selectedSignalId, setSelectedSignalId] = useState<string | null>(null);
   const [isGeneratingPitch, setIsGeneratingPitch] = useState(false);
 
+  // ── Live signals state ─────────────────────────────────────────
+  const [signals, setSignals] = useState<EagleEyeSignal[]>([]);
+  const [signalsLoading, setSignalsLoading] = useState(true);
+
+  useEffect(() => {
+    api.eagleeye.signals()
+      .then((data) => {
+        const arr = Array.isArray(data) ? (data as EagleEyeSignal[]) : [];
+        setSignals(arr);
+      })
+      .catch(() => setSignals([]))
+      .finally(() => setSignalsLoading(false));
+  }, []);
+
+  // ── Find-similar state ────────────────────────────────────────
+  const [fsState, setFsState] = useState("");
+  const [fsSector, setFsSector] = useState("senior_living");
+  const [fsAmount, setFsAmount] = useState("");
+  const [fsBorrower, setFsBorrower] = useState("");
+  const [fsLoading, setFsLoading] = useState(false);
+  const [fsResults, setFsResults] = useState<unknown[]>([]);
+
+  async function handleFindSimilar() {
+    if (!fsBorrower || !fsState || !fsAmount) return;
+    setFsLoading(true);
+    setFsResults([]);
+    try {
+      const data = await api.eagleeye.findSimilar({
+        borrower: fsBorrower,
+        sector: fsSector,
+        state: fsState,
+        par_amount: Number(fsAmount) * 1_000_000,
+      });
+      setFsResults(Array.isArray(data) ? (data as unknown[]) : []);
+    } catch {
+      setFsResults([]);
+    } finally {
+      setFsLoading(false);
+    }
+  }
+
   // Combine all signals
-  const allSignals: EagleEyeSignal[] = useMemo(
-    () => [...DEMO_MA_SIGNALS, ...DEMO_CRE_SIGNALS],
-    [],
-  );
+  const allSignals: EagleEyeSignal[] = useMemo(() => signals, [signals]);
 
   // Selected signal for detail panel
   const selectedSignal = useMemo(
@@ -169,8 +207,8 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
   );
 
   const hotCount = allSignals.filter(s => s.status === "hot").length;
-  const maCount = DEMO_MA_SIGNALS.length;
-  const creCount = DEMO_CRE_SIGNALS.length;
+  const maCount = allSignals.filter(s => s.category === "ma").length;
+  const creCount = allSignals.filter(s => s.category === "cre").length;
 
   // Handlers
   function handleGeneratePitch() {
@@ -241,6 +279,91 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
         ))}
       </div>
 
+      {/* Find Similar Deals */}
+      <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 space-y-3">
+        <p className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-amber-200">Find Similar Deals</p>
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">Borrower</label>
+            <input
+              value={fsBorrower}
+              onChange={e => setFsBorrower(e.target.value)}
+              placeholder="e.g. Jacaranda Trace"
+              className="rounded-lg border border-white/10 bg-black/35 px-3 py-1.5 font-mono text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-white/25"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">State</label>
+            <input
+              value={fsState}
+              onChange={e => setFsState(e.target.value.toUpperCase().slice(0, 2))}
+              placeholder="FL"
+              className="w-16 rounded-lg border border-white/10 bg-black/35 px-3 py-1.5 font-mono text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-white/25"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">Sector</label>
+            <select
+              value={fsSector}
+              onChange={e => setFsSector(e.target.value)}
+              className="rounded-lg border border-white/10 bg-black/35 px-3 py-1.5 font-mono text-xs text-white focus:outline-none focus:border-white/25"
+            >
+              <option value="senior_living">Senior Living</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="multifamily">Multifamily</option>
+              <option value="industrial">Industrial</option>
+              <option value="data_centers">Data Centers</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">Amount ($M)</label>
+            <input
+              type="number"
+              value={fsAmount}
+              onChange={e => setFsAmount(e.target.value)}
+              placeholder="172.5"
+              className="w-24 rounded-lg border border-white/10 bg-black/35 px-3 py-1.5 font-mono text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-white/25"
+            />
+          </div>
+          <Button
+            onClick={handleFindSimilar}
+            disabled={fsLoading || !fsBorrower || !fsState || !fsAmount}
+            className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-1.5 font-mono text-[0.68rem] font-semibold uppercase text-amber-200 hover:bg-amber-400/20 disabled:opacity-40"
+          >
+            {fsLoading ? <Loader2 size={13} className="animate-spin mr-1 inline" /> : null}
+            Find Similar Deals
+          </Button>
+        </div>
+        {fsResults.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <p className="font-mono text-[0.58rem] uppercase tracking-[0.12em] text-slate-500">{fsResults.length} comparable{fsResults.length !== 1 ? "s" : ""}</p>
+            {(fsResults as Array<Record<string, unknown>>).map((comp, i) => (
+              <article key={i} className="rounded-xl border border-white/10 bg-black/35 p-3">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="font-mono text-sm font-semibold text-white">{String(comp.entity ?? comp.name ?? comp.borrower ?? "—")}</p>
+                    <p className="mt-0.5 text-[0.7rem] text-slate-400 line-clamp-2">{String(comp.description ?? comp.deal_thesis ?? "")}</p>
+                    <div className="mt-1 flex items-center gap-3 font-mono text-[0.58rem] text-slate-500">
+                      {comp.state ? <span><MapPin size={10} className="inline" /> {String(comp.state)}</span> : null}
+                      {comp.sector ? <span>{String(comp.sector)}</span> : null}
+                      {comp.naics ? <span>NAICS {String(comp.naics)}</span> : null}
+                    </div>
+                  </div>
+                  <div className="text-right space-y-1">
+                    {comp.par_amount != null && (
+                      <p className="font-mono text-base font-semibold text-amber-100">{formatMoney(Number(comp.par_amount))}</p>
+                    )}
+                    {comp.similarity_score != null && (
+                      <p className="font-mono text-[0.62rem] text-slate-400">Match: {String(comp.similarity_score)}%</p>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Main Tabs */}
       <Tabs value={mainTab} onValueChange={(v) => { setMainTab(v); setActiveState(null); }}>
         <TabsList className="w-fit rounded-xl border border-white/10 bg-black/45">
@@ -299,7 +422,11 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
             </span>
           </div>
           <div className="space-y-3">
-            {filteredSignals.map(signal => (
+            {signalsLoading ? (
+              <p className="font-mono text-[0.68rem] text-slate-500 flex items-center gap-2">
+                <Loader2 size={13} className="animate-spin" /> Loading signals...
+              </p>
+            ) : filteredSignals.map(signal => (
               <SignalCard
                 key={signal.id}
                 signal={signal}
@@ -345,7 +472,11 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
             </span>
           </div>
           <div className="space-y-3">
-            {filteredSignals.map(signal => (
+            {signalsLoading ? (
+              <p className="font-mono text-[0.68rem] text-slate-500 flex items-center gap-2">
+                <Loader2 size={13} className="animate-spin" /> Loading signals...
+              </p>
+            ) : filteredSignals.map(signal => (
               <SignalCard
                 key={signal.id}
                 signal={signal}
