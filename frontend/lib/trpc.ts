@@ -150,7 +150,7 @@ const bonds = {
   create: m(async (input: { dealId: number } & Record<string, unknown>) => {
     const { dealId, ...rest } = input;
     return fetch(
-      `${(process.env.NEXT_PUBLIC_API_URL ?? "https://backend-iota-sand-94.vercel.app") || ""}/api/deals/${dealId}/bond`,
+      `${(process.env.NEXT_PUBLIC_API_URL ?? "") || ""}/api/deals/${dealId}/bond`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -175,7 +175,7 @@ const mTargets = {
   list: q(["mTargets", "list"], async () => {
     try {
       const result = await fetch(
-        `${(process.env.NEXT_PUBLIC_API_URL ?? "https://backend-iota-sand-94.vercel.app") || ""}/api/ma/targets`,
+        `${(process.env.NEXT_PUBLIC_API_URL ?? "") || ""}/api/ma/targets`,
         { credentials: "include" },
       ).then((r) => r.json());
       if (result.success && Array.isArray(result.data)) return result.data;

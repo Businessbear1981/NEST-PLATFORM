@@ -199,15 +199,32 @@ def create_app():
 
     @app.get("/api/metrics")
     def metrics():
-        from routes.deals import _deals, _bonds, _lock
-        with _lock:
-            deal_count = len(_deals)
-            active = sum(1 for d in _deals.values() if d["status"] != "closed")
-            total_pipeline = sum(
-                d.get("project", {}).get("total_project_cost_usd", 0)
-                for d in _deals.values() if d["status"] != "closed"
-            )
-            bond_count = len(_bonds)
+        from datetime import datetime as _dt
+        try:
+            from services.database import db as _db
+            if _db and _db.configured:
+                rows = _db.select("deals") or []
+                deal_count = len(rows)
+                active = sum(1 for r in rows if r.get("status") != "closed")
+                total_pipeline = sum(float(r.get("bond_face", 0)) for r in rows if r.get("status") != "closed")
+                bond_count = sum(1 for r in rows if r.get("bond_face", 0))
+            else:
+                raise RuntimeError("no db")
+        except Exception:
+            from routes.deals import _deals, _bonds, _lock
+            with _lock:
+                deal_count = len(_deals)
+                active = sum(1 for d in _deals.values() if d["status"] != "closed")
+                total_pipeline = sum(
+                    d.get("project", {}).get("total_project_cost_usd", 0)
+                    for d in _deals.values() if d["status"] != "closed"
+                )
+                bond_count = len(_bonds)
+        try:
+            from agents.desk_registry import get_all_agents
+            agents_total = len(get_all_agents())
+        except Exception:
+            agents_total = 16
         return jsonify({
             "success": True,
             "data": {
@@ -215,10 +232,10 @@ def create_app():
                 "active_deals": active,
                 "total_pipeline_usd": total_pipeline,
                 "bond_structures": bond_count,
-                "agents_active": 16,
-                "agents_total": len(__import__("agents.desk_registry", fromlist=["get_all_agents"]).get_all_agents()),
+                "agents_active": agents_total,
+                "agents_total": agents_total,
             },
-            "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+            "timestamp": _dt.utcnow().isoformat(),
         })
 
     is_serverless = os.environ.get("VERCEL") == "1"
