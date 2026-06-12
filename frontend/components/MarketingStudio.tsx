@@ -1,7 +1,7 @@
 ﻿"use client";
 import { useEffect, useMemo, useState } from "react";
 
-const API = "";
+const API = process.env.NEXT_PUBLIC_API_URL || "";
 
 /* ── Types ── */
 type ContentType = { value: string; label: string };

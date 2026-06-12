@@ -397,6 +397,261 @@ export function PortalsPage() {
   );
 }
 
+// ─── M&A Analysis ────────────────────────────────────────────────────────────
+type MASector = { metric: string; quality: string; range: [number, number]; senior: number; total: number; cap_rate_range?: [number, number]; alt_metric?: string; alt_range?: [number, number] };
+
+export function MAAnalysisPage() {
+  const [sectors, setSectors] = useState<Record<string, MASector>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/api/intel/sectors`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setSectors(d.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const qualityBadge = (q: string) => {
+    if (q === "high") return "border-[#C4A048]/50 bg-[#C4A048]/15 text-[#C4A048]";
+    if (q === "mid") return "border-[#7A9A82]/50 bg-[#7A9A82]/10 text-[#7A9A82]";
+    return "border-white/20 bg-white/5 text-white/50";
+  };
+
+  const sectorLabel = (k: string) => k.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+  const entries = Object.entries(sectors).sort(([, a], [, b]) => {
+    const order = { high: 0, mid: 1, low: 2 };
+    return (order[a.quality as keyof typeof order] ?? 2) - (order[b.quality as keyof typeof order] ?? 2);
+  });
+
+  return (
+    <WorkbenchShell
+      icon={Target}
+      eyebrow="EagleEye Intelligence · M&A Sector Analysis"
+      title="EBITDA multiples, leverage thresholds, and deal quality by sector."
+      lede="Live sector multiples from Merlin. Senior leverage and total leverage caps derived from JP Morgan credit benchmarks. High-quality sectors carry higher senior advance capacity."
+    >
+      {loading && <p className="font-mono text-sm text-[#7A9A82] mt-4">Loading sector data…</p>}
+      {!loading && entries.length === 0 && <p className="font-mono text-sm text-[#7A9A82] mt-4">No sector data available.</p>}
+      {entries.length > 0 && (
+        <section className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {entries.map(([key, s]) => (
+            <article key={key} className="rounded-2xl border border-[#C4A048]/15 bg-[#0D2218]/80 p-4 hover:border-[#C4A048]/35 transition-colors">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-[Cormorant_Garamond] text-lg text-[#EDE8DC] leading-tight">{sectorLabel(key)}</h3>
+                <span className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-wider ${qualityBadge(s.quality)}`}>{s.quality}</span>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-2 py-2 text-center">
+                  <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">EV / {s.metric}</p>
+                  <strong className="mt-1 block font-mono text-base text-[#C4A048]">{s.range[0]}–{s.range[1]}×</strong>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-2 py-2 text-center">
+                  <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Senior</p>
+                  <strong className="mt-1 block font-mono text-base text-emerald-300">{s.senior}×</strong>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-2 py-2 text-center">
+                  <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Total</p>
+                  <strong className="mt-1 block font-mono text-base text-amber-200">{s.total}×</strong>
+                </div>
+              </div>
+              {s.cap_rate_range && (
+                <p className="mt-2 font-mono text-[0.65rem] text-[#7A9A82]">Cap rate: {s.cap_rate_range[0]}–{s.cap_rate_range[1]}%</p>
+              )}
+              {s.alt_metric && s.alt_range && (
+                <p className="mt-1 font-mono text-[0.65rem] text-[#7A9A82]">Alt: {s.alt_range[0]}–{s.alt_range[1]}× {s.alt_metric}</p>
+              )}
+            </article>
+          ))}
+        </section>
+      )}
+      <div className="mt-6 rounded-2xl border border-[#C4A048]/20 bg-[#0D2218]/60 p-4 font-mono text-xs text-[#7A9A82]">
+        JP Morgan benchmark: A-grade requires DSCR &gt; 2.0, LTV &lt; 55%, D/EBITDA &lt; 4.5 · Sub-IG flag triggered at DSCR &lt; 1.5
+      </div>
+    </WorkbenchShell>
+  );
+}
+
+// ─── Convergence Engine ───────────────────────────────────────────────────────
+type ConvergenceSignal = { id: string; entity: string; type: string; date: string; details: string; location: string; state: string };
+
+const SIGNAL_LABELS: Record<string, string> = {
+  llc_formation: "LLC Formation", land_purchase: "Land Purchase", equity_raise: "Equity Raise",
+  ucc_filing: "UCC Filing", building_permit: "Building Permit", tenant_vacancy_spike: "Vacancy Spike",
+  cmbs_maturity: "CMBS Maturity", property_listed: "Property Listed", large_wire: "Wire Transfer",
+  parent_acquisition: "Acquisition", surety_bond_filed: "Surety Bond", construction_loan_ucc: "Const. Loan",
+  "8k_filing": "SEC 8-K", tax_lien: "Tax Lien", deed_transfer: "Deed Transfer",
+  sc13d_filing: "SC 13D", merger_announcement: "Merger", officer_change: "Officer Change",
+};
+
+export function ConvergenceEnginePage() {
+  const [signals, setSignals] = useState<ConvergenceSignal[]>([]);
+  const [filter, setFilter] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/api/convergence/signals`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setSignals(d.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const isConverged = (s: ConvergenceSignal) => !s.details.includes("single occurrence");
+  const convergedEntities = new Set(signals.filter(isConverged).map(s => s.entity));
+
+  const types = Array.from(new Set(signals.map(s => s.type))).sort();
+  const shown = filter === "all" ? signals : filter === "converged" ? signals.filter(isConverged) : signals.filter(s => s.type === filter);
+
+  return (
+    <WorkbenchShell
+      icon={RadioTower}
+      eyebrow="EagleEye Intelligence · Convergence Engine"
+      title="Multi-signal entity tracking. When signals converge, deals emerge."
+      lede="Cross-referencing EMMA, SEC EDGAR, UCC filings, property records, and surety bonds. Entities with 2+ independent signals are flagged for deal origination review."
+    >
+      <div className="mt-4 flex flex-wrap gap-2 mb-4">
+        <span className="font-mono text-[0.65rem] uppercase tracking-wider text-[#7A9A82] self-center mr-1">Filter:</span>
+        {["all", "converged", ...types].map(t => (
+          <button key={t} type="button"
+            onClick={() => setFilter(t)}
+            className={`rounded-xl border px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-wider transition-colors ${filter === t ? "border-[#C4A048]/60 bg-[#C4A048]/15 text-[#C4A048]" : "border-white/15 bg-white/[0.03] text-[#7A9A82] hover:border-white/30"}`}>
+            {t === "all" ? `All (${signals.length})` : t === "converged" ? `Converged (${signals.filter(isConverged).length})` : (SIGNAL_LABELS[t] || t)}
+          </button>
+        ))}
+      </div>
+      {loading && <p className="font-mono text-sm text-[#7A9A82]">Loading signals…</p>}
+      <div className="grid gap-2">
+        {shown.map(sig => {
+          const converged = isConverged(sig);
+          const entityConverged = convergedEntities.has(sig.entity);
+          return (
+            <article key={sig.id} className={`rounded-2xl border p-3 transition-colors ${converged ? "border-[#C4A048]/35 bg-[#0D2218]/90" : "border-white/[0.06] bg-[#0D2218]/50"}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`font-[Cormorant_Garamond] text-base ${entityConverged ? "text-[#E8C87A]" : "text-[#EDE8DC]"}`}>{sig.entity}</span>
+                    {entityConverged && <span className="rounded border border-[#C4A048]/50 bg-[#C4A048]/15 px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-wider text-[#C4A048]">Convergence</span>}
+                  </div>
+                  <p className="mt-1 text-sm text-[#7A9A82] leading-snug">{sig.details}</p>
+                  <p className="mt-1 font-mono text-[0.6rem] text-white/30">{sig.location} · {sig.state} · {new Date(sig.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                </div>
+                <span className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-wider whitespace-nowrap ${converged ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-200" : "border-white/15 bg-white/[0.03] text-white/40"}`}>
+                  {SIGNAL_LABELS[sig.type] || sig.type}
+                </span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      {!loading && shown.length === 0 && <p className="font-mono text-sm text-[#7A9A82] mt-2">No signals match this filter.</p>}
+    </WorkbenchShell>
+  );
+}
+
+// ─── Pipeline Workflow ────────────────────────────────────────────────────────
+type WorkflowStage = { id: string; name: string; description: string; desk: string; gate_conditions: string[]; outputs: string[]; next: string | null };
+
+export function WorkflowPage() {
+  const [stages, setStages] = useState<WorkflowStage[]>([]);
+  const [active, setActive] = useState<string | null>(null);
+  const [pipeline, setPipeline] = useState<DashPipeline | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/api/workflow/stages`)
+      .then(r => r.json())
+      .then(d => { if (d.success) { setStages(d.data); if (d.data.length) setActive(d.data[0].id); } })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+    fetch(`${API}/api/deals/pipeline`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setPipeline(d.data); })
+      .catch(() => {});
+  }, []);
+
+  const activeStage = stages.find(s => s.id === active);
+  const deskLabel = (d: string) => d.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+  return (
+    <WorkbenchShell
+      icon={Layers3}
+      eyebrow="Deal Pipeline · Workflow Engine"
+      title="11-stage bond origination workflow from intake to ongoing surveillance."
+      lede="Each stage has defined gate conditions, desk ownership, and mandatory outputs. No stage is skipped — the deterministic backend enforces transitions."
+    >
+      {pipeline && (
+        <div className="mt-3 mb-5 flex flex-wrap gap-3">
+          {[
+            { label: "Total Pipeline", value: formatCompactCurrency(pipeline.total_pipeline_usd ?? 0) },
+            { label: "Deals Tracked", value: String(pipeline.deal_count ?? 0) },
+            ...(pipeline.by_status ? Object.entries(pipeline.by_status).map(([s, c]) => ({ label: s.charAt(0).toUpperCase() + s.slice(1), value: String(c) })) : []),
+          ].map(({ label, value }) => (
+            <div key={label} className="rounded-xl border border-[#C4A048]/20 bg-[#0D2218]/70 px-3 py-2">
+              <span className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">{label}</span>
+              <strong className="ml-2 font-mono text-sm text-[#C4A048]">{value}</strong>
+            </div>
+          ))}
+        </div>
+      )}
+      {loading && <p className="font-mono text-sm text-[#7A9A82]">Loading stages…</p>}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="grid gap-2">
+          {stages.map((s, i) => (
+            <button key={s.id} type="button"
+              onClick={() => setActive(s.id)}
+              className={`w-full rounded-2xl border p-3 text-left transition-colors ${active === s.id ? "border-[#C4A048]/50 bg-[#C4A048]/10" : "border-white/[0.06] bg-[#0D2218]/60 hover:border-[#C4A048]/25"}`}>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[0.6rem] text-[#7A9A82]">{String(i + 1).padStart(2, "0")}</span>
+                <strong className="font-[Cormorant_Garamond] text-base text-[#EDE8DC]">{s.name}</strong>
+                <span className="ml-auto font-mono text-[0.55rem] uppercase tracking-wider border border-[#7A9A82]/30 rounded px-1.5 py-0.5 text-[#7A9A82]">{deskLabel(s.desk)}</span>
+              </div>
+              <p className="mt-1 text-sm text-[#7A9A82] pl-6 leading-snug">{s.description}</p>
+            </button>
+          ))}
+        </div>
+        {activeStage && (
+          <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start sticky top-4">
+            <p className="kicker text-[#C4A048]"><Layers3 size={14} /> {deskLabel(activeStage.desk)}</p>
+            <h2 className="mt-2 font-[Cormorant_Garamond] text-2xl text-white">{activeStage.name}</h2>
+            <p className="mt-2 text-sm text-[#EDE8DC] leading-6">{activeStage.description}</p>
+            {activeStage.gate_conditions.length > 0 && (
+              <div className="mt-4">
+                <p className="font-mono text-[0.65rem] uppercase tracking-wider text-[#C4A048] mb-2">Gate Conditions</p>
+                <div className="grid gap-1">
+                  {activeStage.gate_conditions.map(g => (
+                    <span key={g} className="flex items-center gap-2 font-mono text-xs text-[#EDE8DC]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C4A048] shrink-0" />
+                      {g.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {activeStage.outputs.length > 0 && (
+              <div className="mt-4">
+                <p className="font-mono text-[0.65rem] uppercase tracking-wider text-emerald-300/70 mb-2">Stage Outputs</p>
+                <div className="grid gap-1">
+                  {activeStage.outputs.map(o => (
+                    <span key={o} className="flex items-center gap-2 font-mono text-xs text-emerald-100/70">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                      {o.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {activeStage.next && (
+              <p className="mt-4 font-mono text-[0.6rem] text-[#7A9A82]">Next stage → {stages.find(s => s.id === activeStage.next)?.name || activeStage.next}</p>
+            )}
+          </aside>
+        )}
+      </div>
+    </WorkbenchShell>
+  );
+}
+
 export function AgentsPage() {
   return (
     <WorkbenchShell
@@ -420,6 +675,198 @@ export function AgentsPage() {
           </div>
         ))}
       </section>
+    </WorkbenchShell>
+  );
+}
+
+// ─── Bond Workflow (re-uses pipeline WorkflowPage) ────────────────────────────
+export function BondWorkflowPage() { return <WorkflowPage />; }
+
+// ─── Bond Structure Analysis ──────────────────────────────────────────────────
+type StructureResult = {
+  tranches?: Array<{ name: string; amount: number; rate: number; ltc: number }>;
+  total_debt?: number; total_ltc?: number; weighted_rate?: number;
+  summary?: string; error?: string;
+};
+
+export function BondStructuringPage() {
+  const [faceAmount, setFaceAmount] = useState(50_000_000);
+  const [assetClass, setAssetClass] = useState("cre");
+  const [seniorAdv, setSeniorAdv] = useState(75);
+  const [mezzAdv, setMezzAdv] = useState(7);
+  const [seniorRate, setSeniorRate] = useState(6.75);
+  const [mezzRate, setMezzRate] = useState(11.5);
+  const [structResult, setStructResult] = useState<StructureResult | null>(null);
+  const [structLoading, setStructLoading] = useState(false);
+
+  const runStructure = async () => {
+    setStructLoading(true);
+    try {
+      const tranches = [
+        { name: "Series A Senior", amount: Math.round(faceAmount * seniorAdv / 100), rate: seniorRate, ltc: seniorAdv },
+        ...(mezzAdv > 0 ? [{ name: "Series B Mezzanine", amount: Math.round(faceAmount * mezzAdv / 100), rate: mezzRate, ltc: mezzAdv }] : []),
+      ];
+      const res = await fetch(`${API}/api/bond-structuring/structure`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deal_id: "demo", face_amount: faceAmount, asset_class: assetClass, tranches }),
+      });
+      const d = await res.json();
+      if (d.success) setStructResult(d.data); else setStructResult({ error: d.error || "Structure failed" });
+    } catch { setStructResult({ error: "Backend unreachable" }); }
+    finally { setStructLoading(false); }
+  };
+
+  const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(n);
+
+  return (
+    <WorkbenchShell icon={Landmark} eyebrow="Bond Desk · Structure Analysis"
+      title="Capital stack designer. A/B tranche sizing with JP Morgan credit benchmarks."
+      lede="Configure tranches. Backend validates DSCR floor, LTV cap, and leverage thresholds.">
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="rounded-[1.35rem] border border-[#C4A048]/25 bg-[#06101a]/90 p-5">
+          <p className="kicker text-[#C4A048]"><Landmark size={14} /> Structure inputs</p>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {([
+              ["Face ($M)", faceAmount / 1e6, 10, 500, 5, (v: number) => setFaceAmount(v * 1e6)],
+              ["Senior %", seniorAdv, 50, 78, 1, setSeniorAdv],
+              ["B Tranche %", mezzAdv, 0, 20, 1, setMezzAdv],
+              ["Senior Rate %", seniorRate, 4.0, 9.0, 0.25, setSeniorRate],
+              ["Mezz Rate %", mezzRate, 6.0, 16.0, 0.25, setMezzRate],
+            ] as const).map(([label, val, min, max, step, setter]) => (
+              <label key={label as string} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                <span className="flex justify-between font-mono text-[0.68rem] uppercase tracking-wider text-[#EDE8DC]">
+                  {label}<strong className="text-amber-200">{String(Number(val).toFixed(step < 1 ? 2 : 0))}</strong>
+                </span>
+                <input type="range" min={min} max={max} step={step} value={Number(val)} onChange={e => (setter as (v: number) => void)(Number(e.target.value))} className="mt-2 w-full accent-amber-400" />
+              </label>
+            ))}
+            <label className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+              <span className="font-mono text-[0.68rem] uppercase tracking-wider text-[#EDE8DC]">Asset Class</span>
+              <select value={assetClass} onChange={e => setAssetClass(e.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-[#030A06] px-2 py-1 font-mono text-xs text-[#EDE8DC]">
+                {["cre","multifamily","industrial","healthcare","hospitality","mixed_use"].map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-xs text-[#7A9A82]">Senior: <span className="text-[#C4A048]">{fmt(faceAmount * seniorAdv / 100)}</span></div>
+            {mezzAdv > 0 && <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-xs text-[#7A9A82]">Mezz: <span className="text-fuchsia-200">{fmt(faceAmount * mezzAdv / 100)}</span></div>}
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-xs text-[#7A9A82]">CLTV: <span className="text-amber-200">{(seniorAdv + mezzAdv).toFixed(0)}%</span></div>
+          </div>
+          <button type="button" onClick={runStructure} disabled={structLoading} className="mt-4 rounded-xl border border-[#C4A048]/40 bg-[#C4A048]/15 px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#C4A048] disabled:opacity-50">
+            {structLoading ? "Structuring…" : "Run Structure Analysis →"}
+          </button>
+        </div>
+        <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start">
+          <p className="kicker text-[#C4A048] mb-3"><ShieldCheck size={14} /> JP Morgan benchmarks</p>
+          <div className="grid gap-2 font-mono text-xs mb-4">
+            {[["A-grade","DSCR>2.0 LTV<55% D/E<4.5","text-[#C4A048]"],["BBB+","DSCR>1.75 LTV<62% D/E<5.5","text-amber-200"],["BBB-","DSCR>1.5 LTV<70% D/E<6.5","text-[#7A9A82]"],["Sub-IG","DSCR<1.5 = sub-IG","text-red-300"]].map(([g,c,col]) => (
+              <div key={g as string} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2"><span className={col as string}>{g}</span><span className="ml-2 text-white/50">{c}</span></div>
+            ))}
+          </div>
+          {structResult && !structResult.error && (
+            <>
+              <p className="kicker text-emerald-300 mb-2"><Activity size={14} /> Output</p>
+              {structResult.tranches?.map(t => (
+                <div key={t.name} className="mb-2 rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-2">
+                  <span className="font-mono text-[0.65rem] uppercase tracking-wider text-emerald-200">{t.name}</span>
+                  <div className="mt-1 flex gap-3 font-mono text-xs text-[#EDE8DC]"><span>{fmt(t.amount)}</span><span>{t.rate}%</span><span>{t.ltc}% LTC</span></div>
+                </div>
+              ))}
+              {structResult.weighted_rate !== undefined && <p className="mt-1 font-mono text-[0.65rem] text-[#7A9A82]">Wtd cost: <span className="text-[#C4A048]">{structResult.weighted_rate.toFixed(2)}%</span></p>}
+              {structResult.summary && <p className="mt-2 text-xs text-[#EDE8DC]">{structResult.summary}</p>}
+            </>
+          )}
+          {structResult?.error && <p className="mt-3 font-mono text-xs text-red-300">{structResult.error}</p>}
+        </aside>
+      </div>
+    </WorkbenchShell>
+  );
+}
+
+// ─── Bond Grade / Audit ───────────────────────────────────────────────────────
+type RatingResult = { moodys?: string; sp?: string; strategy?: string; rationale?: string; error?: string };
+
+export function BondGradeAuditPage() {
+  const [dscr, setDscr] = useState(1.85);
+  const [ltv, setLtv] = useState(62);
+  const [debtEbitda, setDebtEbitda] = useState(5.2);
+  const [icr, setIcr] = useState(2.9);
+  const [ratingResult, setRatingResult] = useState<RatingResult | null>(null);
+  const [ratingLoading, setRatingLoading] = useState(false);
+
+  const runRating = async () => {
+    setRatingLoading(true);
+    try {
+      const res = await fetch(`${API}/api/rating/dual`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dscr, ltv: ltv / 100, debt_to_ebitda: debtEbitda, icr }),
+      });
+      const d = await res.json();
+      if (d.success) setRatingResult(d.data); else setRatingResult({ error: d.error || "Rating failed" });
+    } catch { setRatingResult({ error: "Backend unreachable" }); }
+    finally { setRatingLoading(false); }
+  };
+
+  const gradeColor = (g?: string) => !g ? "text-[#7A9A82]" : g.startsWith("A") ? "text-[#C4A048]" : g[0] === "B" ? "text-amber-200" : "text-red-300";
+
+  return (
+    <WorkbenchShell icon={ShieldCheck} eyebrow="Bond Desk · Grade Audit"
+      title="Mirror Agent dual-prediction. Moody's and S&P equivalent rating from live credit metrics."
+      lede="Enter DSCR, LTV, D/EBITDA, and ICR. Mirror Agent predicts equivalent bond grades and rating strategy.">
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="rounded-[1.35rem] border border-[#C4A048]/25 bg-[#06101a]/90 p-5">
+          <p className="kicker text-[#C4A048]"><ShieldCheck size={14} /> Credit metrics</p>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {([
+              ["DSCR", dscr, 0.8, 4.0, 0.05, setDscr, "Debt Service Coverage"],
+              ["LTV %", ltv, 30, 90, 1, setLtv, "Loan to Value"],
+              ["D/EBITDA", debtEbitda, 1.0, 10.0, 0.1, setDebtEbitda, "Debt / EBITDA"],
+              ["ICR", icr, 1.0, 6.0, 0.05, setIcr, "Interest Coverage"],
+            ] as const).map(([label, val, min, max, step, setter, full]) => (
+              <label key={label as string} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                <span className="flex justify-between font-mono text-[0.68rem] uppercase tracking-wider text-[#EDE8DC]">
+                  {label}<strong className="text-amber-200">{Number(val).toFixed(step < 1 ? 2 : 0)}</strong>
+                </span>
+                <p className="font-mono text-[0.55rem] text-white/30 mb-1">{full}</p>
+                <input type="range" min={min} max={max} step={step} value={Number(val)} onChange={e => (setter as (v: number) => void)(Number(e.target.value))} className="w-full accent-amber-400" />
+              </label>
+            ))}
+          </div>
+          <button type="button" onClick={runRating} disabled={ratingLoading} className="mt-4 rounded-xl border border-[#C4A048]/40 bg-[#C4A048]/15 px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#C4A048] disabled:opacity-50">
+            {ratingLoading ? "Running Mirror Agent…" : "Run Rating Prediction →"}
+          </button>
+        </div>
+        <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start">
+          {ratingResult && !ratingResult.error ? (
+            <>
+              <p className="kicker text-[#C4A048] mb-3"><Target size={14} /> Mirror Agent prediction</p>
+              <div className="grid gap-2">
+                <div className="rounded-xl border border-[#C4A048]/25 bg-[#C4A048]/10 p-3 text-center">
+                  <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Moody's Equivalent</p>
+                  <strong className={`mt-1 block font-mono text-3xl ${gradeColor(ratingResult.moodys)}`}>{ratingResult.moodys || "—"}</strong>
+                </div>
+                <div className="rounded-xl border border-[#C4A048]/25 bg-[#C4A048]/10 p-3 text-center">
+                  <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">S&P Equivalent</p>
+                  <strong className={`mt-1 block font-mono text-3xl ${gradeColor(ratingResult.sp)}`}>{ratingResult.sp || "—"}</strong>
+                </div>
+              </div>
+              {ratingResult.strategy && <p className="mt-3 rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-2 font-mono text-xs text-emerald-100">{ratingResult.strategy}</p>}
+              {ratingResult.rationale && <p className="mt-2 text-sm text-[#EDE8DC]">{ratingResult.rationale}</p>}
+            </>
+          ) : ratingResult?.error ? (
+            <p className="font-mono text-xs text-red-300">{ratingResult.error}</p>
+          ) : (
+            <>
+              <p className="kicker text-[#C4A048] mb-3"><ShieldCheck size={14} /> JP Morgan thresholds</p>
+              <div className="grid gap-2 font-mono text-xs">
+                {[["A-grade","DSCR 2.0 LTV 55% D/E 4.5 ICR 3.5"],["BBB+","DSCR 1.75 LTV 62% D/E 5.5 ICR 2.75"],["BBB-","DSCR 1.5 LTV 70% D/E 6.5 ICR 2.25"]].map(([g,t]) => (
+                  <div key={g} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2"><span className="text-[#C4A048]">{g}</span><span className="ml-2 text-white/50">{t}</span></div>
+                ))}
+              </div>
+            </>
+          )}
+        </aside>
+      </div>
     </WorkbenchShell>
   );
 }

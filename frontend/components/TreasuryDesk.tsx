@@ -116,7 +116,7 @@ interface Overview {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-const API = "/api/treasury";
+const API = (process.env.NEXT_PUBLIC_API_URL || "") + "/api/treasury";
 
 async function fetchData<T>(path: string): Promise<T | null> {
   try {

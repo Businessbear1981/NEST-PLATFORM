@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Bond Grade / Audit" silo="Bond Desk / ALADDIN" api="/api/bond-tools" status="shell" />;
-}
+"use client";
+import { BondGradeAuditPage } from "@/components/WorkbenchPages";
+export default function Page() { return <BondGradeAuditPage />; }

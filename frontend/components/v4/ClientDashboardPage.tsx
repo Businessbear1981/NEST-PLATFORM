@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const API = "";
+const API = process.env.NEXT_PUBLIC_API_URL || "";
 
 export default function ClientDashboardPage() {
   const [dealId] = useState("jacaranda-2026");

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Convergence Engine" silo="EagleEye Intelligence" api="/api/convergence" status="shell" />;
-}
+"use client";
+import { ConvergenceEnginePage } from "@/components/WorkbenchPages";
+export default function Page() { return <ConvergenceEnginePage />; }

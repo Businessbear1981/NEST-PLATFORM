@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Pipeline Workflow" silo="Deal Pipeline" api="/api/workflow" status="shell" />;
-}
+"use client";
+import { WorkflowPage } from "@/components/WorkbenchPages";
+export default function Page() { return <WorkflowPage />; }

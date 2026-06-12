@@ -91,7 +91,7 @@ interface WarchestEconomics {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-const API = "/api/phoenix";
+const API = (process.env.NEXT_PUBLIC_API_URL || "") + "/api/phoenix";
 
 async function fetchData<T>(path: string): Promise<T | null> {
   try {
