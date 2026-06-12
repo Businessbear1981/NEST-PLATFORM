@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Building2, MapPin, RefreshCw, ArrowRight, Zap, ChevronDown, ChevronUp } from "lucide-react";
@@ -134,7 +135,7 @@ export default function EagleEyeMATab() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/eagleeye/ma-scan", {
+      const res = await fetch(`${_API}/api/eagleeye/ma-scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

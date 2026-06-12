@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 import { useRouter } from "next/navigation";
 /**
  * Deal Input — Simple intake to create the deal vehicle.
@@ -213,7 +214,7 @@ export default function DealInputPage() {
     try {
       // Create the deal record. ADR-0002: this is the SINGLE insertion point
       // for the `deals` table — EagleEye never inserts directly.
-      const res = await fetch("/api/deals", {
+      const res = await fetch(`${_API}/api/deals`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -239,7 +240,7 @@ export default function DealInputPage() {
         setDealId(newId);
 
         // Initialize in workflow pipeline (existing behavior preserved).
-        await fetch("/api/workflow/init", {
+        await fetch(`${_API}/api/workflow/init`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

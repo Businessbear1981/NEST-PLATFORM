@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * Surveillance Desk — Portfolio monitoring, refunding identification,
  * risk re-rating, restructuring, workouts.
@@ -19,8 +20,8 @@ export default function SurveillancePage() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      fetch("/api/surveillance/refunding").then(r => r.json()),
-      fetch("/api/surveillance/alerts").then(r => r.json()),
+      fetch(`${_API}/api/surveillance/refunding`).then(r => r.json()),
+      fetch(`${_API}/api/surveillance/alerts`).then(r => r.json()),
     ])
       .then(([ref, alrt]) => {
         if (ref.success) setRefunding(ref.data.candidates || []);

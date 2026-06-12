@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * Construction Risk Management Desk — 12 agents
  * Draw processing, budget tracking, schedule monitoring, change orders.
@@ -23,7 +24,7 @@ export default function ConstructionPage() {
 
   // Load deal list
   useEffect(() => {
-    fetch("/api/deals")
+    fetch(`${_API}/api/deals`)
       .then(r => r.json())
       .then(d => {
         const list = d.data?.deals || d.data || [];

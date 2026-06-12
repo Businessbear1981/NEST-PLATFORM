@@ -1,4 +1,5 @@
 "use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * NISLE Dashboard — NEST Intelligence Self-Learning Engine
  *
@@ -213,7 +214,7 @@ export default function NISTLEDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/nisle/run", {
+      const res = await fetch(`${_API}/api/nisle/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

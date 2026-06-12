@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -861,7 +862,7 @@ function FindSimilarPanel() {
 
   // Auto-load the EagleEye operator learning loop on mount → live pipeline aggregate
   useEffect(() => {
-    fetch("/api/eagleeye/operators/learning-loop", {
+    fetch(`${_API}/api/eagleeye/operators/learning-loop`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ docs: [] }),
@@ -875,7 +876,7 @@ function FindSimilarPanel() {
   async function runFindSimilar() {
     setFindLoading(true);
     try {
-      const r = await fetch("/api/bernard/find-similar", {
+      const r = await fetch(`${_API}/api/bernard/find-similar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,4 +1,5 @@
 "use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, AlertCircle, CheckCircle } from 'lucide-react';
@@ -68,7 +69,7 @@ export function AnimatedBondDesk() {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        const res = await fetch("/api/market/rates/live");
+        const res = await fetch(`${_API}/api/market/rates/live`);
         const json = await res.json();
         if (json.success && json.data?.rates) {
           const r = json.data.rates;

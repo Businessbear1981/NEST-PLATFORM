@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * Treasury Desk — Ramp P-Card Program, construction draws, soft costs,
  * arrangement fees, T&E, 1.5% interchange rebate.
@@ -18,7 +19,7 @@ export default function TreasuryPage() {
 
   // Load deal list on mount
   useEffect(() => {
-    fetch("/api/deals")
+    fetch(`${_API}/api/deals`)
       .then(r => r.json())
       .then(d => {
         const list = d.data?.deals || d.data || [];

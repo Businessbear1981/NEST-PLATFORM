@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 import Link from "next/link";
 /**
  * Active Deals — master view of all deals with pipeline status.
@@ -37,7 +38,7 @@ export default function DealsPage() {
 
   useEffect(() => {
     // Load seed deals from EMMA + any real deals
-    fetch("/api/deal-flow/seed-deals").then(r => r.json()).then(d => {
+    fetch(`${_API}/api/deal-flow/seed-deals`).then(r => r.json()).then(d => {
       if (d.success) setDeals(d.data);
     }).catch(() => {});
   }, []);
@@ -46,7 +47,7 @@ export default function DealsPage() {
     setRunning(true);
     setSelectedDeal(deal);
     try {
-      const res = await fetch("/api/deal-flow/run", {
+      const res = await fetch(`${_API}/api/deal-flow/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(deal),

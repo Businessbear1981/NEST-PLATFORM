@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * Licensing Study — Series 50 / 54 / 7 / 24/63 curriculum + progress.
  *
@@ -137,7 +138,7 @@ export default function StudyPage() {
   async function markSection(sectionId: string, status: Status) {
     setLoading(true);
     try {
-      const res = await fetch("/api/study/progress", {
+      const res = await fetch(`${_API}/api/study/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

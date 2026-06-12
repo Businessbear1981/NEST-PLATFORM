@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+const _API = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * EMMA — MSRB Electronic Municipal Market Access.
  * Muni bond corpus, comparable transactions, sector templates, parsing.
@@ -148,7 +149,7 @@ export default function EMMAPage() {
 
   // Load stats on mount + auto-load CCRC comps as starting state
   useEffect(() => {
-    fetch("/api/emma/stats").then(r => r.json()).then(d => { if (d.success) setStats(d.data); }).catch(() => {});
+    fetch(`${_API}/api/emma/stats`).then(r => r.json()).then(d => { if (d.success) setStats(d.data); }).catch(() => {});
     runComps("senior_living", "", "", "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
