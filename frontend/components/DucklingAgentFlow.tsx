@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Zap, CheckCircle2, Loader2 } from "lucide-react";
@@ -160,7 +160,7 @@ export default function DucklingAgentFlow({ autoRun }: { autoRun?: boolean }) {
           <p className="mt-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-amber-200">
             {beeksActive ? "ALL SYSTEMS ONLINE" : isRunning ? "POWERING UP..." : "MR. BEEKS"}
           </p>
-          <p className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-slate-500">
+          <p className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-[#7A9A82]">
             {completedCount}/{agents.length} agents active
           </p>
         </div>
@@ -182,11 +182,11 @@ export default function DucklingAgentFlow({ autoRun }: { autoRun?: boolean }) {
 
       {/* Status bar */}
       <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.035] px-4 py-2">
-        <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-slate-400">
+        <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-[#7A9A82]">
           {completedCount}/{agents.length} agents powered
         </span>
         <span className={`font-mono text-[0.62rem] font-semibold uppercase ${
-          allDone ? "text-emerald-200" : isRunning ? "text-amber-200" : "text-slate-500"
+          allDone ? "text-emerald-200" : isRunning ? "text-amber-200" : "text-[#7A9A82]"
         }`}>
           {allDone ? "🦆 All Ducklings Online" : isRunning ? "Feeding Mr. Beeks..." : "Ready to Ignite"}
         </span>
@@ -218,7 +218,7 @@ function AgentChip({ agent, idx }: { agent: AgentNode; idx: number }) {
       </motion.span>
       <div>
         <p className="font-mono text-[0.58rem] font-semibold uppercase leading-none text-white">{agent.name}</p>
-        <p className="font-mono text-[0.46rem] uppercase leading-none text-slate-400">{agent.role}</p>
+        <p className="font-mono text-[0.46rem] uppercase leading-none text-[#7A9A82]">{agent.role}</p>
       </div>
       <div className="ml-1">
         {isActive && <Loader2 size={10} className="animate-spin text-white" />}

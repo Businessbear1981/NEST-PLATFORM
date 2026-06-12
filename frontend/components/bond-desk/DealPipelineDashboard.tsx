@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDealState, type Deal } from "@/contexts/DealStateContext";
@@ -21,7 +21,7 @@ interface PipelineDeal {
 }
 
 const PHASES: { key: Deal["phase"]; label: string; color: string; glow: string }[] = [
-  { key: "sourcing", label: "Sourcing", color: "border-slate-500/30 bg-slate-500/[0.06]", glow: "bg-slate-400" },
+  { key: "sourcing", label: "Sourcing", color: "border-[#2D6B3D]/30 bg-[#2D6B3D]/[0.06]", glow: "bg-[#7A9A82]" },
   { key: "structuring", label: "Structuring", color: "border-[#C4A048]/30 bg-cyan-500/[0.06]", glow: "bg-cyan-400" },
   { key: "placement", label: "Placement", color: "border-amber-500/30 bg-amber-500/[0.06]", glow: "bg-amber-400" },
   { key: "closing", label: "Closing", color: "border-emerald-500/30 bg-emerald-500/[0.06]", glow: "bg-emerald-400" },
@@ -109,10 +109,10 @@ export default function DealPipelineDashboard() {
         className="flex w-full items-center justify-between px-5 py-3 transition-colors hover:bg-white/[0.02]"
       >
         <div className="flex items-center gap-4">
-          <h2 className="font-[Cormorant_Garamond] text-lg font-semibold text-slate-200">
+          <h2 className="font-[Cormorant_Garamond] text-lg font-semibold text-[#EDE8DC]">
             Deal Pipeline
           </h2>
-          <div className="flex items-center gap-3 font-mono text-[0.6rem] text-slate-500">
+          <div className="flex items-center gap-3 font-mono text-[0.6rem] text-[#7A9A82]">
             <span>{pipeline.length} deals</span>
             <span>·</span>
             <span className="text-[#C4A048]">${(totalPipeline / 1e6).toFixed(0)}M total</span>
@@ -128,7 +128,7 @@ export default function DealPipelineDashboard() {
             })}
           </div>
         </div>
-        <span className="font-mono text-xs text-slate-600">{collapsed ? "▸" : "▾"}</span>
+        <span className="font-mono text-xs text-[#7A9A82]">{collapsed ? "▸" : "▾"}</span>
       </button>
 
       {/* Pipeline Kanban */}
@@ -149,10 +149,10 @@ export default function DealPipelineDashboard() {
                     {/* Phase Header */}
                     <div className="flex items-center gap-2 py-1">
                       <div className={`h-2 w-2 rounded-full ${phase.glow}`} />
-                      <span className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-400">
+                      <span className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
                         {phase.label}
                       </span>
-                      <span className="font-mono text-[0.55rem] text-slate-600">({deals.length})</span>
+                      <span className="font-mono text-[0.55rem] text-[#7A9A82]">({deals.length})</span>
                     </div>
 
                     {/* Deal Cards */}
@@ -164,16 +164,16 @@ export default function DealPipelineDashboard() {
                         className={`w-full rounded-xl border p-3 text-left transition-all hover:scale-[1.02] hover:shadow-lg ${phase.color}`}
                       >
                         <div className="flex items-start justify-between">
-                          <span className="font-[Space_Grotesk] text-[0.8rem] font-medium text-slate-200 leading-tight">
+                          <span className="font-[Space_Grotesk] text-[0.8rem] font-medium text-[#EDE8DC] leading-tight">
                             {deal.name}
                           </span>
                           {deal.grade && (
-                            <span className={`font-mono text-[0.6rem] font-semibold ${GRADE_COLORS[deal.grade] ?? "text-slate-400"}`}>
+                            <span className={`font-mono text-[0.6rem] font-semibold ${GRADE_COLORS[deal.grade] ?? "text-[#7A9A82]"}`}>
                               {deal.grade}
                             </span>
                           )}
                         </div>
-                        <div className="mt-1 font-mono text-[0.55rem] text-slate-500">
+                        <div className="mt-1 font-mono text-[0.55rem] text-[#7A9A82]">
                           {deal.sponsor} · ${(deal.total_project_cost_usd / 1e6).toFixed(0)}M
                         </div>
                         {deal.dscr && (
@@ -184,14 +184,14 @@ export default function DealPipelineDashboard() {
                         {deal.assignedPartners && deal.assignedPartners.length > 0 && (
                           <div className="mt-1.5 flex flex-wrap gap-1">
                             {deal.assignedPartners.map((p) => (
-                              <span key={p} className="rounded-full border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[0.45rem] text-slate-400">
+                              <span key={p} className="rounded-full border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[0.45rem] text-[#7A9A82]">
                                 {p}
                               </span>
                             ))}
                           </div>
                         )}
                         {deal.lastActivity && (
-                          <div className="mt-1.5 font-mono text-[0.5rem] text-slate-600 italic">
+                          <div className="mt-1.5 font-mono text-[0.5rem] text-[#7A9A82] italic">
                             {deal.lastActivity}
                           </div>
                         )}
@@ -199,7 +199,7 @@ export default function DealPipelineDashboard() {
                     ))}
 
                     {deals.length === 0 && (
-                      <div className="rounded-xl border border-dashed border-white/[0.06] py-6 text-center font-mono text-[0.55rem] text-slate-700">
+                      <div className="rounded-xl border border-dashed border-white/[0.06] py-6 text-center font-mono text-[0.55rem] text-[#2D6B3D]">
                         No deals
                       </div>
                     )}

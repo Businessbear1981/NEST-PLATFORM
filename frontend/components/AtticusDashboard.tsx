@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, Scale, FileText, AlertTriangle, CheckCircle2, Shield, BookOpen, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -76,10 +76,10 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
             <Gavel size={17} /> Atticus — In-House Counsel
           </div>
-          <p className="mt-1 text-sm text-slate-400">Legal compliance, covenant monitoring, and bond counsel coordination.</p>
+          <p className="mt-1 text-sm text-[#7A9A82]">Legal compliance, covenant monitoring, and bond counsel coordination.</p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Legal Readiness</p>
+          <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Legal Readiness</p>
           <p className={`font-mono text-2xl font-bold ${readinessPct >= 80 ? "text-emerald-200" : readinessPct >= 50 ? "text-amber-200" : "text-red-200"}`}>
             {readinessPct}%
           </p>
@@ -96,14 +96,14 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
         {/* Compliance Checklist */}
         <TabsContent value="compliance" className="space-y-4 mt-4">
           <div className="flex items-center justify-between">
-            <p className="font-mono text-sm text-slate-400">
+            <p className="font-mono text-sm text-[#7A9A82]">
               {completed}/{checklist.length} items · {requiredComplete}/{required} required
             </p>
           </div>
 
           {categories.map((cat) => (
             <div key={cat}>
-              <h4 className="mb-2 flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-slate-400">
+              <h4 className="mb-2 flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#7A9A82]">
                 <Shield size={12} /> {cat}
               </h4>
               <div className="space-y-1">
@@ -116,9 +116,9 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
                     {item.completed ? (
                       <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />
                     ) : (
-                      <div className={`h-4 w-4 shrink-0 rounded-full border ${item.required ? "border-amber-300/50" : "border-slate-600"}`} />
+                      <div className={`h-4 w-4 shrink-0 rounded-full border ${item.required ? "border-amber-300/50" : "border-[#1E4A2E]"}`} />
                     )}
-                    <span className={`font-mono text-sm ${item.completed ? "text-slate-500 line-through" : "text-white"}`}>
+                    <span className={`font-mono text-sm ${item.completed ? "text-[#7A9A82] line-through" : "text-white"}`}>
                       {item.item}
                     </span>
                     {item.required && !item.completed && (
@@ -143,18 +143,18 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
             <>
               <div className="flex gap-3">
                 <div className={`rounded-xl border p-3 text-center ${(covenantMutation.data as any).overall_status === "compliant" ? "border-emerald-300/30 bg-emerald-400/10" : "border-red-400/30 bg-red-500/10"}`}>
-                  <p className="font-mono text-[0.56rem] uppercase text-slate-400">Status</p>
+                  <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">Status</p>
                   <p className={`font-mono text-lg font-bold uppercase ${(covenantMutation.data as any).overall_status === "compliant" ? "text-emerald-200" : "text-red-200"}`}>
                     {(covenantMutation.data as any).overall_status}
                   </p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-                  <p className="font-mono text-[0.56rem] uppercase text-slate-400">Compliant</p>
+                  <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">Compliant</p>
                   <p className="font-mono text-lg font-bold text-emerald-200">{(covenantMutation.data as any).compliant}/{(covenantMutation.data as any).total}</p>
                 </div>
                 {(covenantMutation.data as any).breaches > 0 && (
                   <div className="rounded-xl border border-red-400/30 bg-red-500/10 p-3 text-center">
-                    <p className="font-mono text-[0.56rem] uppercase text-slate-400">Breaches</p>
+                    <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">Breaches</p>
                     <p className="font-mono text-lg font-bold text-red-200">{(covenantMutation.data as any).breaches}</p>
                   </div>
                 )}
@@ -168,7 +168,7 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
                       <span className="font-mono text-sm text-white">{cov.name}</span>
                     </div>
                     <div className="flex items-center gap-4 font-mono text-sm">
-                      <span className="text-slate-400">{cov.type === "minimum" ? "Min" : "Max"}: {cov.threshold}</span>
+                      <span className="text-[#7A9A82]">{cov.type === "minimum" ? "Min" : "Max"}: {cov.threshold}</span>
                       <span className={cov.compliant ? "text-emerald-200" : "text-red-200"}>Current: {cov.current}</span>
                       <span className={`font-semibold ${cov.headroom >= 0 ? "text-emerald-300" : "text-red-300"}`}>
                         Headroom: {cov.headroom >= 0 ? "+" : ""}{cov.headroom.toFixed(2)}
@@ -193,7 +193,7 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
               <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
                 <BookOpen size={14} /> AI Legal Opinion
               </div>
-              <div className="mt-3 whitespace-pre-wrap font-mono text-sm leading-7 text-slate-300">
+              <div className="mt-3 whitespace-pre-wrap font-mono text-sm leading-7 text-[#EDE8DC]">
                 {(legalMemoMutation.data as any).content}
               </div>
             </div>

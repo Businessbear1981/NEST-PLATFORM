@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Eye, Building2, TrendingUp } from "lucide-react";
 import EagleEyeV2 from "./EagleEyeV2";
@@ -37,13 +37,13 @@ export default function EagleEyeMain() {
                 <div className="flex items-center gap-2">
                   <Icon
                     size={14}
-                    className={isActive ? "text-[#C4A048]" : "text-slate-500"}
+                    className={isActive ? "text-[#C4A048]" : "text-[#7A9A82]"}
                   />
                   <div className="min-w-0">
-                    <div className={`text-[0.78rem] font-semibold leading-tight ${isActive ? "text-[#C4A048]" : "text-slate-400"}`}>
+                    <div className={`text-[0.78rem] font-semibold leading-tight ${isActive ? "text-[#C4A048]" : "text-[#7A9A82]"}`}>
                       {tab.label}
                     </div>
-                    <div className="font-mono text-[0.58rem] text-slate-600 truncate mt-0.5">{tab.sub}</div>
+                    <div className="font-mono text-[0.58rem] text-[#7A9A82] truncate mt-0.5">{tab.sub}</div>
                   </div>
                 </div>
               </button>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, FileCheck2, Shield, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -277,7 +277,7 @@ export function KYCCompliance() {
         </div>
         <div className="grid gap-2">
           {auditLog.map((item, index) => (
-            <p key={`${item}-${index}`} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-slate-300">
+            <p key={`${item}-${index}`} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-[#EDE8DC]">
               {item}
             </p>
           ))}

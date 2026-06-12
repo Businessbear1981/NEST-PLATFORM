@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import React, { useState } from 'react';
 import { AlertCircle, BadgeDollarSign, CheckCircle, Clock, FileCheck, Layers3, Send, ShieldCheck } from 'lucide-react';
@@ -187,7 +187,7 @@ export function CompleteSuretyModule() {
 
   return (
     <div className="space-y-6" data-testid="complete-surety-module">
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#061018] p-5 text-slate-100 shadow-[0_0_85px_rgba(196,160,72,0.11)] sm:p-7" data-testid="surety-command-hero">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#061018] p-5 text-[#EDE8DC] shadow-[0_0_85px_rgba(196,160,72,0.11)] sm:p-7" data-testid="surety-command-hero">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.17),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(16,185,129,0.15),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
@@ -197,11 +197,11 @@ export function CompleteSuretyModule() {
             <h1 className="mt-4 flex items-center gap-2 text-3xl font-black tracking-tight text-white sm:text-5xl">
               <FileCheck className="h-9 w-9 text-[#C4A048]" /> Insurance & Surety Command
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#EDE8DC] sm:text-base">
               Insurance and surety are core NEST infrastructure, not a side panel. This command room manages underwriting gaps, carrier capacity, coverage evidence, surety wrap economics, quote negotiation, and the approval gates that determine whether a bond can move into sales distribution.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/bond-offerings" className="inline-flex items-center rounded-xl bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
+              <Link href="/bond-offerings" className="inline-flex items-center rounded-xl bg-cyan-300 px-4 py-2 text-sm font-semibold text-[#030A06] transition hover:bg-cyan-200">
                 <BadgeDollarSign className="mr-2 h-4 w-4" /> Send cleared bond to offering desk
               </Link>
               <button type="button" onClick={() => setActiveTab('packet')} className="inline-flex items-center rounded-xl border border-emerald-300/35 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-400/15">
@@ -216,11 +216,11 @@ export function CompleteSuretyModule() {
               ['Critical gaps', gaps.filter((gap) => gap.severity === 'critical' && gap.status !== 'resolved').length.toString(), 'must clear before launch'],
               ['Premium corridor', '0.5% - 1.5%', 'modeled provider range'],
             ].map(([label, value, detail]) => (
-              <Card key={label} className="border-white/10 bg-white/[0.045] text-slate-100 shadow-none">
+              <Card key={label} className="border-white/10 bg-white/[0.045] text-[#EDE8DC] shadow-none">
                 <CardContent className="p-4">
-                  <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-slate-400">{label}</p>
+                  <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-[#7A9A82]">{label}</p>
                   <p className="mt-2 text-2xl font-black text-white">{value}</p>
-                  <p className="mt-1 text-xs text-slate-400">{detail}</p>
+                  <p className="mt-1 text-xs text-[#7A9A82]">{detail}</p>
                 </CardContent>
               </Card>
             ))}
@@ -230,10 +230,10 @@ export function CompleteSuretyModule() {
 
       <div className="grid gap-3 md:grid-cols-4" aria-label="Insurance and surety command rails">
         {suretyCommandRails.map(([stage, description]) => (
-          <Card key={stage} className="border-[#C4A048]/20 bg-slate-950/80 text-slate-100">
+          <Card key={stage} className="border-[#C4A048]/20 bg-black/80 text-[#EDE8DC]">
             <CardContent className="p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C4A048]">{stage}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">{description}</p>
+              <p className="mt-2 text-xs leading-5 text-[#7A9A82]">{description}</p>
             </CardContent>
           </Card>
         ))}
@@ -241,19 +241,19 @@ export function CompleteSuretyModule() {
 
       <div className="grid gap-3 md:grid-cols-3" aria-label="Three Cs underwriting scorecard">
         {threeCsScore.map(([label, score, detail]) => (
-          <Card key={label} className="border-emerald-300/20 bg-slate-950/80 text-slate-100">
+          <Card key={label} className="border-emerald-300/20 bg-black/80 text-[#EDE8DC]">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="font-mono text-[0.66rem] uppercase tracking-[0.18em] text-emerald-200">{label}</p>
                 <p className="text-lg font-black text-white">{score}</p>
               </div>
-              <p className="mt-2 text-xs leading-5 text-slate-400">{detail}</p>
+              <p className="mt-2 text-xs leading-5 text-[#7A9A82]">{detail}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="border-amber-300/25 bg-amber-400/10 text-slate-100" data-testid="lc-surety-comparison">
+      <Card className="border-amber-300/25 bg-amber-400/10 text-[#EDE8DC]" data-testid="lc-surety-comparison">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-100">
             <BadgeDollarSign className="h-5 w-5" /> LC / surety / insurance economics
@@ -264,7 +264,7 @@ export function CompleteSuretyModule() {
             <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <p className="font-semibold text-white">{title}</p>
               <p className="mt-1 font-mono text-xs uppercase tracking-[0.12em] text-amber-200">{economics}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-300">{detail}</p>
+              <p className="mt-2 text-xs leading-5 text-[#EDE8DC]">{detail}</p>
             </div>
           ))}
         </CardContent>
@@ -277,7 +277,7 @@ export function CompleteSuretyModule() {
           ['Carrier submission', 'Provider quote requests create tracked carrier-submission records.'],
           ['Approval workflow', 'Risk, pricing, rating enhancement, carrier exclusions, parametric trigger language, and final approval gates remain visible before release.'],
         ].map(([stage, description]) => (
-          <Card key={stage} className="border-slate-700 bg-slate-900/70">
+          <Card key={stage} className="border-[#1E4A2E] bg-[#030A06]/70">
             <CardContent className="p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C4A048]">{stage}</p>
               <p className="mt-2 text-xs leading-5 text-muted-foreground">{description}</p>
@@ -305,7 +305,7 @@ export function CompleteSuretyModule() {
         <TabsContent value="providers" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {providers.map((provider) => (
-              <Card key={provider.id} className="border-slate-700 hover:border-[#C4A048]/50 transition-all">
+              <Card key={provider.id} className="border-[#1E4A2E] hover:border-[#C4A048]/50 transition-all">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -336,7 +336,7 @@ export function CompleteSuretyModule() {
                     <p className="text-xs text-muted-foreground mb-2">Specialties</p>
                     <div className="flex flex-wrap gap-1">
                       {provider.specialties.map((spec, i) => (
-                        <span key={i} className="text-xs bg-slate-700 px-2 py-1 rounded text-[#C4A048]">
+                        <span key={i} className="text-xs bg-[#1E4A2E] px-2 py-1 rounded text-[#C4A048]">
                           {spec}
                         </span>
                       ))}
@@ -376,7 +376,7 @@ export function CompleteSuretyModule() {
         </TabsContent>
       </Tabs>
 
-      <Card className="border-emerald-300/25 bg-emerald-400/10 text-slate-100" data-testid="surety-offering-handoff">
+      <Card className="border-emerald-300/25 bg-emerald-400/10 text-[#EDE8DC]" data-testid="surety-offering-handoff">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-emerald-100">
             <Send className="h-5 w-5" /> Surety-to-offering handoff
@@ -386,7 +386,7 @@ export function CompleteSuretyModule() {
           {offeringHandoffs.map(([title, detail]) => (
             <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <p className="font-semibold text-white">{title}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-300">{detail}</p>
+              <p className="mt-2 text-xs leading-5 text-[#EDE8DC]">{detail}</p>
             </div>
           ))}
         </CardContent>

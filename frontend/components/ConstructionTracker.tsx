@@ -1,4 +1,4 @@
-/*
+﻿/*
 Design philosophy: Bloomberg Terminal x Spider-Verse institutional command cockpit.
 Construction Tracker monitors project milestones, permits, inspections, and schedule variance.
 */
@@ -33,7 +33,7 @@ export interface ConstructionTrackerProps {
 
 function getScheduleStatus(daysAhead: number): { color: string; label: string } {
   if (daysAhead > 0) return { color: "text-emerald-400", label: "Ahead" };
-  if (daysAhead === 0) return { color: "text-slate-400", label: "On track" };
+  if (daysAhead === 0) return { color: "text-[#7A9A82]", label: "On track" };
   if (daysAhead > -10) return { color: "text-yellow-400", label: "Slightly behind" };
   return { color: "text-red-400", label: "Behind schedule" };
 }
@@ -41,7 +41,7 @@ function getScheduleStatus(daysAhead: number): { color: string; label: string } 
 function getVarianceClass(variance: number): string {
   if (variance > 0) return "text-red-400"; // Over budget
   if (variance < 0) return "text-emerald-400"; // Under budget
-  return "text-slate-400"; // On budget
+  return "text-[#7A9A82]"; // On budget
 }
 
 export default function ConstructionTracker({
@@ -62,13 +62,13 @@ export default function ConstructionTracker({
       <div className="construction-metrics-grid">
         <Card className="construction-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Overall Progress</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Overall Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-3xl font-bold text-[#C4A048]">{totalProgress}%</p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-[#7A9A82] mt-1">
                   {milestones.filter((m) => m.percentComplete === 100).length} / {milestones.length} complete
                 </p>
               </div>
@@ -79,7 +79,7 @@ export default function ConstructionTracker({
 
         <Card className="construction-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Schedule Status</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Schedule Status</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
@@ -87,7 +87,7 @@ export default function ConstructionTracker({
                 <p className={`text-3xl font-bold ${behindSchedule === 0 ? "text-emerald-400" : "text-red-400"}`}>
                   {behindSchedule === 0 ? "On track" : `${behindSchedule} behind`}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">Critical path: {criticalPathMilestones.length} milestones</p>
+                <p className="text-xs text-[#7A9A82] mt-1">Critical path: {criticalPathMilestones.length} milestones</p>
               </div>
               <Clock size={24} className={behindSchedule === 0 ? "text-emerald-400 opacity-50" : "text-red-400 opacity-50"} />
             </div>
@@ -96,7 +96,7 @@ export default function ConstructionTracker({
 
         <Card className="construction-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Budget Variance</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Budget Variance</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
@@ -105,7 +105,7 @@ export default function ConstructionTracker({
                   {totalBudgetVariance > 0 ? "+" : ""}{totalBudgetVariance > 0 ? "$" : "-$"}
                   {Math.abs(totalBudgetVariance / 1_000_000).toFixed(1)}M
                 </p>
-                <p className="text-xs text-slate-500 mt-1">{totalBudgetVariance > 0 ? "Over" : "Under"} budget</p>
+                <p className="text-xs text-[#7A9A82] mt-1">{totalBudgetVariance > 0 ? "Over" : "Under"} budget</p>
               </div>
               <TrendingDown size={24} className={totalBudgetVariance > 0 ? "text-red-400 opacity-50" : "text-emerald-400 opacity-50"} />
             </div>
@@ -114,7 +114,7 @@ export default function ConstructionTracker({
 
         <Card className="construction-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Permit / Inspection Gaps</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Permit / Inspection Gaps</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
@@ -122,7 +122,7 @@ export default function ConstructionTracker({
                 <p className={`text-2xl font-bold ${permitGaps.length === 0 && inspectionGaps.length === 0 ? "text-emerald-400" : "text-red-400"}`}>
                   {permitGaps.length + inspectionGaps.length}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-[#7A9A82] mt-1">
                   {permitGaps.length} permits, {inspectionGaps.length} inspections
                 </p>
               </div>
@@ -146,8 +146,8 @@ export default function ConstructionTracker({
                 <div key={milestone.milestoneId} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-mono text-slate-300">{milestone.milestoneName}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm font-mono text-[#EDE8DC]">{milestone.milestoneName}</p>
+                      <p className="text-xs text-[#7A9A82]">
                         {new Date(milestone.plannedStartDate).toLocaleDateString()} —{" "}
                         {new Date(milestone.plannedEndDate).toLocaleDateString()}
                       </p>
@@ -159,14 +159,14 @@ export default function ConstructionTracker({
                       </p>
                     </div>
                   </div>
-                  <div className="h-6 bg-slate-800 rounded border border-slate-700 overflow-hidden relative">
+                  <div className="h-6 bg-[#0D2218] rounded border border-[#1E4A2E] overflow-hidden relative">
                     <div className="absolute h-full bg-cyan-500 opacity-60" style={{ width: `${milestone.percentComplete}%` }} />
                   </div>
                   <div className="flex gap-2 text-xs">
-                    <span className={milestone.isCriticalPath ? "text-red-400 font-mono" : "text-slate-500"}>
+                    <span className={milestone.isCriticalPath ? "text-red-400 font-mono" : "text-[#7A9A82]"}>
                       {milestone.isCriticalPath ? "🔴 Critical" : "○ Non-critical"}
                     </span>
-                    <span className="text-slate-500">
+                    <span className="text-[#7A9A82]">
                       Budget: ${(milestone.budgetedCost / 1_000_000).toFixed(1)}M
                     </span>
                     <span className={getVarianceClass(milestone.variance)}>
@@ -192,22 +192,22 @@ export default function ConstructionTracker({
             {milestones.map((milestone) => {
               const permitProgress = (milestone.permitsObtained.length / milestone.requiredPermits.length) * 100;
               return (
-                <div key={milestone.milestoneId} className="p-3 border border-slate-700 rounded bg-slate-900/50">
+                <div key={milestone.milestoneId} className="p-3 border border-[#1E4A2E] rounded bg-[#030A06]/50">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-mono text-slate-300">{milestone.milestoneName}</span>
+                    <span className="text-sm font-mono text-[#EDE8DC]">{milestone.milestoneName}</span>
                     <span className={`text-xs font-mono ${permitProgress === 100 ? "text-emerald-400" : "text-yellow-400"}`}>
                       {milestone.permitsObtained.length} / {milestone.requiredPermits.length}
                     </span>
                   </div>
-                  <div className="h-2 bg-slate-800 rounded overflow-hidden">
+                  <div className="h-2 bg-[#0D2218] rounded overflow-hidden">
                     <div
                       className={`h-full ${permitProgress === 100 ? "bg-emerald-500" : "bg-yellow-500"}`}
                       style={{ width: `${permitProgress}%` }}
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-[#7A9A82] mt-2">
                     {milestone.requiredPermits.map((p) => (
-                      <span key={p} className={milestone.permitsObtained.includes(p) ? "text-emerald-400" : "text-slate-500"}>
+                      <span key={p} className={milestone.permitsObtained.includes(p) ? "text-emerald-400" : "text-[#7A9A82]"}>
                         {milestone.permitsObtained.includes(p) ? "✓" : "○"} {p} {" "}
                       </span>
                     ))}
@@ -233,22 +233,22 @@ export default function ConstructionTracker({
             {milestones.map((milestone) => {
               const inspectionProgress = (milestone.inspectionsCompleted.length / milestone.requiredInspections.length) * 100;
               return (
-                <div key={milestone.milestoneId} className="p-3 border border-slate-700 rounded bg-slate-900/50">
+                <div key={milestone.milestoneId} className="p-3 border border-[#1E4A2E] rounded bg-[#030A06]/50">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-mono text-slate-300">{milestone.milestoneName}</span>
+                    <span className="text-sm font-mono text-[#EDE8DC]">{milestone.milestoneName}</span>
                     <span className={`text-xs font-mono ${inspectionProgress === 100 ? "text-emerald-400" : "text-yellow-400"}`}>
                       {milestone.inspectionsCompleted.length} / {milestone.requiredInspections.length}
                     </span>
                   </div>
-                  <div className="h-2 bg-slate-800 rounded overflow-hidden">
+                  <div className="h-2 bg-[#0D2218] rounded overflow-hidden">
                     <div
                       className={`h-full ${inspectionProgress === 100 ? "bg-emerald-500" : "bg-yellow-500"}`}
                       style={{ width: `${inspectionProgress}%` }}
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-[#7A9A82] mt-2">
                     {milestone.requiredInspections.map((i) => (
-                      <span key={i} className={milestone.inspectionsCompleted.includes(i) ? "text-emerald-400" : "text-slate-500"}>
+                      <span key={i} className={milestone.inspectionsCompleted.includes(i) ? "text-emerald-400" : "text-[#7A9A82]"}>
                         {milestone.inspectionsCompleted.includes(i) ? "✓" : "○"} {i} {" "}
                       </span>
                     ))}

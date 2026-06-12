@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Building2, MapPin, RefreshCw, ArrowRight, Zap, ChevronDown, ChevronUp } from "lucide-react";
@@ -32,13 +32,13 @@ function fmt(n: number): string {
 }
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 80 ? "bg-emerald-400" : score >= 60 ? "bg-amber-300" : "bg-slate-500";
+  const color = score >= 80 ? "bg-emerald-400" : score >= 60 ? "bg-amber-300" : "bg-[#2D6B3D]";
   return (
     <div className="flex items-center gap-2">
       <div className="h-1 flex-1 rounded-full bg-white/10">
         <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
       </div>
-      <span className="w-7 text-right font-mono text-[0.68rem] text-slate-400">{score}</span>
+      <span className="w-7 text-right font-mono text-[0.68rem] text-[#7A9A82]">{score}</span>
     </div>
   );
 }
@@ -57,20 +57,20 @@ function MACard({ target, index }: { target: MATarget; index: number }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-slate-100 truncate">{target.name}</span>
+            <span className="font-semibold text-[#EDE8DC] truncate">{target.name}</span>
             <Badge className={`text-[0.6rem] border ${typeConfig.color}`}>{typeConfig.label}</Badge>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-[0.72rem] text-slate-400">
+          <div className="mt-1 flex items-center gap-2 text-[0.72rem] text-[#7A9A82]">
             <MapPin size={11} />
             <span>{target.city}, {target.state}</span>
-            <span className="text-slate-600">·</span>
+            <span className="text-[#7A9A82]">·</span>
             <Building2 size={11} />
             <span className="truncate">{target.sector}</span>
           </div>
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="shrink-0 rounded-lg p-1.5 text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-all"
+          className="shrink-0 rounded-lg p-1.5 text-[#7A9A82] hover:text-[#EDE8DC] hover:bg-white/5 transition-all"
         >
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
@@ -78,23 +78,23 @@ function MACard({ target, index }: { target: MATarget; index: number }) {
 
       <div className="mt-3 grid grid-cols-3 gap-3">
         <div>
-          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Revenue Est.</div>
+          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Revenue Est.</div>
           <div className="mt-0.5 font-mono text-sm font-semibold text-[#C4A048]">{fmt(target.est_revenue_usd)}</div>
         </div>
         <div>
-          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">EBITDA Est.</div>
+          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">EBITDA Est.</div>
           <div className="mt-0.5 font-mono text-sm font-semibold text-emerald-400">{fmt(target.est_ebitda_usd)}</div>
         </div>
         <div>
-          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">EV/EBITDA</div>
-          <div className="mt-0.5 font-mono text-sm font-semibold text-slate-200">
+          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">EV/EBITDA</div>
+          <div className="mt-0.5 font-mono text-sm font-semibold text-[#EDE8DC]">
             {(target.est_revenue_usd / target.est_ebitda_usd).toFixed(1)}x
           </div>
         </div>
       </div>
 
       <div className="mt-3">
-        <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500 mb-1">Opportunity Score</div>
+        <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1">Opportunity Score</div>
         <ScoreBar score={target.score} />
       </div>
 
@@ -107,13 +107,13 @@ function MACard({ target, index }: { target: MATarget; index: number }) {
             className="overflow-hidden"
           >
             <div className="mt-3 border-t border-white/10 pt-3">
-              <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500 mb-1">Acquisition Thesis</div>
-              <p className="text-[0.78rem] text-slate-300 leading-relaxed">{target.acquisition_thesis}</p>
+              <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1">Acquisition Thesis</div>
+              <p className="text-[0.78rem] text-[#EDE8DC] leading-relaxed">{target.acquisition_thesis}</p>
               <div className="mt-3 flex gap-2">
                 <Button size="sm" className="h-7 bg-[#C4A048] text-[#030A06] hover:bg-[#E8C87A] text-[0.7rem]">
                   <ArrowRight size={11} className="mr-1" /> Add to Pipeline
                 </Button>
-                <Button size="sm" variant="outline" className="h-7 border-white/10 text-slate-300 hover:bg-white/5 text-[0.7rem]">
+                <Button size="sm" variant="outline" className="h-7 border-white/10 text-[#EDE8DC] hover:bg-white/5 text-[0.7rem]">
                   Run Due Diligence
                 </Button>
               </div>
@@ -166,15 +166,15 @@ export default function EagleEyeMATab() {
             <h2 className="mt-1 text-lg font-black text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>
               Acquisition Targets
             </h2>
-            <p className="text-[0.72rem] text-slate-400 mt-0.5">
+            <p className="text-[0.72rem] text-[#7A9A82] mt-0.5">
               $30M–$150M revenue · Sub-$20M EBITDA · NEST bond financing eligible
             </p>
           </div>
           <div className="flex items-center gap-3">
             {data && (
               <div className="text-right">
-                <div className="font-mono text-xs text-slate-400">{data.edgar_signals} EDGAR signals</div>
-                <div className="font-mono text-xs text-slate-400">{data.total} targets found</div>
+                <div className="font-mono text-xs text-[#7A9A82]">{data.edgar_signals} EDGAR signals</div>
+                <div className="font-mono text-xs text-[#7A9A82]">{data.total} targets found</div>
               </div>
             )}
             <Button
@@ -216,7 +216,7 @@ export default function EagleEyeMATab() {
             },
           ].map(({ label, value, color }) => (
             <div key={label} className="rounded-lg border border-white/10 bg-[#0D2218]/40 p-3">
-              <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">{label}</div>
+              <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">{label}</div>
               <div className={`mt-1 font-mono text-base font-semibold ${color}`}>{value}</div>
             </div>
           ))}
@@ -228,7 +228,7 @@ export default function EagleEyeMATab() {
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
             <RefreshCw size={24} className="mx-auto animate-spin text-[#C4A048]" />
-            <p className="mt-3 text-sm text-slate-400">Scanning EDGAR + market intelligence…</p>
+            <p className="mt-3 text-sm text-[#7A9A82]">Scanning EDGAR + market intelligence…</p>
           </div>
         </div>
       )}

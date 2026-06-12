@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -74,7 +74,7 @@ const TYPE_ICONS: Record<string, typeof Activity> = {
 };
 
 const SEVERITY_STYLES: Record<string, string> = {
-  info: "border-slate-500/30 bg-slate-500/10 text-slate-400",
+  info: "border-[#2D6B3D]/30 bg-[#2D6B3D]/10 text-[#7A9A82]",
   low: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#C4A048]",
   medium: "border-amber-400/30 bg-amber-500/10 text-amber-300",
   high: "border-orange-400/30 bg-orange-500/10 text-orange-300",
@@ -86,14 +86,14 @@ const DIRECTION_STYLES: Record<string, { icon: typeof Activity; color: string }>
   positive: { icon: TrendingUp, color: "text-emerald-400" },
   bearish: { icon: TrendingDown, color: "text-red-400" },
   negative: { icon: TrendingDown, color: "text-red-400" },
-  neutral: { icon: Minus, color: "text-slate-400" },
+  neutral: { icon: Minus, color: "text-[#7A9A82]" },
 };
 
 const REC_STYLES: Record<string, string> = {
   execute_call: "border-emerald-400/40 bg-emerald-500/15 text-emerald-300",
   call_eligible: "border-[#C4A048]/40 bg-[#C4A048]/15 text-[#C4A048]",
   monitor: "border-amber-400/40 bg-amber-500/15 text-amber-300",
-  hold: "border-slate-400/40 bg-slate-500/15 text-slate-300",
+  hold: "border-[#2D6B3D]/40 bg-[#2D6B3D]/15 text-[#EDE8DC]",
   put_alert: "border-red-400/40 bg-red-500/15 text-red-300",
 };
 
@@ -141,7 +141,7 @@ function SignalCard({ signal }: { signal: SignalEvent }) {
     ? "border-emerald-300/20 bg-emerald-400/8 text-emerald-200"
     : signal.category === "regulatory"
     ? "border-violet-300/20 bg-violet-400/8 text-violet-200"
-    : "border-slate-300/20 bg-slate-400/8 text-slate-200";
+    : "border-[#7A9A82]/20 bg-[#7A9A82]/8 text-[#EDE8DC]";
 
   return (
     <div className="rounded-xl border border-white/8 bg-black/30 p-3.5 transition hover:border-white/15 hover:bg-black/40">
@@ -160,21 +160,21 @@ function SignalCard({ signal }: { signal: SignalEvent }) {
             </span>
           </div>
 
-          <div className="mt-1.5 flex items-center gap-3 font-mono text-[0.62rem] text-slate-500">
-            <span className="text-slate-400">{signal.source}</span>
+          <div className="mt-1.5 flex items-center gap-3 font-mono text-[0.62rem] text-[#7A9A82]">
+            <span className="text-[#7A9A82]">{signal.source}</span>
             {signal.state && (
               <span><MapPin size={10} className="inline" /> {signal.state}{signal.county ? `, ${signal.county}` : ""}</span>
             )}
             {signal.entity_name && (
-              <span className="text-slate-300 truncate max-w-[180px]">{signal.entity_name}</span>
+              <span className="text-[#EDE8DC] truncate max-w-[180px]">{signal.entity_name}</span>
             )}
             {signal.source_ref && (
-              <span className="text-slate-600 truncate max-w-[140px]">{signal.source_ref}</span>
+              <span className="text-[#7A9A82] truncate max-w-[140px]">{signal.source_ref}</span>
             )}
           </div>
 
           {signal.payload?.description && (
-            <p className="mt-1.5 text-[0.7rem] text-slate-400 line-clamp-1">
+            <p className="mt-1.5 text-[0.7rem] text-[#7A9A82] line-clamp-1">
               {String(signal.payload.description)}
             </p>
           )}
@@ -191,12 +191,12 @@ function SignalCard({ signal }: { signal: SignalEvent }) {
       </div>
 
       <div className="mt-2 flex items-center justify-between">
-        <span className="font-mono text-[0.5rem] text-slate-600">
+        <span className="font-mono text-[0.5rem] text-[#7A9A82]">
           <Clock size={9} className="inline mr-0.5" />
           {timeAgo(signal.captured_at)}
         </span>
         {signal.confidence !== null && (
-          <span className="font-mono text-[0.5rem] text-slate-500">
+          <span className="font-mono text-[0.5rem] text-[#7A9A82]">
             conf: {(signal.confidence * 100).toFixed(0)}%
           </span>
         )}
@@ -211,10 +211,10 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
   if (!snapshot) {
     return (
       <div className="rounded-2xl border border-white/8 bg-black/30 p-5">
-        <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-500 mb-3">
+        <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82] mb-3">
           Vector Agent
         </h3>
-        <p className="text-sm text-slate-500">No scoring data yet. Poll FRED to generate.</p>
+        <p className="text-sm text-[#7A9A82]">No scoring data yet. Poll FRED to generate.</p>
       </div>
     );
   }
@@ -224,16 +224,16 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
   const recStyle = REC_STYLES[rec] || REC_STYLES.monitor;
   const putStyle = PUT_RISK_STYLES[snapshot.put_risk_level || "LOW"] || PUT_RISK_STYLES.LOW;
 
-  const scoreColor = score >= 82 ? "text-emerald-400" : score >= 65 ? "text-[#C4A048]" : score >= 45 ? "text-amber-400" : score >= 25 ? "text-slate-300" : "text-red-400";
+  const scoreColor = score >= 82 ? "text-emerald-400" : score >= 65 ? "text-[#C4A048]" : score >= 45 ? "text-amber-400" : score >= 25 ? "text-[#EDE8DC]" : "text-red-400";
   const arcPct = score / 100;
 
   return (
     <div className="rounded-2xl border border-white/8 bg-black/30 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-500">
+        <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82]">
           Vector Agent — Call/Put Radar
         </h3>
-        <span className="font-mono text-[0.5rem] text-slate-600">{timeAgo(snapshot.created_at)}</span>
+        <span className="font-mono text-[0.5rem] text-[#7A9A82]">{timeAgo(snapshot.created_at)}</span>
       </div>
 
       {/* Score gauge */}
@@ -262,9 +262,9 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
             </span>
           </div>
           <div className="flex items-center gap-4 font-mono text-[0.62rem]">
-            <span className="text-slate-400">Put Risk: <span className={`font-semibold ${putStyle}`}>{snapshot.put_risk_level || "—"}</span></span>
+            <span className="text-[#7A9A82]">Put Risk: <span className={`font-semibold ${putStyle}`}>{snapshot.put_risk_level || "—"}</span></span>
             {snapshot.estimated_savings && Number(snapshot.estimated_savings) > 0 && (
-              <span className="text-slate-400">Savings: <span className="text-emerald-400 font-semibold">{formatMoney(Number(snapshot.estimated_savings))}</span></span>
+              <span className="text-[#7A9A82]">Savings: <span className="text-emerald-400 font-semibold">{formatMoney(Number(snapshot.estimated_savings))}</span></span>
             )}
           </div>
         </div>
@@ -274,7 +274,7 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
       {snapshot.reasoning && snapshot.reasoning.length > 0 && (
         <div className="space-y-1">
           {snapshot.reasoning.map((reason, i) => (
-            <div key={i} className="flex items-start gap-2 text-[0.68rem] text-slate-400">
+            <div key={i} className="flex items-start gap-2 text-[0.68rem] text-[#7A9A82]">
               <ChevronRight size={11} className="text-[#C4A048]/60 mt-0.5 shrink-0" />
               <span>{reason}</span>
             </div>
@@ -292,35 +292,35 @@ function StatsPanel({ stats }: { stats: StatsData | null }) {
 
   return (
     <div className="rounded-2xl border border-white/8 bg-black/30 p-5">
-      <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-500 mb-3">
+      <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82] mb-3">
         Signal Inventory
       </h3>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="text-center">
           <p className="font-mono text-2xl font-bold text-white">{stats.total}</p>
-          <p className="font-mono text-[0.5rem] uppercase text-slate-500">Total</p>
+          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Total</p>
         </div>
         <div className="text-center">
           <p className="font-mono text-2xl font-bold text-[#C4A048]">{stats.by_category?.macro_market || 0}</p>
-          <p className="font-mono text-[0.5rem] uppercase text-slate-500">Market</p>
+          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Market</p>
         </div>
         <div className="text-center">
           <p className="font-mono text-2xl font-bold text-emerald-400">{stats.by_category?.deal_sourcing || 0}</p>
-          <p className="font-mono text-[0.5rem] uppercase text-slate-500">Deal Source</p>
+          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Deal Source</p>
         </div>
       </div>
 
       {/* By type breakdown */}
       <div className="space-y-1.5">
-        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-slate-600">By Type</p>
+        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">By Type</p>
         {Object.entries(stats.by_type || {}).map(([type, count]) => {
           const Icon = TYPE_ICONS[type] || Activity;
           return (
             <div key={type} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Icon size={11} className="text-slate-500" />
-                <span className="font-mono text-[0.62rem] text-slate-400">{type.replace(/_/g, " ")}</span>
+                <Icon size={11} className="text-[#7A9A82]" />
+                <span className="font-mono text-[0.62rem] text-[#7A9A82]">{type.replace(/_/g, " ")}</span>
               </div>
               <span className="font-mono text-[0.62rem] font-semibold text-white">{count}</span>
             </div>
@@ -330,10 +330,10 @@ function StatsPanel({ stats }: { stats: StatsData | null }) {
 
       {/* By source breakdown */}
       <div className="mt-3 space-y-1.5">
-        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-slate-600">By Source</p>
+        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">By Source</p>
         {Object.entries(stats.by_source || {}).map(([source, count]) => (
           <div key={source} className="flex items-center justify-between">
-            <span className="font-mono text-[0.62rem] text-slate-400">{source}</span>
+            <span className="font-mono text-[0.62rem] text-[#7A9A82]">{source}</span>
             <span className="font-mono text-[0.62rem] font-semibold text-white">{count}</span>
           </div>
         ))}
@@ -392,7 +392,7 @@ export default function SignalIntelligenceFeed() {
               <h1 className="font-[Cormorant_Garamond] text-2xl font-semibold tracking-wide text-white">
                 Signal Intelligence
               </h1>
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-[#7A9A82]">
                 Live Market & Deal Signal Feed
               </p>
             </div>
@@ -424,20 +424,20 @@ export default function SignalIntelligenceFeed() {
           <Tabs value={activeCategory} onValueChange={setActiveCategory}>
             <div className="flex items-center justify-between mb-3">
               <TabsList className="h-8 bg-white/5 border border-white/8 rounded-lg p-0.5">
-                <TabsTrigger value="all" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-white/10 data-[state=active]:text-white text-slate-500">
+                <TabsTrigger value="all" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-white/10 data-[state=active]:text-white text-[#7A9A82]">
                   All ({allSignals.length})
                 </TabsTrigger>
-                <TabsTrigger value="macro_market" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-[#C4A048]/15 data-[state=active]:text-[#E8C87A] text-slate-500">
+                <TabsTrigger value="macro_market" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-[#C4A048]/15 data-[state=active]:text-[#E8C87A] text-[#7A9A82]">
                   Market
                 </TabsTrigger>
-                <TabsTrigger value="deal_sourcing" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-200 text-slate-500">
+                <TabsTrigger value="deal_sourcing" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-200 text-[#7A9A82]">
                   Deal Source
                 </TabsTrigger>
-                <TabsTrigger value="regulatory" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-violet-500/15 data-[state=active]:text-violet-200 text-slate-500">
+                <TabsTrigger value="regulatory" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-violet-500/15 data-[state=active]:text-violet-200 text-[#7A9A82]">
                   Regulatory
                 </TabsTrigger>
               </TabsList>
-              <span className="font-mono text-[0.5rem] text-slate-600">
+              <span className="font-mono text-[0.5rem] text-[#7A9A82]">
                 auto-refresh 30s
               </span>
             </div>
@@ -449,9 +449,9 @@ export default function SignalIntelligenceFeed() {
                 </div>
               ) : filteredSignals.length === 0 ? (
                 <div className="rounded-2xl border border-white/8 bg-black/20 p-12 text-center">
-                  <AlertTriangle size={24} className="mx-auto text-slate-600 mb-2" />
-                  <p className="font-mono text-sm text-slate-500">No signals in this category</p>
-                  <p className="font-mono text-[0.6rem] text-slate-600 mt-1">
+                  <AlertTriangle size={24} className="mx-auto text-[#7A9A82] mb-2" />
+                  <p className="font-mono text-sm text-[#7A9A82]">No signals in this category</p>
+                  <p className="font-mono text-[0.6rem] text-[#7A9A82] mt-1">
                     Hit "Poll FRED" to ingest live market data
                   </p>
                 </div>

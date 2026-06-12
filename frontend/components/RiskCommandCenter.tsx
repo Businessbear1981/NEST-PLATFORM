@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 
 const API = "";
@@ -35,7 +35,7 @@ export default function RiskCommandCenter() {
   const dimensions = ["Market Risk", "Construction Risk", "Credit Risk", "Operational Risk", "Regulatory Risk", "Sponsor Risk", "Environmental Risk"];
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
@@ -52,7 +52,7 @@ export default function RiskCommandCenter() {
             { label: "Alerts Active", value: "0" },
           ].map((k) => (
             <article key={k.label} className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/[0.09] p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{k.label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{k.label}</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{k.value}</strong>
             </article>
           ))}
@@ -69,7 +69,7 @@ export default function RiskCommandCenter() {
               <div className="mb-3 flex items-start justify-between">
                 <div>
                   <div className="font-mono text-sm font-semibold text-white">{d.name}</div>
-                  <div className="mt-0.5 font-mono text-[0.55rem] text-slate-600">{d.project?.city}, {d.project?.state}</div>
+                  <div className="mt-0.5 font-mono text-[0.55rem] text-[#7A9A82]">{d.project?.city}, {d.project?.state}</div>
                 </div>
                 <span className="rounded bg-emerald-800/40 px-2 py-0.5 font-mono text-[0.55rem] font-semibold uppercase tracking-wider text-emerald-400">GREEN</span>
               </div>
@@ -78,7 +78,7 @@ export default function RiskCommandCenter() {
               {/* Risk dimension bars */}
               {dimensions.map((dim) => (
                 <div key={dim} className="mb-1 flex items-center gap-2">
-                  <div className="w-20 font-mono text-[0.45rem] uppercase tracking-wider text-slate-600">{dim.replace(" Risk", "")}</div>
+                  <div className="w-20 font-mono text-[0.45rem] uppercase tracking-wider text-[#7A9A82]">{dim.replace(" Risk", "")}</div>
                   <div className="h-1 flex-1 overflow-hidden rounded-full bg-[#03060b]">
                     <div className="h-full rounded-full bg-emerald-500/70" style={{ width: `${15 + Math.random() * 20}%` }} />
                   </div>
@@ -107,13 +107,13 @@ export default function RiskCommandCenter() {
                   {auditResult.grade}
                 </div>
                 <div>
-                  <div className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">Score</div>
+                  <div className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">Score</div>
                   <div className="font-mono text-xl font-semibold text-white">{auditResult.composite_score}</div>
                 </div>
               </div>
             </div>
-            <div className="mb-3 text-sm text-slate-300">{auditResult.recommendation}</div>
-            <div className="font-mono text-[0.62rem] text-slate-500">
+            <div className="mb-3 text-sm text-[#EDE8DC]">{auditResult.recommendation}</div>
+            <div className="font-mono text-[0.62rem] text-[#7A9A82]">
               Passed: {auditResult.passed}/{auditResult.total_checks} - Failed: {auditResult.failed} - Blockers: {auditResult.blocker_count}
             </div>
           </div>

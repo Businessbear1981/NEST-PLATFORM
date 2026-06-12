@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { AlertTriangle, Loader2, ShieldCheck } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-const inputClass = "rounded-xl border border-red-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-red-300/55 focus:ring-2 focus:ring-red-300/10";
+const inputClass = "rounded-xl border border-red-300/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none placeholder:text-[#7A9A82] focus:border-red-300/55 focus:ring-2 focus:ring-red-300/10";
 
 function statusClass(status: string) {
   if (status === "compliant") return "border-emerald-300/30 bg-emerald-400/10 text-emerald-100";
@@ -36,22 +36,22 @@ export function CovenantsDashboard({ dealId }: { dealId: number }) {
   const covenants = covenantsQuery.data ?? [];
 
   return (
-    <div className="space-y-5 text-slate-100">
+    <div className="space-y-5 text-[#EDE8DC]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-red-200"><ShieldCheck size={17} /> Compliance monitoring</div>
-          <p className="mt-1 text-sm leading-6 text-slate-400">Backend-connected covenant thresholds, current values, and breach/watch states.</p>
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">Backend-connected covenant thresholds, current values, and breach/watch states.</p>
         </div>
         <span className="w-fit rounded-full border border-red-300/30 bg-red-400/10 px-3 py-1 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-red-100">{covenants.length} covenant records</span>
       </div>
 
       {covenantsQuery.isLoading ? (
-        <div className="flex items-center justify-center rounded-2xl border border-red-300/20 bg-black/30 p-8 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-red-200" size={16} /> Loading covenants...</div>
+        <div className="flex items-center justify-center rounded-2xl border border-red-300/20 bg-black/30 p-8 text-sm text-[#7A9A82]"><Loader2 className="mr-2 animate-spin text-red-200" size={16} /> Loading covenants...</div>
       ) : (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="grid gap-3 md:grid-cols-2">
             {covenants.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-red-300/25 bg-red-400/5 p-6 text-sm text-slate-400 md:col-span-2">No covenants yet. Add DSCR, occupancy, LTV, or leverage tests to activate monitoring.</div>
+              <div className="rounded-2xl border border-dashed border-red-300/25 bg-red-400/5 p-6 text-sm text-[#7A9A82] md:col-span-2">No covenants yet. Add DSCR, occupancy, LTV, or leverage tests to activate monitoring.</div>
             ) : (
               covenants.map((covenant) => (
                 <article key={covenant.id} className="rounded-2xl border border-red-300/25 bg-black/35 p-4 shadow-[0_0_32px_rgba(248,113,113,0.08)]">
@@ -63,10 +63,10 @@ export function CovenantsDashboard({ dealId }: { dealId: number }) {
                     <span className={`rounded-full border px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.13em] ${statusClass(covenant.status)}`}>{covenant.status}</span>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Threshold</span><p className="font-mono font-semibold text-amber-100">{numberLabel(covenant.threshold)}</p></div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Current</span><p className="font-mono font-semibold text-[#EDE8DC]">{numberLabel(covenant.current)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Threshold</span><p className="font-mono font-semibold text-amber-100">{numberLabel(covenant.threshold)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Current</span><p className="font-mono font-semibold text-[#EDE8DC]">{numberLabel(covenant.current)}</p></div>
                   </div>
-                  <p className="mt-3 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-slate-600">Last checked: {covenant.lastChecked ? new Date(covenant.lastChecked).toLocaleDateString() : "Pending"}</p>
+                  <p className="mt-3 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-[#7A9A82]">Last checked: {covenant.lastChecked ? new Date(covenant.lastChecked).toLocaleDateString() : "Pending"}</p>
                   <button
                     onClick={() => {
                       const current = prompt("Enter current value:");

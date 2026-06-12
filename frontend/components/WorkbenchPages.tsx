@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 /*
 Design philosophy for this file: Bloomberg Terminal x Spider-Verse institutional command cockpit.
@@ -199,7 +199,7 @@ export function DashboardPage() {
               <Icon size={16} className="text-[#C4A048]" />
             </div>
             <strong className="mt-3 block font-mono text-3xl text-[#C4A048]">{value}</strong>
-            <p className="mt-2 text-sm text-slate-300">{detail}</p>
+            <p className="mt-2 text-sm text-[#EDE8DC]">{detail}</p>
           </article>
         ))}
       </section>
@@ -220,7 +220,7 @@ export function DashboardPage() {
           <div className="mt-3 grid gap-2">
             {(statusRows.length ? statusRows : [{ status: "intake", count: 0 }, { status: "active", count: 0 }, { status: "closed", count: 0 }]).map(({ status, count }) => (
               <div key={status} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 font-mono text-sm">
-                <span className="uppercase tracking-[0.12em] text-slate-300">{status}</span>
+                <span className="uppercase tracking-[0.12em] text-[#EDE8DC]">{status}</span>
                 <strong className="text-[#C4A048]">{count}</strong>
               </div>
             ))}
@@ -237,7 +237,7 @@ export function DashboardPage() {
               <Link key={d.id || d.name} href={d.id ? `/operations/deal/${d.id}` : "/deals"} className="rounded-2xl border border-white/[0.06] bg-[#0D2218]/60 hover:border-[#C4A048]/30 transition-colors p-4">
                 <p className="font-[Cormorant_Garamond] text-lg text-amber-100">{d.name}</p>
                 <div className="mt-2 flex items-center justify-between font-mono text-xs">
-                  <span className="text-slate-400">{d.state || "—"}</span>
+                  <span className="text-[#7A9A82]">{d.state || "—"}</span>
                   <span className="text-[#C4A048]">{formatCompactCurrency(d.bond_face || 0)}</span>
                 </div>
                 <div className="mt-2 flex items-center gap-2 font-mono text-[0.55rem] uppercase tracking-wider">
@@ -304,7 +304,7 @@ export function ArchitecturePage() {
           <div>
             <p className="kicker"><LineChart size={14} /> Capital-stack designer</p>
             <h2 className="mt-2 font-mono text-2xl uppercase tracking-[0.08em] text-white">A/B tranche and surety wrap simulator</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">Adjust leverage, mezzanine participation, surety coverage, reserves, and spread assumptions. The output remains frontend-demo simulated until a human committee approves a backend bond record.</p>
+            <p className="mt-2 text-sm leading-6 text-[#EDE8DC]">Adjust leverage, mezzanine participation, surety coverage, reserves, and spread assumptions. The output remains frontend-demo simulated until a human committee approves a backend bond record.</p>
             <button type="button" onClick={applyDownsidePreset} className="mt-4 rounded-xl border border-red-300/40 bg-red-500/10 px-3 py-2 font-mono text-xs uppercase tracking-[0.14em] text-red-100">Apply downside preset</button>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
@@ -317,7 +317,7 @@ export function ArchitecturePage() {
               ["spreadBps", "Spread", 70, 260, "bp"],
             ] as const).map(([key, label, min, max, unit]) => (
               <label key={key} className="rounded-2xl border border-white/10 bg-white/[0.035] p-3">
-                <span className="flex items-center justify-between font-mono text-[0.68rem] uppercase tracking-[0.14em] text-slate-300">
+                <span className="flex items-center justify-between font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[#EDE8DC]">
                   {label}<strong className="text-amber-200">{designer[key]}{unit}</strong>
                 </span>
                 <input
@@ -343,7 +343,7 @@ export function ArchitecturePage() {
             ["Surety wrapped", capitalStackDesigner.wrapped, "red"],
           ].map(([label, value, tone]) => (
             <article key={label as string} className="rounded-2xl border border-white/10 bg-black/30 p-3">
-              <span className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-slate-400">{label}</span>
+              <span className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-[#7A9A82]">{label}</span>
               <strong className={`mt-2 block font-mono text-xl ${tone === "cyan" ? "text-[#E8C87A]" : tone === "violet" ? "text-fuchsia-200" : tone === "gold" ? "text-amber-200" : tone === "green" ? "text-emerald-200" : "text-red-200"}`}>{formatCompactCurrency(Number(value) * 1_000_000)}</strong>
             </article>
           ))}
@@ -388,8 +388,8 @@ export function PortalsPage() {
         <aside className="rounded-[1.35rem] border border-amber-300/30 bg-[#06101a]/90 p-5">
           <p className="kicker"><FileCheck2 size={14} /> Active portal path</p>
           <h2 className="mt-2 font-mono text-2xl uppercase tracking-[0.08em] text-white">{selectedPortal[0]}</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-300">{selectedPortal[3]}</p>
-          <div className="mt-4 grid gap-2 font-mono text-xs uppercase tracking-[0.12em] text-slate-300">
+          <p className="mt-3 text-sm leading-6 text-[#EDE8DC]">{selectedPortal[3]}</p>
+          <div className="mt-4 grid gap-2 font-mono text-xs uppercase tracking-[0.12em] text-[#EDE8DC]">
             <span className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2">Evidence inherited from shared deal record</span>
             <span className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2">Critical actions route through human approval gates</span>
             <span className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2">External communications retained for compliance review</span>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 import {
   Banknote,
@@ -185,7 +185,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
     return (
       <div className="flex items-center justify-center py-20">
         <RefreshCw className="mr-2 h-5 w-5 animate-spin text-amber-200" />
-        <span className="font-mono text-sm text-slate-400">Loading treasury data...</span>
+        <span className="font-mono text-sm text-[#7A9A82]">Loading treasury data...</span>
       </div>
     );
   }
@@ -202,7 +202,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
         ].map((m) => (
           <article key={m.label} className={`relative overflow-hidden rounded-[1.25rem] border p-4 ${m.tone}`}>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{m.label}</span>
               <m.icon size={16} />
             </div>
             <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{m.value}</strong>
@@ -219,7 +219,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
             className={`flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] transition ${
               tab === t.id
                 ? "bg-amber-300/15 text-amber-100 shadow-[0_0_18px_rgba(251,191,36,0.12)]"
-                : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
+                : "text-[#7A9A82] hover:bg-white/5 hover:text-[#EDE8DC]"
             }`}
           >
             <t.icon size={14} />
@@ -244,14 +244,14 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
                 {prefunds.map((pf) => (
                   <div key={pf.id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
                     <div>
-                      <span className="font-mono text-xs text-slate-400">{pf.draw_id}</span>
+                      <span className="font-mono text-xs text-[#7A9A82]">{pf.draw_id}</span>
                       <p className="font-mono text-sm text-white">{money(pf.amount)}</p>
                     </div>
                     <div className="text-right">
                       <Badge variant="outline" className="border-emerald-300/30 bg-emerald-400/10 text-emerald-100 text-[0.58rem]">
                         {pf.status}
                       </Badge>
-                      <p className="mt-1 font-mono text-[0.6rem] text-slate-500">{shortDate(pf.funded_at)}</p>
+                      <p className="mt-1 font-mono text-[0.6rem] text-[#7A9A82]">{shortDate(pf.funded_at)}</p>
                     </div>
                   </div>
                 ))}
@@ -276,14 +276,14 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
                       <div className="flex items-start justify-between">
                         <div>
                           <p className="font-mono text-[0.72rem] font-semibold text-white">{card.display_name}</p>
-                          <p className="font-mono text-[0.58rem] text-slate-500">•••• {card.last_four}</p>
+                          <p className="font-mono text-[0.58rem] text-[#7A9A82]">•••• {card.last_four}</p>
                         </div>
                         <Badge variant="outline" className="border-emerald-300/30 bg-emerald-400/10 text-emerald-100 text-[0.54rem]">
                           {card.state}
                         </Badge>
                       </div>
                       <div className="mt-3 space-y-1">
-                        <div className="flex justify-between font-mono text-[0.6rem] text-slate-400">
+                        <div className="flex justify-between font-mono text-[0.6rem] text-[#7A9A82]">
                           <span>Spent: {money(card.total_spent)}</span>
                           <span>Limit: {money(card.spending_restrictions.amount)}</span>
                         </div>
@@ -299,29 +299,29 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
           {/* Transaction Feed */}
           <Card className="border-white/10 bg-[#07101a]/88">
             <CardHeader>
-              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-slate-300">
+              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-[#EDE8DC]">
                 Recent Transactions ({transactions.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
-                  <TableRow className="border-slate-700 hover:bg-transparent">
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Date</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Vendor</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Category</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Amount</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Status</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Receipt</TableHead>
+                  <TableRow className="border-[#1E4A2E] hover:bg-transparent">
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Date</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Vendor</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Category</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Amount</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Status</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Receipt</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {transactions.slice(0, 25).map((txn) => (
-                    <TableRow key={txn.id} className="border-slate-800 hover:bg-slate-900/50">
-                      <TableCell className="font-mono text-xs text-slate-400">{shortDate(txn.created_at)}</TableCell>
+                    <TableRow key={txn.id} className="border-[#0D2218] hover:bg-[#030A06]/50">
+                      <TableCell className="font-mono text-xs text-[#7A9A82]">{shortDate(txn.created_at)}</TableCell>
                       <TableCell className="font-mono text-xs text-white">{txn.merchant_name}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="border-white/10 text-[0.54rem] text-slate-300">
+                        <Badge variant="outline" className="border-white/10 text-[0.54rem] text-[#EDE8DC]">
                           {txn.category.name}
                         </Badge>
                       </TableCell>
@@ -358,23 +358,23 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
             <CardContent>
               <Table>
                 <TableHeader>
-                  <TableRow className="border-slate-700 hover:bg-transparent">
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Category</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Budgeted</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Drawn</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Spent</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Remaining</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Status</TableHead>
+                  <TableRow className="border-[#1E4A2E] hover:bg-transparent">
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Category</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Budgeted</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Drawn</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Spent</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Remaining</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {budgetLines.map((line) => (
-                    <TableRow key={line.category_id} className="border-slate-800 hover:bg-slate-900/50">
+                    <TableRow key={line.category_id} className="border-[#0D2218] hover:bg-[#030A06]/50">
                       <TableCell className="font-mono text-xs text-white">{line.category_name}</TableCell>
-                      <TableCell className="text-right font-mono text-xs text-slate-300">{money(line.budgeted)}</TableCell>
+                      <TableCell className="text-right font-mono text-xs text-[#EDE8DC]">{money(line.budgeted)}</TableCell>
                       <TableCell className="text-right font-mono text-xs text-[#C4A048]">{money(line.drawn)}</TableCell>
                       <TableCell className="text-right font-mono text-xs text-amber-200">{money(line.spent)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs text-slate-400">{money(line.remaining)}</TableCell>
+                      <TableCell className="text-right font-mono text-xs text-[#7A9A82]">{money(line.remaining)}</TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
@@ -409,9 +409,9 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
                 {recon.map((r) => (
                   <div key={r.prefund_id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
                     <div>
-                      <p className="font-mono text-xs text-slate-400">{r.draw_id}</p>
+                      <p className="font-mono text-xs text-[#7A9A82]">{r.draw_id}</p>
                       <p className="font-mono text-sm text-white">Draw: {money(r.draw_amount)}</p>
-                      <p className="font-mono text-[0.6rem] text-slate-500">{r.transaction_count} transactions matched</p>
+                      <p className="font-mono text-[0.6rem] text-[#7A9A82]">{r.transaction_count} transactions matched</p>
                     </div>
                     <div className="text-right">
                       <p className="font-mono text-xs text-amber-200">Matched: {money(r.matched_spend)}</p>
@@ -442,15 +442,15 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
           {/* NEST Soft Cost Summary */}
           <div className="grid gap-3 sm:grid-cols-3">
             <article className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/9 p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">Total Fronted</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">Total Fronted</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{money(nestCosts.total_fronted)}</strong>
             </article>
             <article className="rounded-[1.25rem] border border-fuchsia-300/30 bg-fuchsia-500/8 p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">Rebate Earned</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">Rebate Earned</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{money(nestCosts.rebate_earned)}</strong>
             </article>
             <article className="rounded-[1.25rem] border border-[#C4A048]/30 bg-[#C4A048]/8 p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">Reimbursement</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">Reimbursement</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white capitalize">{nestCosts.reimbursement_status}</strong>
             </article>
           </div>
@@ -466,20 +466,20 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
             <CardContent>
               <Table>
                 <TableHeader>
-                  <TableRow className="border-slate-700 hover:bg-transparent">
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Date</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Vendor</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Category</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Amount</TableHead>
+                  <TableRow className="border-[#1E4A2E] hover:bg-transparent">
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Date</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Vendor</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Category</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Amount</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {nestCosts.line_items.map((item, i) => (
-                    <TableRow key={`nest-${i}`} className="border-slate-800 hover:bg-slate-900/50">
-                      <TableCell className="font-mono text-xs text-slate-400">{shortDate(item.date)}</TableCell>
+                    <TableRow key={`nest-${i}`} className="border-[#0D2218] hover:bg-[#030A06]/50">
+                      <TableCell className="font-mono text-xs text-[#7A9A82]">{shortDate(item.date)}</TableCell>
                       <TableCell className="font-mono text-xs text-white">{item.vendor}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="border-white/10 text-[0.54rem] text-slate-300">
+                        <Badge variant="outline" className="border-white/10 text-[0.54rem] text-[#EDE8DC]">
                           {item.category}
                         </Badge>
                       </TableCell>
@@ -504,7 +504,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
               { label: "Projected (36mo)", value: money(rebate.projected_36mo), tone: "border-[#C4A048]/30 bg-[#C4A048]/8 text-[#E8C87A]" },
             ].map((m) => (
               <article key={m.label} className={`rounded-[1.25rem] border p-4 ${m.tone}`}>
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>
+                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{m.label}</span>
                 <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{m.value}</strong>
               </article>
             ))}
@@ -522,15 +522,15 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-3">
                   <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                    <span className="font-mono text-[0.6rem] text-slate-500">Active Deals</span>
+                    <span className="font-mono text-[0.6rem] text-[#7A9A82]">Active Deals</span>
                     <p className="font-mono text-xl text-white">{portfolio.active_deals}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                    <span className="font-mono text-[0.6rem] text-slate-500">Total Managed Spend</span>
+                    <span className="font-mono text-[0.6rem] text-[#7A9A82]">Total Managed Spend</span>
                     <p className="font-mono text-xl text-amber-200">{money(portfolio.total_managed_spend)}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                    <span className="font-mono text-[0.6rem] text-slate-500">Combined Rebate (all deals + NEST)</span>
+                    <span className="font-mono text-[0.6rem] text-[#7A9A82]">Combined Rebate (all deals + NEST)</span>
                     <p className="font-mono text-xl text-fuchsia-200">{money(portfolio.combined_rebate)}</p>
                   </div>
                 </div>
@@ -541,15 +541,15 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
                     </p>
                     <div className="mt-3 space-y-2">
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Manual recon hours eliminated</span>
+                        <span className="text-[#7A9A82]">Manual recon hours eliminated</span>
                         <span className="font-mono text-emerald-300">{portfolio.traditional_savings.manual_reconciliation_hours_eliminated.toLocaleString()} hrs</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Estimated labor savings</span>
+                        <span className="text-[#7A9A82]">Estimated labor savings</span>
                         <span className="font-mono text-emerald-300">{money(portfolio.traditional_savings.estimated_labor_savings)}</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Auto-categorized</span>
+                        <span className="text-[#7A9A82]">Auto-categorized</span>
                         <span className="font-mono text-emerald-300">{portfolio.traditional_savings.misallocation_risk_reduction}</span>
                       </div>
                     </div>
@@ -560,11 +560,11 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
                     </p>
                     <div className="mt-3 space-y-2">
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Receipt match rate</span>
+                        <span className="text-[#7A9A82]">Receipt match rate</span>
                         <span className="font-mono text-amber-300">{pct(overview?.receipt_match_rate ?? 0)}</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Budget categories on track</span>
+                        <span className="text-[#7A9A82]">Budget categories on track</span>
                         <span className="font-mono text-amber-300">{budgetLines.filter((b) => b.status === "green").length}/{budgetLines.length}</span>
                       </div>
                     </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -54,7 +54,7 @@ function CurveTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded border border-white/[0.12] bg-[#030A06]/95 px-3 py-2 shadow-xl backdrop-blur-sm">
-      <p className="font-mono text-[0.6rem] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="font-mono text-[0.6rem] uppercase tracking-widest text-[#7A9A82]">{label}</p>
       <p className="font-mono text-sm font-semibold text-[#C4A048]">
         {payload[0]?.value?.toFixed(2)}%
       </p>
@@ -187,7 +187,7 @@ export default function DealPulseTicker() {
       <div className="relative grid grid-cols-12 gap-3 border-b border-white/[0.06] px-4 py-2.5">
         {/* LEFT — Market Vitals (3 cols) */}
         <div className="col-span-3 flex flex-col gap-1">
-          <div className="mb-0.5 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-slate-600">
+          <div className="mb-0.5 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-[#7A9A82]">
             Market Vitals
           </div>
           <RateChip label="10yr" value={mkt.treasury_10yr} delta={delta10yr} suffix="%" />
@@ -198,7 +198,7 @@ export default function DealPulseTicker() {
 
         {/* CENTER — Deal Impact Stream (6 cols) */}
         <div className="col-span-6 flex flex-col items-center justify-center">
-          <div className="mb-0.5 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-slate-600">
+          <div className="mb-0.5 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-[#7A9A82]">
             Deal Impact
           </div>
           <div className="relative h-7 w-full overflow-hidden">
@@ -220,7 +220,7 @@ export default function DealPulseTicker() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex h-full items-center justify-center font-mono text-[0.62rem] text-slate-600"
+                  className="flex h-full items-center justify-center font-mono text-[0.62rem] text-[#7A9A82]"
                 >
                   {state.activeDeal
                     ? "Monitoring deal impact..."
@@ -235,7 +235,7 @@ export default function DealPulseTicker() {
                 <div
                   key={i}
                   className={`h-1 w-1 rounded-full transition-all ${
-                    i === visibleLine ? "bg-cyan-400" : "bg-slate-700"
+                    i === visibleLine ? "bg-cyan-400" : "bg-[#1E4A2E]"
                   }`}
                 />
               ))}
@@ -245,7 +245,7 @@ export default function DealPulseTicker() {
 
         {/* RIGHT — Issuance Window (3 cols) */}
         <div className="col-span-3 flex flex-col items-end gap-0.5">
-          <div className="mb-0.5 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-slate-600">
+          <div className="mb-0.5 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-[#7A9A82]">
             Issuance Window
           </div>
           <div className="flex items-center gap-2">
@@ -258,14 +258,14 @@ export default function DealPulseTicker() {
                     : "bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.5)]"
               }`}
             />
-            <span className="font-mono text-xs font-semibold uppercase text-slate-200">
+            <span className="font-mono text-xs font-semibold uppercase text-[#EDE8DC]">
               {win.status}
             </span>
           </div>
-          <span className="font-mono text-[0.58rem] text-slate-500">
+          <span className="font-mono text-[0.58rem] text-[#7A9A82]">
             {win.hours_remaining}hr · {Math.round(win.confidence * 100)}% conf
           </span>
-          <span className="font-[Space_Grotesk] text-[0.58rem] italic text-slate-400">
+          <span className="font-[Space_Grotesk] text-[0.58rem] italic text-[#7A9A82]">
             {win.summary}
           </span>
         </div>
@@ -278,7 +278,7 @@ export default function DealPulseTicker() {
           {/* Header row */}
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[0.48rem] uppercase tracking-[0.15em] text-slate-600">
+              <span className="font-mono text-[0.48rem] uppercase tracking-[0.15em] text-[#7A9A82]">
                 US Treasury Yield Curve
               </span>
               {blendedCoupon !== undefined && (
@@ -287,7 +287,7 @@ export default function DealPulseTicker() {
                 </span>
               )}
             </div>
-            <span className="font-mono text-[0.45rem] text-slate-700">
+            <span className="font-mono text-[0.45rem] text-[#2D6B3D]">
               {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })} ET
             </span>
           </div>
@@ -367,7 +367,7 @@ export default function DealPulseTicker() {
             <TerminalStat label="SOFR" value={`${mkt.sofr.toFixed(2)}%`} accent="cyan" />
             <TerminalStat label="Prime" value="8.50%" accent="amber" />
             <TerminalStat label="Fed Target" value="5.25–5.50%" accent="slate" />
-            <div className="ml-auto font-mono text-[0.45rem] text-slate-700">
+            <div className="ml-auto font-mono text-[0.45rem] text-[#2D6B3D]">
               src: UST · SOFR · FRED
             </div>
           </div>
@@ -378,7 +378,7 @@ export default function DealPulseTicker() {
 
         {/* RIGHT: rate cards (4 cols) */}
         <div className="col-span-4 pl-4">
-          <div className="mb-2 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-slate-600">
+          <div className="mb-2 font-mono text-[0.48rem] uppercase tracking-[0.15em] text-[#7A9A82]">
             Rates Terminal
           </div>
           <div className="grid grid-cols-2 gap-1.5">
@@ -410,7 +410,7 @@ function RateChip({
 }) {
   return (
     <div className="flex items-baseline justify-between">
-      <span className="font-mono text-[0.52rem] uppercase tracking-wider text-slate-600">
+      <span className="font-mono text-[0.52rem] uppercase tracking-wider text-[#7A9A82]">
         {label}
       </span>
       <div className="flex items-baseline gap-1.5">
@@ -451,13 +451,13 @@ function RateCard({
           : "border-white/[0.07] bg-white/[0.02]"
       }`}
     >
-      <div className="font-mono text-[0.45rem] uppercase tracking-widest text-slate-600">
+      <div className="font-mono text-[0.45rem] uppercase tracking-widest text-[#7A9A82]">
         {label}
       </div>
       <div className="mt-0.5 flex items-baseline gap-1">
         <span
           className={`font-mono text-[0.78rem] font-semibold leading-none ${
-            highlight ? "text-[#C4A048]" : "text-slate-200"
+            highlight ? "text-[#C4A048]" : "text-[#EDE8DC]"
           }`}
         >
           {typeof value === "number" ? value.toFixed(2) : value}
@@ -466,7 +466,7 @@ function RateCard({
         {delta !== undefined && delta !== 0 && (
           <span
             className={`font-mono text-[0.45rem] ${
-              isUp ? "text-rose-400" : isDown ? "text-emerald-400" : "text-slate-500"
+              isUp ? "text-rose-400" : isDown ? "text-emerald-400" : "text-[#7A9A82]"
             }`}
           >
             {isUp ? "▲" : "▼"}
@@ -490,12 +490,12 @@ function TerminalStat({
   const accentClass = {
     cyan: "text-[#C4A048]",
     amber: "text-[#C4A048]",
-    slate: "text-slate-400",
+    slate: "text-[#7A9A82]",
   }[accent];
 
   return (
     <div className="flex items-center gap-1.5">
-      <span className="font-mono text-[0.45rem] uppercase tracking-widest text-slate-600">
+      <span className="font-mono text-[0.45rem] uppercase tracking-widest text-[#7A9A82]">
         {label}
       </span>
       <span className={`font-mono text-[0.7rem] font-semibold ${accentClass}`}>{value}</span>

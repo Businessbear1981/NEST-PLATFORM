@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, Landmark, Activity, TrendingDown, TrendingUp, Radio } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-const inputClass = "rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-amber-300/55 focus:ring-2 focus:ring-amber-300/10";
+const inputClass = "rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none placeholder:text-[#7A9A82] focus:border-amber-300/55 focus:ring-2 focus:ring-amber-300/10";
 const buttonClass = "rounded-xl border border-amber-300/35 bg-amber-300/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-amber-100 shadow-[0_0_24px_rgba(251,191,36,0.13)] transition hover:bg-amber-300/20 disabled:opacity-60";
 
 function money(value: string | number) {
@@ -64,24 +64,24 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
   };
 
   return (
-    <div className="space-y-5 text-slate-100">
+    <div className="space-y-5 text-[#EDE8DC]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
             <Landmark size={17} /> Capital stack desk
           </div>
-          <p className="mt-1 text-sm leading-6 text-slate-400">Backend-connected tranches, LTC/LTV sizing, DSCR, and spread inputs.</p>
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">Backend-connected tranches, LTC/LTV sizing, DSCR, and spread inputs.</p>
         </div>
         <span className="w-fit rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-amber-100">{bonds.length} tranche records</span>
       </div>
 
       {bondsQuery.isLoading ? (
-        <div className="flex items-center justify-center rounded-2xl border border-amber-300/20 bg-black/30 p-8 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-amber-200" size={16} /> Loading bond stack...</div>
+        <div className="flex items-center justify-center rounded-2xl border border-amber-300/20 bg-black/30 p-8 text-sm text-[#7A9A82]"><Loader2 className="mr-2 animate-spin text-amber-200" size={16} /> Loading bond stack...</div>
       ) : (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="grid gap-3 md:grid-cols-2">
             {bonds.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-amber-300/25 bg-amber-300/5 p-6 text-sm text-slate-400 md:col-span-2">No tranche records yet. Add an A or B tranche to begin sizing this deal.</div>
+              <div className="rounded-2xl border border-dashed border-amber-300/25 bg-amber-300/5 p-6 text-sm text-[#7A9A82] md:col-span-2">No tranche records yet. Add an A or B tranche to begin sizing this deal.</div>
             ) : (
               bonds.map((bond) => (
                 <article key={bond.id} className="rounded-2xl border border-amber-300/25 bg-black/35 p-4 shadow-[0_0_32px_rgba(251,191,36,0.08)]">
@@ -93,10 +93,10 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
                     <span className="rounded-full border border-[#C4A048]/25 bg-[#C4A048]/10 px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.13em] text-[#EDE8DC]">{bond.status}</span>
                   </div>
                   <div className="mt-4 grid grid-cols-4 gap-2 text-sm">
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">LTC</span><p className="font-mono font-semibold text-amber-100">{percent(bond.ltc)}</p></div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">LTV</span><p className="font-mono font-semibold text-amber-100">{percent(bond.ltv)}</p></div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">DSCR</span><p className="font-mono font-semibold text-emerald-100">{Number(bond.dscr).toFixed(2)}x</p></div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Spread</span><p className="font-mono font-semibold text-[#EDE8DC]">+{Number(bond.spread).toFixed(0)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">LTC</span><p className="font-mono font-semibold text-amber-100">{percent(bond.ltc)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">LTV</span><p className="font-mono font-semibold text-amber-100">{percent(bond.ltv)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">DSCR</span><p className="font-mono font-semibold text-emerald-100">{Number(bond.dscr).toFixed(2)}x</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Spread</span><p className="font-mono font-semibold text-[#EDE8DC]">+{Number(bond.spread).toFixed(0)}</p></div>
                   </div>
                 </article>
               ))
@@ -124,25 +124,25 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
           <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
             <Radio size={14} className="text-emerald-400" /> Power strip — live rates
           </div>
-          <span className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-slate-500">
+          <span className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-[#7A9A82]">
             {marketRatesQuery.data?.timestamp ?? "loading"}
           </span>
         </div>
         <div className="mt-3 grid grid-cols-3 gap-3">
           <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
-            <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">10yr Treasury</span>
+            <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">10yr Treasury</span>
             <p className="font-mono text-lg font-semibold text-amber-100">
               {marketRatesQuery.isLoading ? "..." : marketRatesQuery.data?.treasury_10yr_pct != null ? `${marketRatesQuery.data.treasury_10yr_pct}%` : "4.28%"}
             </p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
-            <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">SOFR</span>
+            <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">SOFR</span>
             <p className="font-mono text-lg font-semibold text-amber-100">
               {marketRatesQuery.isLoading ? "..." : marketRatesQuery.data?.sofr_pct != null ? `${marketRatesQuery.data.sofr_pct}%` : "—"}
             </p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
-            <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">IG Spread</span>
+            <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">IG Spread</span>
             <p className="font-mono text-lg font-semibold text-[#EDE8DC]">
               {marketRatesQuery.isLoading ? "..." : marketRatesQuery.data?.ig_spread_bps != null ? `+${marketRatesQuery.data.ig_spread_bps}bp` : "—"}
             </p>
@@ -168,18 +168,18 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
               ) : refiMutation.data.recommendation === "PUT_ALERT" ? (
                 <TrendingUp size={18} className="text-red-400" />
               ) : (
-                <Activity size={18} className="text-slate-400" />
+                <Activity size={18} className="text-[#7A9A82]" />
               )}
               <div>
                 <p className={`font-mono text-sm font-semibold ${
                   refiMutation.data.recommendation === "EXECUTE_CALL" ? "text-emerald-300" :
                   refiMutation.data.recommendation === "CALL_ELIGIBLE" ? "text-emerald-200" :
                   refiMutation.data.recommendation === "PUT_ALERT" ? "text-red-300" :
-                  "text-slate-300"
+                  "text-[#EDE8DC]"
                 }`}>
                   {refiMutation.data.recommendation?.replace(/_/g, " ")}
                 </p>
-                <p className="font-mono text-[0.62rem] text-slate-500">
+                <p className="font-mono text-[0.62rem] text-[#7A9A82]">
                   Rate Δ: {refiMutation.data.rate_delta_bps > 0 ? "+" : ""}{refiMutation.data.rate_delta_bps}bp
                   {refiMutation.data.estimated_savings_usd > 0 && (
                     <> · Est. saving: ${(refiMutation.data.estimated_savings_usd / 1_000_000).toFixed(2)}M</>

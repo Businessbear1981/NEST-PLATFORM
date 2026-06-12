@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
@@ -129,13 +129,13 @@ export default function IPOReadinessDashboard() {
           <h3 className="font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-violet-200">
             IPO Readiness Assessment
           </h3>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-[#7A9A82]">
             Evaluate target company readiness for public markets across 8 institutional gateways
           </p>
         </div>
         <button
           onClick={handleDemoFill}
-          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[0.6rem] text-slate-400 hover:bg-white/[0.06] transition-all"
+          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[0.6rem] text-[#7A9A82] hover:bg-white/[0.06] transition-all"
         >
           Load Demo
         </button>
@@ -145,7 +145,7 @@ export default function IPOReadinessDashboard() {
         {/* Input Form */}
         <div className="col-span-4 space-y-3">
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 space-y-2.5">
-            <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500 mb-2">Financial Profile</h4>
+            <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-2">Financial Profile</h4>
             <FormInput label="Company" value={form.company_name} onChange={(v) => setForm({...form, company_name: v})} placeholder="Company name" />
             <FormInput label="Revenue ($)" value={form.revenue_usd} onChange={(v) => setForm({...form, revenue_usd: v})} type="number" placeholder="145000000" />
             <FormInput label="EBITDA ($)" value={form.ebitda_usd} onChange={(v) => setForm({...form, ebitda_usd: v})} type="number" placeholder="21750000" />
@@ -156,7 +156,7 @@ export default function IPOReadinessDashboard() {
           </div>
 
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 space-y-2.5">
-            <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500 mb-2">Institutional Readiness</h4>
+            <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-2">Institutional Readiness</h4>
             <FormInput label="Years Audited" value={form.years_audited} onChange={(v) => setForm({...form, years_audited: v})} type="number" placeholder="3" />
             <FormInput label="Independent Directors" value={form.independent_board_members} onChange={(v) => setForm({...form, independent_board_members: v})} type="number" placeholder="3" />
             <FormInput label="Public Comps" value={form.public_comparable_count} onChange={(v) => setForm({...form, public_comparable_count: v})} type="number" placeholder="4" />
@@ -192,13 +192,13 @@ export default function IPOReadinessDashboard() {
                     <div className={`font-[Cormorant_Garamond] text-2xl font-bold ${v?.text}`}>
                       {v?.label}
                     </div>
-                    <p className="mt-1 font-[Space_Grotesk] text-sm text-slate-300">{result.timeline}</p>
+                    <p className="mt-1 font-[Space_Grotesk] text-sm text-[#EDE8DC]">{result.timeline}</p>
                   </div>
                   <div className="text-right">
                     <div className={`font-mono text-4xl font-bold ${v?.text}`}>
                       {result.overall_score}
                     </div>
-                    <div className="font-mono text-[0.6rem] text-slate-500">
+                    <div className="font-mono text-[0.6rem] text-[#7A9A82]">
                       {result.passing_gates}/{result.total_gates} gates passing
                     </div>
                   </div>
@@ -217,7 +217,7 @@ export default function IPOReadinessDashboard() {
 
               {/* Gateway Chart */}
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-                <h4 className="mb-3 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+                <h4 className="mb-3 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
                   Gateway Scores
                 </h4>
                 <ResponsiveContainer width="100%" height={280}>
@@ -251,7 +251,7 @@ export default function IPOReadinessDashboard() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-[Space_Grotesk] text-[0.75rem] font-medium text-slate-200">
+                      <span className="font-[Space_Grotesk] text-[0.75rem] font-medium text-[#EDE8DC]">
                         {GATE_LABELS[key] ?? key}
                       </span>
                       <span className={`font-mono text-sm font-bold ${
@@ -262,9 +262,9 @@ export default function IPOReadinessDashboard() {
                       </span>
                     </div>
                     <div className="mt-1.5 space-y-1 font-mono text-[0.55rem]">
-                      <div><span className="text-slate-600">Benchmark:</span> <span className="text-slate-400">{gate.benchmark}</span></div>
-                      <div><span className="text-slate-600">Current:</span> <span className="text-[#C4A048]">{gate.current}</span></div>
-                      <div><span className="text-slate-600">Gap:</span> <span className={gate.score >= 70 ? "text-emerald-400" : "text-amber-400"}>{gate.gap}</span></div>
+                      <div><span className="text-[#7A9A82]">Benchmark:</span> <span className="text-[#7A9A82]">{gate.benchmark}</span></div>
+                      <div><span className="text-[#7A9A82]">Current:</span> <span className="text-[#C4A048]">{gate.current}</span></div>
+                      <div><span className="text-[#7A9A82]">Gap:</span> <span className={gate.score >= 70 ? "text-emerald-400" : "text-amber-400"}>{gate.gap}</span></div>
                     </div>
                   </motion.div>
                 ))}
@@ -274,10 +274,10 @@ export default function IPOReadinessDashboard() {
             <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-white/[0.06]">
               <div className="text-center">
                 <div className="mb-2 text-3xl opacity-20">📊</div>
-                <p className="font-mono text-sm text-slate-600">
+                <p className="font-mono text-sm text-[#7A9A82]">
                   Enter company details and run assessment
                 </p>
-                <p className="mt-1 font-mono text-[0.6rem] text-slate-700">
+                <p className="mt-1 font-mono text-[0.6rem] text-[#2D6B3D]">
                   or click "Load Demo" to see a sample evaluation
                 </p>
               </div>
@@ -294,13 +294,13 @@ function FormInput({ label, value, onChange, placeholder, type = "text" }: {
 }) {
   return (
     <div>
-      <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">{label}</label>
+      <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-slate-200 placeholder:text-slate-700 focus:border-violet-500/40 focus:outline-none"
+        className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-[#EDE8DC] placeholder:text-[#2D6B3D] focus:border-violet-500/40 focus:outline-none"
       />
     </div>
   );
@@ -314,8 +314,8 @@ function Toggle({ label, checked, onChange }: {
       onClick={() => onChange(!checked)}
       className="flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-1.5"
     >
-      <span className="font-mono text-[0.6rem] text-slate-400">{label}</span>
-      <div className={`h-4 w-8 rounded-full transition-all ${checked ? "bg-violet-500" : "bg-slate-700"}`}>
+      <span className="font-mono text-[0.6rem] text-[#7A9A82]">{label}</span>
+      <div className={`h-4 w-8 rounded-full transition-all ${checked ? "bg-violet-500" : "bg-[#1E4A2E]"}`}>
         <div className={`h-4 w-4 rounded-full bg-white shadow transition-transform ${checked ? "translate-x-4" : "translate-x-0"}`} />
       </div>
     </button>

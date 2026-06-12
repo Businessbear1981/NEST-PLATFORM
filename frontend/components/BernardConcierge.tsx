@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Send, Loader2, X, Maximize2, Minimize2, Sparkles } from "lucide-react";
@@ -333,14 +333,14 @@ User question: ${msg}`,
           </div>
           <div>
             <p className="font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-amber-200">Bernard</p>
-            <p className="font-mono text-[0.52rem] uppercase tracking-[0.1em] text-slate-500">Analyst Concierge</p>
+            <p className="font-mono text-[0.52rem] uppercase tracking-[0.1em] text-[#7A9A82]">Analyst Concierge</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setIsExpanded(!isExpanded)} className="rounded-lg p-1.5 text-slate-400 transition hover:bg-white/5 hover:text-white">
+          <button onClick={() => setIsExpanded(!isExpanded)} className="rounded-lg p-1.5 text-[#7A9A82] transition hover:bg-white/5 hover:text-white">
             {isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
-          <button onClick={() => setIsOpen(false)} className="rounded-lg p-1.5 text-slate-400 transition hover:bg-white/5 hover:text-white">
+          <button onClick={() => setIsOpen(false)} className="rounded-lg p-1.5 text-[#7A9A82] transition hover:bg-white/5 hover:text-white">
             <X size={14} />
           </button>
         </div>
@@ -353,11 +353,11 @@ User question: ${msg}`,
             <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
               msg.role === "user"
                 ? "bg-amber-300/12 border border-amber-300/25 text-amber-100"
-                : "bg-white/[0.04] border border-white/10 text-slate-300"
+                : "bg-white/[0.04] border border-white/10 text-[#EDE8DC]"
             }`}>
               <p className="whitespace-pre-wrap font-mono text-[0.78rem] leading-6">{msg.content}</p>
               {msg.tool && (
-                <p className="mt-1 font-mono text-[0.52rem] uppercase text-slate-600">via {msg.tool}</p>
+                <p className="mt-1 font-mono text-[0.52rem] uppercase text-[#7A9A82]">via {msg.tool}</p>
               )}
             </div>
           </div>
@@ -366,7 +366,7 @@ User question: ${msg}`,
           <div className="flex justify-start">
             <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5">
               <Loader2 size={14} className="animate-spin text-amber-200" />
-              <span className="font-mono text-[0.72rem] text-slate-400">Bernard is thinking...</span>
+              <span className="font-mono text-[0.72rem] text-[#7A9A82]">Bernard is thinking...</span>
             </div>
           </div>
         )}
@@ -378,7 +378,7 @@ User question: ${msg}`,
         <div className="flex flex-wrap gap-1.5 px-4 pb-2">
           {SUGGESTED_PROMPTS.map((prompt) => (
             <button key={prompt} onClick={() => sendMessage(prompt)}
-              className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-[0.58rem] text-slate-400 transition hover:border-amber-300/30 hover:bg-amber-300/5 hover:text-amber-200">
+              className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-[0.58rem] text-[#7A9A82] transition hover:border-amber-300/30 hover:bg-amber-300/5 hover:text-amber-200">
               <Sparkles size={10} className="mr-1 inline" />{prompt}
             </button>
           ))}
@@ -394,7 +394,7 @@ User question: ${msg}`,
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             placeholder="Ask Bernard anything..."
-            className="flex-1 rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-amber-300/50"
+            className="flex-1 rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-[#EDE8DC] outline-none placeholder:text-[#7A9A82] focus:border-amber-300/50"
           />
           <button
             onClick={() => sendMessage()}

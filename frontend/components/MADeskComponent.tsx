@@ -1,15 +1,15 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, Target, TrendingUp } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-const inputClass = "rounded-xl border border-fuchsia-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-fuchsia-300/55 focus:ring-2 focus:ring-fuchsia-300/10";
+const inputClass = "rounded-xl border border-fuchsia-300/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none placeholder:text-[#7A9A82] focus:border-fuchsia-300/55 focus:ring-2 focus:ring-fuchsia-300/10";
 
 function scoreTone(score?: number | null) {
   const value = Number(score ?? 0);
   if (value >= 75) return "text-emerald-100";
   if (value >= 60) return "text-amber-100";
-  return "text-slate-400";
+  return "text-[#7A9A82]";
 }
 
 function recommendationClass(recommendation?: string | null) {
@@ -55,29 +55,29 @@ export function MADeskComponent() {
   const targets = targetsQuery.data ?? [];
 
   return (
-    <div className="space-y-5 text-slate-100">
+    <div className="space-y-5 text-[#EDE8DC]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-fuchsia-200"><Target size={17} /> M&A intelligence desk</div>
-          <p className="mt-1 text-sm leading-6 text-slate-400">Backend-connected target qualification, score updates, and acquisition recommendation state.</p>
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">Backend-connected target qualification, score updates, and acquisition recommendation state.</p>
         </div>
         <span className="w-fit rounded-full border border-fuchsia-300/30 bg-fuchsia-400/10 px-3 py-1 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-fuchsia-100">{targets.length} target records</span>
       </div>
 
       {targetsQuery.isLoading ? (
-        <div className="flex items-center justify-center rounded-2xl border border-fuchsia-300/20 bg-black/30 p-8 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-fuchsia-200" size={16} /> Loading targets...</div>
+        <div className="flex items-center justify-center rounded-2xl border border-fuchsia-300/20 bg-black/30 p-8 text-sm text-[#7A9A82]"><Loader2 className="mr-2 animate-spin text-fuchsia-200" size={16} /> Loading targets...</div>
       ) : (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="space-y-3">
             {targets.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-fuchsia-300/25 bg-fuchsia-400/5 p-6 text-sm text-slate-400">No targets in the M&A desk yet. Add a target to begin scoring.</div>
+              <div className="rounded-2xl border border-dashed border-fuchsia-300/25 bg-fuchsia-400/5 p-6 text-sm text-[#7A9A82]">No targets in the M&A desk yet. Add a target to begin scoring.</div>
             ) : (
               targets.map((target) => (
                 <article key={target.id} className="rounded-2xl border border-fuchsia-300/25 bg-black/35 p-4 shadow-[0_0_32px_rgba(217,70,239,0.08)]">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <h3 className="font-mono text-lg font-semibold uppercase tracking-[0.04em] text-white">{target.name}</h3>
-                      <p className="mt-1 text-sm text-slate-400">{target.sector}</p>
+                      <p className="mt-1 text-sm text-[#7A9A82]">{target.sector}</p>
                     </div>
                     <span className={`w-fit rounded-full border px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.13em] ${recommendationClass(target.recommendation)}`}>{target.recommendation || "review"}</span>
                   </div>
@@ -90,12 +90,12 @@ export function MADeskComponent() {
                       ["Overall", target.overallScore],
                     ].map(([label, score]) => (
                       <div key={String(label)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-sm">
-                        <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{label}</span>
+                        <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{label}</span>
                         <p className={`mt-1 font-mono text-lg font-semibold ${scoreTone(Number(score ?? 0))}`}>{score ?? "—"}</p>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-3 text-xs text-[#7A9A82] sm:flex-row sm:items-center sm:justify-between">
                     <span>Revenue {money(target.revenue)} · EBITDA {money(target.ebitda)} · Debt {money(target.debt)}</span>
                     <button onClick={() => handleUpdateScores(target.id)} disabled={updateScoresMutation.isPending} className="w-fit rounded-xl border border-fuchsia-300/25 bg-fuchsia-300/8 px-3 py-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-fuchsia-100 hover:bg-fuchsia-300/14 disabled:opacity-60">
                       {updateScoresMutation.isPending ? "Scoring..." : "Run scoring"}

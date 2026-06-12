@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { DealStateProvider } from "@/contexts/DealStateContext";
 import { BernardProvider } from "@/contexts/BernardContext";
 import LiveMarketTape from "./LiveMarketTape";
@@ -19,7 +19,7 @@ export default function BondDeskPage() {
     <DealStateProvider>
       <BernardProvider defaultMode="standard">
         <div
-          className="min-h-screen text-slate-100"
+          className="min-h-screen text-[#EDE8DC]"
           style={{
             background:
               "radial-gradient(ellipse at 8% 0%, rgba(196,160,72,0.09) 0%, transparent 45%)," +
@@ -50,7 +50,7 @@ export default function BondDeskPage() {
                     <h1 className="font-[Cormorant_Garamond] text-4xl font-bold tracking-tight text-[#EDE8DC]">
                       GENIE
                     </h1>
-                    <span className="font-mono text-[0.55rem] uppercase tracking-[0.2em] text-slate-500">
+                    <span className="font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[#7A9A82]">
                       Bond Arrangement Engine
                     </span>
                   </div>
@@ -68,7 +68,7 @@ export default function BondDeskPage() {
                   { label: "CMBS DESK", value: "OPEN", color: "text-[#C4A048]" },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex flex-col items-end gap-0.5">
-                    <span className="font-mono text-[0.45rem] uppercase tracking-widest text-slate-600">{label}</span>
+                    <span className="font-mono text-[0.45rem] uppercase tracking-widest text-[#7A9A82]">{label}</span>
                     <div className="flex items-center gap-1.5">
                       <motion.div
                         className={`h-1.5 w-1.5 rounded-full ${color.replace("text-", "bg-")}`}
@@ -131,7 +131,7 @@ function SectionLabel({ label, tag }: { label: string; tag: string }) {
     <div className="mb-3 flex items-center gap-3">
       <div className="h-px flex-1 bg-white/[0.05]" />
       <span className="font-[Cormorant_Garamond] text-base font-semibold text-[#EDE8DC]/70">{label}</span>
-      <span className="font-mono text-[0.45rem] uppercase tracking-[0.18em] text-slate-600">{tag}</span>
+      <span className="font-mono text-[0.45rem] uppercase tracking-[0.18em] text-[#7A9A82]">{tag}</span>
       <div className="h-px flex-1 bg-white/[0.05]" />
     </div>
   );

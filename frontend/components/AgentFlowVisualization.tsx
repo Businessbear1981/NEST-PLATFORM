@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from 'react';
 import { Activity, ArrowRight, Bot, BrainCircuit, CheckCircle2, Clock3, DatabaseZap, FileCheck2, LockKeyhole, RadioTower, ShieldCheck, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -130,8 +130,8 @@ export function AgentFlowVisualization() {
   };
 
   return (
-    <section className="space-y-5 text-slate-100" data-testid="agent-flow-visualization">
-      <Card className="overflow-hidden border-violet-300/20 bg-slate-950/75 text-slate-100">
+    <section className="space-y-5 text-[#EDE8DC]" data-testid="agent-flow-visualization">
+      <Card className="overflow-hidden border-violet-300/20 bg-black/75 text-[#EDE8DC]">
         <CardHeader className="relative">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(139,92,246,0.18),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(196,160,72,0.12),transparent_28%)]" />
           <div className="relative flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -139,7 +139,7 @@ export function AgentFlowVisualization() {
               <CardTitle className="flex items-center gap-2 text-violet-100">
                 <BrainCircuit className="h-5 w-5" /> Agent-flow subscription simulation
               </CardTitle>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[#7A9A82]">
                 A live-demo orchestration lane showing how evidence enters the NEST nervous system, moves through agent reasoning and workpaper drafting, then stops at human review before external action.
               </p>
             </div>
@@ -155,16 +155,16 @@ export function AgentFlowVisualization() {
             ['Approved outputs', flowStats.approvedCount.toString(), 'release-ready workpapers'],
           ].map(([label, value, detail]) => (
             <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-slate-500">{label}</p>
+              <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#7A9A82]">{label}</p>
               <p className="mt-2 text-2xl font-black text-white">{value}</p>
-              <p className="mt-1 text-xs text-slate-400">{detail}</p>
+              <p className="mt-1 text-xs text-[#7A9A82]">{detail}</p>
             </div>
           ))}
         </CardContent>
       </Card>
 
       <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-        <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#0D2218] bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><RadioTower className="h-5 w-5" /> Live agent state lanes</CardTitle>
           </CardHeader>
@@ -180,14 +180,14 @@ export function AgentFlowVisualization() {
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-slate-500">{flow.desk}</p>
+                      <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[#7A9A82]">{flow.desk}</p>
                       <h3 className="mt-1 flex items-center gap-2 text-lg font-black text-white"><Bot className="h-4 w-4 text-violet-200" /> {flow.agent}</h3>
                     </div>
                     <Badge className={phaseClasses[flow.phase]}>{phaseLabels[flow.phase]}</Badge>
                   </div>
-                  <p className="mt-2 text-sm text-slate-300">{flow.source}</p>
+                  <p className="mt-2 text-sm text-[#EDE8DC]">{flow.source}</p>
                   <div className="mt-4 space-y-2">
-                    <div className="flex justify-between text-xs text-slate-400"><span>State transition progress</span><span>{flow.progress}%</span></div>
+                    <div className="flex justify-between text-xs text-[#7A9A82]"><span>State transition progress</span><span>{flow.progress}%</span></div>
                     <Progress value={flow.progress} className="h-2" />
                   </div>
                 </button>
@@ -196,7 +196,7 @@ export function AgentFlowVisualization() {
           </CardContent>
         </Card>
 
-        <Card className="border-violet-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-violet-300/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-violet-100"><Sparkles className="h-5 w-5" /> Selected flow detail panel</CardTitle>
           </CardHeader>
@@ -204,12 +204,12 @@ export function AgentFlowVisualization() {
             <div className="rounded-2xl border border-violet-300/25 bg-violet-400/10 p-4">
               <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-violet-200">{selectedFlow.agent} · {selectedFlow.desk}</p>
               <h3 className="mt-2 text-2xl font-black text-white">{phaseLabels[selectedFlow.phase]}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-300">{selectedFlow.nextAction}</p>
+              <p className="mt-2 text-sm leading-6 text-[#EDE8DC]">{selectedFlow.nextAction}</p>
             </div>
 
             <div className="grid gap-2 sm:grid-cols-2">
               {selectedFlow.evidence.map((item) => (
-                <div key={item} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-300">
+                <div key={item} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-sm text-[#EDE8DC]">
                   <DatabaseZap className="h-4 w-4 shrink-0 text-[#C4A048]" /> {item}
                 </div>
               ))}
@@ -221,7 +221,7 @@ export function AgentFlowVisualization() {
             </div>
 
             <div className="grid gap-2 sm:grid-cols-2">
-              <Button type="button" className="bg-violet-400 text-slate-950 hover:bg-violet-300" onClick={streamNextEvent}>
+              <Button type="button" className="bg-violet-400 text-[#030A06] hover:bg-violet-300" onClick={streamNextEvent}>
                 <Activity className="mr-2 h-4 w-4" /> Stream next event
               </Button>
               <Button type="button" variant="outline" className="border-amber-300/35 bg-amber-400/10 text-amber-100 hover:bg-amber-400/15" onClick={routeHumanGate}>
@@ -232,11 +232,11 @@ export function AgentFlowVisualization() {
         </Card>
       </div>
 
-      <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
+      <Card className="border-[#C4A048]/20 bg-black/75 text-[#EDE8DC]">
         <CardHeader><CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><Clock3 className="h-5 w-5" /> Agent state event stream</CardTitle></CardHeader>
         <CardContent className="grid gap-2 lg:grid-cols-2">
           {events.map((event, index) => (
-            <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
+            <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-[#EDE8DC]">
               {index === 0 ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 2 === 0 ? <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" /> : <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}
               <span>{event}</span>
             </div>

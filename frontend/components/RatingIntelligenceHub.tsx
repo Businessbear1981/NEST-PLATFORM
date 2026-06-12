@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, TrendingUp, CheckCircle2, XCircle, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,19 +45,19 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
       {rating && (
         <div className="grid grid-cols-3 gap-4">
           <div className="rounded-2xl border border-amber-300/25 bg-black/35 p-5 text-center">
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Indicative Rating</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Indicative Rating</p>
             <p className="mt-2 font-mono text-4xl font-bold text-amber-100">{rating.indicative_rating}</p>
-            <p className="mt-1 font-mono text-sm text-slate-400">Maxwell Engine</p>
+            <p className="mt-1 font-mono text-sm text-[#7A9A82]">Maxwell Engine</p>
           </div>
           <div className="rounded-2xl border border-emerald-300/25 bg-black/35 p-5 text-center">
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Deal Score</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Deal Score</p>
             <p className="mt-2 font-mono text-4xl font-bold text-emerald-200">{rating.deal_score}/100</p>
-            <p className="mt-1 font-mono text-sm text-slate-400">Grade: {rating.deal_score_grade}</p>
+            <p className="mt-1 font-mono text-sm text-[#7A9A82]">Grade: {rating.deal_score_grade}</p>
           </div>
           <div className="rounded-2xl border border-[#C4A048]/25 bg-black/35 p-5 text-center">
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">ESG Grade</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">ESG Grade</p>
             <p className="mt-2 font-mono text-4xl font-bold text-[#E8C87A]">{esg?.esg_grade ?? "—"}</p>
-            <p className="mt-1 font-mono text-sm text-slate-400">{esg?.composite_score ?? "—"}/100</p>
+            <p className="mt-1 font-mono text-sm text-[#7A9A82]">{esg?.composite_score ?? "—"}/100</p>
           </div>
         </div>
       )}
@@ -71,7 +71,7 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
           <div className="mt-3 overflow-x-auto">
             <table className="w-full font-mono text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">
+                <tr className="border-b border-white/10 text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">
                   <th className="py-2 text-left">Grade</th>
                   <th className="py-2 text-center">DSCR</th>
                   <th className="py-2 text-center">LTV</th>
@@ -90,7 +90,7 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
                           <span className={metrics[m]?.pass ? "text-emerald-200" : "text-red-200"}>
                             {metrics[m]?.actual?.toFixed?.(2) ?? metrics[m]?.actual}
                           </span>
-                          <span className="text-slate-600">/ {metrics[m]?.required}</span>
+                          <span className="text-[#7A9A82]">/ {metrics[m]?.required}</span>
                         </span>
                       </td>
                     ))}
@@ -99,7 +99,7 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
               </tbody>
             </table>
           </div>
-          <p className="mt-2 font-mono text-[0.56rem] text-slate-500">
+          <p className="mt-2 font-mono text-[0.56rem] text-[#7A9A82]">
             Current grade: <span className="text-amber-200">{(compareMutation.data as any)?.current_grade}</span>
           </p>
         </div>
@@ -108,8 +108,8 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
       {/* AI Rationale */}
       {rating?.ai_rationale && (
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-          <h3 className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">AI Rating Rationale</h3>
-          <p className="mt-2 font-mono text-sm leading-6 text-slate-300">{rating.ai_rationale}</p>
+          <h3 className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">AI Rating Rationale</h3>
+          <p className="mt-2 font-mono text-sm leading-6 text-[#EDE8DC]">{rating.ai_rationale}</p>
         </div>
       )}
     </div>

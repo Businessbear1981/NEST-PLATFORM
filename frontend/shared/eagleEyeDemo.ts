@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EagleEye Demo Data — comprehensive pre-loaded signals for investor demo.
  * Types here are the contract for frontend ↔ backend API shape.
  */
@@ -249,17 +249,17 @@ export const STATUS_COLORS: Record<SignalStatus, string> = {
   hot: "border-red-400/40 bg-red-500/15 text-red-200",
   warm: "border-amber-300/40 bg-amber-300/15 text-amber-200",
   review: "border-cyan-300/40 bg-cyan-400/15 text-cyan-200",
-  passed: "border-slate-400/40 bg-slate-500/15 text-slate-300",
+  passed: "border-[#2D6B3D]/40 bg-[#2D6B3D]/15 text-[#EDE8DC]",
   converted: "border-emerald-300/40 bg-emerald-400/15 text-emerald-200",
 };
 
 export const PROSPECT_STATUS_COLORS: Record<string, string> = {
-  cold: "border-slate-400/40 bg-slate-500/15 text-slate-300",
+  cold: "border-[#2D6B3D]/40 bg-[#2D6B3D]/15 text-[#EDE8DC]",
   warm: "border-amber-300/40 bg-amber-300/15 text-amber-200",
   hot: "border-red-400/40 bg-red-500/15 text-red-200",
   meeting_booked: "border-emerald-300/40 bg-emerald-400/15 text-emerald-200",
   converted: "border-green-300/40 bg-green-400/15 text-green-200",
-  recycled: "border-slate-400/40 bg-slate-500/15 text-slate-300",
+  recycled: "border-[#2D6B3D]/40 bg-[#2D6B3D]/15 text-[#EDE8DC]",
 };
 
 // ── Helpers ──────────────────────────────────────────────────────

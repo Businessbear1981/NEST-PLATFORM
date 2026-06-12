@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AlertCircle, CheckCircle2, FileCheck2, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -67,7 +67,7 @@ export function SuretySubmissionChecklist() {
   const blockingItems = CHECKLIST_ITEMS.filter((item) => item.blocking && item.status !== 'approved').length;
 
   return (
-    <Card className="border-slate-700 bg-slate-950/80" data-testid="surety-submission-checklist">
+    <Card className="border-[#1E4A2E] bg-black/80" data-testid="surety-submission-checklist">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#C4A048]">
           <FileCheck2 className="h-5 w-5" />
@@ -79,7 +79,7 @@ export function SuretySubmissionChecklist() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+          <div className="rounded-lg border border-[#1E4A2E] bg-[#030A06]/70 p-3">
             <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Readiness</p>
             <p className="mt-1 text-2xl font-bold text-foreground">{completionRate}%</p>
             <Progress value={completionRate} className="mt-2 h-1.5" />
@@ -96,7 +96,7 @@ export function SuretySubmissionChecklist() {
 
         <div className="space-y-3">
           {CHECKLIST_ITEMS.map((item) => (
-            <div key={item.id} className="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+            <div key={item.id} className="rounded-lg border border-[#1E4A2E] bg-[#030A06]/70 p-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <div className="flex items-center gap-2">

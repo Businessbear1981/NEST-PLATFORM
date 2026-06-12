@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, RefreshCw, Eye, Layers3, Target, TrendingUp, ShieldCheck, Scale, Gavel, Bot, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,10 +57,10 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
         <h1 className="relative mt-5 text-4xl font-bold tracking-[0.14em] text-amber-200/90" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           NEST ADVISORS
         </h1>
-        <p className="relative mt-1 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+        <p className="relative mt-1 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#7A9A82]">
           Arden Edge Capital × Soparrow Capital
         </p>
-        <p className="relative mt-0.5 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-slate-600">
+        <p className="relative mt-0.5 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-[#7A9A82]">
           Bond Command Center · Deal {dealId}
         </p>
       </div>
@@ -69,13 +69,13 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-mono text-2xl font-bold uppercase tracking-[0.04em] text-white">Bond Command Center</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-[#7A9A82]">
             Deal {dealId} — {workflow?.phase ?? "loading"} phase
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Readiness</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Readiness</p>
             <p className={`font-mono text-2xl font-bold ${overallScore >= 70 ? "text-emerald-200" : overallScore >= 40 ? "text-amber-200" : "text-red-200"}`}>
               {overallScore}%
             </p>
@@ -113,7 +113,7 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
               <div key={p.label} className={`rounded-xl border p-3 ${tone}`}>
                 <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em]">{p.label}</p>
                 <p className="mt-1 font-mono text-xl font-bold text-white">{p.score ?? "—"}</p>
-                <p className="font-mono text-[0.52rem] uppercase text-slate-400">{p.desc}</p>
+                <p className="font-mono text-[0.52rem] uppercase text-[#7A9A82]">{p.desc}</p>
               </div>
             );
           })}
@@ -123,7 +123,7 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
       {/* AI Assessment */}
       {workflow?.aiAssessment && (
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
-          <p className="font-mono text-sm leading-6 text-slate-300">{workflow.aiAssessment}</p>
+          <p className="font-mono text-sm leading-6 text-[#EDE8DC]">{workflow.aiAssessment}</p>
         </div>
       )}
 

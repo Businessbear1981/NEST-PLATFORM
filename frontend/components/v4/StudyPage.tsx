@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * Licensing Study — Series 50 / 54 / 7 / 24/63 curriculum + progress.
  *
@@ -82,7 +82,7 @@ function statusBadgeClass(status: Status) {
     case "in_progress":
       return "border-[#C4A048]/50 bg-[#C4A048]/15 text-[#E8C87A]";
     default:
-      return "border-white/15 bg-white/[0.03] text-slate-400";
+      return "border-white/15 bg-white/[0.03] text-[#7A9A82]";
   }
 }
 
@@ -157,7 +157,7 @@ export default function StudyPage() {
   return (
     <div className="space-y-6">
       {/* Header — same idiom as EMMA / Treasury */}
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 shadow-[0_0_85px_rgba(196,160,72,0.13)] sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-[#EDE8DC] shadow-[0_0_85px_rgba(196,160,72,0.13)] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.17),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1fr_0.7fr]">
           <div>
@@ -170,7 +170,7 @@ export default function StudyPage() {
             >
               Licensing Study
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#EDE8DC]">
               Track 2 (MSRB Municipal Advisor — Series 50 + 54) registers NEST Advisors LLC to collect transaction-based advisory fees directly on muni transactions. Track 1 (Britehorn-sponsored — Series 7 + 24 + 63) hosts Sean as a registered rep at Britehorn Securities (BD #36402). Both study tracks ship as v1 platform surfaces per ADR-0001.
             </p>
           </div>
@@ -208,7 +208,7 @@ export default function StudyPage() {
               {/* Exam meta strip */}
               {curriculum && (
                 <Card className="border-white/10 bg-[#0D2218]">
-                  <CardContent className="grid gap-4 p-4 text-xs text-slate-300 sm:grid-cols-4">
+                  <CardContent className="grid gap-4 p-4 text-xs text-[#EDE8DC] sm:grid-cols-4">
                     <MetaCell label="Regulator" value={curriculum.regulator} />
                     <MetaCell label="Track" value={curriculum.track} />
                     <MetaCell
@@ -230,7 +230,7 @@ export default function StudyPage() {
                     <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[#C4A048]">
                       Curriculum loading…
                     </p>
-                    <p className="mt-2 text-sm text-slate-300">
+                    <p className="mt-2 text-sm text-[#EDE8DC]">
                       {e.label} outline will populate from the published FINRA / NASAA content outline. Track 1 sequence runs after Track 2 enters Phase 2 per ADR-0001.
                     </p>
                   </CardContent>
@@ -243,7 +243,7 @@ export default function StudyPage() {
                 return (
                   <Card
                     key={section.id}
-                    className="border-slate-700 bg-[#0D2218]"
+                    className="border-[#1E4A2E] bg-[#0D2218]"
                   >
                     <CardHeader className="pb-2">
                       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -254,7 +254,7 @@ export default function StudyPage() {
                           >
                             {section.title}
                           </CardTitle>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
+                          <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-[#7A9A82]">
                             <span>~{fmtMinutes(section.estimated_minutes)}</span>
                             {section.weight_pct != null && (
                               <span>· {section.weight_pct}% weight</span>
@@ -273,15 +273,15 @@ export default function StudyPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-xs leading-5 text-slate-300">
+                      <p className="text-xs leading-5 text-[#EDE8DC]">
                         {section.description}
                       </p>
 
                       {section.subsections && section.subsections.length > 0 && (
                         <Accordion type="single" collapsible className="rounded-md border border-white/5 bg-black/20">
                           <AccordionItem value={section.id} className="border-b-0">
-                            <AccordionTrigger className="px-3 text-xs text-slate-300 hover:no-underline">
-                              <span className="font-mono uppercase tracking-[0.14em] text-slate-400">
+                            <AccordionTrigger className="px-3 text-xs text-[#EDE8DC] hover:no-underline">
+                              <span className="font-mono uppercase tracking-[0.14em] text-[#7A9A82]">
                                 Sub-topics ({section.subsections.length})
                               </span>
                             </AccordionTrigger>
@@ -296,8 +296,8 @@ export default function StudyPage() {
                                       className="flex items-center justify-between gap-3 rounded-md border border-white/5 bg-white/[0.02] px-2.5 py-1.5"
                                     >
                                       <div className="min-w-0">
-                                        <p className="truncate text-xs text-slate-200">{sub.title}</p>
-                                        <p className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-slate-500">
+                                        <p className="truncate text-xs text-[#EDE8DC]">{sub.title}</p>
+                                        <p className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">
                                           {fmtMinutes(sub.estimated_minutes)}
                                         </p>
                                       </div>
@@ -309,7 +309,7 @@ export default function StudyPage() {
                                           size="sm"
                                           variant="outline"
                                           disabled={loading}
-                                          className="h-7 border-white/10 bg-white/[0.03] px-2 text-[0.65rem] font-mono uppercase tracking-[0.12em] text-slate-300 hover:bg-white/[0.07]"
+                                          className="h-7 border-white/10 bg-white/[0.03] px-2 text-[0.65rem] font-mono uppercase tracking-[0.12em] text-[#EDE8DC] hover:bg-white/[0.07]"
                                           onClick={() =>
                                             markSection(
                                               sub.id,
@@ -337,7 +337,7 @@ export default function StudyPage() {
                         </Accordion>
                       )}
 
-                      <p className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-slate-600">
+                      <p className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">
                         Source: {section.content_source}
                       </p>
 
@@ -364,7 +364,7 @@ export default function StudyPage() {
                             size="sm"
                             variant="outline"
                             disabled={loading}
-                            className="border-white/15 bg-transparent text-slate-400 hover:bg-white/[0.05]"
+                            className="border-white/15 bg-transparent text-[#7A9A82] hover:bg-white/[0.05]"
                             onClick={() => markSection(section.id, "not_started")}
                           >
                             Reset
@@ -384,7 +384,7 @@ export default function StudyPage() {
                       <p className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-[#C4A048]">
                         Overall progress · {e.label}
                       </p>
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[#7A9A82]">
                         {completedSections} of {totalSections} sections complete
                         {inProgressSections > 0
                           ? ` · ${inProgressSections} in progress`
@@ -416,10 +416,10 @@ export default function StudyPage() {
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="font-mono text-[0.55rem] uppercase tracking-[0.14em] text-slate-500">
+      <p className="font-mono text-[0.55rem] uppercase tracking-[0.14em] text-[#7A9A82]">
         {label}
       </p>
-      <p className="mt-1 text-xs text-slate-200">{value}</p>
+      <p className="mt-1 text-xs text-[#EDE8DC]">{value}</p>
     </div>
   );
 }
@@ -437,7 +437,7 @@ function ExamHeaderStat({ exam }: { exam: Curriculum | undefined }) {
       ].map(([label, value]) => (
         <Card key={label} className="border-white/10 bg-white/[0.04]">
           <CardContent className="p-3">
-            <p className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+            <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
               {label}
             </p>
             <p

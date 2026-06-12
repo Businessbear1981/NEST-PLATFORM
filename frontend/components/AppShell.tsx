@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation";
+﻿import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Eye, TreePine, Landmark, Target, Shield, Bot,
@@ -89,7 +89,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <NestMark size={28} />
           <div>
             <p className="font-[Cormorant_Garamond] text-lg font-semibold tracking-[0.14em] text-[#C4A048]">NEST</p>
-            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-slate-500">Command Platform</p>
+            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-[#7A9A82]">Command Platform</p>
           </div>
         </Link>
 
@@ -97,7 +97,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 overflow-y-auto px-2 py-3">
           {NAV_SECTIONS.map((section) => (
             <div key={section.label} className="mb-4">
-              <p className="mb-1.5 px-2 font-mono text-[0.5rem] font-bold uppercase tracking-[0.18em] text-slate-600">
+              <p className="mb-1.5 px-2 font-mono text-[0.5rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82]">
                 {section.label}
               </p>
               {section.items.map((item) => {
@@ -110,10 +110,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     className={`mb-0.5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs transition-all ${
                       active
                         ? "bg-[#C4A048]/15 text-[#E8C87A] shadow-[0_0_12px_rgba(196,160,72,0.1)]"
-                        : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                        : "text-[#7A9A82] hover:bg-white/5 hover:text-[#EDE8DC]"
                     }`}
                   >
-                    <Icon size={14} className={active ? "text-[#C4A048]" : "text-slate-500"} />
+                    <Icon size={14} className={active ? "text-[#C4A048]" : "text-[#7A9A82]"} />
                     <span className="font-mono text-[0.68rem] uppercase tracking-[0.06em]">{item.label}</span>
                   </Link>
                 );
@@ -126,10 +126,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="border-t border-white/10 px-4 py-3">
           <p className="font-serif text-sm italic text-amber-100/80 tracking-wide">It's Time To Fly</p>
           <div className="mt-2 space-y-0.5">
-            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-slate-500">Sean Gilmore — Founder</p>
-            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-slate-500">Josh Edwards — Founder</p>
+            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-[#7A9A82]">Sean Gilmore — Founder</p>
+            <p className="font-mono text-[0.45rem] uppercase tracking-[0.1em] text-[#7A9A82]">Josh Edwards — Founder</p>
           </div>
-          <p className="font-mono text-[0.42rem] uppercase tracking-[0.1em] text-slate-600 mt-1.5">
+          <p className="font-mono text-[0.42rem] uppercase tracking-[0.1em] text-[#7A9A82] mt-1.5">
             Arden Edge × Sparrow Capital
           </p>
         </div>

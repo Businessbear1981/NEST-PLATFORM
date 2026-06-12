@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * Preflight Interview — Bernard-driven Q&A run at Deal Input (Stage 0).
  * Answers persist server-side per deal_id and become the foundation of the
@@ -114,38 +114,38 @@ export default function PreflightInterview({ dealId, onComplete }: { dealId: str
   return (
     <div className="space-y-5">
       {/* Header + progress */}
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-[#EDE8DC] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.17),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative">
           <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#C4A048]">Stage 0 · Preflight Interview</div>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>Bernard's Interview</h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-400">
+          <p className="mt-2 max-w-2xl text-sm text-[#7A9A82]">
             Answer Bernard's questions to build the deal narrative. These responses become the foundation of the credit memo and determine the document package Roots will request. Stuck on one? Ask Bernard to brainstorm.
           </p>
           <div className="mt-4 max-w-md">
             <div className="flex items-center justify-between mb-1">
-              <span className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-400">Interview Progress</span>
+              <span className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Interview Progress</span>
               <span className="font-mono text-sm font-bold text-[#C4A048]">{pct}%</span>
             </div>
             <Progress value={pct} className="h-2" />
-            <p className="font-mono text-[0.55rem] text-slate-500 mt-1">
+            <p className="font-mono text-[0.55rem] text-[#7A9A82] mt-1">
               {status?.answered ?? 0}/{status?.total_questions ?? 0} answered · {ready ? "memo-ready" : `${Math.max(0, Math.ceil((status?.total_questions ?? 0) * 0.75) - (status?.answered ?? 0))} more to reach memo-ready`}
             </p>
           </div>
         </div>
       </section>
 
-      {loading && <p className="font-mono text-xs text-slate-500">Loading interview…</p>}
+      {loading && <p className="font-mono text-xs text-[#7A9A82]">Loading interview…</p>}
 
       {/* Sections */}
       {sections.map((section) => {
         const sectionAnswered = section.questions.filter((q) => answeredIds.has(q.id)).length;
         return (
-          <Card key={section.id} className="border-slate-700/60 bg-[#0D2218]">
+          <Card key={section.id} className="border-[#1E4A2E]/60 bg-[#0D2218]">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-[#C4A048]" style={{ fontFamily: "Cormorant Garamond, serif" }}>{section.title}</h3>
-                <Badge variant="outline" className="text-[0.5rem] border-slate-600 text-slate-400">
+                <Badge variant="outline" className="text-[0.5rem] border-[#1E4A2E] text-[#7A9A82]">
                   {sectionAnswered}/{section.questions.length}
                 </Badge>
               </div>
@@ -155,16 +155,16 @@ export default function PreflightInterview({ dealId, onComplete }: { dealId: str
                   return (
                     <div key={q.id} className="rounded-lg border border-white/5 bg-black/20 p-3">
                       <div className="flex items-start gap-2">
-                        <span className={`mt-1 w-2 h-2 shrink-0 rounded-full ${done ? "bg-emerald-500" : "bg-slate-600"}`} />
+                        <span className={`mt-1 w-2 h-2 shrink-0 rounded-full ${done ? "bg-emerald-500" : "bg-[#2D6B3D]"}`} />
                         <div className="flex-1">
-                          <p className="text-sm text-slate-200">{q.question}</p>
-                          {q.why && <p className="mt-1 text-[0.65rem] text-slate-500 italic">Why it matters: {q.why}</p>}
+                          <p className="text-sm text-[#EDE8DC]">{q.question}</p>
+                          {q.why && <p className="mt-1 text-[0.65rem] text-[#7A9A82] italic">Why it matters: {q.why}</p>}
                           <textarea
                             value={drafts[q.id] || ""}
                             onChange={(e) => setDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))}
                             rows={3}
                             placeholder="Your answer…"
-                            className="mt-2 w-full resize-vertical rounded-lg border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#C4A048]/50 focus:outline-none"
+                            className="mt-2 w-full resize-vertical rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white placeholder:text-[#7A9A82] focus:border-[#C4A048]/50 focus:outline-none"
                           />
                           <div className="mt-2 flex items-center gap-2">
                             <Button
@@ -178,7 +178,7 @@ export default function PreflightInterview({ dealId, onComplete }: { dealId: str
                               onClick={() => askBernard(q.id)}
                               disabled={brainstormId === q.id}
                               variant="outline"
-                              className="h-7 border-slate-600 px-3 text-[0.65rem] text-slate-300 hover:bg-white/5"
+                              className="h-7 border-[#1E4A2E] px-3 text-[0.65rem] text-[#EDE8DC] hover:bg-white/5"
                             >
                               {brainstormId === q.id ? "Bernard thinking…" : "Ask Bernard"}
                             </Button>
@@ -187,7 +187,7 @@ export default function PreflightInterview({ dealId, onComplete }: { dealId: str
                           {brainstorms[q.id] && (
                             <div className="mt-2 rounded-lg border border-[#C4A048]/20 bg-[#060E1A] p-3">
                               <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#C4A048] mb-1">Bernard</p>
-                              <p className="whitespace-pre-wrap text-xs text-slate-300">{brainstorms[q.id]}</p>
+                              <p className="whitespace-pre-wrap text-xs text-[#EDE8DC]">{brainstorms[q.id]}</p>
                             </div>
                           )}
                         </div>
@@ -210,7 +210,7 @@ export default function PreflightInterview({ dealId, onComplete }: { dealId: str
         >
           {ready ? "Interview Complete — Continue to Roots →" : `Answer ${Math.max(0, Math.ceil((status?.total_questions ?? 0) * 0.75) - (status?.answered ?? 0))} more to continue`}
         </Button>
-        {!ready && <span className="font-mono text-[0.6rem] text-slate-500">The interview must reach memo-ready before the deal advances.</span>}
+        {!ready && <span className="font-mono text-[0.6rem] text-[#7A9A82]">The interview must reach memo-ready before the deal advances.</span>}
       </div>
     </div>
   );

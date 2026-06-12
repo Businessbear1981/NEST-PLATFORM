@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useRouter } from "next/navigation";
 /**
  * Deal Input — Simple intake to create the deal vehicle.
@@ -58,8 +58,8 @@ const SPONSOR_TYPES = [
   { value: "developer", label: "Real Estate Developer" },
 ];
 
-const inputClass = "w-full rounded-lg border border-slate-700 bg-black/40 px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-[#C4A048]/50 focus:outline-none";
-const labelClass = "block font-mono text-[0.6rem] uppercase tracking-wider text-slate-400 mb-1.5";
+const inputClass = "w-full rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2.5 text-sm text-white placeholder:text-[#7A9A82] focus:border-[#C4A048]/50 focus:outline-none";
+const labelClass = "block font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1.5";
 
 // ──────────────────────────────────────────────────────────────
 // Intake Brainstorm types — mirror services/intake_brainstorm.py
@@ -328,15 +328,15 @@ export default function DealInputPage() {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 sm:p-7">
+        <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-[#EDE8DC] sm:p-7">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.17),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
           <div className="relative">
             <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#C4A048]">Stage 0 · Intake Brainstorm</div>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>Bernard's First Look</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-400">
+            <p className="mt-2 max-w-2xl text-sm text-[#7A9A82]">
               {dealName} · {selectedSector?.label} · NAICS {selectedSector?.naics}{state ? ` · ${state}` : ""}
             </p>
-            <p className="mt-1 max-w-2xl text-xs text-slate-500">
+            <p className="mt-1 max-w-2xl text-xs text-[#7A9A82]">
               Review the memo, answer the gap questions, then greenlight to advance to Roots — or park if the deal needs more work before document collection.
             </p>
             {parkedConfirmation && (
@@ -353,7 +353,7 @@ export default function DealInputPage() {
         </section>
 
         {loadingBrainstorm && (
-          <Card className="border-slate-700/60 bg-[#0D2218]"><CardContent className="p-8 text-center text-slate-400">Running brainstorm…</CardContent></Card>
+          <Card className="border-[#1E4A2E]/60 bg-[#0D2218]"><CardContent className="p-8 text-center text-[#7A9A82]">Running brainstorm…</CardContent></Card>
         )}
         {brainstormError && (
           <Card className="border-red-500/30 bg-[#0D2218]"><CardContent className="p-6 text-red-300 text-sm">{brainstormError}</CardContent></Card>
@@ -366,14 +366,14 @@ export default function DealInputPage() {
               {/* Left: First-Look Memo */}
               <div className="space-y-4">
                 {/* Bond Type Assessment */}
-                <Card className="border-slate-700/60 bg-[#0D2218]">
+                <Card className="border-[#1E4A2E]/60 bg-[#0D2218]">
                   <CardHeader><CardTitle className="text-[#C4A048] text-sm">Bond Type Assessment</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {brainstorm.first_look_memo.bond_type_assessment.engine_error ? (
                       <p className="text-sm text-amber-300">{brainstorm.first_look_memo.bond_type_assessment.engine_error}</p>
                     ) : (
                       <>
-                        <p className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+                        <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
                           NAICS {brainstorm.first_look_memo.bond_type_assessment.naics_code} · {brainstorm.first_look_memo.bond_type_assessment.naics_label}
                         </p>
                         {(brainstorm.first_look_memo.bond_type_assessment.preferred || []).map((b) => (
@@ -382,21 +382,21 @@ export default function DealInputPage() {
                               <span className="text-sm font-semibold text-[#C4A048]" style={{ fontFamily: "Cormorant Garamond, serif" }}>{b.type}</span>
                               <Badge variant="outline" className="border-[#C4A048]/40 text-[#C4A048] font-mono text-[0.55rem] uppercase">Preferred</Badge>
                             </div>
-                            <p className="text-xs text-slate-300">{b.rationale}</p>
-                            {b.source_row_id && <p className="mt-1 font-mono text-[0.55rem] text-slate-500">Source: {b.source_row_id}</p>}
+                            <p className="text-xs text-[#EDE8DC]">{b.rationale}</p>
+                            {b.source_row_id && <p className="mt-1 font-mono text-[0.55rem] text-[#7A9A82]">Source: {b.source_row_id}</p>}
                           </div>
                         ))}
                         {(brainstorm.first_look_memo.bond_type_assessment.alternatives || []).map((b) => (
-                          <div key={b.type} className="rounded-lg border border-slate-700/60 bg-black/20 p-3">
+                          <div key={b.type} className="rounded-lg border border-[#1E4A2E]/60 bg-black/20 p-3">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm text-slate-300">{b.type}</span>
-                              <Badge variant="outline" className="border-slate-600 text-slate-400 font-mono text-[0.55rem] uppercase">Alternative</Badge>
+                              <span className="text-sm text-[#EDE8DC]">{b.type}</span>
+                              <Badge variant="outline" className="border-[#1E4A2E] text-[#7A9A82] font-mono text-[0.55rem] uppercase">Alternative</Badge>
                             </div>
-                            <p className="text-xs text-slate-400">{b.rationale}</p>
+                            <p className="text-xs text-[#7A9A82]">{b.rationale}</p>
                           </div>
                         ))}
                         {brainstorm.first_look_memo.narration?.bond_type_assessment && (
-                          <p className="text-xs italic text-slate-400 border-l-2 border-[#C4A048]/40 pl-3">{brainstorm.first_look_memo.narration.bond_type_assessment}</p>
+                          <p className="text-xs italic text-[#7A9A82] border-l-2 border-[#C4A048]/40 pl-3">{brainstorm.first_look_memo.narration.bond_type_assessment}</p>
                         )}
                       </>
                     )}
@@ -404,91 +404,91 @@ export default function DealInputPage() {
                 </Card>
 
                 {/* Credit Profile Snapshot */}
-                <Card className="border-slate-700/60 bg-[#0D2218]">
+                <Card className="border-[#1E4A2E]/60 bg-[#0D2218]">
                   <CardHeader><CardTitle className="text-[#C4A048] text-sm">Credit Profile Snapshot</CardTitle></CardHeader>
                   <CardContent className="space-y-2">
-                    <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-500">
+                    <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">
                       Suggested grade: <span className="text-[#C4A048]">{brainstorm.first_look_memo.credit_profile_snapshot.suggested_grade || "Unknown"}</span>
                       {brainstorm.first_look_memo.credit_profile_snapshot.sub_ig_breach && <span className="ml-2 text-red-400">· Sub-IG breach</span>}
                     </p>
                     <div className="space-y-1.5">
                       {Object.entries(brainstorm.first_look_memo.credit_profile_snapshot.metrics).map(([key, m]) => (
-                        <div key={key} className="flex items-center justify-between rounded-md border border-slate-700/40 bg-black/20 px-3 py-2">
-                          <span className="font-mono text-[0.65rem] uppercase tracking-wider text-slate-400">{m.label}</span>
+                        <div key={key} className="flex items-center justify-between rounded-md border border-[#1E4A2E]/40 bg-black/20 px-3 py-2">
+                          <span className="font-mono text-[0.65rem] uppercase tracking-wider text-[#7A9A82]">{m.label}</span>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs text-slate-200">{m.value ?? "—"}</span>
+                            <span className="font-mono text-xs text-[#EDE8DC]">{m.value ?? "—"}</span>
                             <Badge variant="outline" className={
                               m.status === "pass" ? "border-emerald-500/40 text-emerald-300 font-mono text-[0.55rem] uppercase" :
                               m.status === "borderline" ? "border-amber-500/40 text-amber-300 font-mono text-[0.55rem] uppercase" :
                               m.status === "fail" ? "border-red-500/40 text-red-300 font-mono text-[0.55rem] uppercase" :
-                              "border-slate-600 text-slate-500 font-mono text-[0.55rem] uppercase"
+                              "border-[#1E4A2E] text-[#7A9A82] font-mono text-[0.55rem] uppercase"
                             }>{m.status}</Badge>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <p className="font-mono text-[0.5rem] text-slate-600 mt-2">Source: {brainstorm.first_look_memo.credit_profile_snapshot.source}</p>
+                    <p className="font-mono text-[0.5rem] text-[#7A9A82] mt-2">Source: {brainstorm.first_look_memo.credit_profile_snapshot.source}</p>
                     {brainstorm.first_look_memo.narration?.credit_profile_snapshot && (
-                      <p className="text-xs italic text-slate-400 border-l-2 border-[#C4A048]/40 pl-3 mt-2">{brainstorm.first_look_memo.narration.credit_profile_snapshot}</p>
+                      <p className="text-xs italic text-[#7A9A82] border-l-2 border-[#C4A048]/40 pl-3 mt-2">{brainstorm.first_look_memo.narration.credit_profile_snapshot}</p>
                     )}
                   </CardContent>
                 </Card>
 
                 {/* Structural Template */}
-                <Card className="border-slate-700/60 bg-[#0D2218]">
+                <Card className="border-[#1E4A2E]/60 bg-[#0D2218]">
                   <CardHeader><CardTitle className="text-[#C4A048] text-sm">Structural Template</CardTitle></CardHeader>
                   <CardContent className="space-y-2">
                     <p className="text-sm text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>{brainstorm.first_look_memo.structural_template.name}</p>
-                    <p className="text-xs text-slate-300">{brainstorm.first_look_memo.structural_template.summary}</p>
+                    <p className="text-xs text-[#EDE8DC]">{brainstorm.first_look_memo.structural_template.summary}</p>
                     {brainstorm.first_look_memo.structural_template.irc_anchor && (
-                      <p className="font-mono text-[0.6rem] text-slate-500">IRC: {brainstorm.first_look_memo.structural_template.irc_anchor}</p>
+                      <p className="font-mono text-[0.6rem] text-[#7A9A82]">IRC: {brainstorm.first_look_memo.structural_template.irc_anchor}</p>
                     )}
                     {brainstorm.first_look_memo.structural_template.bible_ref && (
-                      <p className="font-mono text-[0.55rem] text-slate-600">{brainstorm.first_look_memo.structural_template.bible_ref}</p>
+                      <p className="font-mono text-[0.55rem] text-[#7A9A82]">{brainstorm.first_look_memo.structural_template.bible_ref}</p>
                     )}
                     {brainstorm.first_look_memo.narration?.structural_template && (
-                      <p className="text-xs italic text-slate-400 border-l-2 border-[#C4A048]/40 pl-3 mt-2">{brainstorm.first_look_memo.narration.structural_template}</p>
+                      <p className="text-xs italic text-[#7A9A82] border-l-2 border-[#C4A048]/40 pl-3 mt-2">{brainstorm.first_look_memo.narration.structural_template}</p>
                     )}
                   </CardContent>
                 </Card>
 
                 {/* Deal-Killer Flags */}
-                <Card className="border-slate-700/60 bg-[#0D2218]">
+                <Card className="border-[#1E4A2E]/60 bg-[#0D2218]">
                   <CardHeader><CardTitle className="text-[#C4A048] text-sm">Deal-Killer Flags</CardTitle></CardHeader>
                   <CardContent className="space-y-2">
                     {brainstorm.first_look_memo.deal_killer_flags.length === 0 ? (
                       <p className="text-xs text-emerald-300">No flags raised. Deal cleanly clears intake heuristics.</p>
                     ) : (
                       brainstorm.first_look_memo.deal_killer_flags.map((f, i) => (
-                        <div key={i} className="rounded-md border border-slate-700/40 bg-black/20 p-2.5">
+                        <div key={i} className="rounded-md border border-[#1E4A2E]/40 bg-black/20 p-2.5">
                           <div className="flex items-start gap-2">
                             <Badge variant="outline" className={
                               f.severity === "high" ? "border-red-500/40 text-red-300 font-mono text-[0.55rem] uppercase mt-0.5" :
                               f.severity === "medium" ? "border-amber-500/40 text-amber-300 font-mono text-[0.55rem] uppercase mt-0.5" :
-                              "border-slate-600 text-slate-400 font-mono text-[0.55rem] uppercase mt-0.5"
+                              "border-[#1E4A2E] text-[#7A9A82] font-mono text-[0.55rem] uppercase mt-0.5"
                             }>{f.severity}</Badge>
                             <div className="flex-1">
-                              <p className="text-xs text-slate-200">{f.message}</p>
-                              <p className="font-mono text-[0.5rem] text-slate-600 mt-1">{f.category} · {f.source}</p>
+                              <p className="text-xs text-[#EDE8DC]">{f.message}</p>
+                              <p className="font-mono text-[0.5rem] text-[#7A9A82] mt-1">{f.category} · {f.source}</p>
                             </div>
                           </div>
                         </div>
                       ))
                     )}
                     {brainstorm.first_look_memo.narration?.deal_killer_flags && (
-                      <p className="text-xs italic text-slate-400 border-l-2 border-[#C4A048]/40 pl-3 mt-2">{brainstorm.first_look_memo.narration.deal_killer_flags}</p>
+                      <p className="text-xs italic text-[#7A9A82] border-l-2 border-[#C4A048]/40 pl-3 mt-2">{brainstorm.first_look_memo.narration.deal_killer_flags}</p>
                     )}
                   </CardContent>
                 </Card>
               </div>
 
               {/* Right: Gap-Filling Q&A */}
-              <Card className="border-slate-700/60 bg-[#0D2218] h-fit">
+              <Card className="border-[#1E4A2E]/60 bg-[#0D2218] h-fit">
                 <CardHeader>
                   <CardTitle className="text-[#C4A048] text-sm">Gap-Filling Questions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-[#7A9A82]">
                     {brainstorm.gap_questions.length} targeted questions to fill the information Deal Input didn't capture. Answers feed Stage 1.
                   </p>
                   {brainstorm.gap_questions.map((q) => (
@@ -528,8 +528,8 @@ export default function DealInputPage() {
                           className={inputClass}
                         />
                       )}
-                      <p className="mt-1 font-mono text-[0.55rem] text-slate-500">Why: {q.why_we_ask}</p>
-                      <p className="font-mono text-[0.5rem] text-slate-600">→ {q.feeds_stage}</p>
+                      <p className="mt-1 font-mono text-[0.55rem] text-[#7A9A82]">Why: {q.why_we_ask}</p>
+                      <p className="font-mono text-[0.5rem] text-[#7A9A82]">→ {q.feeds_stage}</p>
                     </div>
                   ))}
                 </CardContent>
@@ -539,7 +539,7 @@ export default function DealInputPage() {
             {/* Action bar */}
             <Card className="border-white/10 bg-black/30">
               <CardContent className="p-4 flex flex-wrap gap-3 items-center justify-between">
-                <p className="text-xs text-slate-400 max-w-xl">
+                <p className="text-xs text-[#7A9A82] max-w-xl">
                   Greenlight advances the deal to Roots Stage 1 (document ingestion). Park saves your answers without advancing — useful if you need to gather more sponsor information first.
                 </p>
                 <div className="flex gap-3">
@@ -547,7 +547,7 @@ export default function DealInputPage() {
                     onClick={handlePark}
                     disabled={parking || greenlighting}
                     variant="outline"
-                    className="border-slate-600 text-slate-300"
+                    className="border-[#1E4A2E] text-[#EDE8DC]"
                   >
                     {parking ? "Parking…" : "Park"}
                   </Button>
@@ -570,7 +570,7 @@ export default function DealInputPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-[#EDE8DC] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.17),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative">
           <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#C4A048]">Stage 0 · Intake</div>
@@ -583,7 +583,7 @@ export default function DealInputPage() {
               Promoted from EagleEye signal: {sourceSignalId}
             </Badge>
           )}
-          <p className="mt-2 max-w-2xl text-sm text-slate-400">
+          <p className="mt-2 max-w-2xl text-sm text-[#7A9A82]">
             Enter the basics to create the deal. After submit, Bernard runs the Intake Brainstorm — a first-look memo plus targeted gap questions — before the deal advances to Roots document ingestion.
           </p>
         </div>
@@ -592,7 +592,7 @@ export default function DealInputPage() {
       {/* Single form — all fields visible */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Deal basics */}
-        <Card className="border-slate-700/60 bg-[#0D2218]">
+        <Card className="border-[#1E4A2E]/60 bg-[#0D2218]">
           <CardHeader><CardTitle className="text-[#C4A048] text-sm">Deal Information</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -629,7 +629,7 @@ export default function DealInputPage() {
         </Card>
 
         {/* Right: Sponsor + description */}
-        <Card className="border-slate-700/60 bg-[#0D2218]">
+        <Card className="border-[#1E4A2E]/60 bg-[#0D2218]">
           <CardHeader><CardTitle className="text-[#C4A048] text-sm">Borrower & Sponsor</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -659,7 +659,7 @@ export default function DealInputPage() {
       {/* Pipeline preview */}
       <Card className="border-white/10 bg-black/30">
         <CardContent className="p-4">
-          <p className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500 mb-3">What happens next</p>
+          <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-3">What happens next</p>
           <div className="flex gap-1">
             {[
               { label: "Intake", desc: "You are here", active: true },
@@ -674,8 +674,8 @@ export default function DealInputPage() {
               { label: "Admin", desc: "30yr lifecycle" },
             ].map((s) => (
               <div key={s.label} className={`flex-1 rounded-lg px-2 py-2 text-center ${s.active ? "bg-[#C4A048]/10 border border-[#C4A048]/30" : "bg-white/[0.02]"}`}>
-                <p className={`font-mono text-[0.5rem] uppercase font-bold ${s.active ? "text-[#C4A048]" : "text-slate-600"}`}>{s.label}</p>
-                <p className="font-mono text-[0.45rem] text-slate-600 mt-0.5">{s.desc}</p>
+                <p className={`font-mono text-[0.5rem] uppercase font-bold ${s.active ? "text-[#C4A048]" : "text-[#7A9A82]"}`}>{s.label}</p>
+                <p className="font-mono text-[0.45rem] text-[#7A9A82] mt-0.5">{s.desc}</p>
               </div>
             ))}
           </div>

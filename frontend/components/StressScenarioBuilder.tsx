@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from "react";
 import { BarChart3, Calculator, LineChart, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -44,14 +44,14 @@ export function StressScenarioBuilder() {
   };
 
   return (
-    <Card className="border-emerald-300/25 bg-[#07140d]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(52,211,153,0.10)]">
+    <Card className="border-emerald-300/25 bg-[#07140d]/90 p-5 text-[#EDE8DC] shadow-[0_0_42px_rgba(52,211,153,0.10)]">
       <div className="mb-5 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-emerald-200">
             <LineChart size={14} /> Stress scenario builder · live comparison
           </p>
           <h2 className="mt-2 font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">Modeling desk scenario lab</h2>
-          <p className="mt-1 text-sm leading-6 text-slate-400">
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">
             Adjust operating and market assumptions to see DSCR, IRR, equity value, and approval-risk state update immediately.
           </p>
         </div>
@@ -68,7 +68,7 @@ export function StressScenarioBuilder() {
           ] as const).map(([key, label, min, max, suffix]) => (
             <div key={key}>
               <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="font-semibold text-slate-200">{label}</span>
+                <span className="font-semibold text-[#EDE8DC]">{label}</span>
                 <span className="font-mono text-emerald-200">{inputs[key].toFixed(key === "rateShock" ? 0 : 1)}{suffix}</span>
               </div>
               <Slider value={[inputs[key]]} min={min} max={max} step={key === "rateShock" ? 5 : 0.1} onValueChange={(value) => updateInput(key, value[0])} />
@@ -76,9 +76,9 @@ export function StressScenarioBuilder() {
           ))}
 
           <div className="grid grid-cols-3 gap-2 pt-2 text-center">
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">DSCR</p><p className="font-mono text-lg font-semibold text-[#EDE8DC]">{results.dscr.toFixed(2)}x</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">IRR</p><p className="font-mono text-lg font-semibold text-emerald-100">{results.irr.toFixed(1)}%</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">Equity</p><p className="font-mono text-lg font-semibold text-amber-100">${results.equity.toFixed(1)}M</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-[#7A9A82]">DSCR</p><p className="font-mono text-lg font-semibold text-[#EDE8DC]">{results.dscr.toFixed(2)}x</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-[#7A9A82]">IRR</p><p className="font-mono text-lg font-semibold text-emerald-100">{results.irr.toFixed(1)}%</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-[#7A9A82]">Equity</p><p className="font-mono text-lg font-semibold text-amber-100">${results.equity.toFixed(1)}M</p></div>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2">
@@ -101,7 +101,7 @@ export function StressScenarioBuilder() {
         </div>
 
         <div className="rounded-2xl border border-emerald-300/20 bg-black/30 p-5">
-          <p className="mb-3 flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-slate-500"><BarChart3 size={14} /> Scenario comparison chart</p>
+          <p className="mb-3 flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-[#7A9A82]"><BarChart3 size={14} /> Scenario comparison chart</p>
           <div className="space-y-3">
             {allScenarios.map((scenario) => {
               const maxDscr = 1.65;
@@ -112,14 +112,14 @@ export function StressScenarioBuilder() {
                   <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-mono text-sm font-semibold uppercase tracking-[0.04em] text-white">{scenario.name}</p>
-                      <p className="text-xs text-slate-500">DSCR {scenario.dscr.toFixed(2)}x · IRR {scenario.irr.toFixed(1)}% · Equity ${scenario.equity.toFixed(1)}M</p>
+                      <p className="text-xs text-[#7A9A82]">DSCR {scenario.dscr.toFixed(2)}x · IRR {scenario.irr.toFixed(1)}% · Equity ${scenario.equity.toFixed(1)}M</p>
                     </div>
                     <Badge variant="outline" className={isRisky ? "border-amber-300/40 bg-amber-300/10 text-amber-100" : "border-emerald-300/35 bg-emerald-400/10 text-emerald-100"}>{scenario.risk}</Badge>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                  <div className="h-2 overflow-hidden rounded-full bg-[#0D2218]">
                     <div className={isRisky ? "h-full bg-amber-400" : "h-full bg-emerald-400"} style={{ width: `${barWidth}%` }} />
                   </div>
-                  <div className="mt-2 flex justify-end text-xs text-slate-500">
+                  <div className="mt-2 flex justify-end text-xs text-[#7A9A82]">
                     {scenario.dscr >= BASE_CASE.dscr ? <TrendingUp size={14} className="mr-1 text-emerald-300" /> : <TrendingDown size={14} className="mr-1 text-red-300" />}
                     vs. base DSCR {(scenario.dscr - BASE_CASE.dscr).toFixed(2)}x
                   </div>

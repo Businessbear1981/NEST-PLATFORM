@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 
 const API = "";
@@ -62,7 +62,7 @@ export default function ModelingStudio() {
   const colorMap: Record<string, string> = { emerald: "#2D6B3D", amber: "#C4A048", orange: "#f97316", red: "#ef4444" };
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
@@ -79,7 +79,7 @@ export default function ModelingStudio() {
               className={`px-5 py-2.5 font-mono text-[0.65rem] uppercase tracking-[0.08em] transition ${
                 tab === i
                   ? "border-b-2 border-amber-300 text-amber-200"
-                  : "text-slate-600 hover:text-slate-300"
+                  : "text-[#7A9A82] hover:text-[#EDE8DC]"
               }`}
             >
               {t}
@@ -101,9 +101,9 @@ export default function ModelingStudio() {
               <div className="grid gap-4 lg:grid-cols-[200px_1fr]">
                 {/* Grade Display */}
                 <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5 text-center">
-                  <div className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-slate-600">Base Grade</div>
+                  <div className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Base Grade</div>
                   <div className="mt-2 font-mono text-5xl font-light text-emerald-400">{gradeResult.base_grade}</div>
-                  <div className="my-2 font-mono text-[0.6rem] text-slate-600">{"\u2193"} Enhanced {"\u2193"}</div>
+                  <div className="my-2 font-mono text-[0.6rem] text-[#7A9A82]">{"\u2193"} Enhanced {"\u2193"}</div>
                   <div className="font-mono text-6xl font-normal leading-none text-amber-300">{gradeResult.enhanced_grade}</div>
                   <div className={`mt-2 font-mono text-[0.55rem] ${gradeResult.target_achieved ? "text-emerald-400" : "text-red-400"}`}>
                     Target {gradeResult.target_grade}: {gradeResult.target_achieved ? "ACHIEVED" : "NOT MET"}
@@ -113,10 +113,10 @@ export default function ModelingStudio() {
                 <div className="space-y-3">
                   {/* Component Scores */}
                   <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-                    <h3 className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-slate-600">Component Scores</h3>
+                    <h3 className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Component Scores</h3>
                     {Object.entries(gradeResult.component_scores || {}).map(([k, v]: [string, any]) => (
                       <div key={k} className="mb-1.5 flex items-center gap-3">
-                        <div className="w-36 font-mono text-[0.55rem] uppercase text-slate-500">{k.replace(/_/g, " ")}</div>
+                        <div className="w-36 font-mono text-[0.55rem] uppercase text-[#7A9A82]">{k.replace(/_/g, " ")}</div>
                         <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#03060b]">
                           <div
                             className={`h-full rounded-full ${v.score >= 70 ? "bg-emerald-500" : v.score >= 40 ? "bg-amber-300" : "bg-red-500"}`}
@@ -131,10 +131,10 @@ export default function ModelingStudio() {
                   {/* Enhancements */}
                   {gradeResult.enhancements_applied?.length > 0 && (
                     <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-                      <h3 className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-slate-600">Structural Enhancements Applied</h3>
+                      <h3 className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Structural Enhancements Applied</h3>
                       {gradeResult.enhancements_applied.map((e: any, i: number) => (
                         <div key={i} className="flex items-center justify-between border-b border-white/5 py-1.5 last:border-b-0">
-                          <span className="text-xs text-slate-400">{e.description}</span>
+                          <span className="text-xs text-[#7A9A82]">{e.description}</span>
                           <span className="font-mono text-xs font-semibold text-amber-300">+{e.notch_up} notch</span>
                         </div>
                       ))}
@@ -149,7 +149,7 @@ export default function ModelingStudio() {
                 <h3 className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-red-400">Gap Analysis - What's Needed</h3>
                 {gradeResult.gap_analysis.map((g: any, i: number) => (
                   <div key={i} className="flex items-center justify-between border-b border-white/5 py-1.5 last:border-b-0">
-                    <span className="text-xs text-slate-400">{g.metric}: {g.current} {"\u2192"} need {g.required}</span>
+                    <span className="text-xs text-[#7A9A82]">{g.metric}: {g.current} {"\u2192"} need {g.required}</span>
                     <span className="text-xs font-semibold text-red-400">{g.action}</span>
                   </div>
                 ))}
@@ -169,8 +169,8 @@ export default function ModelingStudio() {
               >
                 <div className="font-mono text-[0.55rem] uppercase tracking-[0.12em]" style={{ color: colorMap[s.color] }}>{s.name}</div>
                 <div className="mt-2 font-mono text-3xl font-medium" style={{ color: colorMap[s.color] }}>{s.dscr}</div>
-                <div className="font-mono text-[0.5rem] uppercase tracking-wider text-slate-600">DSCR</div>
-                <div className="mt-2 text-xs text-slate-500">{s.outcome}</div>
+                <div className="font-mono text-[0.5rem] uppercase tracking-wider text-[#7A9A82]">DSCR</div>
+                <div className="mt-2 text-xs text-[#7A9A82]">{s.outcome}</div>
               </div>
             ))}
           </div>
@@ -196,7 +196,7 @@ export default function ModelingStudio() {
                     { label: "Differential", value: `${optimizeResult.rate_differential_bps}bps` },
                   ].map((k) => (
                     <article key={k.label} className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/[0.09] p-4">
-                      <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{k.label}</span>
+                      <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{k.label}</span>
                       <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{k.value}</strong>
                     </article>
                   ))}
@@ -209,7 +209,7 @@ export default function ModelingStudio() {
                     style={{ borderLeftColor: a.action === "EXECUTE_CALL" ? "#C4A048" : a.action === "PUT_ALERT" ? "#ef4444" : "#7A9A82" }}
                   >
                     <div className="font-mono text-xs font-semibold" style={{ color: a.action === "EXECUTE_CALL" ? "#C4A048" : "#7A9A82" }}>{a.action}</div>
-                    <div className="mt-1 text-sm text-slate-300">{a.rationale}</div>
+                    <div className="mt-1 text-sm text-[#EDE8DC]">{a.rationale}</div>
                     {a.annual_savings_usd && (
                       <div className="mt-1 font-mono text-sm text-amber-300">
                         Annual savings: ${(a.annual_savings_usd / 1e6).toFixed(2)}M - Breakeven: {a.breakeven_months}mo
@@ -224,7 +224,7 @@ export default function ModelingStudio() {
                     <div className="mt-2 font-mono text-2xl font-semibold text-amber-300">
                       ${(optimizeResult.par_value_analysis.additional_capacity_usd / 1e6).toFixed(1)}M
                     </div>
-                    <div className="mt-1 font-mono text-[0.62rem] text-slate-500">{optimizeResult.par_value_analysis.note}</div>
+                    <div className="mt-1 font-mono text-[0.62rem] text-[#7A9A82]">{optimizeResult.par_value_analysis.note}</div>
                   </div>
                 )}
               </>

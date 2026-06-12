@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 import {
   AlertTriangle,
@@ -65,7 +65,7 @@ const URGENCY = {
   critical: { border: "border-red-500/40", bg: "bg-red-500/15", text: "text-red-300", label: "CRITICAL", glow: "shadow-[0_0_20px_rgba(239,68,68,0.3)]" },
   high: { border: "border-amber-400/40", bg: "bg-amber-400/15", text: "text-amber-300", label: "HIGH", glow: "shadow-[0_0_16px_rgba(251,191,36,0.2)]" },
   medium: { border: "border-[#C4A048]/30", bg: "bg-[#C4A048]/10", text: "text-[#C4A048]", label: "MEDIUM", glow: "" },
-  low: { border: "border-slate-400/20", bg: "bg-slate-500/10", text: "text-slate-400", label: "LOW", glow: "" },
+  low: { border: "border-[#2D6B3D]/20", bg: "bg-[#2D6B3D]/10", text: "text-[#7A9A82]", label: "LOW", glow: "" },
 };
 
 const DEAL_TYPE_BADGE: Record<string, string> = {
@@ -106,13 +106,13 @@ export function ConvergenceRadar() {
     return (
       <div className="flex items-center justify-center py-20">
         <RefreshCw className="mr-2 h-5 w-5 animate-spin text-red-300" />
-        <span className="font-mono text-sm text-slate-400">Scanning signals...</span>
+        <span className="font-mono text-sm text-[#7A9A82]">Scanning signals...</span>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-red-400/20 bg-[#07101a]/80 p-6 shadow-[0_0_40px_rgba(239,68,68,0.06)]">
@@ -123,7 +123,7 @@ export function ConvergenceRadar() {
               <h1 className="mt-1 font-mono text-xl font-bold uppercase tracking-[0.06em] text-white">Multi-Signal Target Detection</h1>
             </div>
           </div>
-          <p className="mt-3 text-sm text-slate-400">Autonomous signal monitoring. When 2-3 signals converge on the same entity — that's a deal. No input required.</p>
+          <p className="mt-3 text-sm text-[#7A9A82]">Autonomous signal monitoring. When 2-3 signals converge on the same entity — that's a deal. No input required.</p>
         </div>
 
         {/* Stats */}
@@ -136,7 +136,7 @@ export function ConvergenceRadar() {
               { label: "Entities Monitored", value: String(stats.unique_entities), tone: "text-amber-200 border-amber-300/35 bg-amber-300/9" },
             ].map((m) => (
               <article key={m.label} className={`rounded-[1.25rem] border p-4 ${m.tone}`}>
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>
+                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{m.label}</span>
                 <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{m.value}</strong>
               </article>
             ))}
@@ -171,8 +171,8 @@ export function ConvergenceRadar() {
                             <Badge variant="outline" className={`text-[0.5rem] ${u.border} ${u.bg} ${u.text}`}>{u.label}</Badge>
                             <Badge variant="outline" className={`text-[0.5rem] ${DEAL_TYPE_BADGE[h.deal_type] ?? ""}`}>{h.deal_type}</Badge>
                           </div>
-                          <p className="mt-1 font-mono text-sm text-slate-300">{h.entity}</p>
-                          <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                          <p className="mt-1 font-mono text-sm text-[#EDE8DC]">{h.entity}</p>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-[#7A9A82]">
                             <MapPin size={11} />
                             <span>{h.location}</span>
                             <span>|</span>
@@ -181,14 +181,14 @@ export function ConvergenceRadar() {
                         </div>
                         <div className="text-right">
                           <div className={`font-mono text-lg font-bold ${u.text}`}>{h.convergence_score}</div>
-                          <div className="font-mono text-[0.5rem] text-slate-500">SCORE</div>
+                          <div className="font-mono text-[0.5rem] text-[#7A9A82]">SCORE</div>
                         </div>
                       </div>
 
                       {/* Matched signals */}
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         {h.matched_signals.map((s) => (
-                          <span key={s} className="rounded border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[0.54rem] text-slate-400">
+                          <span key={s} className="rounded border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[0.54rem] text-[#7A9A82]">
                             {s.replace(/_/g, " ")}
                           </span>
                         ))}
@@ -196,9 +196,9 @@ export function ConvergenceRadar() {
 
                       {/* Deploy agents */}
                       <div className="mt-2 flex items-center gap-1.5">
-                        <span className="font-mono text-[0.5rem] text-slate-600">DEPLOY:</span>
+                        <span className="font-mono text-[0.5rem] text-[#7A9A82]">DEPLOY:</span>
                         {h.recommended_agents.map((a) => (
-                          <span key={a} className={`rounded border px-2 py-0.5 font-mono text-[0.54rem] font-semibold uppercase ${AGENT_COLOR[a] ?? "text-slate-300 border-white/10"}`}>
+                          <span key={a} className={`rounded border px-2 py-0.5 font-mono text-[0.54rem] font-semibold uppercase ${AGENT_COLOR[a] ?? "text-[#EDE8DC] border-white/10"}`}>
                             {a.replace(/_/g, " ")}
                           </span>
                         ))}
@@ -223,47 +223,47 @@ export function ConvergenceRadar() {
                 <div className="space-y-4">
                   <div>
                     <p className="font-mono text-lg font-bold text-white">{selected.entity}</p>
-                    <p className="font-mono text-xs text-slate-400">{selected.location}</p>
+                    <p className="font-mono text-xs text-[#7A9A82]">{selected.location}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                    <p className="text-sm text-slate-300">{selected.description}</p>
+                    <p className="text-sm text-[#EDE8DC]">{selected.description}</p>
                   </div>
 
                   <div>
-                    <p className="mb-2 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-slate-500">Converging Signals</p>
+                    <p className="mb-2 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">Converging Signals</p>
                     <div className="space-y-2">
                       {selected.signals.map((sig) => (
                         <div key={sig.id} className="rounded-lg border border-white/5 bg-white/[0.02] p-3">
                           <div className="flex items-center justify-between">
-                            <Badge variant="outline" className="border-white/10 text-[0.5rem] text-slate-300">
+                            <Badge variant="outline" className="border-white/10 text-[0.5rem] text-[#EDE8DC]">
                               {sig.type.replace(/_/g, " ")}
                             </Badge>
-                            <span className="font-mono text-[0.56rem] text-slate-500">{shortDate(sig.date)}</span>
+                            <span className="font-mono text-[0.56rem] text-[#7A9A82]">{shortDate(sig.date)}</span>
                           </div>
-                          <p className="mt-1 text-xs text-slate-400">{sig.details}</p>
+                          <p className="mt-1 text-xs text-[#7A9A82]">{sig.details}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <p className="mb-2 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-slate-500">Recommended Deployment</p>
+                    <p className="mb-2 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">Recommended Deployment</p>
                     <div className="space-y-1.5">
                       {selected.recommended_agents.map((a) => (
                         <button
                           key={a}
-                          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left transition hover:bg-white/5 ${AGENT_COLOR[a] ?? "text-slate-300 border-white/10"}`}
+                          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left transition hover:bg-white/5 ${AGENT_COLOR[a] ?? "text-[#EDE8DC] border-white/10"}`}
                         >
                           <Zap size={12} />
                           <span className="font-mono text-[0.68rem] font-semibold uppercase">{a.replace(/_/g, " ")}</span>
-                          <span className="ml-auto font-mono text-[0.5rem] text-slate-500">DEPLOY</span>
+                          <span className="ml-auto font-mono text-[0.5rem] text-[#7A9A82]">DEPLOY</span>
                         </button>
                       ))}
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Click a HEAT event to see signal details and deployment options.</p>
+                <p className="text-sm text-[#7A9A82]">Click a HEAT event to see signal details and deployment options.</p>
               )}
             </CardContent>
           </Card>

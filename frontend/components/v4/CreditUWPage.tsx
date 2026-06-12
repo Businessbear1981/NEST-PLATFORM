@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * Credit Underwriting Desk — Universal Credit Policy (Appendix F)
  * DSCR, LTV, LGD, obligor grading, credit memo generation.
@@ -49,12 +49,12 @@ export default function CreditUWPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-emerald-300/25 bg-[#060E1A] p-5 text-slate-100 shadow-[0_0_85px_rgba(16,185,129,0.11)] sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-emerald-300/25 bg-[#060E1A] p-5 text-[#EDE8DC] shadow-[0_0_85px_rgba(16,185,129,0.11)] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(16,185,129,0.17),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(196,160,72,0.12),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative">
           <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-emerald-200">Credit Underwriting Desk · Maxwell Agent</div>
           <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl" style={{ fontFamily: "Cormorant Garamond, serif" }}>Credit Underwriting</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#EDE8DC]">
             Universal Credit Policy enforcement, credit memo production, obligor grading. Every deal screened against Appendix F thresholds with sector-specific overlays.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function CreditUWPage() {
                 <CardContent className="p-4">
                   <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-emerald-200">{t.label}</p>
                   <p className="mt-2 text-2xl font-black text-white" style={{ fontFamily: "IBM Plex Mono, monospace" }}>{t.value}</p>
-                  <p className="mt-1 text-xs text-slate-400">{t.description}</p>
+                  <p className="mt-1 text-xs text-[#7A9A82]">{t.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -82,25 +82,25 @@ export default function CreditUWPage() {
         </TabsContent>
 
         <TabsContent value="screen" className="mt-6 space-y-4">
-          <Card className="border-slate-700 bg-[#0D2218]">
+          <Card className="border-[#1E4A2E] bg-[#0D2218]">
             <CardHeader><CardTitle className="text-[#C4A048]">Quick Credit Screen</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-slate-400 mb-1">DSCR</label>
-                  <input value={dscr} onChange={(e) => setDscr(e.target.value)} className="w-full rounded-lg border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white" />
+                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1">DSCR</label>
+                  <input value={dscr} onChange={(e) => setDscr(e.target.value)} className="w-full rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white" />
                 </div>
                 <div>
-                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-slate-400 mb-1">Total Leverage (x)</label>
-                  <input value={leverage} onChange={(e) => setLeverage(e.target.value)} className="w-full rounded-lg border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white" />
+                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1">Total Leverage (x)</label>
+                  <input value={leverage} onChange={(e) => setLeverage(e.target.value)} className="w-full rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white" />
                 </div>
                 <div>
-                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-slate-400 mb-1">Equity %</label>
-                  <input value={equityPct} onChange={(e) => setEquityPct(e.target.value)} className="w-full rounded-lg border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white" />
+                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1">Equity %</label>
+                  <input value={equityPct} onChange={(e) => setEquityPct(e.target.value)} className="w-full rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white" />
                 </div>
                 <div>
-                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-slate-400 mb-1">Sponsor Experience (yrs)</label>
-                  <input value={experience} onChange={(e) => setExperience(e.target.value)} className="w-full rounded-lg border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white" />
+                  <label className="block font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82] mb-1">Sponsor Experience (yrs)</label>
+                  <input value={experience} onChange={(e) => setExperience(e.target.value)} className="w-full rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white" />
                 </div>
               </div>
               <Button onClick={runScreen} disabled={underwriteMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
@@ -125,7 +125,7 @@ export default function CreditUWPage() {
                 {screenResult.flags?.map((f: any, i: number) => (
                   <div key={i} className="flex items-center gap-2 py-1.5 border-b border-white/5 last:border-0">
                     <span className={`w-2 h-2 rounded-full ${f.severity === "material" ? "bg-red-500" : "bg-yellow-500"}`} />
-                    <span className="text-sm text-slate-300">{f.message}</span>
+                    <span className="text-sm text-[#EDE8DC]">{f.message}</span>
                     <Badge variant="outline" className="ml-auto text-[0.6rem]">{f.severity}</Badge>
                   </div>
                 ))}
@@ -140,11 +140,11 @@ export default function CreditUWPage() {
         <TabsContent value="exceptions" className="mt-6">
           <div className="space-y-3">
             {EXCEPTION_AUTHORITY.map((e) => (
-              <Card key={e.level} className="border-slate-700 bg-[#0D2218]">
+              <Card key={e.level} className="border-[#1E4A2E] bg-[#0D2218]">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-white">{e.level} Deviations</p>
-                    <p className="text-xs text-slate-400 mt-1">{e.description}</p>
+                    <p className="text-xs text-[#7A9A82] mt-1">{e.description}</p>
                   </div>
                   <Badge variant="outline" className="text-[#C4A048] border-[#C4A048]/30">{e.handler}</Badge>
                 </CardContent>

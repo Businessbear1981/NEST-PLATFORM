@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React from 'react';
 import { DollarSign, Send, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,7 @@ export function CarrierSubmissionForm({
 }: CarrierSubmissionFormProps) {
   return (
     <div className="space-y-5" data-testid="carrier-submission-form">
-      <Card className="border-slate-700 bg-slate-950/80">
+      <Card className="border-[#1E4A2E] bg-black/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#C4A048]">
             <Send className="h-5 w-5" />
@@ -52,7 +52,7 @@ export function CarrierSubmissionForm({
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {providers.map((provider) => (
-              <Card key={provider.id} className="border-slate-700 bg-slate-900/70 transition-all hover:border-[#C4A048]/50">
+              <Card key={provider.id} className="border-[#1E4A2E] bg-[#030A06]/70 transition-all hover:border-[#C4A048]/50">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -83,7 +83,7 @@ export function CarrierSubmissionForm({
                     <p className="mb-2 text-xs text-muted-foreground">Specialties</p>
                     <div className="flex flex-wrap gap-1">
                       {provider.specialties.map((specialty) => (
-                        <span key={specialty} className="rounded bg-slate-800 px-2 py-1 text-xs text-[#E8C87A]">
+                        <span key={specialty} className="rounded bg-[#0D2218] px-2 py-1 text-xs text-[#E8C87A]">
                           {specialty}
                         </span>
                       ))}
@@ -99,7 +99,7 @@ export function CarrierSubmissionForm({
         </CardContent>
       </Card>
 
-      <Card className="border-slate-700 bg-slate-950/80">
+      <Card className="border-[#1E4A2E] bg-black/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#C4A048]">
             <DollarSign className="h-5 w-5" />
@@ -112,7 +112,7 @@ export function CarrierSubmissionForm({
           ) : (
             <div className="space-y-3">
               {quotes.map((quote) => (
-                <div key={quote.id} className="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+                <div key={quote.id} className="rounded-lg border border-[#1E4A2E] bg-[#030A06]/70 p-4">
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold text-foreground">{quote.provider}</p>
@@ -128,11 +128,11 @@ export function CarrierSubmissionForm({
                       </span>
                     </div>
                   </div>
-                  <div className="mb-3 border-b border-slate-700 pb-3">
+                  <div className="mb-3 border-b border-[#1E4A2E] pb-3">
                     <p className="mb-2 text-xs text-muted-foreground">Risk factors</p>
                     <div className="flex flex-wrap gap-1">
                       {quote.riskFactors.map((factor) => (
-                        <span key={factor} className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-200">
+                        <span key={factor} className="rounded bg-[#0D2218] px-2 py-1 text-xs text-[#EDE8DC]">
                           {factor}
                         </span>
                       ))}

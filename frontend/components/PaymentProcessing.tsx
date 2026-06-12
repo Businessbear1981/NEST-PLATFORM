@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState } from 'react';
 import { CreditCard, DollarSign, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,13 +97,13 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
                   className={`p-4 rounded-lg border-2 cursor-pointer transition ${
                     selectedMethod === method.id
                       ? 'border-cyan-500 bg-[#C4A048]/10'
-                      : 'border-slate-700 bg-slate-800 hover:border-slate-600'
+                      : 'border-[#1E4A2E] bg-[#0D2218] hover:border-[#1E4A2E]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        selectedMethod === method.id ? 'border-cyan-500 bg-cyan-500' : 'border-slate-600'
+                        selectedMethod === method.id ? 'border-cyan-500 bg-cyan-500' : 'border-[#1E4A2E]'
                       }`}
                     >
                       {selectedMethod === method.id && <div className="w-2 h-2 bg-white rounded-full" />}
@@ -118,7 +118,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               ))}
             </div>
 
-            <div className="pt-4 border-t border-slate-700">
+            <div className="pt-4 border-t border-[#1E4A2E]">
               <label className="text-sm font-semibold text-foreground mb-2 block">Payment Amount</label>
               <div className="flex gap-2">
                 <span className="text-2xl font-bold text-[#C4A048]">$</span>
@@ -126,7 +126,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
                   type="number"
                   value={paymentAmount}
                   onChange={(e) => setPaymentAmount(Number(e.target.value))}
-                  className="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-2 text-foreground text-lg"
+                  className="flex-1 bg-[#1E4A2E] border border-[#1E4A2E] rounded px-3 py-2 text-foreground text-lg"
                 />
               </div>
             </div>
@@ -145,7 +145,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
             <CardTitle className="text-[#C4A048]">Review Payment</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 space-y-3">
+            <div className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E] space-y-3">
               {invoiceId && (
                 <div className="flex justify-between">
                   <p className="text-muted-foreground">Invoice</p>
@@ -164,14 +164,14 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
                 <p className="text-muted-foreground">Processing Fee</p>
                 <p className="text-foreground">$0.00</p>
               </div>
-              <div className="border-t border-slate-600 pt-3 flex justify-between">
+              <div className="border-t border-[#1E4A2E] pt-3 flex justify-between">
                 <p className="font-semibold text-foreground">Total</p>
                 <p className="text-xl font-bold text-[#C4A048]">${paymentAmount.toLocaleString()}</p>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={() => setStep('method')} variant="outline" className="flex-1 border-slate-600">
+              <Button onClick={() => setStep('method')} variant="outline" className="flex-1 border-[#1E4A2E]">
                 Back
               </Button>
               <Button onClick={handlePayment} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
@@ -198,7 +198,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               </p>
             </div>
 
-            <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 space-y-3">
+            <div className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E] space-y-3">
               {invoiceId && (
                 <div className="flex justify-between">
                   <p className="text-muted-foreground">Invoice</p>
@@ -231,7 +231,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               </div>
             </div>
 
-            <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+            <div className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
               <p className="text-sm text-muted-foreground mb-2">What happens next?</p>
               <ul className="space-y-2 text-sm text-foreground">
                 <li className="flex gap-2">

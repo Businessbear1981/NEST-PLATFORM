@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * ModulePages.tsx — 39 module page components for the NEST Advisors platform.
  * Each exports a standalone page with header, metric cards, and data tables
@@ -26,12 +26,12 @@ function pct(n: number): string {
 
 function PageShell({ eyebrow, title, subtitle, children }: { eyebrow: string; title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         <div className="rounded-[1.5rem] border border-[#C4A048]/20 bg-[#07101a]/80 p-6">
           <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#C4A048]">{eyebrow}</p>
           <h1 className="mt-2 font-mono text-xl font-bold uppercase tracking-[0.06em] text-white">{title}</h1>
-          <p className="mt-2 text-sm text-slate-400">{subtitle}</p>
+          <p className="mt-2 text-sm text-[#7A9A82]">{subtitle}</p>
         </div>
         {children}
       </div>
@@ -44,7 +44,7 @@ function MetricGrid({ metrics }: { metrics: { label: string; value: string; tone
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {metrics.map((m) => (
         <article key={m.label} className={`relative overflow-hidden rounded-[1.25rem] border p-4 ${m.tone}`}>
-          <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>
+          <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{m.label}</span>
           <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{m.value}</strong>
         </article>
       ))}
@@ -57,17 +57,17 @@ function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
     <div className="overflow-x-auto rounded-[1.25rem] border border-white/10 bg-[#07101a]/88">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-slate-700">
+          <tr className="border-b border-[#1E4A2E]">
             {headers.map((h) => (
-              <th key={h} className="px-4 py-3 text-left font-mono text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-slate-500">{h}</th>
+              <th key={h} className="px-4 py-3 text-left font-mono text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-b border-slate-800/60 hover:bg-slate-900/50">
+            <tr key={i} className="border-b border-[#0D2218]/60 hover:bg-[#030A06]/50">
               {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3 font-mono text-xs text-slate-300">{cell}</td>
+                <td key={j} className="px-4 py-3 font-mono text-xs text-[#EDE8DC]">{cell}</td>
               ))}
             </tr>
           ))}
@@ -83,7 +83,7 @@ function StatusBadge({ status, variant = "default" }: { status: string; variant?
     amber: "border-amber-300/30 bg-amber-400/10 text-amber-200",
     red: "border-red-400/30 bg-red-500/10 text-red-200",
     cyan: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]",
-    default: "border-white/20 bg-white/5 text-slate-300",
+    default: "border-white/20 bg-white/5 text-[#EDE8DC]",
   };
   return <Badge variant="outline" className={`text-[0.56rem] ${colors[variant]}`}>{status}</Badge>;
 }
@@ -209,12 +209,12 @@ export function TreasuryCompanyDashboard() {
       <DataTable
         headers={["Category", "Budget", "Spent", "Remaining", "Utilization", "Status"]}
         rows={[
-          [<span className="text-white">Deal Due Diligence</span>, <span className="text-slate-300">$850K</span>, <span className="text-amber-200">$612K</span>, "$238K", "72.0%", <StatusBadge status="On Track" variant="green" />],
-          [<span className="text-white">Appraisals & Inspections</span>, <span className="text-slate-300">$420K</span>, <span className="text-amber-200">$387K</span>, "$33K", "92.1%", <StatusBadge status="Near Limit" variant="amber" />],
-          [<span className="text-white">Legal & Compliance</span>, <span className="text-slate-300">$680K</span>, <span className="text-amber-200">$445K</span>, "$235K", "65.4%", <StatusBadge status="On Track" variant="green" />],
-          [<span className="text-white">Technology & SaaS</span>, <span className="text-slate-300">$185K</span>, <span className="text-amber-200">$142K</span>, "$43K", "76.8%", <StatusBadge status="On Track" variant="green" />],
-          [<span className="text-white">Travel & Entertainment</span>, <span className="text-slate-300">$250K</span>, <span className="text-amber-200">$268K</span>, "-$18K", "107.2%", <StatusBadge status="Over Budget" variant="red" />],
-          [<span className="text-white">Marketing & BD</span>, <span className="text-slate-300">$320K</span>, <span className="text-amber-200">$198K</span>, "$122K", "61.9%", <StatusBadge status="On Track" variant="green" />],
+          [<span className="text-white">Deal Due Diligence</span>, <span className="text-[#EDE8DC]">$850K</span>, <span className="text-amber-200">$612K</span>, "$238K", "72.0%", <StatusBadge status="On Track" variant="green" />],
+          [<span className="text-white">Appraisals & Inspections</span>, <span className="text-[#EDE8DC]">$420K</span>, <span className="text-amber-200">$387K</span>, "$33K", "92.1%", <StatusBadge status="Near Limit" variant="amber" />],
+          [<span className="text-white">Legal & Compliance</span>, <span className="text-[#EDE8DC]">$680K</span>, <span className="text-amber-200">$445K</span>, "$235K", "65.4%", <StatusBadge status="On Track" variant="green" />],
+          [<span className="text-white">Technology & SaaS</span>, <span className="text-[#EDE8DC]">$185K</span>, <span className="text-amber-200">$142K</span>, "$43K", "76.8%", <StatusBadge status="On Track" variant="green" />],
+          [<span className="text-white">Travel & Entertainment</span>, <span className="text-[#EDE8DC]">$250K</span>, <span className="text-amber-200">$268K</span>, "-$18K", "107.2%", <StatusBadge status="Over Budget" variant="red" />],
+          [<span className="text-white">Marketing & BD</span>, <span className="text-[#EDE8DC]">$320K</span>, <span className="text-amber-200">$198K</span>, "$122K", "61.9%", <StatusBadge status="On Track" variant="green" />],
         ]}
       />
     </PageShell>
@@ -384,7 +384,7 @@ export function ContactStrategy() {
           [<span className="text-white">Robert Steinberg</span>, "Hylant Insurance", "1 day ago", <span className="text-emerald-300">8.4</span>, "Schedule site visit", <StatusBadge status="Hot" variant="red" />],
           [<span className="text-white">Amanda Zhao</span>, "Northwestern Mutual", "1 week ago", <span className="text-amber-300">7.1</span>, "Email update", <StatusBadge status="Warm" variant="amber" />],
           [<span className="text-white">David Kim</span>, "Nuveen", "2 weeks ago", <span className="text-amber-300">5.8</span>, "Re-engage", <StatusBadge status="Warm" variant="amber" />],
-          [<span className="text-white">Sarah Patterson</span>, "Turner Construction", "3 weeks ago", <span className="text-slate-400">4.2</span>, "Outreach sequence", <StatusBadge status="Cool" variant="default" />],
+          [<span className="text-white">Sarah Patterson</span>, "Turner Construction", "3 weeks ago", <span className="text-[#7A9A82]">4.2</span>, "Outreach sequence", <StatusBadge status="Cool" variant="default" />],
         ]}
       />
     </PageShell>
@@ -574,20 +574,20 @@ export function NapkinPage() {
         <div className="rounded-[1.25rem] border border-[#C4A048]/20 bg-[#07101a]/88 p-5 space-y-4">
           <div className="flex gap-2">
             {(["ou", "investor"] as const).map((t) => (
-              <button key={t} onClick={() => setCalcType(t)} className={`rounded-lg px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] transition ${calcType === t ? "bg-[#C4A048]/15 text-[#EDE8DC]" : "text-slate-500 hover:bg-white/5"}`}>
+              <button key={t} onClick={() => setCalcType(t)} className={`rounded-lg px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] transition ${calcType === t ? "bg-[#C4A048]/15 text-[#EDE8DC]" : "text-[#7A9A82] hover:bg-white/5"}`}>
                 {t === "ou" ? "Owner/User" : "Investor RE"}
               </button>
             ))}
           </div>
           <div className="space-y-3">
-            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">Purchase Price</span>
-              <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" /></label>
-            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">Down Payment %</span>
-              <input value={downPayment} onChange={(e) => setDownPayment(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" /></label>
-            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">Interest Rate %</span>
-              <input value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" step="0.1" /></label>
-            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">{calcType === "ou" ? "Annual NOI" : "NOI"}</span>
-              <input value={noi} onChange={(e) => setNoi(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" /></label>
+            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">Purchase Price</span>
+              <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none focus:border-[#C4A048]/55" type="number" /></label>
+            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">Down Payment %</span>
+              <input value={downPayment} onChange={(e) => setDownPayment(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none focus:border-[#C4A048]/55" type="number" /></label>
+            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">Interest Rate %</span>
+              <input value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none focus:border-[#C4A048]/55" type="number" step="0.1" /></label>
+            <label className="block"><span className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">{calcType === "ou" ? "Annual NOI" : "NOI"}</span>
+              <input value={noi} onChange={(e) => setNoi(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none focus:border-[#C4A048]/55" type="number" /></label>
             <button onClick={runCalc} disabled={loading} className="w-full rounded-xl border border-amber-300/35 bg-amber-300/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-amber-100 hover:bg-amber-300/20 disabled:opacity-60">
               {loading ? "Calculating..." : "Run Napkin"}
             </button>
@@ -596,9 +596,9 @@ export function NapkinPage() {
         <div className="rounded-[1.25rem] border border-amber-300/20 bg-[#07101a]/88 p-5">
           <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-amber-300 mb-4">Results</p>
           {result ? (
-            <pre className="font-mono text-xs text-slate-300 whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
+            <pre className="font-mono text-xs text-[#EDE8DC] whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
           ) : (
-            <div className="space-y-3 text-slate-400 text-sm">
+            <div className="space-y-3 text-[#7A9A82] text-sm">
               <p>Configure inputs and click "Run Napkin" to see results.</p>
               <div className="grid gap-2 sm:grid-cols-2 mt-4">
                 {[
@@ -608,7 +608,7 @@ export function NapkinPage() {
                   { label: "Cap Rate", value: pct(Number(noi) / Number(purchasePrice) * 100) },
                 ].map((m) => (
                   <div key={m.label} className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                    <span className="font-mono text-[0.56rem] uppercase text-slate-500">{m.label}</span>
+                    <span className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">{m.label}</span>
                     <p className="font-mono text-lg text-white mt-1">{m.value}</p>
                   </div>
                 ))}

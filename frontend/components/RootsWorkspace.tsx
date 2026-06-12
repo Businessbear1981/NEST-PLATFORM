@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, FolderOpen, FileCheck2, CheckCircle2, Circle, AlertTriangle, BarChart3, Shield, Leaf, ShieldCheck, ClipboardCheck, FileText, Calculator, BookOpen, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -150,11 +150,11 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
         </div>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Docs</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Docs</p>
             <p className="font-mono text-xl font-semibold text-white">{docReadiness}%</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Readiness</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Readiness</p>
             <p className="font-mono text-xl font-semibold text-amber-100">{checkReadiness}%</p>
           </div>
         </div>
@@ -170,10 +170,10 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-emerald-200">
             <FolderOpen size={17} /> Roots — Arrangement & Readiness Engine
           </div>
-          <p className="mt-1 text-sm text-slate-400">Document vault, project readiness, surety prep, audit, feasibility, RMA spreads, credit memo — all groundwork before it becomes a bond.</p>
+          <p className="mt-1 text-sm text-[#7A9A82]">Document vault, project readiness, surety prep, audit, feasibility, RMA spreads, credit memo — all groundwork before it becomes a bond.</p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Overall Readiness</p>
+          <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Overall Readiness</p>
           <p className={`font-mono text-2xl font-bold ${overallReadiness >= 75 ? "text-emerald-200" : overallReadiness >= 50 ? "text-amber-200" : "text-red-200"}`}>
             {overallReadiness}%
           </p>
@@ -195,7 +195,7 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
 
         {/* ── DOCUMENT VAULT ──────────────────────────────────────── */}
         <TabsContent value="vault" className="mt-4 space-y-4">
-          <div className="flex items-center gap-4 font-mono text-[0.62rem] text-slate-400">
+          <div className="flex items-center gap-4 font-mono text-[0.62rem] text-[#7A9A82]">
             <span className="text-emerald-200">{uploadedRequired}/{requiredDocs.length} required uploaded</span>
             <span className="text-amber-200">{allDocs.filter((i) => docStatus[i.id] === "review").length} in review</span>
             <span className="text-red-200">{allDocs.filter((i) => i.required && docStatus[i.id] === "missing").length} required missing</span>
@@ -210,7 +210,7 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
                   <div className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white">
                     <Icon size={14} className="text-emerald-300" /> {cat.name}
                   </div>
-                  <span className="font-mono text-[0.56rem] text-slate-400">{catUploaded}/{cat.items.length}</span>
+                  <span className="font-mono text-[0.56rem] text-[#7A9A82]">{catUploaded}/{cat.items.length}</span>
                 </div>
                 <div className="space-y-1">
                   {cat.items.map((item) => {
@@ -227,8 +227,8 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
                         <div className="flex items-center gap-3">
                           {isOn ? <CheckCircle2 size={16} className="text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
                            : isReview ? <AlertTriangle size={16} className="text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" />
-                           : <Circle size={16} className="text-slate-600" />}
-                          <span className={`font-mono text-sm ${isOn ? "text-white" : "text-slate-400"}`}>{item.label}</span>
+                           : <Circle size={16} className="text-[#7A9A82]" />}
+                          <span className={`font-mono text-sm ${isOn ? "text-white" : "text-[#7A9A82]"}`}>{item.label}</span>
                           {item.required && st === "missing" && (
                             <span className="rounded-full border border-red-400/30 bg-red-500/10 px-2 py-0.5 font-mono text-[0.52rem] uppercase text-red-200">required</span>
                           )}
@@ -236,7 +236,7 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
                         <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.52rem] uppercase ${
                           isOn ? "border-emerald-300/30 bg-emerald-400/10 text-emerald-200"
                           : isReview ? "border-amber-300/30 bg-amber-300/10 text-amber-200"
-                          : "border-slate-600 text-slate-500"
+                          : "border-[#1E4A2E] text-[#7A9A82]"
                         }`}>{isOn ? "Uploaded" : isReview ? "Review" : "Missing"}</span>
                       </button>
                     );
@@ -250,14 +250,14 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
         {/* ── PROJECT READINESS ────────────────────────────────────── */}
         <TabsContent value="readiness" className="mt-4 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="font-mono text-[0.62rem] text-slate-400">{completedChecks}/{requiredChecks.length} required items complete</p>
+            <p className="font-mono text-[0.62rem] text-[#7A9A82]">{completedChecks}/{requiredChecks.length} required items complete</p>
             <span className={`font-mono text-lg font-bold ${checkReadiness >= 75 ? "text-emerald-200" : "text-amber-200"}`}>{checkReadiness}%</span>
           </div>
           <Progress value={checkReadiness} className="h-2" />
 
           {Array.from(new Set(READINESS_CHECKLIST.map((i) => i.category))).map((cat) => (
             <div key={cat}>
-              <h4 className="mb-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-slate-400">{cat}</h4>
+              <h4 className="mb-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#7A9A82]">{cat}</h4>
               <div className="space-y-1">
                 {READINESS_CHECKLIST.filter((i) => i.category === cat).map((item) => {
                   const done = readinessStatus[item.id];
@@ -269,8 +269,8 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
                       } hover:border-white/20`}>
                       <div className="flex items-center gap-3">
                         {done ? <CheckCircle2 size={16} className="text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-                         : <Circle size={16} className="text-slate-600" />}
-                        <span className={`font-mono text-sm ${done ? "text-white" : "text-slate-400"}`}>{item.label}</span>
+                         : <Circle size={16} className="text-[#7A9A82]" />}
+                        <span className={`font-mono text-sm ${done ? "text-white" : "text-[#7A9A82]"}`}>{item.label}</span>
                       </div>
                       {item.required && !done && (
                         <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-2 py-0.5 font-mono text-[0.52rem] uppercase text-amber-200">required</span>
@@ -345,8 +345,8 @@ function SuretyReadinessPanel({ ratingMutation }: { ratingMutation: any }) {
             <div className="flex items-center gap-3">
               {req.status === "complete"
                 ? <CheckCircle2 size={16} className="text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-                : <Circle size={16} className="text-slate-600" />}
-              <span className={`font-mono text-sm ${req.status === "complete" ? "text-white" : "text-slate-400"}`}>{req.label}</span>
+                : <Circle size={16} className="text-[#7A9A82]" />}
+              <span className={`font-mono text-sm ${req.status === "complete" ? "text-white" : "text-[#7A9A82]"}`}>{req.label}</span>
             </div>
           </div>
         ))}
@@ -359,9 +359,9 @@ function SuretyReadinessPanel({ ratingMutation }: { ratingMutation: any }) {
           { label: "Max Bond", value: "$500M", sub: "Capacity" },
         ].map((m) => (
           <div key={m.label} className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-center">
-            <p className="font-mono text-[0.56rem] uppercase text-slate-500">{m.label}</p>
+            <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">{m.label}</p>
             <p className="font-mono text-lg font-bold text-amber-100">{m.value}</p>
-            <p className="font-mono text-[0.52rem] text-slate-500">{m.sub}</p>
+            <p className="font-mono text-[0.52rem] text-[#7A9A82]">{m.sub}</p>
           </div>
         ))}
       </div>
@@ -382,7 +382,7 @@ function RMAPanel({ rmaMutation }: { rmaMutation: any }) {
       <div className="flex items-center justify-between">
         <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-emerald-200">RMA Industry Benchmark Spreads</h3>
         <div className="flex gap-2">
-          <select value={naics} onChange={(e) => setNaics(e.target.value)} className="rounded-xl border border-emerald-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none">
+          <select value={naics} onChange={(e) => setNaics(e.target.value)} className="rounded-xl border border-emerald-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-[#EDE8DC] outline-none">
             <option value="6232">Assisted Living</option>
             <option value="6231">Nursing Care</option>
             <option value="5311">Property Mgmt</option>
@@ -401,7 +401,7 @@ function RMAPanel({ rmaMutation }: { rmaMutation: any }) {
             }`}>
               <span className="font-mono text-sm text-white">{metric.replace(/_/g, " ")}</span>
               <div className="flex items-center gap-4 font-mono text-sm">
-                <span className="text-slate-400">Bench: {data.benchmark}</span>
+                <span className="text-[#7A9A82]">Bench: {data.benchmark}</span>
                 <span className={data.status === "above" ? "text-emerald-200" : "text-red-200"}>Actual: {data.actual}</span>
                 <span className={`font-semibold ${data.delta >= 0 ? "text-emerald-300" : "text-red-300"}`}>{data.delta >= 0 ? "+" : ""}{data.delta}</span>
               </div>
@@ -458,7 +458,7 @@ function CreditMemoPanel({ creditMemoMutation, ratingMutation }: { creditMemoMut
             { label: "Score", value: `${rating.deal_score}/100`, tone: "text-white" },
           ].map((m) => (
             <div key={m.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase text-slate-500">{m.label}</p>
+              <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">{m.label}</p>
               <p className={`font-mono text-xl font-bold ${m.tone}`}>{m.value}</p>
             </div>
           ))}
@@ -470,7 +470,7 @@ function CreditMemoPanel({ creditMemoMutation, ratingMutation }: { creditMemoMut
           <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
             <BookOpen size={14} /> AI Credit Memo
           </div>
-          <div className="mt-3 whitespace-pre-wrap font-mono text-sm leading-7 text-slate-300">
+          <div className="mt-3 whitespace-pre-wrap font-mono text-sm leading-7 text-[#EDE8DC]">
             {(creditMemoMutation.data as any).content}
           </div>
         </div>
@@ -499,22 +499,22 @@ function ESGPanel({ esgMutation }: { esgMutation: any }) {
         <>
           <div className="grid grid-cols-4 gap-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase text-slate-500">Composite</p>
+              <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">Composite</p>
               <p className="font-mono text-2xl font-bold text-white">{data.composite_score}</p>
-              <p className="font-mono text-[0.52rem] text-slate-500">Grade: {data.esg_grade}</p>
+              <p className="font-mono text-[0.52rem] text-[#7A9A82]">Grade: {data.esg_grade}</p>
             </div>
             {["environmental", "social", "governance"].map((pillar) => {
               const colors: Record<string, string> = { environmental: "text-emerald-200 border-emerald-300/25 bg-emerald-400/8", social: "text-[#E8C87A] border-[#C4A048]/25 bg-[#C4A048]/8", governance: "text-amber-200 border-amber-300/25 bg-amber-300/8" };
               return (
                 <div key={pillar} className={`rounded-xl border p-3 text-center ${colors[pillar]}`}>
-                  <p className="font-mono text-[0.56rem] uppercase text-slate-500">{pillar}</p>
+                  <p className="font-mono text-[0.56rem] uppercase text-[#7A9A82]">{pillar}</p>
                   <p className="font-mono text-2xl font-bold">{data.pillar_scores?.[pillar]?.score ?? "—"}</p>
                 </div>
               );
             })}
           </div>
           <div className={`rounded-xl border p-3 text-center ${data.bond_impact?.includes("Green") ? "border-emerald-300/30 bg-emerald-400/8" : "border-white/10 bg-white/[0.035]"}`}>
-            <p className={`font-mono text-sm font-semibold ${data.bond_impact?.includes("Green") ? "text-emerald-200" : "text-slate-400"}`}>{data.bond_impact}</p>
+            <p className={`font-mono text-sm font-semibold ${data.bond_impact?.includes("Green") ? "text-emerald-200" : "text-[#7A9A82]"}`}>{data.bond_impact}</p>
           </div>
         </>
       )}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from 'react';
 import { ArrowDownRight, ArrowUpRight, Gauge, RadioTower, RefreshCw, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -62,12 +62,12 @@ export function StreamingMTMTicker({ onDeskEvent }: { onDeskEvent?: (event: stri
   };
 
   return (
-    <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100" data-testid="streaming-mtm-ticker">
+    <Card className="border-[#C4A048]/20 bg-black/75 text-[#EDE8DC]" data-testid="streaming-mtm-ticker">
       <CardHeader>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><RadioTower className="h-5 w-5" /> Streaming MTM ticker</CardTitle>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Deterministic subscription simulation for mark-to-market prices, spread changes, value movement, and desk-level derived metrics.</p>
+            <p className="mt-2 text-sm leading-6 text-[#7A9A82]">Deterministic subscription simulation for mark-to-market prices, spread changes, value movement, and desk-level derived metrics.</p>
           </div>
           <Badge className="w-fit border-[#C4A048]/30 bg-[#C4A048]/10 font-mono uppercase tracking-[0.14em] text-[#EDE8DC]">
             animated demo feed
@@ -77,22 +77,22 @@ export function StreamingMTMTicker({ onDeskEvent }: { onDeskEvent?: (event: stri
       <CardContent className="space-y-4">
         <div className="grid gap-3 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-slate-500">Portfolio MTM</p>
+            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#7A9A82]">Portfolio MTM</p>
             <p className="mt-2 text-2xl font-black text-white">{money(portfolioMtm)}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-slate-500">Weighted spread</p>
+            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#7A9A82]">Weighted spread</p>
             <p className="mt-2 text-2xl font-black text-[#EDE8DC]">+{weightedSpread.toFixed(0)} bp</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-slate-500">Active tape</p>
+            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#7A9A82]">Active tape</p>
             <p className="mt-2 text-sm font-semibold text-white">{activeTick.label}</p>
           </div>
         </div>
 
         <div className="overflow-x-auto rounded-2xl border border-white/10">
           <table className="w-full min-w-[780px] text-left text-sm">
-            <thead className="bg-white/[0.035] font-mono text-[0.62rem] uppercase tracking-[0.16em] text-slate-500">
+            <thead className="bg-white/[0.035] font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#7A9A82]">
               <tr>
                 <th className="px-4 py-3">CUSIP lane</th>
                 <th className="px-4 py-3">Px</th>
@@ -110,12 +110,12 @@ export function StreamingMTMTicker({ onDeskEvent }: { onDeskEvent?: (event: stri
                   <tr key={row.id} onClick={() => setSelectedId(row.id)} className={`cursor-pointer border-t border-white/10 transition hover:bg-[#C4A048]/5 ${selected ? 'bg-[#C4A048]/10' : ''}`}>
                     <td className="px-4 py-3">
                       <p className="font-semibold text-white">{row.id}</p>
-                      <p className="text-xs text-slate-400">{row.issuer} · {row.ratingPath}</p>
+                      <p className="text-xs text-[#7A9A82]">{row.issuer} · {row.ratingPath}</p>
                     </td>
                     <td className="px-4 py-3 font-mono text-emerald-100">{row.price.toFixed(2)}</td>
                     <td className={`px-4 py-3 font-mono ${up ? 'text-emerald-200' : 'text-rose-200'}`}>{up ? '+' : ''}{row.dayChange.toFixed(2)}</td>
                     <td className="px-4 py-3 font-mono text-[#EDE8DC]">+{row.spread.toFixed(0)} bp</td>
-                    <td className="px-4 py-3 font-mono text-slate-200">{money(row.mtmValue)}</td>
+                    <td className="px-4 py-3 font-mono text-[#EDE8DC]">{money(row.mtmValue)}</td>
                     <td className="px-4 py-3 font-mono text-amber-100">{row.yieldSignal.toFixed(2)}%</td>
                   </tr>
                 );
@@ -130,7 +130,7 @@ export function StreamingMTMTicker({ onDeskEvent }: { onDeskEvent?: (event: stri
               <Gauge className="h-4 w-4" /> Selected lane <strong>{selectedMarkedRow.id}</strong> reprices to <strong>{selectedMarkedRow.price.toFixed(2)}</strong> with spread <strong>+{selectedMarkedRow.spread.toFixed(0)} bp</strong>.
             </div>
           </div>
-          <Button type="button" className="bg-cyan-400 text-slate-950 hover:bg-cyan-300" onClick={pulseTick}>
+          <Button type="button" className="bg-cyan-400 text-[#030A06] hover:bg-cyan-300" onClick={pulseTick}>
             <RefreshCw className="mr-2 h-4 w-4" /> Pulse MTM update
           </Button>
         </div>

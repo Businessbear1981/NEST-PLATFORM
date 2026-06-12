@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, Layers3, Calculator, BarChart3, ShieldCheck, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 
-const inputClass = "rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-amber-300/55 focus:ring-2 focus:ring-amber-300/10 font-mono";
+const inputClass = "rounded-xl border border-amber-300/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none placeholder:text-[#7A9A82] focus:border-amber-300/55 focus:ring-2 focus:ring-amber-300/10 font-mono";
 
 function money(val: number) {
   if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(1)}M`;
@@ -95,11 +95,11 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
         </div>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Status</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Status</p>
             <p className="font-mono text-sm font-semibold text-emerald-200">Ready to structure</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Engine</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Engine</p>
             <p className="font-mono text-sm font-semibold text-white">CreditEngine + Architect</p>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
         <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
           <Layers3 size={17} /> Bond Desk — Structuring Studio
         </div>
-        <p className="mt-1 text-sm text-slate-400">Dual-tranche sizing, stress testing, ratings, and cash waterfall — all powered by CreditEngine.</p>
+        <p className="mt-1 text-sm text-[#7A9A82]">Dual-tranche sizing, stress testing, ratings, and cash waterfall — all powered by CreditEngine.</p>
       </div>
 
       {/* Input panel */}
@@ -123,27 +123,27 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
           <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white">Deal Parameters</h3>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Total Project Cost</label>
+              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Total Project Cost</label>
               <input type="number" value={tpc} onChange={(e) => setTpc(e.target.value)} className={inputClass + " w-full"} />
             </div>
             <div>
-              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">A Tranche LTC %</label>
+              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">A Tranche LTC %</label>
               <input type="number" value={aLtc} onChange={(e) => setALtc(e.target.value)} step="1" className={inputClass + " w-full"} />
             </div>
             <div>
-              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">B Addon %</label>
+              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">B Addon %</label>
               <input type="number" value={bAddon} onChange={(e) => setBAddon(e.target.value)} step="1" className={inputClass + " w-full"} />
             </div>
             <div>
-              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Maturity (yrs)</label>
+              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Maturity (yrs)</label>
               <input type="number" value={yrs} onChange={(e) => setYrs(e.target.value)} className={inputClass + " w-full"} />
             </div>
             <div>
-              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">A Coupon %</label>
+              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">A Coupon %</label>
               <input type="number" value={aCoup} onChange={(e) => setACoup(e.target.value)} step="0.25" className={inputClass + " w-full"} />
             </div>
             <div>
-              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">B Coupon %</label>
+              <label className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">B Coupon %</label>
               <input type="number" value={bCoup} onChange={(e) => setBCoup(e.target.value)} step="0.5" className={inputClass + " w-full"} />
             </div>
           </div>
@@ -174,11 +174,11 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
                 { label: "CLTV", value: `${structureResult.cltv_pct.toFixed(1)}%`, tone: structureResult.cltv_pct > 75 ? "text-red-300" : "text-emerald-200" },
                 { label: "Net Proceeds", value: money(structureResult.project_proceeds_usd), tone: "text-emerald-200" },
                 { label: "Debt Service", value: money(structureResult.annual_debt_service), tone: "text-amber-100" },
-                { label: "Surety Premium", value: money(structureResult.surety_premium_usd), tone: "text-slate-300" },
+                { label: "Surety Premium", value: money(structureResult.surety_premium_usd), tone: "text-[#EDE8DC]" },
                 { label: "B → HFT Fund", value: money(structureResult.b_to_hft_usd), tone: "text-fuchsia-200" },
               ].map((m) => (
                 <div key={m.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
-                  <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{m.label}</p>
+                  <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{m.label}</p>
                   <p className={`font-mono text-sm font-semibold ${m.tone}`}>{m.value}</p>
                 </div>
               ))}
@@ -203,7 +203,7 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
                   <div key={name} className={`flex items-center justify-between rounded-xl border p-3 ${statusColor}`}>
                     <div>
                       <p className="font-mono text-[0.62rem] font-semibold uppercase">{name}</p>
-                      <p className="font-mono text-[0.56rem] text-slate-400">{data.description}</p>
+                      <p className="font-mono text-[0.56rem] text-[#7A9A82]">{data.description}</p>
                     </div>
                     <p className="font-mono text-lg font-semibold">{data.dscr.toFixed(2)}x</p>
                   </div>
@@ -222,20 +222,20 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
           </h3>
           <div className="mt-3 grid grid-cols-3 gap-4">
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Indicative Rating</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Indicative Rating</p>
               <p className="font-mono text-2xl font-bold text-amber-100">{ratingResult.indicative_rating}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Deal Score</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Deal Score</p>
               <p className="font-mono text-2xl font-bold text-white">{ratingResult.deal_score}/100</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Grade</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Grade</p>
               <p className="font-mono text-2xl font-bold text-emerald-200">{ratingResult.deal_score_grade}</p>
             </div>
           </div>
           {ratingResult.ai_rationale && (
-            <p className="mt-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 font-mono text-sm leading-6 text-slate-300">
+            <p className="mt-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 font-mono text-sm leading-6 text-[#EDE8DC]">
               {ratingResult.ai_rationale}
             </p>
           )}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, CloudRain, Flame, Wind, Thermometer, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
         <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CloudRain size={14} /> Climate Resilience
         </div>
-        <p className="mt-2 font-mono text-sm text-slate-400">Physical + transition risk scoring</p>
+        <p className="mt-2 font-mono text-sm text-[#7A9A82]">Physical + transition risk scoring</p>
       </div>
     );
   }
@@ -41,7 +41,7 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
           <CloudRain size={17} /> Climate Resilience Assessment
         </div>
         <div className="flex gap-2">
-          <select value={state} onChange={(e) => setState(e.target.value)} className="rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none">
+          <select value={state} onChange={(e) => setState(e.target.value)} className="rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 font-mono text-sm text-[#EDE8DC] outline-none">
             {["FL", "CA", "TX", "AZ", "WA"].map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <Button onClick={() => transitionRisk.mutate({ dealId: dealId || "demo-deal", sector: "healthcare" })} disabled={transitionRisk.isPending || physicalRisk.isLoading}
@@ -55,17 +55,17 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
         <>
           <div className="grid grid-cols-3 gap-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Physical Risk Score</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Physical Risk Score</p>
               <p className={`font-mono text-2xl font-bold ${data?.overall_physical_score >= 70 ? "text-red-200" : data?.overall_physical_score >= 40 ? "text-amber-200" : "text-emerald-200"}`}>
                 {data?.overall_physical_score || 0}/100
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Transition Risk</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Transition Risk</p>
               <p className="font-mono text-2xl font-bold text-amber-100">{transition?.overall_transition_score || combined?.combined_climate_score || 0}/100</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Combined Score</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Combined Score</p>
               <p className={`font-mono text-lg font-bold ${combined?.combined_climate_score >= 70 ? "text-emerald-200" : "text-amber-200"}`}>{combined?.combined_climate_score || 0}/100</p>
             </div>
           </div>
@@ -95,7 +95,7 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
 
           {transition?.mitigation_actions?.length > 0 && (
             <div className="space-y-1">
-              <h4 className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">Mitigation Actions</h4>
+              <h4 className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">Mitigation Actions</h4>
               {transition.mitigation_actions.map((m: string, i: number) => (
                 <div key={i} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2">
                   <span className="font-mono text-sm text-white">{m}</span>

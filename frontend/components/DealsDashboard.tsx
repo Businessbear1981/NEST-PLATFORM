@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -130,7 +130,7 @@ export function DealsDashboard() {
             <Button
               onClick={handleCreateDeal}
               disabled={createDealMutation.isPending}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-[#C4A048] hover:bg-[#C4A048]"
             >
               {createDealMutation.isPending ? (
                 <>

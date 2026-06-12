@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trpc } from "@/lib/trpc";
@@ -113,7 +113,7 @@ export default function LiveMarketTape() {
                 initial={{ opacity: 0.6 }}
                 animate={{ opacity: 1 }}
               >
-                <span className="font-mono text-[0.52rem] uppercase tracking-widest text-slate-500">
+                <span className="font-mono text-[0.52rem] uppercase tracking-widest text-[#7A9A82]">
                   {tick.label}
                 </span>
                 <motion.span

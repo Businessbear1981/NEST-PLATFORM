@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from "react";
 import { ArrowRight, Calculator, GitCompareArrows, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +66,7 @@ const DEALS: AffectedDealScore[] = [
 const directionStyles: Record<MethodologyFactor["direction"], string> = {
   tightened: "border-red-300/35 bg-red-500/10 text-red-100",
   relaxed: "border-emerald-300/35 bg-emerald-400/10 text-emerald-100",
-  neutral: "border-slate-400/35 bg-slate-500/10 text-slate-100",
+  neutral: "border-[#2D6B3D]/35 bg-[#2D6B3D]/10 text-[#EDE8DC]",
 };
 
 export function MethodologyVersionDiff() {
@@ -81,7 +81,7 @@ export function MethodologyVersionDiff() {
   }, []);
 
   return (
-    <Card className="overflow-hidden border-amber-300/25 bg-[#120f07]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(245,158,11,0.10)]">
+    <Card className="overflow-hidden border-amber-300/25 bg-[#120f07]/90 p-5 text-[#EDE8DC] shadow-[0_0_42px_rgba(245,158,11,0.10)]">
       <div className="mb-4 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-amber-200">
@@ -90,12 +90,12 @@ export function MethodologyVersionDiff() {
           <h2 className="mt-2 font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">
             Factor changes and affected-deal impact
           </h2>
-          <p className="mt-1 text-sm leading-6 text-slate-400">
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">
             Compares prior and revised agency criteria, then simulates deal-level score movement so the Rating Room can update memos and route approvals.
           </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-black/25 p-3 text-right">
-          <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">Portfolio score shift</p>
+          <p className="text-[0.68rem] uppercase tracking-[0.16em] text-[#7A9A82]">Portfolio score shift</p>
           <p className={`mt-1 font-mono text-2xl font-semibold ${aggregateShift.delta >= 0 ? "text-emerald-200" : "text-red-200"}`}>
             {aggregateShift.delta >= 0 ? "+" : ""}{aggregateShift.delta.toFixed(1)} pts
           </p>
@@ -117,7 +117,7 @@ export function MethodologyVersionDiff() {
                 <p className="font-mono text-sm font-semibold uppercase tracking-[0.04em] text-white">{factor.factor}</p>
                 <Badge variant="outline" className={directionStyles[factor.direction]}>{factor.direction.toUpperCase()}</Badge>
               </div>
-              <div className="mt-3 flex items-center gap-2 text-sm text-slate-300">
+              <div className="mt-3 flex items-center gap-2 text-sm text-[#EDE8DC]">
                 <span>{factor.previous}</span>
                 <ArrowRight size={14} className="text-amber-200" />
                 <span className="text-amber-100">{factor.revised}</span>
@@ -129,15 +129,15 @@ export function MethodologyVersionDiff() {
         <div className="rounded-2xl border border-amber-300/20 bg-black/30 p-5">
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-              <p className="text-xs text-slate-500">Selected factor</p>
+              <p className="text-xs text-[#7A9A82]">Selected factor</p>
               <p className="mt-1 text-sm font-semibold text-white">{selectedFactor.factor}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-              <p className="text-xs text-slate-500">Weight delta</p>
+              <p className="text-xs text-[#7A9A82]">Weight delta</p>
               <p className="mt-1 text-sm font-semibold text-amber-100">{selectedFactor.weightDelta >= 0 ? "+" : ""}{selectedFactor.weightDelta} pts</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-              <p className="text-xs text-slate-500">Rescore state</p>
+              <p className="text-xs text-[#7A9A82]">Rescore state</p>
               <p className={rescored ? "mt-1 text-sm font-semibold text-emerald-200" : "mt-1 text-sm font-semibold text-amber-200"}>{rescored ? "UPDATED" : "PENDING"}</p>
             </div>
           </div>
@@ -150,11 +150,11 @@ export function MethodologyVersionDiff() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="font-mono text-sm font-semibold uppercase tracking-[0.04em] text-white">{deal.deal}</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-400">{deal.memoImpact}</p>
+                      <p className="mt-1 text-xs leading-5 text-[#7A9A82]">{deal.memoImpact}</p>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-sm">
-                      <span className="text-slate-400">{deal.currentScore}</span>
-                      <ArrowRight size={13} className="text-slate-500" />
+                      <span className="text-[#7A9A82]">{deal.currentScore}</span>
+                      <ArrowRight size={13} className="text-[#7A9A82]" />
                       <span className={delta >= 0 ? "text-emerald-200" : "text-red-200"}>{rescored ? deal.revisedScore : "--"}</span>
                       {delta >= 0 ? <TrendingUp size={14} className="text-emerald-300" /> : <TrendingDown size={14} className="text-red-300" />}
                     </div>

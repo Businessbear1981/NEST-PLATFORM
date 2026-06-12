@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -12,7 +12,7 @@ export default function CovenantMonitoring({ dealId, summaryMode }: { dealId?: s
         <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CheckCircle2 size={14} /> Covenant Monitoring
         </div>
-        <p className="mt-2 font-mono text-sm text-slate-400">Real-time covenant compliance tracking</p>
+        <p className="mt-2 font-mono text-sm text-[#7A9A82]">Real-time covenant compliance tracking</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export default function CovenantMonitoring({ dealId, summaryMode }: { dealId?: s
               {c.status || (c.in_compliance ? "compliant" : "breach")}
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-[0.56rem] text-slate-400">
+          <div className="grid grid-cols-3 gap-2 text-[0.56rem] text-[#7A9A82]">
             <div>Threshold: {c.threshold ?? c.threshold_value}</div>
             <div>Current: {c.current ?? c.current_value}</div>
             <div className="text-[#E8C87A]">Margin: {c.margin_pct ?? "—"}%</div>
@@ -49,7 +49,7 @@ export default function CovenantMonitoring({ dealId, summaryMode }: { dealId?: s
 
       {!data?.covenants && !covenantMutation.isPending && (
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6 text-center">
-          <p className="font-mono text-sm text-slate-400">Click "Run Covenant Sweep" to analyze deal covenants</p>
+          <p className="font-mono text-sm text-[#7A9A82]">Click "Run Covenant Sweep" to analyze deal covenants</p>
         </div>
       )}
 

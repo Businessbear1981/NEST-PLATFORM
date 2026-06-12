@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * Roots Document Upload — Drag & drop triggers Bernard analysis.
  * Documents auto-classify into the correct slot in the deal package.
@@ -134,13 +134,13 @@ export default function RootsUploadPage() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-emerald-300/25 bg-[#060E1A] p-5 text-slate-100 sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-emerald-300/25 bg-[#060E1A] p-5 text-[#EDE8DC] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(16,185,129,0.15),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1fr_0.4fr]">
           <div>
             <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-emerald-200">Roots · Document Ingestion · Stage 1</div>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>Document Upload</h1>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-[#7A9A82]">
               Drop files here. Bernard auto-classifies each document, extracts financial data,
               and assigns it to the correct slot in the deal package. Credit readiness advances
               as documents are ingested.
@@ -148,7 +148,7 @@ export default function RootsUploadPage() {
 
             {/* Deal selector — the same deals created in Deal Input */}
             <div className="mt-4">
-              <label className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-slate-500">Active Deal</label>
+              <label className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-[#7A9A82]">Active Deal</label>
               <select
                 value={selectedDealId}
                 onChange={(e) => setSelectedDealId(e.target.value)}
@@ -164,7 +164,7 @@ export default function RootsUploadPage() {
                 ))}
               </select>
               {selectedDeal?.project?.total_project_cost_usd ? (
-                <p className="mt-1 font-mono text-[0.55rem] text-slate-500">
+                <p className="mt-1 font-mono text-[0.55rem] text-[#7A9A82]">
                   {selectedDeal.project.asset_type?.replace(/_/g, " ")} · TPC ${selectedDeal.project.total_project_cost_usd.toLocaleString()}
                 </p>
               ) : null}
@@ -173,10 +173,10 @@ export default function RootsUploadPage() {
           <div className="flex flex-col items-center justify-center">
             <div className="text-center">
               <p className="font-mono text-4xl font-black text-emerald-400">{overallPct}%</p>
-              <p className="font-mono text-[0.6rem] uppercase text-slate-500 mt-1">Credit Ready</p>
+              <p className="font-mono text-[0.6rem] uppercase text-[#7A9A82] mt-1">Credit Ready</p>
             </div>
             <Progress value={overallPct} className="w-full mt-3 h-2" />
-            <p className="font-mono text-[0.55rem] text-slate-500 mt-1">
+            <p className="font-mono text-[0.55rem] text-[#7A9A82] mt-1">
               {requiredFilled}/{requiredSlots.length} required docs
             </p>
           </div>
@@ -191,31 +191,31 @@ export default function RootsUploadPage() {
         onClick={() => { if (selectedDealId) fileInputRef.current?.click(); }}
         className={`rounded-2xl border-2 border-dashed p-12 text-center transition-all ${
           !selectedDealId
-            ? "border-slate-800 bg-[#0D2218]/20 cursor-not-allowed opacity-60"
+            ? "border-[#0D2218] bg-[#0D2218]/20 cursor-not-allowed opacity-60"
             : dragOver
             ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_30px_rgba(16,185,129,0.15)] cursor-pointer"
             : uploading
             ? "border-[#C4A048] bg-[#C4A048]/5 animate-pulse cursor-pointer"
-            : "border-slate-700 bg-[#0D2218]/30 hover:border-slate-500 cursor-pointer"
+            : "border-[#1E4A2E] bg-[#0D2218]/30 hover:border-[#2D6B3D] cursor-pointer"
         }`}
       >
         <input ref={fileInputRef} type="file" multiple accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.txt"
           onChange={handleFileSelect} className="hidden" />
         {!selectedDealId ? (
           <div>
-            <p className="text-lg text-slate-300 font-semibold">Select a deal to begin</p>
-            <p className="text-sm text-slate-500 mt-1">Choose a deal above — or create one in Deal Input — then upload its document package here.</p>
+            <p className="text-lg text-[#EDE8DC] font-semibold">Select a deal to begin</p>
+            <p className="text-sm text-[#7A9A82] mt-1">Choose a deal above — or create one in Deal Input — then upload its document package here.</p>
           </div>
         ) : uploading ? (
           <div>
             <p className="text-lg text-[#C4A048] font-semibold">Bernard is analyzing...</p>
-            <p className="text-sm text-slate-400 mt-1">Classifying document, extracting financials</p>
+            <p className="text-sm text-[#7A9A82] mt-1">Classifying document, extracting financials</p>
           </div>
         ) : (
           <div>
             <p className="text-lg text-white font-semibold">Drop documents here</p>
-            <p className="text-sm text-slate-400 mt-1">PDF, Excel, or text — Bernard classifies and extracts automatically</p>
-            <p className="font-mono text-[0.6rem] text-slate-600 mt-3">
+            <p className="text-sm text-[#7A9A82] mt-1">PDF, Excel, or text — Bernard classifies and extracts automatically</p>
+            <p className="font-mono text-[0.6rem] text-[#7A9A82] mt-3">
               Financials · Appraisals · Officer Certs · Pro Formas · Rent Rolls · S&U · QofE
             </p>
           </div>
@@ -230,7 +230,7 @@ export default function RootsUploadPage() {
               <span className="font-mono text-[0.65rem] uppercase tracking-wider text-[#C4A048]">Bernard</span>
               <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 text-[0.55rem]">Auto-Analysis</Badge>
             </div>
-            <p className="text-sm text-slate-300 whitespace-pre-wrap">{lastNarration}</p>
+            <p className="text-sm text-[#EDE8DC] whitespace-pre-wrap">{lastNarration}</p>
           </CardContent>
         </Card>
       )}
@@ -241,12 +241,12 @@ export default function RootsUploadPage() {
           const filled = uploads.find(u => u.doc_type === slot.key);
           return (
             <Card key={slot.key} className={`transition ${
-              filled ? "border-emerald-500/30 bg-[#0D2218]" : slot.required ? "border-red-500/15 bg-[#0D2218]/50" : "border-slate-700/40 bg-[#0D2218]/30"
+              filled ? "border-emerald-500/30 bg-[#0D2218]" : slot.required ? "border-red-500/15 bg-[#0D2218]/50" : "border-[#1E4A2E]/40 bg-[#0D2218]/30"
             }`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${filled ? "bg-emerald-500" : slot.required ? "bg-red-500/50" : "bg-slate-700"}`} />
+                    <span className={`w-2.5 h-2.5 rounded-full ${filled ? "bg-emerald-500" : slot.required ? "bg-red-500/50" : "bg-[#1E4A2E]"}`} />
                     <span className="text-sm font-semibold text-white">{slot.label}</span>
                   </div>
                   <div className="flex gap-1">
@@ -254,11 +254,11 @@ export default function RootsUploadPage() {
                     {filled && <Badge variant="outline" className="text-[0.5rem] border-emerald-500/30 text-emerald-400">Uploaded</Badge>}
                   </div>
                 </div>
-                <p className="text-[0.65rem] text-slate-500 ml-4.5">{slot.description}</p>
+                <p className="text-[0.65rem] text-[#7A9A82] ml-4.5">{slot.description}</p>
                 {filled && (
                   <div className="mt-2 ml-4.5">
                     <p className="font-mono text-[0.55rem] text-emerald-400">{filled.filename}</p>
-                    <p className="font-mono text-[0.5rem] text-slate-500">{filled.fields_extracted.length} fields extracted</p>
+                    <p className="font-mono text-[0.5rem] text-[#7A9A82]">{filled.fields_extracted.length} fields extracted</p>
                   </div>
                 )}
               </CardContent>
@@ -282,7 +282,7 @@ export default function RootsUploadPage() {
                 .slice(0, 16)
                 .map(([k, v]) => (
                   <div key={k} className="rounded-lg border border-white/5 bg-black/20 p-2">
-                    <p className="font-mono text-[0.5rem] uppercase text-slate-500">{k.replace(/_/g, " ")}</p>
+                    <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">{k.replace(/_/g, " ")}</p>
                     <p className="font-mono text-sm text-white mt-0.5">
                       {typeof v === "number" && v > 1000 ? `$${v.toLocaleString()}` : typeof v === "number" ? v.toFixed(2) : String(v)}
                     </p>
@@ -295,7 +295,7 @@ export default function RootsUploadPage() {
 
       {/* Completeness Detail */}
       {completeness && (
-        <Card className="border-slate-700 bg-[#0D2218]">
+        <Card className="border-[#1E4A2E] bg-[#0D2218]">
           <CardHeader>
             <CardTitle className="text-sm text-white flex items-center justify-between">
               <span>Credit Readiness Assessment</span>
@@ -311,7 +311,7 @@ export default function RootsUploadPage() {
                 {[...(completeness.critical_found || []), ...(completeness.important_found || [])].map((f: string) => (
                   <div key={f} className="flex items-center gap-1.5 py-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    <span className="text-xs text-slate-300">{f.replace(/_/g, " ")}</span>
+                    <span className="text-xs text-[#EDE8DC]">{f.replace(/_/g, " ")}</span>
                   </div>
                 ))}
               </div>
@@ -320,7 +320,7 @@ export default function RootsUploadPage() {
                 {[...(completeness.critical_missing || []), ...(completeness.important_missing || [])].map((f: string) => (
                   <div key={f} className="flex items-center gap-1.5 py-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
-                    <span className="text-xs text-slate-400">{f.replace(/_/g, " ")}</span>
+                    <span className="text-xs text-[#7A9A82]">{f.replace(/_/g, " ")}</span>
                   </div>
                 ))}
               </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo, useCallback } from "react";
 import { Layers, Zap } from "lucide-react";
 import BondArrangementCanvas from "./BondArrangementCanvas";
@@ -90,13 +90,13 @@ export default function BondArrangementEngine() {
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
             <Layers size={17} /> GENIE — Bond Arrangement Engine
           </div>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-[#7A9A82]">
             Modular structuring. CMBS-style pooling. Rate arbitrage. 45-day close.
           </p>
         </div>
         <div className="text-right">
           <p className="font-mono text-2xl font-bold text-amber-100">{formatM(scenarioEconomics.totalCommitment)}</p>
-          <p className="font-mono text-[0.56rem] text-slate-500 uppercase">Total Pool</p>
+          <p className="font-mono text-[0.56rem] text-[#7A9A82] uppercase">Total Pool</p>
         </div>
       </div>
 

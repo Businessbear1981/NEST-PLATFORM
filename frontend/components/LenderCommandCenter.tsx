@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 
 const API = "";
@@ -34,7 +34,7 @@ export default function LenderCommandCenter() {
   const stages = ["TARGETED", "OUTREACH SENT", "RESPONDED", "TERM SHEET", "COMMITTED", "CLOSED"];
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
@@ -51,7 +51,7 @@ export default function LenderCommandCenter() {
             { label: "Placement Fees YTD", value: "$1.2M" },
           ].map((k) => (
             <article key={k.label} className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/[0.09] p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{k.label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{k.label}</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{k.value}</strong>
             </article>
           ))}
@@ -66,21 +66,21 @@ export default function LenderCommandCenter() {
           >
             {searching ? "Searching..." : "Run Lender Search"}
           </button>
-          <button className="rounded-[1rem] border border-white/15 bg-white/5 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-slate-400 transition hover:bg-white/10">
+          <button className="rounded-[1rem] border border-white/15 bg-white/5 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#7A9A82] transition hover:bg-white/10">
             Add Lender Manually
           </button>
         </div>
 
         {/* Provider Database */}
         <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-          <h3 className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-slate-600">Provider Database - {lenders.length} firms</h3>
+          <h3 className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-[#7A9A82]">Provider Database - {lenders.length} firms</h3>
           <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {lenders.map((l: any) => (
               <div key={l.id || l.name} className="rounded-[1rem] border border-white/5 bg-[#03060b]/60 p-4">
                 <div className="mb-2 flex items-start justify-between">
                   <div>
                     <div className="font-mono text-sm font-semibold text-white">{l.name}</div>
-                    <div className="mt-0.5 font-mono text-[0.5rem] uppercase tracking-wider text-slate-600">{(l.type || l.lender_type || "").replace(/_/g, " ")}</div>
+                    <div className="mt-0.5 font-mono text-[0.5rem] uppercase tracking-wider text-[#7A9A82]">{(l.type || l.lender_type || "").replace(/_/g, " ")}</div>
                   </div>
                   <span className={`rounded px-2 py-0.5 font-mono text-[0.5rem] font-semibold ${
                     l.relationship_status === "partner"
@@ -101,12 +101,12 @@ export default function LenderCommandCenter() {
 
         {/* Pipeline Kanban */}
         <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-          <h3 className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-slate-600">Lender Pipeline</h3>
+          <h3 className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-[#7A9A82]">Lender Pipeline</h3>
           <div className="flex gap-2 overflow-x-auto">
             {stages.map((stage) => (
               <div key={stage} className="min-w-[140px] flex-1 rounded-lg border border-white/5 bg-[#03060b]/60 p-3">
-                <div className="mb-2 text-center font-mono text-[0.45rem] uppercase tracking-[0.12em] text-slate-600">{stage}</div>
-                <div className="py-3 text-center font-mono text-[0.55rem] text-slate-700">{"\u2014"}</div>
+                <div className="mb-2 text-center font-mono text-[0.45rem] uppercase tracking-[0.12em] text-[#7A9A82]">{stage}</div>
+                <div className="py-3 text-center font-mono text-[0.55rem] text-[#2D6B3D]">{"\u2014"}</div>
               </div>
             ))}
           </div>
@@ -116,7 +116,7 @@ export default function LenderCommandCenter() {
         {searchResult && (
           <div className="rounded-[1.25rem] border border-amber-300/30 bg-[#07101a]/80 p-5">
             <h3 className="mb-3 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-amber-300">Search Results</h3>
-            <pre className="whitespace-pre-wrap font-mono text-[0.62rem] leading-relaxed text-slate-500">
+            <pre className="whitespace-pre-wrap font-mono text-[0.62rem] leading-relaxed text-[#7A9A82]">
               {JSON.stringify(searchResult, null, 2).slice(0, 1500)}
             </pre>
           </div>

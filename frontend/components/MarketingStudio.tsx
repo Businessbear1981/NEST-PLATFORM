@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useMemo, useState } from "react";
 
 const API = "";
@@ -128,7 +128,7 @@ export default function MarketingStudio() {
   const inputCls = "mt-1 w-full rounded-lg border border-white/10 bg-[#03060b] px-3 py-2 font-mono text-xs text-white outline-none focus:border-amber-300/40";
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
@@ -136,29 +136,29 @@ export default function MarketingStudio() {
             <h1 className="font-mono text-xl font-bold uppercase tracking-[0.06em] text-white">Marketing Studio</h1>
             <span className="rounded bg-amber-300/15 px-2 py-0.5 font-mono text-[0.55rem] font-semibold text-amber-300">Morgan - Jimmy Lee tone</span>
           </div>
-          <p className="mt-1 text-xs text-slate-500">Content command center. Every output is direct, decisive, no hedging.</p>
+          <p className="mt-1 text-xs text-[#7A9A82]">Content command center. Every output is direct, decisive, no hedging.</p>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[300px_1fr_240px]">
           {/* LEFT - Content type + context */}
           <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5 space-y-3">
-            <h3 className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Content Type</h3>
+            <h3 className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-[#7A9A82]">Content Type</h3>
             <label className="block">
-              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-slate-600">Type</span>
+              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-[#7A9A82]">Type</span>
               <select className={inputCls} value={contentType} onChange={(e) => setContentType(e.target.value)}>
                 {types.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </label>
             <label className="block">
-              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-slate-600">Deal ID</span>
+              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-[#7A9A82]">Deal ID</span>
               <input className={inputCls} value={dealId} onChange={(e) => setDealId(e.target.value)} />
             </label>
             <label className="block">
-              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-slate-600">Client / Sponsor Name</span>
+              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-[#7A9A82]">Client / Sponsor Name</span>
               <input className={inputCls} value={clientName} onChange={(e) => setClientName(e.target.value)} />
             </label>
             <label className="block">
-              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-slate-600">Angles to Hit (one per line)</span>
+              <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-[#7A9A82]">Angles to Hit (one per line)</span>
               <textarea className={`${inputCls} resize-y`} rows={4} value={angles} onChange={(e) => setAngles(e.target.value)} />
             </label>
             <button
@@ -172,16 +172,16 @@ export default function MarketingStudio() {
 
           {/* CENTER - Output */}
           <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Output</h3>
+            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-[#7A9A82]">Output</h3>
             {current ? (
               <>
-                <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-[#7A9A82]">
                   <span>{current.content_type_label}</span>
                   <span>- {current.word_count} words</span>
                   <span>- {current.estimated_read_time}</span>
                   <button
                     onClick={() => setEditing((e) => !e)}
-                    className="ml-auto rounded border border-white/10 px-2 py-0.5 font-mono text-[0.6rem] text-slate-400 hover:text-white"
+                    className="ml-auto rounded border border-white/10 px-2 py-0.5 font-mono text-[0.6rem] text-[#7A9A82] hover:text-white"
                   >
                     {editing ? "Preview" : "Edit"}
                   </button>
@@ -194,7 +194,7 @@ export default function MarketingStudio() {
                     onChange={(e) => setEdited(e.target.value)}
                   />
                 ) : (
-                  <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap font-mono text-xs leading-7 text-slate-300">
+                  <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap font-mono text-xs leading-7 text-[#EDE8DC]">
                     {displayContent}
                   </div>
                 )}
@@ -207,7 +207,7 @@ export default function MarketingStudio() {
                     <button
                       key={btn.label}
                       onClick={btn.onClick}
-                      className="rounded border border-white/10 px-3 py-1.5 font-mono text-[0.6rem] text-slate-400 transition hover:bg-white/5 hover:text-white"
+                      className="rounded border border-white/10 px-3 py-1.5 font-mono text-[0.6rem] text-[#7A9A82] transition hover:bg-white/5 hover:text-white"
                     >
                       {btn.label}
                     </button>
@@ -215,22 +215,22 @@ export default function MarketingStudio() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-slate-600">Pick a content type and hit Generate. The output lands here.</p>
+              <p className="text-sm text-[#7A9A82]">Pick a content type and hit Generate. The output lands here.</p>
             )}
           </div>
 
           {/* RIGHT - History */}
           <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Recent</h3>
-            {history.length === 0 && <p className="text-xs text-slate-600">Nothing yet.</p>}
+            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-[#7A9A82]">Recent</h3>
+            {history.length === 0 && <p className="text-xs text-[#7A9A82]">Nothing yet.</p>}
             {history.map((h) => (
               <div
                 key={h.id}
                 className="cursor-pointer border-b border-white/5 py-2 last:border-b-0 hover:bg-white/5"
                 onClick={() => { setCurrent(h); setEdited(null); setEditing(false); }}
               >
-                <div className="text-xs text-slate-300">{h.content_type_label}</div>
-                <div className="font-mono text-[0.55rem] text-slate-600">
+                <div className="text-xs text-[#EDE8DC]">{h.content_type_label}</div>
+                <div className="font-mono text-[0.55rem] text-[#7A9A82]">
                   {new Date(h.generated_at).toLocaleString()} - {h.word_count}w
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function MarketingStudio() {
         {/* Batch Bar */}
         <div className="flex flex-wrap items-center gap-3 rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-4">
           <div className="font-mono text-xs font-semibold text-white">Batch - Full Deal Marketing Package</div>
-          <span className="text-xs text-slate-600">exec summary + teaser + term-sheet cover + deck slide</span>
+          <span className="text-xs text-[#7A9A82]">exec summary + teaser + term-sheet cover + deck slide</span>
           <input
             className="flex-1 rounded-lg border border-white/10 bg-[#03060b] px-3 py-2 font-mono text-xs text-white outline-none focus:border-amber-300/40"
             style={{ minWidth: 200 }}

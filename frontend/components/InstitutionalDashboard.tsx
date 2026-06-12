@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 
 /* ── Types ── */
@@ -111,7 +111,7 @@ export default function InstitutionalDashboard() {
   const vectorRec = signals?.vector_recommendation ?? "HOLD";
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
@@ -126,7 +126,7 @@ export default function InstitutionalDashboard() {
             { label: "SOFR", value: fmtPct(signals?.sofr) },
             { label: "VIX", value: signals?.vix != null ? signals.vix.toFixed(1) : "\u2014" },
           ].map((t) => (
-            <span key={t.label} className="text-slate-500">
+            <span key={t.label} className="text-[#7A9A82]">
               {t.label}{" "}
               <span className="font-semibold text-amber-300">{t.value}</span>
             </span>
@@ -142,7 +142,7 @@ export default function InstitutionalDashboard() {
             { label: "Vector Says", value: vectorRec },
           ].map((kpi) => (
             <article key={kpi.label} className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/[0.09] p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{kpi.label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{kpi.label}</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{kpi.value}</strong>
             </article>
           ))}
@@ -152,7 +152,7 @@ export default function InstitutionalDashboard() {
         <div>
           <h2 className="mb-4 font-mono text-base font-bold uppercase tracking-[0.08em] text-white">Active Deals</h2>
           {deals.length === 0 ? (
-            <p className="text-sm text-slate-500">Book refreshing. Check back shortly.</p>
+            <p className="text-sm text-[#7A9A82]">Book refreshing. Check back shortly.</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {deals.map((d) => {
@@ -172,14 +172,14 @@ export default function InstitutionalDashboard() {
                       <span className={`rounded px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider ${
                         status === "active" || status === "underwriting"
                           ? "bg-[#C4A048]/50 text-[#C4A048]"
-                          : "bg-slate-800/60 text-slate-400"
+                          : "bg-[#0D2218]/60 text-[#7A9A82]"
                       }`}>
                         {status.replace(/_/g, " ")}
                       </span>
                     </div>
                     {/* Readiness bar */}
                     <div>
-                      <div className="mb-1 flex justify-between font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+                      <div className="mb-1 flex justify-between font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
                         <span>Readiness</span>
                         <span className="text-amber-300">{readinessPct}%</span>
                       </div>
@@ -204,7 +204,7 @@ export default function InstitutionalDashboard() {
 
               return (
                 <div key={name} className="flex items-center gap-2.5 rounded-[1rem] border border-white/10 bg-[#07101a]/80 px-3 py-2.5">
-                  <span className={`h-2 w-2 shrink-0 rounded-full ${isActive ? "bg-emerald-400 shadow-[0_0_6px_rgba(74,222,128,0.4)]" : "bg-slate-600"}`} />
+                  <span className={`h-2 w-2 shrink-0 rounded-full ${isActive ? "bg-emerald-400 shadow-[0_0_6px_rgba(74,222,128,0.4)]" : "bg-[#2D6B3D]"}`} />
                   <span className="font-mono text-[0.7rem] text-white">{name}</span>
                 </div>
               );
@@ -225,13 +225,13 @@ export default function InstitutionalDashboard() {
                 { label: "M&A Deploy", value: fmtUSD(warChest.ma_deployment_usd) },
               ].map((item) => (
                 <div key={item.label} className="text-center">
-                  <div className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-slate-600">{item.label}</div>
+                  <div className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">{item.label}</div>
                   <div className="mt-1 font-mono text-lg font-semibold text-amber-300">{item.value}</div>
                 </div>
               ))}
             </div>
             {warChest.lc_phase && (
-              <div className="mt-2 font-mono text-[0.65rem] tracking-wider text-slate-600">
+              <div className="mt-2 font-mono text-[0.65rem] tracking-wider text-[#7A9A82]">
                 LC PHASE: <span className="text-amber-300">{warChest.lc_phase.replace("_", " ").toUpperCase()}</span>
               </div>
             )}
@@ -254,9 +254,9 @@ export default function InstitutionalDashboard() {
                   }`}>
                     {ev.tx_type}
                   </span>
-                  <span className="flex-1 font-mono text-[0.68rem] text-slate-500">{ev.deal_id}</span>
-                  <span className="font-mono text-[0.6rem] text-slate-600">{ev.tx_hash.slice(0, 10)}...</span>
-                  <span className="font-mono text-[0.6rem] text-slate-600">#{ev.block_number}</span>
+                  <span className="flex-1 font-mono text-[0.68rem] text-[#7A9A82]">{ev.deal_id}</span>
+                  <span className="font-mono text-[0.6rem] text-[#7A9A82]">{ev.tx_hash.slice(0, 10)}...</span>
+                  <span className="font-mono text-[0.6rem] text-[#7A9A82]">#{ev.block_number}</span>
                 </div>
               ))}
             </div>

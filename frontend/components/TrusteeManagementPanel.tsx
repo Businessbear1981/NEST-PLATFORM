@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { Loader2, Scale, CheckCircle2, Circle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
@@ -22,7 +22,7 @@ export default function TrusteeManagementPanel({ dealId }: { dealId?: string }) 
         <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-amber-200">
           <Scale size={17} /> Trustee Management
         </div>
-        <span className="font-mono text-sm text-slate-400">
+        <span className="font-mono text-sm text-[#7A9A82]">
           {data?.completed ?? 0}/{data?.total ?? 0} complete
         </span>
       </div>
@@ -34,7 +34,7 @@ export default function TrusteeManagementPanel({ dealId }: { dealId?: string }) 
         if (phaseTasks.length === 0) return null;
         return (
           <div key={phase}>
-            <h3 className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-slate-400 mb-2">
+            <h3 className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#7A9A82] mb-2">
               {phase.replace("-", " ")}
             </h3>
             <div className="space-y-1">
@@ -46,9 +46,9 @@ export default function TrusteeManagementPanel({ dealId }: { dealId?: string }) 
                     ) : task.status === "in_progress" ? (
                       <Clock size={16} className="text-amber-300" />
                     ) : (
-                      <Circle size={16} className="text-slate-600" />
+                      <Circle size={16} className="text-[#7A9A82]" />
                     )}
-                    <span className={`font-mono text-sm ${task.status === "completed" ? "text-slate-400 line-through" : "text-white"}`}>
+                    <span className={`font-mono text-sm ${task.status === "completed" ? "text-[#7A9A82] line-through" : "text-white"}`}>
                       {task.task}
                     </span>
                   </div>

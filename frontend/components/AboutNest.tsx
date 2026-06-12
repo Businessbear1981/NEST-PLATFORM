@@ -1,4 +1,4 @@
-import { Shield, Users, Zap, Eye, Target, Layers, Clock, Lock, ArrowRight } from "lucide-react";
+﻿import { Shield, Users, Zap, Eye, Target, Layers, Clock, Lock, ArrowRight } from "lucide-react";
 
 export default function AboutNest() {
   return (
@@ -6,18 +6,18 @@ export default function AboutNest() {
       {/* Hero */}
       <div className="text-center space-y-4 pt-8">
         <h1 className="font-serif text-4xl text-amber-100 tracking-wide">It's Time To Fly</h1>
-        <p className="font-serif text-lg text-slate-400 italic">Like a bird from a NEST.</p>
+        <p className="font-serif text-lg text-[#7A9A82] italic">Like a bird from a NEST.</p>
         <div className="flex items-center justify-center gap-8 mt-6">
           <div className="text-center">
             <p className="font-mono text-sm font-semibold text-white">Sean Gilmore</p>
             <p className="font-mono text-[0.62rem] text-amber-200">Founder</p>
-            <p className="font-mono text-[0.52rem] text-slate-500 mt-0.5">Arden Edge Capital</p>
+            <p className="font-mono text-[0.52rem] text-[#7A9A82] mt-0.5">Arden Edge Capital</p>
           </div>
-          <div className="font-mono text-[0.56rem] text-slate-600">×</div>
+          <div className="font-mono text-[0.56rem] text-[#7A9A82]">×</div>
           <div className="text-center">
             <p className="font-mono text-sm font-semibold text-white">Josh Edwards</p>
             <p className="font-mono text-[0.62rem] text-amber-200">Founder</p>
-            <p className="font-mono text-[0.52rem] text-slate-500 mt-0.5">Sparrow Capital</p>
+            <p className="font-mono text-[0.52rem] text-[#7A9A82] mt-0.5">Sparrow Capital</p>
           </div>
         </div>
       </div>
@@ -45,8 +45,8 @@ export default function AboutNest() {
       {/* How NEST Was Born */}
       <Section title="HOW NEST WAS BORN">
         <p>
-          A NEST is where chicks grow and become birds of prey. <span className="text-slate-300">Arden Edge</span> — a bird.{" "}
-          <span className="text-slate-300">Sparrow Capital</span> — a bird. We built a platform where deals hatch,
+          A NEST is where chicks grow and become birds of prey. <span className="text-[#EDE8DC]">Arden Edge</span> — a bird.{" "}
+          <span className="text-[#EDE8DC]">Sparrow Capital</span> — a bird. We built a platform where deals hatch,
           are nurtured through every stage of structuring and compliance, and take flight as fully placed,
           performing instruments.
         </p>
@@ -54,7 +54,7 @@ export default function AboutNest() {
           Every module is named for what it does. <span className="text-[#E8C87A]">EagleEye</span> sees
           deals forming before anyone else. <span className="text-amber-200">GENIE</span> structures
           bonds in ways that weren't possible without automation. <span className="text-emerald-200">Hawkeye</span> places
-          them with surgical precision. <span className="text-slate-300">NightVision</span> watches
+          them with surgical precision. <span className="text-[#EDE8DC]">NightVision</span> watches
           compliance around the clock. And <span className="text-amber-100">Bernard</span> — our AI — explains
           every move in plain English so every partner, every investor, every regulator can see exactly
           what's happening, in real time.
@@ -132,17 +132,17 @@ export default function AboutNest() {
         <div className="flex items-center justify-center gap-8">
           <div>
             <p className="font-mono text-sm font-semibold text-white">Sean Gilmore</p>
-            <p className="font-mono text-[0.62rem] text-slate-400">18 years JPMorgan · Top Banker 11× Nationally</p>
+            <p className="font-mono text-[0.62rem] text-[#7A9A82]">18 years JPMorgan · Top Banker 11× Nationally</p>
             <p className="font-mono text-[0.56rem] text-amber-200 mt-0.5">Arden Edge Capital</p>
           </div>
           <div className="font-serif text-2xl text-amber-100/30">×</div>
           <div>
             <p className="font-mono text-sm font-semibold text-white">Josh Edwards</p>
-            <p className="font-mono text-[0.62rem] text-slate-400">Private Equity · Capital Markets</p>
+            <p className="font-mono text-[0.62rem] text-[#7A9A82]">Private Equity · Capital Markets</p>
             <p className="font-mono text-[0.56rem] text-amber-200 mt-0.5">Sparrow Capital</p>
           </div>
         </div>
-        <p className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-slate-600 mt-6">
+        <p className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-[#7A9A82] mt-6">
           NEST Advisors · Pacific Northwest · nestadvisors.com
         </p>
       </div>
@@ -158,7 +158,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="font-mono text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-amber-200 mb-4">
         {title}
       </h2>
-      <div className="space-y-3 font-serif text-base leading-7 text-slate-300">
+      <div className="space-y-3 font-serif text-base leading-7 text-[#EDE8DC]">
         {children}
       </div>
     </div>
@@ -172,7 +172,7 @@ function Principle({ icon: Icon, title, body }: { icon: typeof Shield; title: st
         <Icon size={14} className="text-amber-200" />
         <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white">{title}</h3>
       </div>
-      <p className="font-serif text-sm leading-6 text-slate-400">{body}</p>
+      <p className="font-serif text-sm leading-6 text-[#7A9A82]">{body}</p>
     </div>
   );
 }

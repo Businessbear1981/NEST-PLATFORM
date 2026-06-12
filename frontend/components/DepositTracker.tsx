@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { CheckCircle2, Clock, AlertCircle, CreditCard } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ const STATUS_COLORS: Record<DepositStatus, string> = {
   pending: 'bg-yellow-500/20 text-yellow-700',
   confirmed: 'bg-emerald-500/20 text-emerald-700',
   failed: 'bg-red-500/20 text-red-700',
-  refunded: 'bg-slate-500/20 text-slate-700',
+  refunded: 'bg-[#2D6B3D]/20 text-[#2D6B3D]',
 };
 
 const STATUS_ICONS: Record<DepositStatus, React.ReactNode> = {

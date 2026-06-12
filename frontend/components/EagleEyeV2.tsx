@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -85,12 +85,12 @@ const CATEGORIES = [
 ] as const;
 
 const STATUS_OPTIONS = [
-  { key: "all", label: "All", color: "text-slate-300" },
+  { key: "all", label: "All", color: "text-[#EDE8DC]" },
   { key: "new", label: "New", color: "text-[#C4A048]" },
   { key: "reviewed", label: "Reviewed", color: "text-[#C4A048]" },
   { key: "actionable", label: "Actionable", color: "text-amber-300" },
   { key: "acted_on", label: "Acted On", color: "text-emerald-300" },
-  { key: "dismissed", label: "Dismissed", color: "text-slate-500" },
+  { key: "dismissed", label: "Dismissed", color: "text-[#7A9A82]" },
 ] as const;
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -98,7 +98,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   reviewed: { label: "Reviewed", color: "text-[#C4A048]", bg: "bg-[#C4A048]/10", border: "border-[#C4A048]/25" },
   actionable: { label: "Actionable", color: "text-amber-300", bg: "bg-amber-400/10", border: "border-amber-400/25" },
   acted_on: { label: "Acted On", color: "text-emerald-300", bg: "bg-emerald-400/10", border: "border-emerald-400/25" },
-  dismissed: { label: "Dismissed", color: "text-slate-500", bg: "bg-slate-400/10", border: "border-slate-400/25" },
+  dismissed: { label: "Dismissed", color: "text-[#7A9A82]", bg: "bg-[#7A9A82]/10", border: "border-[#2D6B3D]/25" },
 };
 
 const SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"] as const;
@@ -107,8 +107,8 @@ const SEVERITY_CONFIG: Record<string, { dots: number; color: string; border: str
   critical: { dots: 3, color: "bg-red-400", border: "border-l-red-400" },
   high: { dots: 3, color: "bg-amber-300", border: "border-l-amber-300" },
   medium: { dots: 2, color: "bg-cyan-300", border: "border-l-cyan-300" },
-  low: { dots: 1, color: "bg-slate-400", border: "border-l-slate-400" },
-  info: { dots: 1, color: "bg-slate-500", border: "border-l-slate-500" },
+  low: { dots: 1, color: "bg-[#7A9A82]", border: "border-l-slate-400" },
+  info: { dots: 1, color: "bg-[#2D6B3D]", border: "border-l-slate-500" },
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -116,7 +116,7 @@ const CATEGORY_COLOR: Record<string, string> = {
   regulatory: "text-violet-300 bg-violet-400/10 border-violet-400/25",
   macro_market: "text-amber-300 bg-amber-400/10 border-amber-400/25",
   property: "text-emerald-300 bg-emerald-400/10 border-emerald-400/25",
-  entity: "text-slate-300 bg-slate-400/10 border-slate-400/25",
+  entity: "text-[#EDE8DC] bg-[#7A9A82]/10 border-[#2D6B3D]/25",
 };
 
 const TYPE_ICONS: Record<string, typeof Activity> = {
@@ -273,7 +273,7 @@ function SignalCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <Icon size={13} className="text-slate-400 shrink-0" />
+            <Icon size={13} className="text-[#7A9A82] shrink-0" />
             <span className="font-mono text-[0.72rem] font-semibold text-white truncate">
               {signal.entity_name || signal.signal_type.replace(/_/g, " ")}
             </span>
@@ -292,7 +292,7 @@ function SignalCard({
                 {statusCfg.label}
               </span>
             )}
-            <span className="font-mono text-[0.52rem] text-slate-500 uppercase tracking-wide">
+            <span className="font-mono text-[0.52rem] text-[#7A9A82] uppercase tracking-wide">
               {signal.signal_type.replace(/_/g, " ")}
             </span>
           </div>
@@ -305,7 +305,7 @@ function SignalCard({
       </div>
 
       <div className="flex items-center justify-between mt-2">
-        <div className="flex items-center gap-3 font-mono text-[0.56rem] text-slate-500">
+        <div className="flex items-center gap-3 font-mono text-[0.56rem] text-[#7A9A82]">
           {signal.state && (
             <span className="flex items-center gap-0.5">
               <MapPin size={9} /> {signal.state}{signal.county ? `, ${signal.county}` : ""}
@@ -319,7 +319,7 @@ function SignalCard({
               {formatValue(signal.value, signal.signal_type)}
             </span>
           )}
-          <span className="font-mono text-[0.5rem] text-slate-600">
+          <span className="font-mono text-[0.5rem] text-[#7A9A82]">
             {timeAgo(signal.captured_at)}
           </span>
           {/* Promote to Deal — ADR-0002: navigation only, NEVER inserts into deals.
@@ -342,7 +342,7 @@ function SignalCard({
       </div>
 
       {signal.payload?.description && (
-        <p className="mt-1.5 font-mono text-[0.62rem] text-slate-500 line-clamp-1">
+        <p className="mt-1.5 font-mono text-[0.62rem] text-[#7A9A82] line-clamp-1">
           {String(signal.payload.description)}
         </p>
       )}
@@ -416,10 +416,10 @@ function IntelligenceMap({
       />
 
       <div className="absolute top-3 left-4 z-20">
-        <h3 className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.18em] text-slate-500">
+        <h3 className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82]">
           Geographic Intelligence
         </h3>
-        <p className="font-mono text-[0.48rem] text-slate-600 mt-0.5">
+        <p className="font-mono text-[0.48rem] text-[#7A9A82] mt-0.5">
           {Object.keys(signalsByState).length} states · {signals.filter((s) => s.state).length} located signals
         </p>
       </div>
@@ -504,7 +504,7 @@ function IntelligenceMap({
                           return acc;
                         }, {} as Record<string, number>),
                       ).map(([type, n]) => (
-                        <span key={type} className="font-mono text-[9px] text-slate-400">
+                        <span key={type} className="font-mono text-[9px] text-[#7A9A82]">
                           {type.replace(/_/g, " ")}: {n}
                         </span>
                       ))}
@@ -549,7 +549,7 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <div className="flex items-center gap-2 mb-2">
           <Brain size={12} className="text-[#C4A048] animate-pulse" />
-          <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
+          <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">
             Scanning for correlations...
           </span>
         </div>
@@ -573,7 +573,7 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Brain size={12} className="text-[#C4A048]" />
-          <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
+          <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">
             Correlation Analysis
           </span>
         </div>
@@ -585,7 +585,7 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
       </div>
 
       {related.length === 0 ? (
-        <p className="font-mono text-[0.62rem] text-slate-600 italic">
+        <p className="font-mono text-[0.62rem] text-[#7A9A82] italic">
           No correlated signals found within the 30-day window.
         </p>
       ) : (
@@ -601,7 +601,7 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <Icon size={11} className="text-slate-400 shrink-0" />
+                      <Icon size={11} className="text-[#7A9A82] shrink-0" />
                       <span className="font-mono text-[0.65rem] font-semibold text-white truncate">
                         {r.entity_name || r.signal_type.replace(/_/g, " ")}
                       </span>
@@ -610,17 +610,17 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
                       <span className="rounded bg-[#C4A048]/10 border border-[#C4A048]/20 px-1.5 py-0.5 font-mono text-[0.44rem] uppercase tracking-wider text-[#C4A048]">
                         {matchLabel}
                       </span>
-                      <span className="font-mono text-[0.48rem] text-slate-500">
+                      <span className="font-mono text-[0.48rem] text-[#7A9A82]">
                         {r.signal_type.replace(/_/g, " ")}
                       </span>
                       {r.state && (
-                        <span className="font-mono text-[0.48rem] text-slate-500 flex items-center gap-0.5">
+                        <span className="font-mono text-[0.48rem] text-[#7A9A82] flex items-center gap-0.5">
                           <MapPin size={8} /> {r.state}
                         </span>
                       )}
                     </div>
                   </div>
-                  <span className="font-mono text-[0.48rem] text-slate-600 shrink-0">
+                  <span className="font-mono text-[0.48rem] text-[#7A9A82] shrink-0">
                     {timeAgo(r.captured_at)}
                   </span>
                 </div>
@@ -676,7 +676,7 @@ function SignalDetailSheet({
       ? { icon: TrendingUp, color: "text-emerald-400", label: "Bullish" }
       : signal.direction === "bearish" || signal.direction === "negative"
         ? { icon: TrendingDown, color: "text-red-400", label: "Bearish" }
-        : { icon: Minus, color: "text-slate-400", label: "Neutral" }
+        : { icon: Minus, color: "text-[#7A9A82]", label: "Neutral" }
     : null;
 
   const payloadEntries = Object.entries(signal.payload || {}).filter(
@@ -687,7 +687,7 @@ function SignalDetailSheet({
     { status: "reviewed", label: "Mark Reviewed", icon: Eye, color: "text-[#C4A048] border-[#C4A048]/20 bg-[#C4A048]/8" },
     { status: "actionable", label: "Escalate", icon: Flag, color: "text-amber-300 border-amber-400/20 bg-amber-400/8" },
     { status: "acted_on", label: "Mark Acted On", icon: CheckCircle2, color: "text-emerald-300 border-emerald-400/20 bg-emerald-400/8" },
-    { status: "dismissed", label: "Dismiss", icon: XCircle, color: "text-slate-400 border-slate-400/20 bg-slate-400/8" },
+    { status: "dismissed", label: "Dismiss", icon: XCircle, color: "text-[#7A9A82] border-[#2D6B3D]/20 bg-[#7A9A82]/8" },
   ].filter((a) => a.status !== signal.status);
 
   return (
@@ -715,11 +715,11 @@ function SignalDetailSheet({
                     {statusCfg.label}
                   </span>
                 )}
-                <span className="font-mono text-[0.52rem] uppercase tracking-wide text-slate-500">
+                <span className="font-mono text-[0.52rem] uppercase tracking-wide text-[#7A9A82]">
                   {signal.signal_type.replace(/_/g, " ")}
                 </span>
                 {signal.state && (
-                  <span className="font-mono text-[0.52rem] text-slate-500 flex items-center gap-0.5">
+                  <span className="font-mono text-[0.52rem] text-[#7A9A82] flex items-center gap-0.5">
                     <MapPin size={9} /> {signal.state}{signal.county ? `, ${signal.county}` : ""}{signal.market ? ` · ${signal.market}` : ""}
                   </span>
                 )}
@@ -738,30 +738,30 @@ function SignalDetailSheet({
           <div className="grid grid-cols-3 gap-3">
             {signal.value !== null && (
               <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-                <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">Value</p>
+                <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-[#7A9A82]">Value</p>
                 <p className="font-mono text-base font-semibold text-amber-100">{formatValue(signal.value, signal.signal_type)}</p>
               </div>
             )}
             {dirStyle && (
               <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-                <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">Direction</p>
+                <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-[#7A9A82]">Direction</p>
                 <p className={`font-mono text-sm font-semibold flex items-center gap-1 ${dirStyle.color}`}>
                   <dirStyle.icon size={14} /> {dirStyle.label}
                 </p>
               </div>
             )}
             <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-              <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">Confidence</p>
+              <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-[#7A9A82]">Confidence</p>
               <p className="font-mono text-base font-semibold text-white">
                 {signal.confidence !== null ? `${(signal.confidence * 100).toFixed(0)}%` : "—"}
               </p>
             </div>
             <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-              <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">Severity</p>
+              <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-[#7A9A82]">Severity</p>
               <p className="font-mono text-sm font-semibold text-white capitalize">{signal.severity}</p>
             </div>
             <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-              <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">Source</p>
+              <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-[#7A9A82]">Source</p>
               <p className="font-mono text-sm font-semibold text-white">{signal.source}</p>
             </div>
           </div>
@@ -769,20 +769,20 @@ function SignalDetailSheet({
           {/* Description */}
           {signal.payload?.description && (
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-              <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.14em] text-slate-500 mb-1.5">Description</p>
-              <p className="font-mono text-[0.72rem] leading-5 text-slate-300">{String(signal.payload.description)}</p>
+              <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#7A9A82] mb-1.5">Description</p>
+              <p className="font-mono text-[0.72rem] leading-5 text-[#EDE8DC]">{String(signal.payload.description)}</p>
             </div>
           )}
 
           {/* Signal Data */}
           {payloadEntries.length > 0 && (
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-              <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.14em] text-slate-500 mb-2">Signal Data</p>
+              <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#7A9A82] mb-2">Signal Data</p>
               <div className="space-y-1.5">
                 {payloadEntries.map(([key, val]) => (
                   <div key={key} className="flex items-baseline justify-between gap-3">
-                    <span className="font-mono text-[0.58rem] text-slate-500">{key.replace(/_/g, " ")}</span>
-                    <span className="font-mono text-[0.62rem] text-slate-300 text-right truncate max-w-[240px]">
+                    <span className="font-mono text-[0.58rem] text-[#7A9A82]">{key.replace(/_/g, " ")}</span>
+                    <span className="font-mono text-[0.62rem] text-[#EDE8DC] text-right truncate max-w-[240px]">
                       {typeof val === "object" ? JSON.stringify(val) : String(val)}
                     </span>
                   </div>
@@ -795,7 +795,7 @@ function SignalDetailSheet({
           <CorrelationPanel signal={signal} />
 
           {/* Metadata footer */}
-          <div className="flex items-center justify-between font-mono text-[0.5rem] text-slate-600 pt-2">
+          <div className="flex items-center justify-between font-mono text-[0.5rem] text-[#7A9A82] pt-2">
             <span>Ref: {signal.source_ref || "—"}</span>
             <span>Captured: {new Date(signal.captured_at).toLocaleString()}</span>
           </div>
@@ -924,13 +924,13 @@ function FindSimilarPanel() {
           </h2>
         </div>
         <div className="text-right">
-          <div className="font-mono text-[0.5rem] uppercase tracking-[0.18em] text-slate-400">
+          <div className="font-mono text-[0.5rem] uppercase tracking-[0.18em] text-[#7A9A82]">
             Aggregate pipeline
           </div>
           <div className="font-mono text-2xl text-amber-200" style={{ textShadow: "0 0 18px rgba(196,160,72,0.45)" }}>
             {pipelineLoading ? "—" : fmtUSD(pipelineTotalUSD)}
           </div>
-          <div className="font-mono text-[0.55rem] text-slate-400">
+          <div className="font-mono text-[0.55rem] text-[#7A9A82]">
             {actionItems.length} deals · {pipeline?.docs_processed ?? 0} docs
           </div>
         </div>
@@ -942,12 +942,12 @@ function FindSimilarPanel() {
           value={docText}
           onChange={(e) => setDocText(e.target.value)}
           placeholder="Paste a bond OS, CIM, or term-sheet excerpt..."
-          className="md:col-span-3 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-slate-100 text-sm placeholder:text-slate-500 focus:outline-none focus:border-amber-400/40"
+          className="md:col-span-3 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-[#EDE8DC] text-sm placeholder:text-[#7A9A82] focus:outline-none focus:border-amber-400/40"
         />
         <select
           value={sector}
           onChange={(e) => setSector(e.target.value)}
-          className="px-2 py-2 rounded-lg bg-black/40 border border-white/10 text-slate-100 text-xs font-mono"
+          className="px-2 py-2 rounded-lg bg-black/40 border border-white/10 text-[#EDE8DC] text-xs font-mono"
         >
           <option value="senior_living">senior_living</option>
           <option value="healthcare_services">healthcare</option>
@@ -960,7 +960,7 @@ function FindSimilarPanel() {
           onChange={(e) => setState(e.target.value.toUpperCase())}
           placeholder="State (FL)"
           maxLength={2}
-          className="px-2 py-2 rounded-lg bg-black/40 border border-white/10 text-slate-100 text-sm font-mono"
+          className="px-2 py-2 rounded-lg bg-black/40 border border-white/10 text-[#EDE8DC] text-sm font-mono"
         />
         <button
           onClick={runFindSimilar}
@@ -975,20 +975,20 @@ function FindSimilarPanel() {
           value={sizeMin}
           onChange={(e) => setSizeMin(e.target.value)}
           placeholder="Size min ($)"
-          className="px-2 py-1.5 rounded-lg bg-black/40 border border-white/5 text-slate-300 text-xs font-mono"
+          className="px-2 py-1.5 rounded-lg bg-black/40 border border-white/5 text-[#EDE8DC] text-xs font-mono"
         />
         <input
           value={sizeMax}
           onChange={(e) => setSizeMax(e.target.value)}
           placeholder="Size max ($)"
-          className="px-2 py-1.5 rounded-lg bg-black/40 border border-white/5 text-slate-300 text-xs font-mono"
+          className="px-2 py-1.5 rounded-lg bg-black/40 border border-white/5 text-[#EDE8DC] text-xs font-mono"
         />
       </div>
 
       {/* Pipeline action items (always shown) */}
       {!pipelineLoading && actionItems.length > 0 && (
         <div className="mb-4">
-          <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-slate-400 mb-1.5">
+          <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-[#7A9A82] mb-1.5">
             Live pipeline · action items
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
@@ -1009,7 +1009,7 @@ function FindSimilarPanel() {
                     {a.priority}
                   </span>
                 </div>
-                <div className="font-mono text-[0.62rem] text-slate-400 mt-0.5 line-clamp-2">
+                <div className="font-mono text-[0.62rem] text-[#7A9A82] mt-0.5 line-clamp-2">
                   {a.description}
                 </div>
                 <div className="font-mono text-[0.58rem] text-[#C4A048] mt-1 truncate">
@@ -1025,22 +1025,22 @@ function FindSimilarPanel() {
       {findResult && !findResult.error && (
         <div className="border-t border-white/[0.06] pt-3 mt-2">
           {Object.keys(extracted || {}).length > 0 && (
-            <div className="mb-2 font-mono text-[0.6rem] text-slate-400">
+            <div className="mb-2 font-mono text-[0.6rem] text-[#7A9A82]">
               Extracted from document: <span className="text-amber-200">{JSON.stringify(extracted).slice(0, 200)}</span>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-slate-400 mb-1.5">
+              <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-[#7A9A82] mb-1.5">
                 EMMA comps ({comps.length})
               </div>
               {comps.length === 0 && (
-                <div className="font-mono text-[0.7rem] text-slate-500">No comps matched.</div>
+                <div className="font-mono text-[0.7rem] text-[#7A9A82]">No comps matched.</div>
               )}
               {comps.map((c, i) => (
                 <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 mb-2">
                   <div className="font-mono text-[0.7rem] text-amber-200">{c.borrower || c.issuer}</div>
-                  <div className="font-mono text-[0.62rem] text-slate-400">
+                  <div className="font-mono text-[0.62rem] text-[#7A9A82]">
                     {c.sector} · {c.state} · ${(c.par_amount / 1e6).toFixed(0)}M ·{" "}
                     {c.ratings?.sp || c.ratings?.moodys || "NR"}
                   </div>
@@ -1051,18 +1051,18 @@ function FindSimilarPanel() {
               ))}
             </div>
             <div>
-              <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-slate-400 mb-1.5">
+              <div className="font-mono text-[0.5rem] uppercase tracking-[0.16em] text-[#7A9A82] mb-1.5">
                 EagleEye matched signals ({matchedSignals.length})
               </div>
               {matchedSignals.length === 0 && (
-                <div className="font-mono text-[0.7rem] text-slate-500">
+                <div className="font-mono text-[0.7rem] text-[#7A9A82]">
                   No active signals match yet — run a scout to populate.
                 </div>
               )}
               {matchedSignals.map((s, i) => (
                 <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 mb-2">
                   <div className="font-mono text-[0.7rem] text-amber-200">{s.title || s.entity || s.id}</div>
-                  <div className="font-mono text-[0.62rem] text-slate-400">
+                  <div className="font-mono text-[0.62rem] text-[#7A9A82]">
                     {s.sector} · {s.state} · {s.status}
                   </div>
                 </div>
@@ -1284,7 +1284,7 @@ export default function EagleEyeV2() {
             </div>
 
             <div className="hidden md:flex items-center gap-5 font-mono text-[0.58rem]">
-              <span className="text-slate-400">
+              <span className="text-[#7A9A82]">
                 <span className="text-white font-semibold">{stats?.total ?? 0}</span> signals tracked
               </span>
               {highPriorityCount > 0 && (
@@ -1298,7 +1298,7 @@ export default function EagleEyeV2() {
                 </span>
               )}
               {vector && (
-                <span className="text-slate-400">
+                <span className="text-[#7A9A82]">
                   VectorAgent: <span className="text-emerald-400 font-semibold">{Number(vector.composite_score).toFixed(0)}</span>
                 </span>
               )}
@@ -1327,7 +1327,7 @@ export default function EagleEyeV2() {
               onClick={handlePollEdgar}
               disabled={pollingEdgar}
               variant="ghost"
-              className="h-7 gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 font-mono text-[0.56rem] uppercase tracking-wider text-slate-400 hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
+              className="h-7 gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 font-mono text-[0.56rem] uppercase tracking-wider text-[#7A9A82] hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
             >
               {pollingEdgar ? <RefreshCw size={10} className="animate-spin" /> : <FileText size={10} />}
               {pollingEdgar ? "Polling..." : "Poll EDGAR"}
@@ -1336,7 +1336,7 @@ export default function EagleEyeV2() {
               onClick={handlePollFred}
               disabled={polling}
               variant="ghost"
-              className="h-7 gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 font-mono text-[0.56rem] uppercase tracking-wider text-slate-400 hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
+              className="h-7 gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 font-mono text-[0.56rem] uppercase tracking-wider text-[#7A9A82] hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
             >
               {polling ? <RefreshCw size={10} className="animate-spin" /> : <Zap size={10} />}
               {polling ? "Polling..." : "Poll FRED"}
@@ -1410,7 +1410,7 @@ export default function EagleEyeV2() {
                         : cat.key === "macro_market" ? "bg-amber-500/15 text-amber-200 border border-amber-400/30"
                         : cat.key === "property" ? "bg-emerald-500/15 text-emerald-200 border border-emerald-400/30"
                         : "bg-white/10 text-white border border-white/20"
-                        : "text-slate-500 border border-transparent hover:text-slate-300 hover:bg-white/[0.03]"
+                        : "text-[#7A9A82] border border-transparent hover:text-[#EDE8DC] hover:bg-white/[0.03]"
                     }`}
                   >
                     {cat.label} <span className="ml-1 opacity-60">{count}</span>
@@ -1429,7 +1429,7 @@ export default function EagleEyeV2() {
                     className={`rounded px-2 py-0.5 font-mono text-[0.5rem] uppercase tracking-wider transition ${
                       statusFilter === s.key
                         ? `bg-white/10 ${s.color}`
-                        : "text-slate-600 hover:text-slate-400"
+                        : "text-[#7A9A82] hover:text-[#7A9A82]"
                     }`}
                   >
                     {s.label}
@@ -1443,7 +1443,7 @@ export default function EagleEyeV2() {
                     key={dr.key}
                     onClick={() => setDateRange(dr.key)}
                     className={`rounded px-2 py-0.5 font-mono text-[0.5rem] uppercase tracking-wider transition ${
-                      dateRange === dr.key ? "bg-white/10 text-white" : "text-slate-600 hover:text-slate-400"
+                      dateRange === dr.key ? "bg-white/10 text-white" : "text-[#7A9A82] hover:text-[#7A9A82]"
                     }`}
                   >
                     {dr.label}
@@ -1478,10 +1478,10 @@ export default function EagleEyeV2() {
           ) : displaySignals.length === 0 ? (
             <div className="rounded-xl border border-white/[0.06] bg-black/20 p-8 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] mx-auto mb-3">
-                <Search size={18} className="text-slate-600" />
+                <Search size={18} className="text-[#7A9A82]" />
               </div>
-              <p className="font-mono text-sm text-slate-500">No signals match filters</p>
-              <p className="font-mono text-[0.58rem] text-slate-600 mt-1 max-w-[280px] mx-auto">
+              <p className="font-mono text-sm text-[#7A9A82]">No signals match filters</p>
+              <p className="font-mono text-[0.58rem] text-[#7A9A82] mt-1 max-w-[280px] mx-auto">
                 Try broadening your category, status, or date range filters.
               </p>
             </div>
@@ -1503,7 +1503,7 @@ export default function EagleEyeV2() {
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.04]">
-                <span className="font-mono text-[0.5rem] text-slate-600">
+                <span className="font-mono text-[0.5rem] text-[#7A9A82]">
                   {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, totalCount)} of {totalCount}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -1512,11 +1512,11 @@ export default function EagleEyeV2() {
                     size="sm"
                     disabled={page === 0}
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
-                    className="h-6 w-6 p-0 rounded border border-white/[0.06] text-slate-500 hover:text-white disabled:opacity-30"
+                    className="h-6 w-6 p-0 rounded border border-white/[0.06] text-[#7A9A82] hover:text-white disabled:opacity-30"
                   >
                     <ChevronLeft size={12} />
                   </Button>
-                  <span className="font-mono text-[0.52rem] text-slate-500 min-w-[40px] text-center">
+                  <span className="font-mono text-[0.52rem] text-[#7A9A82] min-w-[40px] text-center">
                     {page + 1} / {totalPages}
                   </span>
                   <Button
@@ -1524,7 +1524,7 @@ export default function EagleEyeV2() {
                     size="sm"
                     disabled={page >= totalPages - 1}
                     onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                    className="h-6 w-6 p-0 rounded border border-white/[0.06] text-slate-500 hover:text-white disabled:opacity-30"
+                    className="h-6 w-6 p-0 rounded border border-white/[0.06] text-[#7A9A82] hover:text-white disabled:opacity-30"
                   >
                     <ChevronRight size={12} />
                   </Button>

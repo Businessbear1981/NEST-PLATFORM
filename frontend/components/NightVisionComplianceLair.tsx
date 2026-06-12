@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Loader2, Eye, Shield, AlertTriangle, CheckCircle2, Lock, Scan, FileWarning, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   warning: { color: "border-amber-300/30 bg-amber-300/10 text-amber-200", label: "WARNING" },
   fail: { color: "border-red-400/30 bg-red-500/10 text-red-200", label: "FAIL" },
   review: { color: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]", label: "REVIEW" },
-  na: { color: "border-slate-400/30 bg-slate-500/10 text-slate-300", label: "N/A" },
+  na: { color: "border-[#2D6B3D]/30 bg-[#2D6B3D]/10 text-[#EDE8DC]", label: "N/A" },
 };
 
 export default function NightVisionComplianceLair({ dealId }: { dealId?: string }) {
@@ -93,10 +93,10 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-emerald-200">
             <Eye size={17} className="text-emerald-400" /> NightVision — Compliance Lair
           </div>
-          <p className="mt-1 text-sm text-slate-400">Regulatory compliance monitoring, audit readiness, and risk detection.</p>
+          <p className="mt-1 text-sm text-[#7A9A82]">Regulatory compliance monitoring, audit readiness, and risk detection.</p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Compliance Score</p>
+          <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Compliance Score</p>
           <p className={`font-mono text-2xl font-bold ${compliancePct >= 80 ? "text-emerald-200" : compliancePct >= 60 ? "text-amber-200" : "text-red-200"}`}>
             {compliancePct}%
           </p>
@@ -137,7 +137,7 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
                   <div className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white">
                     <Icon size={14} className="text-emerald-300" /> {domain.name}
                   </div>
-                  <span className="font-mono text-[0.56rem] text-slate-400">{domainPass}/{domainTotal} clear</span>
+                  <span className="font-mono text-[0.56rem] text-[#7A9A82]">{domainPass}/{domainTotal} clear</span>
                 </div>
                 <div className="space-y-1">
                   {domain.checks.map((check) => {
@@ -149,7 +149,7 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
                            check.status === "warning" ? <AlertTriangle size={13} className="text-amber-300" /> :
                            check.status === "fail" ? <AlertTriangle size={13} className="text-red-400" /> :
                            <Eye size={13} className="text-[#C4A048]" />}
-                          <span className="font-mono text-[0.72rem] text-slate-200">{check.rule}</span>
+                          <span className="font-mono text-[0.72rem] text-[#EDE8DC]">{check.rule}</span>
                         </div>
                         <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase ${cfg.color}`}>
                           {cfg.label}
@@ -174,7 +174,7 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
               <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-200">
                 <Shield size={14} /> AI Compliance Report
               </div>
-              <div className="mt-3 whitespace-pre-wrap font-mono text-sm leading-7 text-slate-300">
+              <div className="mt-3 whitespace-pre-wrap font-mono text-sm leading-7 text-[#EDE8DC]">
                 {(complianceScanMutation.data as any).content}
               </div>
             </div>

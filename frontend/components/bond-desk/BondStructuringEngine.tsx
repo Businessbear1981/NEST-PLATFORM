@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useDealState, type Tranche, type Deal } from "@/contexts/DealStateContext";
@@ -160,7 +160,7 @@ export default function BondStructuringEngine() {
       <div className="col-span-4 space-y-4">
         {!state.activeDeal ? (
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-            <h3 className="mb-3 font-[Cormorant_Garamond] text-lg font-semibold text-slate-200">
+            <h3 className="mb-3 font-[Cormorant_Garamond] text-lg font-semibold text-[#EDE8DC]">
               Deal Setup
             </h3>
             <div className="space-y-2.5">
@@ -172,7 +172,7 @@ export default function BondStructuringEngine() {
               <select
                 value={dealForm.sector}
                 onChange={(e) => setDealForm({...dealForm, sector: e.target.value})}
-                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-xs text-slate-200"
+                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-xs text-[#EDE8DC]"
               >
                 <option value="office">Office</option>
                 <option value="multifamily">Multifamily</option>
@@ -193,7 +193,7 @@ export default function BondStructuringEngine() {
         ) : (
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="font-[Cormorant_Garamond] text-lg font-semibold text-slate-200">
+              <h3 className="font-[Cormorant_Garamond] text-lg font-semibold text-[#EDE8DC]">
                 {state.activeDeal.name}
               </h3>
               <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[0.55rem] text-emerald-400">
@@ -201,12 +201,12 @@ export default function BondStructuringEngine() {
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2 font-mono text-[0.65rem]">
-              <div className="text-slate-500">TPC</div>
+              <div className="text-[#7A9A82]">TPC</div>
               <div className="text-right text-[#C4A048]">${(state.activeDeal.total_project_cost_usd/1e6).toFixed(0)}M</div>
-              <div className="text-slate-500">NOI</div>
+              <div className="text-[#7A9A82]">NOI</div>
               <div className="text-right text-[#C4A048]">${(state.activeDeal.stabilized_noi_usd/1e6).toFixed(1)}M</div>
-              <div className="text-slate-500">Sector</div>
-              <div className="text-right text-slate-300 capitalize">{state.activeDeal.sector}</div>
+              <div className="text-[#7A9A82]">Sector</div>
+              <div className="text-right text-[#EDE8DC] capitalize">{state.activeDeal.sector}</div>
             </div>
           </div>
         )}
@@ -230,22 +230,22 @@ export default function BondStructuringEngine() {
                     >
                       {t.series}
                     </div>
-                    <span className="font-[Space_Grotesk] text-sm text-slate-200">{t.label}</span>
+                    <span className="font-[Space_Grotesk] text-sm text-[#EDE8DC]">{t.label}</span>
                   </div>
                   <button
                     onClick={() => {
                       removeTranche(t.id);
                       log("NEST", "tranche_removed", t.label);
                     }}
-                    className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-400 transition-all text-xs"
+                    className="opacity-0 group-hover:opacity-100 text-[#7A9A82] hover:text-rose-400 transition-all text-xs"
                   >
                     x
                   </button>
                 </div>
                 <div className="mt-2 grid grid-cols-3 gap-2 font-mono text-[0.6rem]">
-                  <div><span className="text-slate-600">Size</span><br/><span className="text-[#C4A048]">${(t.size_usd/1e6).toFixed(0)}M</span></div>
-                  <div><span className="text-slate-600">Coupon</span><br/><span className="text-slate-200">{t.coupon_pct}%</span></div>
-                  <div><span className="text-slate-600">Spread</span><br/><span className="text-slate-200">{t.spread_bps}bp</span></div>
+                  <div><span className="text-[#7A9A82]">Size</span><br/><span className="text-[#C4A048]">${(t.size_usd/1e6).toFixed(0)}M</span></div>
+                  <div><span className="text-[#7A9A82]">Coupon</span><br/><span className="text-[#EDE8DC]">{t.coupon_pct}%</span></div>
+                  <div><span className="text-[#7A9A82]">Spread</span><br/><span className="text-[#EDE8DC]">{t.spread_bps}bp</span></div>
                 </div>
                 {((t as any).call_schedule?.length > 0 || (t as any).put_schedule?.length > 0) && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -267,7 +267,7 @@ export default function BondStructuringEngine() {
             {!showTrancheForm ? (
               <button
                 onClick={() => setShowTrancheForm(true)}
-                className="w-full rounded-xl border border-dashed border-white/10 py-3 font-mono text-xs text-slate-500 hover:border-[#C4A048]/30 hover:text-[#C4A048] transition-all"
+                className="w-full rounded-xl border border-dashed border-white/10 py-3 font-mono text-xs text-[#7A9A82] hover:border-[#C4A048]/30 hover:text-[#C4A048] transition-all"
               >
                 + Add Tranche
               </button>
@@ -287,7 +287,7 @@ export default function BondStructuringEngine() {
                       const spreads: Record<string, string> = { A: "85", B: "145", C: "225", SUB: "400" };
                       setTrancheForm({...trancheForm, series: s, label: labels[s] ?? s, coupon_pct: coupons[s] ?? "7.0", spread_bps: spreads[s] ?? "85"});
                     }}
-                    className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-slate-200"
+                    className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-[#EDE8DC]"
                   >
                     <option value="A">Series A</option>
                     <option value="B">Series B</option>
@@ -309,7 +309,7 @@ export default function BondStructuringEngine() {
                     className={`w-full rounded-lg border px-3 py-1.5 font-mono text-[0.6rem] transition-all ${
                       showCallFields
                         ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                        : "border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-400"
+                        : "border-white/10 text-[#7A9A82] hover:border-white/20 hover:text-[#7A9A82]"
                     }`}
                   >
                     {showCallFields ? "- Remove Call Option" : "+ Add Call Option"}
@@ -319,11 +319,11 @@ export default function BondStructuringEngine() {
                       <Input label="Call Date" value={callDate} onChange={setCallDate} placeholder="2028-06-01" />
                       <Input label="Call Price" value={callPrice} onChange={setCallPrice} placeholder="100" type="number" />
                       <div>
-                        <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">Call Type</label>
+                        <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">Call Type</label>
                         <select
                           value={callType}
                           onChange={(e) => setCallType(e.target.value as typeof callType)}
-                          className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-slate-200"
+                          className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-[#EDE8DC]"
                         >
                           <option value="par">Par</option>
                           <option value="make-whole">Make-Whole</option>
@@ -342,7 +342,7 @@ export default function BondStructuringEngine() {
                     className={`w-full rounded-lg border px-3 py-1.5 font-mono text-[0.6rem] transition-all ${
                       showPutFields
                         ? "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#C4A048]"
-                        : "border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-400"
+                        : "border-white/10 text-[#7A9A82] hover:border-white/20 hover:text-[#7A9A82]"
                     }`}
                   >
                     {showPutFields ? "- Remove Put Option" : "+ Add Put Option"}
@@ -351,11 +351,11 @@ export default function BondStructuringEngine() {
                     <div className="grid grid-cols-2 gap-2">
                       <Input label="Put Date" value={putDate} onChange={setPutDate} placeholder="2029-01-01" />
                       <div>
-                        <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">Put Trigger</label>
+                        <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">Put Trigger</label>
                         <select
                           value={putTrigger}
                           onChange={(e) => setPutTrigger(e.target.value as typeof putTrigger)}
-                          className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-slate-200"
+                          className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 font-mono text-xs text-[#EDE8DC]"
                         >
                           <option value="rate_increase">Rate Increase</option>
                           <option value="covenant_breach">Covenant Breach</option>
@@ -368,7 +368,7 @@ export default function BondStructuringEngine() {
 
                 <div className="flex gap-2">
                   <button onClick={handleAddTranche} className="flex-1 rounded-lg bg-[#C4A048] px-3 py-1.5 font-mono text-xs font-semibold text-[#030A06]">Add</button>
-                  <button onClick={() => setShowTrancheForm(false)} className="rounded-lg border border-white/10 px-3 py-1.5 font-mono text-xs text-slate-500">Cancel</button>
+                  <button onClick={() => setShowTrancheForm(false)} className="rounded-lg border border-white/10 px-3 py-1.5 font-mono text-xs text-[#7A9A82]">Cancel</button>
                 </div>
               </motion.div>
             )}
@@ -381,7 +381,7 @@ export default function BondStructuringEngine() {
         {m ? (
           <>
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-              <h3 className="mb-3 font-[Cormorant_Garamond] text-base font-semibold text-slate-200">
+              <h3 className="mb-3 font-[Cormorant_Garamond] text-base font-semibold text-[#EDE8DC]">
                 Capital Stack
               </h3>
               <div className="flex h-48 items-end gap-1">
@@ -400,7 +400,7 @@ export default function BondStructuringEngine() {
                       <div className="absolute inset-x-0 bottom-2 text-center font-mono text-[0.55rem] font-bold text-[#030A06]">
                         {t.series}
                       </div>
-                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10 rounded-lg bg-black/90 px-3 py-2 font-mono text-[0.6rem] text-slate-200 whitespace-nowrap border border-white/10">
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10 rounded-lg bg-black/90 px-3 py-2 font-mono text-[0.6rem] text-[#EDE8DC] whitespace-nowrap border border-white/10">
                         {t.label}: ${(t.size_usd/1e6).toFixed(0)}M · {t.coupon_pct}% · {t.spread_bps}bp
                       </div>
                     </motion.div>
@@ -415,12 +415,12 @@ export default function BondStructuringEngine() {
               <MetricCard label="Blended Coupon" value={`${m.blended_coupon_pct.toFixed(2)}%`} />
               <MetricCard label="DSCR" value={`${m.dscr.toFixed(2)}x`} grade={m.dscr >= 2.0 ? "A" : m.dscr >= 1.5 ? "BBB" : "Sub-IG"} />
               <MetricCard label="ICR" value={`${m.icr.toFixed(2)}x`} />
-              <MetricCard label="Grade" value={m.obligor_grade} className={GRADE_COLORS[m.obligor_grade] ?? "text-slate-300"} />
+              <MetricCard label="Grade" value={m.obligor_grade} className={GRADE_COLORS[m.obligor_grade] ?? "text-[#EDE8DC]"} />
             </div>
 
             {state.stress && (
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-                <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Stress Scenarios</h4>
+                <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Stress Scenarios</h4>
                 <div className="grid grid-cols-4 gap-2">
                   {Object.entries(state.stress).map(([name, s]: [string, any]) => (
                     <button
@@ -432,7 +432,7 @@ export default function BondStructuringEngine() {
                           : "border-white/5 bg-white/[0.02] hover:border-white/10"
                       }`}
                     >
-                      <div className="font-mono text-[0.55rem] text-slate-400 capitalize">{name}</div>
+                      <div className="font-mono text-[0.55rem] text-[#7A9A82] capitalize">{name}</div>
                       <div className={`font-mono text-sm font-semibold ${
                         s.status === "green" ? "text-emerald-400" :
                         s.status === "yellow" ? "text-amber-400" :
@@ -440,7 +440,7 @@ export default function BondStructuringEngine() {
                       }`}>
                         {s.dscr.toFixed(2)}x
                       </div>
-                      <div className="font-mono text-[0.5rem] text-slate-600">{s.outcome}</div>
+                      <div className="font-mono text-[0.5rem] text-[#7A9A82]">{s.outcome}</div>
                     </button>
                   ))}
                 </div>
@@ -451,7 +451,7 @@ export default function BondStructuringEngine() {
             {state.tranches.some((t: any) => t.call_schedule?.length > 0 || t.put_schedule?.length > 0) && (
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Call/Put Optionality</h4>
+                  <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Call/Put Optionality</h4>
                   <button
                     onClick={() => {
                       if (!state.activeDeal) return;
@@ -475,7 +475,7 @@ export default function BondStructuringEngine() {
                 <div className="mb-3 space-y-1">
                   {state.tranches.filter((t: any) => t.call_schedule?.length > 0 || t.put_schedule?.length > 0).map((t: any) => (
                     <div key={t.id} className="flex items-center gap-2 font-mono text-[0.55rem]">
-                      <span className="text-slate-400">{t.label}:</span>
+                      <span className="text-[#7A9A82]">{t.label}:</span>
                       {t.call_schedule?.map((c: any, i: number) => (
                         <span key={`c-${i}`} className="text-emerald-400">CALL {c.type} @ {c.date?.slice(0, 7)}</span>
                       ))}
@@ -490,39 +490,39 @@ export default function BondStructuringEngine() {
                 {callPutResult && (
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-[0.55rem] uppercase text-slate-500">Recommendation</span>
+                      <span className="font-mono text-[0.55rem] uppercase text-[#7A9A82]">Recommendation</span>
                       <span className={`rounded-full px-2 py-0.5 font-mono text-[0.6rem] font-bold ${
                         callPutResult.recommendation === "EXECUTE_CALL" ? "bg-emerald-500/20 text-emerald-400" :
                         callPutResult.recommendation === "CALL_ELIGIBLE" ? "bg-[#C4A048]/20 text-[#C4A048]" :
                         callPutResult.recommendation === "PUT_ALERT" ? "bg-rose-500/20 text-rose-400" :
                         callPutResult.recommendation === "MONITOR" ? "bg-amber-500/20 text-amber-400" :
-                        "bg-slate-500/20 text-slate-400"
+                        "bg-[#2D6B3D]/20 text-[#7A9A82]"
                       }`}>
                         {callPutResult.recommendation}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 font-mono text-[0.6rem]">
                       <div>
-                        <span className="text-slate-600">Rate Change</span>
+                        <span className="text-[#7A9A82]">Rate Change</span>
                         <div className={`text-sm font-semibold ${callPutResult.rate_change_bps < 0 ? "text-emerald-400" : "text-rose-400"}`}>
                           {callPutResult.rate_change_bps > 0 ? "+" : ""}{callPutResult.rate_change_bps}bp
                         </div>
                       </div>
                       <div>
-                        <span className="text-slate-600">Est. Savings</span>
+                        <span className="text-[#7A9A82]">Est. Savings</span>
                         <div className="text-sm font-semibold text-[#C4A048]">
                           ${(callPutResult.estimated_client_saving_usd / 1e3).toFixed(0)}K
                         </div>
                       </div>
                       <div>
-                        <span className="text-slate-600">Net Benefit</span>
+                        <span className="text-[#7A9A82]">Net Benefit</span>
                         <div className="text-sm font-semibold text-[#C4A048]">
                           ${(callPutResult.net_client_benefit_usd / 1e3).toFixed(0)}K
                         </div>
                       </div>
                       <div>
-                        <span className="text-slate-600">Arrangement Fee</span>
-                        <div className="text-sm font-semibold text-slate-300">
+                        <span className="text-[#7A9A82]">Arrangement Fee</span>
+                        <div className="text-sm font-semibold text-[#EDE8DC]">
                           ${(callPutResult.arrangement_fee_usd / 1e3).toFixed(0)}K
                         </div>
                       </div>
@@ -534,7 +534,7 @@ export default function BondStructuringEngine() {
           </>
         ) : (
           <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-white/[0.06] bg-white/[0.01]">
-            <p className="font-mono text-sm text-slate-600">
+            <p className="font-mono text-sm text-[#7A9A82]">
               {state.activeDeal ? "Add tranches to see the capital stack" : "Initialize a deal to begin"}
             </p>
           </div>
@@ -556,13 +556,13 @@ function Input({ label, value, onChange, placeholder, type = "text" }: {
 }) {
   return (
     <div>
-      {label && <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">{label}</label>}
+      {label && <label className="mb-0.5 block font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">{label}</label>}
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-slate-200 placeholder:text-slate-700 focus:border-[#C4A048]/40 focus:outline-none"
+        className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-[#EDE8DC] placeholder:text-[#2D6B3D] focus:border-[#C4A048]/40 focus:outline-none"
       />
     </div>
   );
@@ -573,12 +573,12 @@ function MetricCard({ label, value, grade, alert, className }: {
 }) {
   return (
     <div className={`rounded-xl border p-3 ${alert ? "border-rose-500/30 bg-rose-500/[0.06]" : "border-white/[0.06] bg-white/[0.02]"}`}>
-      <div className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">{label}</div>
+      <div className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">{label}</div>
       <div className={`font-mono text-lg font-semibold ${className ?? "text-[#C4A048]"}`}>
         {value}
       </div>
       {grade && (
-        <div className={`font-mono text-[0.5rem] ${GRADE_COLORS[grade] ?? "text-slate-400"}`}>{grade}</div>
+        <div className={`font-mono text-[0.5rem] ${GRADE_COLORS[grade] ?? "text-[#7A9A82]"}`}>{grade}</div>
       )}
     </div>
   );

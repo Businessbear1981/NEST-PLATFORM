@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, Clock3, Filter, RadioTower, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -86,7 +86,7 @@ export function MoodysReconFeed() {
   };
 
   return (
-    <Card className="overflow-hidden border-[#C4A048]/25 bg-[#07101a]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(196,160,72,0.10)]">
+    <Card className="overflow-hidden border-[#C4A048]/25 bg-[#07101a]/90 p-5 text-[#EDE8DC] shadow-[0_0_42px_rgba(196,160,72,0.10)]">
       <div className="mb-4 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#E8C87A]">
@@ -95,7 +95,7 @@ export function MoodysReconFeed() {
           <h2 className="mt-2 font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">
             Rating action monitor
           </h2>
-          <p className="mt-1 text-sm leading-6 text-slate-400">
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">
             Simulates a governed recon stream, maps each agency event to affected deals, and requires desk acknowledgement before routing to credit memo updates.
           </p>
         </div>
@@ -105,7 +105,7 @@ export function MoodysReconFeed() {
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-slate-500">
+        <span className="flex items-center gap-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[#7A9A82]">
           <Filter size={13} /> Filter
         </span>
         {(["all", "watch", "upgrade", "affirm", "downgrade"] as const).map((option) => (
@@ -115,7 +115,7 @@ export function MoodysReconFeed() {
             size="sm"
             variant={filter === option ? "default" : "outline"}
             onClick={() => setFilter(option)}
-            className={filter === option ? "bg-cyan-600 text-white hover:bg-cyan-500" : "border-slate-700 bg-black/20 text-slate-300 hover:border-[#C4A048]/45"}
+            className={filter === option ? "bg-cyan-600 text-white hover:bg-cyan-500" : "border-[#1E4A2E] bg-black/20 text-[#EDE8DC] hover:border-[#C4A048]/45"}
           >
             {option.toUpperCase()}
           </Button>
@@ -139,14 +139,14 @@ export function MoodysReconFeed() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-mono text-sm font-semibold uppercase tracking-[0.04em] text-white">{item.issuer}</p>
-                    <p className="mt-1 text-xs text-slate-500">{item.sector} · {item.timestamp}</p>
+                    <p className="mt-1 text-xs text-[#7A9A82]">{item.sector} · {item.timestamp}</p>
                   </div>
                   <Badge variant="outline" className={`${actionStyles[item.action]} whitespace-nowrap`}>
                     {item.action.toUpperCase()}
                   </Badge>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">{item.previousRating} → <strong className="text-[#E8C87A]">{item.currentRating}</strong></span>
+                  <span className="text-[#7A9A82]">{item.previousRating} → <strong className="text-[#E8C87A]">{item.currentRating}</strong></span>
                   <span className={isAcked ? "text-emerald-200" : "text-amber-200"}>{isAcked ? "ACKED" : "NEEDS REVIEW"}</span>
                 </div>
               </button>
@@ -158,19 +158,19 @@ export function MoodysReconFeed() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">{selected.issuer}</h3>
-              <p className="mt-1 text-sm text-slate-400">Outlook: {selected.outlook.toUpperCase()} · Confidence {selected.probability}%</p>
+              <p className="mt-1 text-sm text-[#7A9A82]">Outlook: {selected.outlook.toUpperCase()} · Confidence {selected.probability}%</p>
             </div>
             {selected.action === "upgrade" ? <TrendingUp className="text-emerald-300" /> : <Clock3 className="text-amber-300" />}
           </div>
           <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.035] p-4">
             <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-[#E8C87A]">Agency evidence</p>
-            <p className="mt-2 text-sm leading-6 text-slate-300">{selected.evidence}</p>
+            <p className="mt-2 text-sm leading-6 text-[#EDE8DC]">{selected.evidence}</p>
           </div>
           <div className="mt-4">
-            <p className="mb-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">Affected deals</p>
+            <p className="mb-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-[#7A9A82]">Affected deals</p>
             <div className="flex flex-wrap gap-2">
               {selected.affectedDeals.map((deal) => (
-                <Badge key={deal} variant="secondary" className="bg-slate-800 text-slate-200">{deal}</Badge>
+                <Badge key={deal} variant="secondary" className="bg-[#0D2218] text-[#EDE8DC]">{deal}</Badge>
               ))}
             </div>
           </div>

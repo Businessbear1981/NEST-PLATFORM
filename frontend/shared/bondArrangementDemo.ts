@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Bond Desk Arrangement Engine — Demo Data + Types
  * CMBS-style pooling, modular mini-bonds, scenarios, economics, Bernard narration.
  */
@@ -138,7 +138,7 @@ export const RATING_COLORS: Record<BondRating, string> = {
   BBB: "text-amber-200 border-amber-300/30 bg-amber-300/10",
   BB: "text-orange-200 border-orange-300/30 bg-orange-300/10",
   B: "text-red-200 border-red-300/30 bg-red-300/10",
-  NR: "text-slate-300 border-slate-400/30 bg-slate-400/10",
+  NR: "text-[#EDE8DC] border-[#2D6B3D]/30 bg-[#7A9A82]/10",
 };
 
 export const BOND_COLORS = {
@@ -151,7 +151,7 @@ export const BOND_COLORS = {
 export const STATUS_COLORS: Record<MiniBondStatus, string> = {
   active: "text-emerald-200 border-emerald-300/30 bg-emerald-400/10",
   drawn: "text-cyan-200 border-cyan-300/30 bg-cyan-400/10",
-  retired: "text-slate-300 border-slate-400/30 bg-slate-400/10",
+  retired: "text-[#EDE8DC] border-[#2D6B3D]/30 bg-[#7A9A82]/10",
   called: "text-amber-200 border-amber-300/30 bg-amber-300/10",
   put_exercised: "text-red-200 border-red-300/30 bg-red-300/10",
   restructured: "text-purple-200 border-purple-300/30 bg-purple-300/10",

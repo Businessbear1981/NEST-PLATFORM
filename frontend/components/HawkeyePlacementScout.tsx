@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo } from "react";
 import {
   Loader2, Users, Target, FileText, BookOpen, Send, DollarSign,
@@ -166,7 +166,7 @@ const statusColors: Record<string, string> = {
 const orderStatusColors: Record<string, string> = {
   firm: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
   soft: "border-amber-400/30 bg-amber-400/10 text-amber-300",
-  indicated: "border-slate-400/30 bg-slate-400/10 text-slate-300",
+  indicated: "border-[#2D6B3D]/30 bg-[#7A9A82]/10 text-[#EDE8DC]",
 };
 
 const appetiteIcon = (appetite: string) => {
@@ -211,10 +211,10 @@ function OfferingCard({
             <span className="font-mono text-xs font-semibold text-[#C4A048]">
               {money(offering.totalRaise)}
             </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[0.56rem] text-slate-300">
+            <span className="rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[0.56rem] text-[#EDE8DC]">
               {offering.rating}
             </span>
-            <span className="font-mono text-[0.62rem] text-slate-400">
+            <span className="font-mono text-[0.62rem] text-[#7A9A82]">
               {offering.coupon}% · {bps(offering.spread)}
             </span>
           </div>
@@ -227,7 +227,7 @@ function OfferingCard({
       {/* Subscription bar */}
       <div className="mt-3">
         <div className="flex items-center justify-between font-mono text-[0.56rem]">
-          <span className="text-slate-400">Subscribed</span>
+          <span className="text-[#7A9A82]">Subscribed</span>
           <span className="font-semibold text-white">
             {money(offering.subscribed)} / {money(offering.totalRaise)} ({subscribedPct}%)
           </span>
@@ -248,7 +248,7 @@ function OfferingCard({
         <div className="mt-2 flex gap-3">
           {offering.tranches.map((t) => (
             <div key={t.series} className="flex-1">
-              <div className="flex items-center justify-between font-mono text-[0.48rem] text-slate-500">
+              <div className="flex items-center justify-between font-mono text-[0.48rem] text-[#7A9A82]">
                 <span>Series {t.series} ({t.rating})</span>
                 <span>{pct(t.subscribed, t.size)}%</span>
               </div>
@@ -263,7 +263,7 @@ function OfferingCard({
         </div>
       </div>
 
-      <p className="mt-2 font-mono text-[0.52rem] text-slate-500">
+      <p className="mt-2 font-mono text-[0.52rem] text-[#7A9A82]">
         Target close: {offering.targetClose}
       </p>
     </button>
@@ -279,7 +279,7 @@ function InvestorCard({ investor, onAddToBook }: { investor: InvestorType; onAdd
             {appetiteIcon(investor.appetite)}
             <p className="truncate font-[Space_Grotesk] text-sm font-semibold text-white">{investor.name}</p>
           </div>
-          <p className="mt-1 font-mono text-[0.58rem] text-slate-400">
+          <p className="mt-1 font-mono text-[0.58rem] text-[#7A9A82]">
             AUM {money(investor.aum)} · Ticket {money(investor.minTicket)}–{money(investor.maxTicket)}
           </p>
         </div>
@@ -288,13 +288,13 @@ function InvestorCard({ investor, onAddToBook }: { investor: InvestorType; onAdd
 
       <div className="mt-2 flex flex-wrap gap-1">
         {investor.sectors.map((s) => (
-          <span key={s} className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[0.48rem] text-slate-400">
+          <span key={s} className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[0.48rem] text-[#7A9A82]">
             {s}
           </span>
         ))}
       </div>
 
-      <p className="mt-2 font-mono text-[0.52rem] italic text-slate-500">
+      <p className="mt-2 font-mono text-[0.52rem] italic text-[#7A9A82]">
         {investor.lastDeal}
       </p>
 
@@ -311,20 +311,20 @@ function InvestorCard({ investor, onAddToBook }: { investor: InvestorType; onAdd
 /* ─── Pipeline ─── */
 function OutreachPipeline() {
   const stages = [
-    { label: "Contacted", count: 18, color: "bg-slate-500" },
-    { label: "Responded", count: 12, color: "bg-blue-500" },
+    { label: "Contacted", count: 18, color: "bg-[#2D6B3D]" },
+    { label: "Responded", count: 12, color: "bg-[#C4A048]" },
     { label: "Meeting", count: 8, color: "bg-fuchsia-500" },
     { label: "Indication", count: 5, color: "bg-amber-500" },
     { label: "Allocated", count: 3, color: "bg-emerald-500" },
   ];
   return (
     <div className="mt-3 space-y-1.5">
-      <p className="font-mono text-[0.52rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
+      <p className="font-mono text-[0.52rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">
         Outreach Pipeline
       </p>
       {stages.map((s) => (
         <div key={s.label} className="flex items-center gap-2">
-          <span className="w-16 font-mono text-[0.52rem] text-slate-500">{s.label}</span>
+          <span className="w-16 font-mono text-[0.52rem] text-[#7A9A82]">{s.label}</span>
           <div className="flex-1">
             <div className="h-3 overflow-hidden rounded-full bg-white/5">
               <div
@@ -390,29 +390,29 @@ export default function HawkeyePlacementScout({
         </div>
         <div className="mt-3 grid grid-cols-3 gap-3">
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Active Deals</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Active Deals</p>
             <p className="font-mono text-xl font-semibold text-white">{DEMO_OFFERINGS.length}</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Book Size</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Book Size</p>
             <p className="font-mono text-xl font-semibold text-[#C4A048]">{money(bookStats.total)}</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Investors</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Investors</p>
             <p className="font-mono text-xl font-semibold text-amber-100">{DEMO_ORDERS.length}</p>
           </div>
         </div>
         <div className="mt-2 flex gap-2">
           {DEMO_OFFERINGS.map((o) => (
             <div key={o.id} className="flex-1 rounded-lg border border-white/5 bg-white/[0.02] p-2">
-              <p className="truncate font-mono text-[0.48rem] text-slate-400">{o.name.split(" — ")[0]}</p>
+              <p className="truncate font-mono text-[0.48rem] text-[#7A9A82]">{o.name.split(" — ")[0]}</p>
               <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
                 <div
                   className="h-full rounded-full bg-fuchsia-500"
                   style={{ width: `${pct(o.subscribed, o.totalRaise)}%` }}
                 />
               </div>
-              <p className="mt-0.5 font-mono text-[0.44rem] text-slate-500">{pct(o.subscribed, o.totalRaise)}%</p>
+              <p className="mt-0.5 font-mono text-[0.44rem] text-[#7A9A82]">{pct(o.subscribed, o.totalRaise)}%</p>
             </div>
           ))}
         </div>
@@ -429,11 +429,11 @@ export default function HawkeyePlacementScout({
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-fuchsia-200">
             <Target size={17} /> Hawkeye — Institutional Placement Engine
           </div>
-          <p className="mt-1 font-[Space_Grotesk] text-sm text-slate-400">
+          <p className="mt-1 font-[Space_Grotesk] text-sm text-[#7A9A82]">
             Book building, investor matching, roadshow management, and AI teasers.
           </p>
         </div>
-        <div className="flex items-center gap-2 font-mono text-[0.56rem] text-slate-500">
+        <div className="flex items-center gap-2 font-mono text-[0.56rem] text-[#7A9A82]">
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-emerald-400" /> Live
           </span>
@@ -478,11 +478,11 @@ export default function HawkeyePlacementScout({
                 className={`rounded-lg px-2 py-1 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] transition-all ${
                   investorTab === tab.key
                     ? "border border-fuchsia-400/40 bg-fuchsia-500/15 text-fuchsia-200"
-                    : "border border-transparent bg-white/5 text-slate-400 hover:bg-white/8 hover:text-slate-300"
+                    : "border border-transparent bg-white/5 text-[#7A9A82] hover:bg-white/8 hover:text-[#EDE8DC]"
                 }`}
               >
                 {tab.label}
-                <span className="ml-1 text-[0.44rem] text-slate-500">
+                <span className="ml-1 text-[0.44rem] text-[#7A9A82]">
                   {(DEMO_INVESTORS[tab.key] ?? []).length}
                 </span>
               </button>
@@ -510,7 +510,7 @@ export default function HawkeyePlacementScout({
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
               <BookOpen size={15} className="text-fuchsia-300" /> Book Building
-              <span className="font-mono text-[0.56rem] text-slate-400">— {offering.name.split(" — ")[0]}</span>
+              <span className="font-mono text-[0.56rem] text-[#7A9A82]">— {offering.name.split(" — ")[0]}</span>
             </h2>
             {oversubscribed && (
               <span className="flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase text-emerald-300">
@@ -522,7 +522,7 @@ export default function HawkeyePlacementScout({
           {/* Visual: Stacked bar */}
           <div className="mt-4">
             <div className="flex items-center justify-between font-mono text-[0.56rem]">
-              <span className="text-slate-400">Total Book</span>
+              <span className="text-[#7A9A82]">Total Book</span>
               <span className="font-semibold text-white">{money(bookStats.total)} / {money(offering.totalRaise)}</span>
             </div>
             <div className="mt-1 flex h-5 w-full overflow-hidden rounded-full bg-white/5">
@@ -540,7 +540,7 @@ export default function HawkeyePlacementScout({
               />
               {/* Indicated */}
               <div
-                className="h-full bg-slate-500 transition-all"
+                className="h-full bg-[#2D6B3D] transition-all"
                 style={{ width: `${pct(bookStats.indicatedTotal, offering.totalRaise)}%` }}
                 title={`Indicated: ${money(bookStats.indicatedTotal)}`}
               />
@@ -548,15 +548,15 @@ export default function HawkeyePlacementScout({
             <div className="mt-1 flex gap-4 font-mono text-[0.48rem]">
               <span className="flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span className="text-slate-400">Firm {money(bookStats.firmTotal)}</span>
+                <span className="text-[#7A9A82]">Firm {money(bookStats.firmTotal)}</span>
               </span>
               <span className="flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-amber-500" />
-                <span className="text-slate-400">Soft {money(bookStats.softTotal)}</span>
+                <span className="text-[#7A9A82]">Soft {money(bookStats.softTotal)}</span>
               </span>
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-slate-500" />
-                <span className="text-slate-400">Indicated {money(bookStats.indicatedTotal)}</span>
+                <span className="h-2 w-2 rounded-full bg-[#2D6B3D]" />
+                <span className="text-[#7A9A82]">Indicated {money(bookStats.indicatedTotal)}</span>
               </span>
             </div>
           </div>
@@ -564,7 +564,7 @@ export default function HawkeyePlacementScout({
           {/* Breakdown by tranche */}
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2">
-              <p className="font-mono text-[0.52rem] text-slate-500">Series A Orders</p>
+              <p className="font-mono text-[0.52rem] text-[#7A9A82]">Series A Orders</p>
               <p className="font-mono text-sm font-semibold text-[#C4A048]">{money(bookStats.trancheA)}</p>
               <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/5">
                 <div
@@ -574,7 +574,7 @@ export default function HawkeyePlacementScout({
               </div>
             </div>
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2">
-              <p className="font-mono text-[0.52rem] text-slate-500">Series B Orders</p>
+              <p className="font-mono text-[0.52rem] text-[#7A9A82]">Series B Orders</p>
               <p className="font-mono text-sm font-semibold text-[#C4A048]">{money(bookStats.trancheB)}</p>
               <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/5">
                 <div
@@ -587,7 +587,7 @@ export default function HawkeyePlacementScout({
 
           {/* Orders list */}
           <div className="mt-4">
-            <p className="font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-slate-400">
+            <p className="font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[#7A9A82]">
               Individual Orders ({DEMO_ORDERS.length})
             </p>
             <div className="mt-2 max-h-[300px] space-y-1.5 overflow-y-auto pr-1">
@@ -604,7 +604,7 @@ export default function HawkeyePlacementScout({
                       <span className={`rounded-full px-1.5 py-0.5 font-mono text-[0.48rem] font-semibold uppercase ${orderStatusColors[order.status]}`}>
                         {order.status}
                       </span>
-                      <span className="rounded bg-white/5 px-1 py-0.5 font-mono text-[0.44rem] text-slate-500">
+                      <span className="rounded bg-white/5 px-1 py-0.5 font-mono text-[0.44rem] text-[#7A9A82]">
                         Ser. {order.tranche}
                       </span>
                     </div>
@@ -612,12 +612,12 @@ export default function HawkeyePlacementScout({
                       <span className="font-mono text-sm font-semibold text-[#C4A048]">
                         {money(order.amount)}
                       </span>
-                      <span className="ml-2 font-mono text-[0.52rem] text-slate-400">
+                      <span className="ml-2 font-mono text-[0.52rem] text-[#7A9A82]">
                         {bps(order.spreadBid)}
                       </span>
                     </div>
                   </div>
-                  <p className="mt-1 font-mono text-[0.5rem] italic text-slate-500">{order.notes}</p>
+                  <p className="mt-1 font-mono text-[0.5rem] italic text-[#7A9A82]">{order.notes}</p>
                 </div>
               ))}
             </div>
@@ -667,13 +667,13 @@ export default function HawkeyePlacementScout({
                     {mtg.status}
                   </span>
                 </div>
-                <p className="mt-0.5 font-mono text-[0.52rem] text-slate-400">
+                <p className="mt-0.5 font-mono text-[0.52rem] text-[#7A9A82]">
                   {mtg.date} · {mtg.time}
                 </p>
                 {mtg.feedback && (
                   <div className="mt-1.5 rounded-lg bg-black/20 p-2">
-                    <p className="flex items-start gap-1 font-mono text-[0.5rem] italic text-slate-300">
-                      <MessageSquare size={9} className="mt-0.5 flex-shrink-0 text-slate-500" />
+                    <p className="flex items-start gap-1 font-mono text-[0.5rem] italic text-[#EDE8DC]">
+                      <MessageSquare size={9} className="mt-0.5 flex-shrink-0 text-[#7A9A82]" />
                       {mtg.feedback}
                     </p>
                   </div>
@@ -769,15 +769,15 @@ export default function HawkeyePlacementScout({
 
         {teaserContent ? (
           <div className="mt-4 rounded-xl border border-[#C4A048]/15 bg-black/20 p-4">
-            <pre className="whitespace-pre-wrap font-mono text-[0.72rem] leading-5 text-slate-300">
+            <pre className="whitespace-pre-wrap font-mono text-[0.72rem] leading-5 text-[#EDE8DC]">
               {teaserContent}
             </pre>
           </div>
         ) : (
           <div className="mt-4 flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.01] py-8">
             <div className="text-center">
-              <FileText size={24} className="mx-auto text-slate-600" />
-              <p className="mt-2 font-mono text-[0.62rem] text-slate-500">
+              <FileText size={24} className="mx-auto text-[#7A9A82]" />
+              <p className="mt-2 font-mono text-[0.62rem] text-[#7A9A82]">
                 Click "Generate Teaser" to create an AI-powered investor teaser for {offering.name.split(" — ")[0]}
               </p>
             </div>

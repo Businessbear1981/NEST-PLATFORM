@@ -1,4 +1,4 @@
-import { Play, Pause, AlertCircle, CheckCircle2, Clock, Zap } from 'lucide-react';
+﻿import { Play, Pause, AlertCircle, CheckCircle2, Clock, Zap } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -10,7 +10,7 @@ interface AgentTaskMonitorProps {
 }
 
 const STATUS_COLORS = {
-  idle: 'bg-slate-500/20 text-slate-700',
+  idle: 'bg-[#2D6B3D]/20 text-[#2D6B3D]',
   running: 'bg-[#C4A048]/20 text-[#C4A048]',
   completed: 'bg-emerald-500/20 text-emerald-700',
   error: 'bg-red-500/20 text-red-700',

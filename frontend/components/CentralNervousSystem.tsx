@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback } from "react";
 
 const API = "";
@@ -70,13 +70,13 @@ export default function CentralNervousSystem() {
   const categories = ["AI Intelligence", "Market Data", "Property", "Regulatory", "Credit", "Construction"];
 
   return (
-    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
+    <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
         <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
           <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-amber-200">Platform Orchestration</p>
           <h1 className="mt-2 font-mono text-xl font-bold uppercase tracking-[0.06em] text-white">Central Nervous System</h1>
-          <p className="mt-1 text-xs italic text-slate-500">
+          <p className="mt-1 text-xs italic text-[#7A9A82]">
             NEST Advisors is the power strip. {dashboard?.plugins_total || 0} plugins. {dashboard?.plugins_connected || 0} connected.
           </p>
         </div>
@@ -90,7 +90,7 @@ export default function CentralNervousSystem() {
             { label: "Error Rate", value: `${dashboard?.error_rate_pct || 0}%`, alert: (dashboard?.error_rate_pct || 0) > 5 },
           ].map((k) => (
             <article key={k.label} className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/[0.09] p-4">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{k.label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{k.label}</span>
               <strong className={`mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] ${k.alert ? "text-red-400" : k.accent ? "text-emerald-400" : "text-white"}`}>
                 {k.value}
               </strong>
@@ -104,7 +104,7 @@ export default function CentralNervousSystem() {
           if (catPlugins.length === 0) return null;
           return (
             <div key={cat}>
-              <h3 className="mb-3 font-mono text-[0.62rem] font-bold uppercase tracking-[0.16em] text-slate-600">{cat}</h3>
+              <h3 className="mb-3 font-mono text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[#7A9A82]">{cat}</h3>
               <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
                 {catPlugins.map(([name, info]: [string, any]) => {
                   const meta = PLUGIN_META[name] || { label: name, color: "#666", logo: "?", category: "" };
@@ -148,7 +148,7 @@ export default function CentralNervousSystem() {
                           </span>
                         </div>
                         {info.calls > 0 && (
-                          <div className="mt-0.5 font-mono text-[0.5rem] text-slate-600">{info.calls} calls | {info.avg_latency_ms}ms avg</div>
+                          <div className="mt-0.5 font-mono text-[0.5rem] text-[#7A9A82]">{info.calls} calls | {info.avg_latency_ms}ms avg</div>
                         )}
                       </div>
                     </div>
@@ -163,11 +163,11 @@ export default function CentralNervousSystem() {
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Live Rates */}
           <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Live Market Rates</h3>
+            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-[#7A9A82]">Live Market Rates</h3>
             {rates && (
               <>
                 <span className={`mb-3 inline-block rounded px-2 py-0.5 font-mono text-[0.6rem] font-semibold ${
-                  rates.source === "grok" ? "bg-amber-300/15 text-amber-300" : rates.source === "FRED" ? "bg-emerald-500/15 text-emerald-400" : "bg-slate-800/60 text-slate-500"
+                  rates.source === "grok" ? "bg-amber-300/15 text-amber-300" : rates.source === "FRED" ? "bg-emerald-500/15 text-emerald-400" : "bg-[#0D2218]/60 text-[#7A9A82]"
                 }`}>
                   Source: {rates.source}
                 </span>
@@ -175,7 +175,7 @@ export default function CentralNervousSystem() {
                   <div className="grid grid-cols-2 gap-2">
                     {Object.entries(rates.rates).map(([k, v]: [string, any]) => (
                       <div key={k} className="rounded-lg border border-white/5 bg-[#03060b]/60 p-2.5">
-                        <div className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">{k.replace(/_/g, " ")}</div>
+                        <div className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">{k.replace(/_/g, " ")}</div>
                         <div className="mt-1 font-mono text-base font-semibold text-amber-300">{typeof v === "number" ? v.toFixed(2) : v}%</div>
                       </div>
                     ))}
@@ -188,7 +188,7 @@ export default function CentralNervousSystem() {
                       { label: "IG Spread", value: `${rates.ig_spread_bps}bp` },
                     ].map((r) => (
                       <div key={r.label} className="rounded-lg border border-white/5 bg-[#03060b]/60 p-2.5">
-                        <div className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-600">{r.label}</div>
+                        <div className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">{r.label}</div>
                         <div className="mt-1 font-mono text-base font-semibold text-amber-300">{r.value}</div>
                       </div>
                     ))}
@@ -200,7 +200,7 @@ export default function CentralNervousSystem() {
 
           {/* Task Router */}
           <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5 space-y-3">
-            <h3 className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Route Task to Nervous System</h3>
+            <h3 className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-[#7A9A82]">Route Task to Nervous System</h3>
             <select
               className="w-full rounded-lg border border-white/10 bg-[#03060b] px-3 py-2 font-mono text-xs text-white outline-none focus:border-amber-300/40"
               value={taskType}
@@ -208,7 +208,7 @@ export default function CentralNervousSystem() {
             >
               {TASK_TYPES.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
             </select>
-            <div className="font-mono text-[0.55rem] text-slate-600">
+            <div className="font-mono text-[0.55rem] text-[#7A9A82]">
               Routes to:{" "}
               <span style={{ color: PLUGIN_META[dashboard?.task_routing?.[taskType]]?.color || "#C4A048" }}>
                 {PLUGIN_META[dashboard?.task_routing?.[taskType]]?.label || dashboard?.task_routing?.[taskType] || "claude"}
@@ -245,15 +245,15 @@ export default function CentralNervousSystem() {
               >
                 {PLUGIN_META[routeResult.plugin]?.logo || "?"} {PLUGIN_META[routeResult.plugin]?.label || routeResult.plugin}
               </span>
-              {routeResult.model && <span className="rounded bg-slate-800/60 px-2 py-0.5 font-mono text-[0.55rem] text-slate-500">{routeResult.model}</span>}
+              {routeResult.model && <span className="rounded bg-[#0D2218]/60 px-2 py-0.5 font-mono text-[0.55rem] text-[#7A9A82]">{routeResult.model}</span>}
               <span className={`rounded px-2 py-0.5 font-mono text-[0.55rem] font-semibold ${routeResult.success ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"}`}>
                 {routeResult.success ? "Success" : "Failed"}
               </span>
-              {routeResult.latency_ms && <span className="font-mono text-[0.55rem] text-slate-600">{routeResult.latency_ms}ms</span>}
-              {routeResult.tokens > 0 && <span className="font-mono text-[0.55rem] text-slate-600">{routeResult.tokens} tokens</span>}
+              {routeResult.latency_ms && <span className="font-mono text-[0.55rem] text-[#7A9A82]">{routeResult.latency_ms}ms</span>}
+              {routeResult.tokens > 0 && <span className="font-mono text-[0.55rem] text-[#7A9A82]">{routeResult.tokens} tokens</span>}
               {routeResult.fallback_used && <span className="rounded bg-amber-300/15 px-2 py-0.5 font-mono text-[0.55rem] text-amber-300">fallback: {routeResult.fallback_used}</span>}
             </div>
-            <div className="whitespace-pre-wrap text-sm leading-7 text-slate-300">
+            <div className="whitespace-pre-wrap text-sm leading-7 text-[#EDE8DC]">
               {routeResult.content || routeResult.error || JSON.stringify(routeResult.data, null, 2)}
             </div>
           </div>
@@ -262,19 +262,19 @@ export default function CentralNervousSystem() {
         {/* Recent Activity */}
         {dashboard?.recent_calls?.length > 0 && (
           <div className="overflow-x-auto rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
-            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Recent Nervous System Activity</h3>
+            <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.1em] text-[#7A9A82]">Recent Nervous System Activity</h3>
             <table className="w-full text-left font-mono text-xs">
               <thead>
-                <tr className="border-b border-white/10 text-[0.6rem] uppercase tracking-wider text-slate-600">
+                <tr className="border-b border-white/10 text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
                   <th className="px-3 py-2">Time</th><th className="px-3 py-2">Task</th><th className="px-3 py-2">Plugin</th>
                   <th className="px-3 py-2">Fallback</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Latency</th>
                 </tr>
               </thead>
               <tbody>
                 {dashboard.recent_calls.slice(-10).reverse().map((call: any, i: number) => (
-                  <tr key={i} className="border-b border-white/5 text-slate-400">
-                    <td className="px-3 py-2 text-slate-600">{call.timestamp?.split("T")[1]?.split(".")[0]}</td>
-                    <td className="px-3 py-2 capitalize text-slate-300">{call.task_type?.replace(/_/g, " ")}</td>
+                  <tr key={i} className="border-b border-white/5 text-[#7A9A82]">
+                    <td className="px-3 py-2 text-[#7A9A82]">{call.timestamp?.split("T")[1]?.split(".")[0]}</td>
+                    <td className="px-3 py-2 capitalize text-[#EDE8DC]">{call.task_type?.replace(/_/g, " ")}</td>
                     <td className="px-3 py-2" style={{ color: PLUGIN_META[call.plugin]?.color || "#7A9A82" }}>
                       {PLUGIN_META[call.plugin]?.label || call.plugin}
                     </td>

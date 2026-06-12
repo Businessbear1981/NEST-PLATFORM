@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState } from 'react';
 import { Eye, Download, Send, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,13 +21,13 @@ interface InvoiceListProps {
 }
 
 const STATUS_COLORS: Record<InvoiceStatus, string> = {
-  draft: 'bg-slate-500/20 text-slate-700',
+  draft: 'bg-[#2D6B3D]/20 text-[#2D6B3D]',
   sent: 'bg-[#C4A048]/20 text-[#C4A048]',
   viewed: 'bg-[#C4A048]/20 text-cyan-700',
   partial: 'bg-yellow-500/20 text-yellow-700',
   paid: 'bg-emerald-500/20 text-emerald-700',
   overdue: 'bg-red-500/20 text-red-700',
-  cancelled: 'bg-slate-500/20 text-slate-700',
+  cancelled: 'bg-[#2D6B3D]/20 text-[#2D6B3D]',
 };
 
 const STATUS_ICONS: Record<InvoiceStatus, React.ReactNode> = {

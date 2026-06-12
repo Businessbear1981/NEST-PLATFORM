@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo } from "react";
 import { Eye, Briefcase, Building2, Crosshair, Target, Search, Zap, MapPin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -50,8 +50,8 @@ function SignalCard({
               </span>
             )}
           </div>
-          <p className="mt-1 text-sm text-slate-400 line-clamp-2">{signal.description}</p>
-          <div className="mt-2 flex items-center gap-4 font-mono text-[0.62rem] text-slate-500">
+          <p className="mt-1 text-sm text-[#7A9A82] line-clamp-2">{signal.description}</p>
+          <div className="mt-2 flex items-center gap-4 font-mono text-[0.62rem] text-[#7A9A82]">
             <span><MapPin size={11} className="inline" /> {signal.city}, {signal.state}</span>
             <span>NAICS {signal.naics}</span>
             {maSignal?.ownership && !maSignal.ownership.bankerEngaged && (
@@ -95,7 +95,7 @@ function SignalCard({
                 </span>
               )}
               {maSignal.revenueStreams != null && (
-                <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-2 py-0.5 font-mono text-[0.52rem] text-slate-400">
+                <span className="rounded-full border border-[#2D6B3D]/25 bg-[#2D6B3D]/10 px-2 py-0.5 font-mono text-[0.52rem] text-[#7A9A82]">
                   {maSignal.revenueStreams} streams
                 </span>
               )}
@@ -112,7 +112,7 @@ function SignalCard({
             {isMA ? formatMoney((signal as MASignal).revenueUsd) : formatMoney((signal as CRESignal).amountUsd)}
           </p>
           {maSignal && (
-            <p className="font-mono text-[0.62rem] text-slate-400">
+            <p className="font-mono text-[0.62rem] text-[#7A9A82]">
               EBITDA: {formatMoney(maSignal.ebitdaUsd)}
               {maSignal.ebitdaUsd < 20_000_000 && <span className="text-red-300 ml-1">(sub-$20M)</span>}
             </p>
@@ -188,19 +188,19 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
         </div>
         <div className="mt-3 grid grid-cols-4 gap-3">
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">M&A Signals</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">M&A Signals</p>
             <p className="font-mono text-xl font-semibold text-[#E8C87A]">{maCount}</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">CRE Signals</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">CRE Signals</p>
             <p className="font-mono text-xl font-semibold text-emerald-200">{creCount}</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Hot Leads</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Hot Leads</p>
             <p className="font-mono text-xl font-semibold text-red-200">{hotCount}</p>
           </div>
           <div>
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Pipeline</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Pipeline</p>
             <p className="font-mono text-xl font-semibold text-amber-100">{formatMoney(totalPipeline)}</p>
           </div>
         </div>
@@ -217,7 +217,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
             <Eye size={17} /> EagleEye — Deal Intelligence Radar
           </div>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-[#7A9A82]">
             M&A intelligence, CRE development signals, Bullseye offensive pitches, Boxing Out contact cadence.
           </p>
         </div>
@@ -236,7 +236,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
           { label: "Bullseye Pitches", value: `${DEMO_BULLSEYE_PITCHES.length}`, tone: "text-amber-200" },
         ].map(s => (
           <div key={s.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{s.label}</p>
+            <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{s.label}</p>
             <p className={`font-mono text-lg font-semibold ${s.tone}`}>{s.value}</p>
           </div>
         ))}
@@ -278,12 +278,12 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
           {/* State filter indicator */}
           {activeState && (
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[0.62rem] text-slate-400">
+              <span className="font-mono text-[0.62rem] text-[#7A9A82]">
                 Filtered: <span className="text-[#E8C87A]">{activeState}</span>
               </span>
               <Button
                 onClick={() => setActiveState(null)}
-                className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1 font-mono text-[0.56rem] text-slate-400 hover:bg-white/[0.06]"
+                className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1 font-mono text-[0.56rem] text-[#7A9A82] hover:bg-white/[0.06]"
               >
                 Clear
               </Button>
@@ -295,7 +295,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
             <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A]">
               M&A Signals — ${30}M-$150M Rev, Sub-$20M EBITDA
             </h3>
-            <span className="font-mono text-[0.62rem] text-slate-500">
+            <span className="font-mono text-[0.62rem] text-[#7A9A82]">
               {filteredSignals.length} signals
             </span>
           </div>
@@ -325,12 +325,12 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
 
           {activeState && (
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[0.62rem] text-slate-400">
+              <span className="font-mono text-[0.62rem] text-[#7A9A82]">
                 Filtered: <span className="text-emerald-200">{activeState}</span>
               </span>
               <Button
                 onClick={() => setActiveState(null)}
-                className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1 font-mono text-[0.56rem] text-slate-400 hover:bg-white/[0.06]"
+                className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1 font-mono text-[0.56rem] text-[#7A9A82] hover:bg-white/[0.06]"
               >
                 Clear
               </Button>
@@ -341,7 +341,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
             <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-emerald-200">
               CRE / Development — Dark Zone, Maturing Loans, Permits, Distress
             </h3>
-            <span className="font-mono text-[0.62rem] text-slate-500">
+            <span className="font-mono text-[0.62rem] text-[#7A9A82]">
               {filteredSignals.length} signals
             </span>
           </div>

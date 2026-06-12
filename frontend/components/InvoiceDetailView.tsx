@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from 'react';
 import React from 'react';
 import { FileText, Download, Eye, CheckCircle2, AlertCircle, DollarSign } from 'lucide-react';
@@ -119,7 +119,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
   const paymentProgress = (totalPaid / invoice.amount) * 100;
 
   const statusColor = {
-    draft: 'bg-slate-500',
+    draft: 'bg-[#2D6B3D]',
     sent: 'bg-cyan-500',
     partial: 'bg-yellow-500',
     paid: 'bg-green-500',
@@ -127,7 +127,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
   };
 
   const approvalColor = {
-    pending: 'bg-slate-600 text-slate-100',
+    pending: 'bg-[#2D6B3D] text-[#EDE8DC]',
     approved: 'bg-green-600 text-green-100',
     rejected: 'bg-red-600 text-red-100',
   };
@@ -162,15 +162,15 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+            <div className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
               <p className="text-sm text-muted-foreground mb-1">Total Amount</p>
               <p className="text-2xl font-bold text-[#C4A048]">${(invoice.amount / 1000).toFixed(0)}K</p>
             </div>
-            <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+            <div className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
               <p className="text-sm text-muted-foreground mb-1">Paid</p>
               <p className="text-2xl font-bold text-green-400">${(totalPaid / 1000).toFixed(0)}K</p>
             </div>
-            <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+            <div className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
               <p className="text-sm text-muted-foreground mb-1">Outstanding</p>
               <p className="text-2xl font-bold text-yellow-400">${(outstanding / 1000).toFixed(0)}K</p>
             </div>
@@ -233,7 +233,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
             <CardContent>
               <div className="space-y-3">
                 {invoice.lineItems.map((item) => (
-                  <div key={item.id} className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                  <div key={item.id} className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <p className="font-semibold text-foreground">{item.description}</p>
@@ -245,7 +245,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
                     </div>
                   </div>
                 ))}
-                <div className="p-4 bg-slate-700 rounded-lg border border-slate-600 mt-4">
+                <div className="p-4 bg-[#1E4A2E] rounded-lg border border-[#1E4A2E] mt-4">
                   <div className="flex justify-between items-center">
                     <p className="font-semibold text-foreground">Total</p>
                     <p className="text-2xl font-bold text-[#C4A048]">${invoice.amount.toLocaleString()}</p>
@@ -264,7 +264,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
             </CardHeader>
             <CardContent className="space-y-3">
               {invoice.paymentHistory.map((payment) => (
-                <div key={payment.id} className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                <div key={payment.id} className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -302,7 +302,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
             </CardHeader>
             <CardContent className="space-y-3">
               {invoice.linkedDocuments.map((doc) => (
-                <div key={doc.id} className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                <div key={doc.id} className="p-4 bg-[#0D2218] rounded-lg border border-[#1E4A2E]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1">
                       <FileText className="w-5 h-5 text-cyan-500" />
@@ -314,10 +314,10 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="border-slate-600 hover:border-cyan-500">
+                      <Button size="sm" variant="outline" className="border-[#1E4A2E] hover:border-cyan-500">
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" className="border-slate-600 hover:border-cyan-500">
+                      <Button size="sm" variant="outline" className="border-[#1E4A2E] hover:border-cyan-500">
                         <Download className="w-4 h-4" />
                       </Button>
                     </div>

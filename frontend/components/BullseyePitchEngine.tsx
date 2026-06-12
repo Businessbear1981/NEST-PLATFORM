@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -21,7 +21,7 @@ interface BullseyePitchEngineProps {
 // ── Status Colors ────────────────────────────────────────────────
 
 const PITCH_STATUS_COLORS: Record<string, string> = {
-  draft: "border-slate-400/30 bg-slate-500/15 text-slate-300",
+  draft: "border-[#2D6B3D]/30 bg-[#2D6B3D]/15 text-[#EDE8DC]",
   approved: "border-emerald-300/30 bg-emerald-400/15 text-emerald-200",
   deployed: "border-[#C4A048]/30 bg-[#C4A048]/15 text-[#E8C87A]",
   converted: "border-amber-300/30 bg-amber-400/15 text-amber-100",
@@ -87,13 +87,13 @@ export default function BullseyePitchEngine({
         <div className="flex gap-4">
           {[
             { label: "Total", value: pitches.length, tone: "text-white" },
-            { label: "Draft", value: draftCount, tone: "text-slate-300" },
+            { label: "Draft", value: draftCount, tone: "text-[#EDE8DC]" },
             { label: "Approved", value: approvedCount, tone: "text-emerald-200" },
             { label: "Deployed", value: deployedCount, tone: "text-[#E8C87A]" },
             { label: "Converted", value: convertedCount, tone: "text-amber-100" },
           ].map(stat => (
             <div key={stat.label} className="text-center">
-              <p className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-slate-500">{stat.label}</p>
+              <p className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-[#7A9A82]">{stat.label}</p>
               <p className={`font-mono text-lg font-semibold ${stat.tone}`}>{stat.value}</p>
             </div>
           ))}
@@ -132,13 +132,13 @@ export default function BullseyePitchEngine({
                         {pitch.status}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-slate-400">
+                    <p className="mt-1 text-sm text-[#7A9A82]">
                       <ArrowUpRight size={12} className="inline mr-1" />
                       Approach: <span className="text-[#E8C87A]">{pitch.targetFirm}</span> — {pitch.targetContact} ({pitch.targetTitle})
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isExpanded ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
+                    {isExpanded ? <ChevronUp size={16} className="text-[#7A9A82]" /> : <ChevronDown size={16} className="text-[#7A9A82]" />}
                   </div>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function BullseyePitchEngine({
                       >
                         <ul className="space-y-1">
                           {pitch.whyThem.map((item, i) => (
-                            <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-slate-300">
+                            <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-[#EDE8DC]">
                               <span className="text-[#C4A048] mt-0.5">•</span> {item}
                             </li>
                           ))}
@@ -181,7 +181,7 @@ export default function BullseyePitchEngine({
                       >
                         <ul className="space-y-1">
                           {pitch.whyThisDeal.map((item, i) => (
-                            <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-slate-300">
+                            <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-[#EDE8DC]">
                               <span className="text-emerald-400 mt-0.5">•</span> {item}
                             </li>
                           ))}
@@ -224,11 +224,11 @@ export default function BullseyePitchEngine({
                       {/* APPROACH STRATEGY */}
                       <CollapsibleSection
                         title="APPROACH STRATEGY"
-                        icon={<ArrowUpRight size={12} className="text-slate-300" />}
+                        icon={<ArrowUpRight size={12} className="text-[#EDE8DC]" />}
                         isOpen={isSectionOpen(pitch.id, "approach")}
                         onToggle={() => toggleSection(pitch.id, "approach")}
                       >
-                        <p className="font-mono text-[0.72rem] text-slate-300">{pitch.approachStrategy}</p>
+                        <p className="font-mono text-[0.72rem] text-[#EDE8DC]">{pitch.approachStrategy}</p>
                         {pitch.warmIntroPath && (
                           <p className="mt-2 rounded-lg border-l-2 border-amber-400/30 bg-amber-400/5 px-3 py-1.5 font-mono text-[0.68rem] text-amber-200/70">
                             Warm intro: {pitch.warmIntroPath}
@@ -244,12 +244,12 @@ export default function BullseyePitchEngine({
                         onToggle={() => toggleSection(pitch.id, "email")}
                       >
                         <div className="relative">
-                          <pre className="rounded-xl border border-white/10 bg-black/50 p-4 font-mono text-[0.72rem] leading-5 text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                          <pre className="rounded-xl border border-white/10 bg-black/50 p-4 font-mono text-[0.72rem] leading-5 text-[#EDE8DC] whitespace-pre-wrap overflow-x-auto">
                             {pitch.emailTemplate}
                           </pre>
                           <Button
                             onClick={(e) => { e.stopPropagation(); copyToClipboard(pitch.emailTemplate, `email_${pitch.id}`); }}
-                            className="absolute top-2 right-2 rounded-lg border border-white/10 bg-black/60 px-2 py-1 font-mono text-[0.56rem] text-slate-400 hover:text-white hover:bg-black/80"
+                            className="absolute top-2 right-2 rounded-lg border border-white/10 bg-black/60 px-2 py-1 font-mono text-[0.56rem] text-[#7A9A82] hover:text-white hover:bg-black/80"
                           >
                             {copiedId === `email_${pitch.id}` ? <><Check size={10} className="mr-1 text-emerald-300" /> Copied!</> : <><Copy size={10} className="mr-1" /> Copy</>}
                           </Button>
@@ -264,12 +264,12 @@ export default function BullseyePitchEngine({
                         onToggle={() => toggleSection(pitch.id, "call")}
                       >
                         <div className="relative">
-                          <pre className="rounded-xl border border-white/10 bg-black/50 p-4 font-mono text-[0.72rem] leading-5 text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                          <pre className="rounded-xl border border-white/10 bg-black/50 p-4 font-mono text-[0.72rem] leading-5 text-[#EDE8DC] whitespace-pre-wrap overflow-x-auto">
                             {pitch.callScript}
                           </pre>
                           <Button
                             onClick={(e) => { e.stopPropagation(); copyToClipboard(pitch.callScript, `call_${pitch.id}`); }}
-                            className="absolute top-2 right-2 rounded-lg border border-white/10 bg-black/60 px-2 py-1 font-mono text-[0.56rem] text-slate-400 hover:text-white hover:bg-black/80"
+                            className="absolute top-2 right-2 rounded-lg border border-white/10 bg-black/60 px-2 py-1 font-mono text-[0.56rem] text-[#7A9A82] hover:text-white hover:bg-black/80"
                           >
                             {copiedId === `call_${pitch.id}` ? <><Check size={10} className="mr-1 text-emerald-300" /> Copied!</> : <><Copy size={10} className="mr-1" /> Copy</>}
                           </Button>
@@ -294,7 +294,7 @@ export default function BullseyePitchEngine({
                         )}
                         <Button
                           onClick={() => copyToClipboard(pitch.emailTemplate, `email_btn_${pitch.id}`)}
-                          className="rounded-xl border border-white/10 bg-white/[0.035] px-4 py-2 font-mono text-[0.62rem] font-semibold uppercase text-slate-300 hover:bg-white/[0.06]"
+                          className="rounded-xl border border-white/10 bg-white/[0.035] px-4 py-2 font-mono text-[0.62rem] font-semibold uppercase text-[#EDE8DC] hover:bg-white/[0.06]"
                         >
                           {copiedId === `email_btn_${pitch.id}` ? <><Check size={12} className="mr-1.5 text-emerald-300" /> Copied!</> : <><Mail size={12} className="mr-1.5" /> Copy Email</>}
                         </Button>
@@ -337,8 +337,8 @@ function CollapsibleSection({
         className="flex items-center gap-2 w-full text-left"
       >
         {icon}
-        <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-slate-400">{title}</span>
-        {show ? <ChevronUp size={12} className="text-slate-500 ml-auto" /> : <ChevronDown size={12} className="text-slate-500 ml-auto" />}
+        <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">{title}</span>
+        {show ? <ChevronUp size={12} className="text-[#7A9A82] ml-auto" /> : <ChevronDown size={12} className="text-[#7A9A82] ml-auto" />}
       </button>
       <AnimatePresence>
         {show && (

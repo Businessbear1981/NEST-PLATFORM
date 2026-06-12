@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { CheckCircle2, Clock, FileSignature, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -40,7 +40,7 @@ const APPROVAL_STAGES: ApprovalStage[] = [
 function statusStyle(status: ApprovalStage['status']) {
   if (status === 'completed') return 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200';
   if (status === 'in-progress') return 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]';
-  return 'border-slate-600 bg-slate-800 text-slate-300';
+  return 'border-[#1E4A2E] bg-[#0D2218] text-[#EDE8DC]';
 }
 
 function progressFor(status: ApprovalStage['status']) {
@@ -54,7 +54,7 @@ export function SuretyApprovalWorkflow() {
   const workflowProgress = Math.round((completeStages / APPROVAL_STAGES.length) * 100);
 
   return (
-    <Card className="border-slate-700 bg-slate-950/80" data-testid="surety-approval-workflow">
+    <Card className="border-[#1E4A2E] bg-black/80" data-testid="surety-approval-workflow">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#C4A048]">
           <Users className="h-5 w-5" />
@@ -65,7 +65,7 @@ export function SuretyApprovalWorkflow() {
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+        <div className="rounded-xl border border-[#1E4A2E] bg-[#030A06]/70 p-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">Workflow progress</p>
@@ -77,7 +77,7 @@ export function SuretyApprovalWorkflow() {
         </div>
 
         {APPROVAL_STAGES.map((item) => (
-          <div key={item.stage} className="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+          <div key={item.stage} className="rounded-lg border border-[#1E4A2E] bg-[#030A06]/70 p-4">
             <div className="mb-2 flex items-center justify-between gap-3">
               <div>
                 <p className="font-semibold text-foreground">{item.stage}</p>

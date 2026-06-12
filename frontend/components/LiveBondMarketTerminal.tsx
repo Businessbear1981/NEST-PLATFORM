@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -147,7 +147,7 @@ export function LiveBondMarketTerminal() {
   };
 
   return (
-    <div className="space-y-6 text-slate-100" data-testid="live-bond-desk">
+    <div className="space-y-6 text-[#EDE8DC]" data-testid="live-bond-desk">
       <section className="relative overflow-hidden rounded-[1.8rem] border border-rose-300/25 bg-[#06070d] p-5 shadow-[0_0_85px_rgba(244,63,94,0.11)] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(244,63,94,0.19),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(196,160,72,0.14),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.74),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
@@ -157,7 +157,7 @@ export function LiveBondMarketTerminal() {
               <Badge className="border-rose-300/30 bg-rose-400/10 text-rose-100">no static image</Badge>
             </div>
             <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">Bond Desk Terminal</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#EDE8DC] sm:text-base">
               Select bonds, review call/put timing, tune rate and spread scenarios, and route actions to rating, surety, investor, and approval desks. This is a functional demo module with visible state changes rather than a screenshot-style market graphic.
             </p>
           </div>
@@ -168,11 +168,11 @@ export function LiveBondMarketTerminal() {
               ['Surety pending', deskBonds.filter((bond) => bond.surety === 'pending').length.toString(), 'packet follow-up'],
               ['Selected px', adjustedPrice.toFixed(2), `${rateShift >= 0 ? '+' : ''}${rateShift} bp curve`],
             ].map(([label, value, detail]) => (
-              <Card key={label} className="border-white/10 bg-white/[0.045] text-slate-100 shadow-none">
+              <Card key={label} className="border-white/10 bg-white/[0.045] text-[#EDE8DC] shadow-none">
                 <CardContent className="p-4">
-                  <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-slate-400">{label}</p>
+                  <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-[#7A9A82]">{label}</p>
                   <p className="mt-2 text-2xl font-black text-white">{value}</p>
-                  <p className="mt-1 text-xs text-slate-400">{detail}</p>
+                  <p className="mt-1 text-xs text-[#7A9A82]">{detail}</p>
                 </CardContent>
               </Card>
             ))}
@@ -183,7 +183,7 @@ export function LiveBondMarketTerminal() {
       <StreamingMTMTicker onDeskEvent={(event) => setDeskLog((current) => [event, ...current].slice(0, 7))} />
 
       <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#0D2218] bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-[#EDE8DC]">
               <RadioTower className="h-5 w-5" /> Interactive market tape
@@ -191,8 +191,8 @@ export function LiveBondMarketTerminal() {
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <table className="w-full min-w-[820px] text-left text-sm">
-              <thead className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-slate-500">
-                <tr className="border-b border-slate-800">
+              <thead className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-[#7A9A82]">
+                <tr className="border-b border-[#0D2218]">
                   <th className="py-3 pr-4">Bond</th>
                   <th className="py-3 pr-4">Face</th>
                   <th className="py-3 pr-4">Coupon</th>
@@ -209,17 +209,17 @@ export function LiveBondMarketTerminal() {
                     <tr
                       key={bond.id}
                       onClick={() => setSelectedId(bond.id)}
-                      className={`cursor-pointer border-b border-slate-900 transition hover:bg-[#C4A048]/5 ${isSelected ? 'bg-[#C4A048]/10' : ''}`}
+                      className={`cursor-pointer border-b border-[#0D2218] transition hover:bg-[#C4A048]/5 ${isSelected ? 'bg-[#C4A048]/10' : ''}`}
                     >
                       <td className="py-4 pr-4">
                         <p className="font-semibold text-white">{bond.id}</p>
-                        <p className="text-xs text-slate-400">{bond.issuer}</p>
+                        <p className="text-xs text-[#7A9A82]">{bond.issuer}</p>
                       </td>
-                      <td className="py-4 pr-4 font-mono text-slate-200">{money(bond.faceValue)}</td>
-                      <td className="py-4 pr-4 font-mono text-slate-200">{bond.coupon.toFixed(2)}%</td>
+                      <td className="py-4 pr-4 font-mono text-[#EDE8DC]">{money(bond.faceValue)}</td>
+                      <td className="py-4 pr-4 font-mono text-[#EDE8DC]">{bond.coupon.toFixed(2)}%</td>
                       <td className="py-4 pr-4 font-mono text-emerald-200">{(bond.price - rateShift * 0.035 - spreadShift * 0.012).toFixed(2)}</td>
-                      <td className="py-4 pr-4 font-mono text-slate-200">{bond.spread + spreadShift} bp</td>
-                      <td className="py-4 pr-4 text-slate-300">{bond.callWindowMonths}m call · {bond.putWindowMonths || '—'} put</td>
+                      <td className="py-4 pr-4 font-mono text-[#EDE8DC]">{bond.spread + spreadShift} bp</td>
+                      <td className="py-4 pr-4 text-[#EDE8DC]">{bond.callWindowMonths}m call · {bond.putWindowMonths || '—'} put</td>
                       <td className="py-4 pr-4"><Badge className={statusBadge(bond.status)}>{bond.status}</Badge></td>
                     </tr>
                   );
@@ -229,7 +229,7 @@ export function LiveBondMarketTerminal() {
           </CardContent>
         </Card>
 
-        <Card className="border-rose-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-rose-300/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-rose-100">
               <Target className="h-5 w-5" /> Selected bond workbench
@@ -239,11 +239,11 @@ export function LiveBondMarketTerminal() {
             <div className="rounded-2xl border border-rose-300/25 bg-rose-500/10 p-4">
               <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-rose-200">{selectedBond.id}</p>
               <h2 className="mt-2 text-2xl font-black text-white">{selectedBond.issuer}</h2>
-              <p className="mt-2 text-sm text-slate-300">{selectedBond.action}</p>
+              <p className="mt-2 text-sm text-[#EDE8DC]">{selectedBond.action}</p>
             </div>
 
             <Tabs value={scenario} onValueChange={(value) => setScenario(value as typeof scenario)}>
-              <TabsList className="grid w-full grid-cols-3 border border-slate-800 bg-slate-950">
+              <TabsList className="grid w-full grid-cols-3 border border-[#0D2218] bg-black">
                 <TabsTrigger value="base">Base</TabsTrigger>
                 <TabsTrigger value="refi">Refi</TabsTrigger>
                 <TabsTrigger value="placement">Placement</TabsTrigger>
@@ -251,17 +251,17 @@ export function LiveBondMarketTerminal() {
               <TabsContent value={scenario} className="mt-4 space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Adjusted price</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#7A9A82]">Adjusted price</p>
                     <p className="mt-2 text-3xl font-black text-white">{adjustedPrice.toFixed(2)}</p>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Savings signal</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#7A9A82]">Savings signal</p>
                     <p className="mt-2 text-3xl font-black text-emerald-200">{money(savingsEstimate)}</p>
                   </div>
                 </div>
                 <div className="space-y-3 rounded-2xl border border-[#C4A048]/20 bg-[#C4A048]/5 p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm text-slate-300">Curve shift</span>
+                    <span className="text-sm text-[#EDE8DC]">Curve shift</span>
                     <span className="font-mono text-[#EDE8DC]">{rateShift >= 0 ? '+' : ''}{rateShift} bp</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -272,7 +272,7 @@ export function LiveBondMarketTerminal() {
                     ))}
                   </div>
                   <div className="flex items-center justify-between gap-3 pt-2">
-                    <span className="text-sm text-slate-300">Spread shift</span>
+                    <span className="text-sm text-[#EDE8DC]">Spread shift</span>
                     <span className="font-mono text-[#EDE8DC]">{spreadShift >= 0 ? '+' : ''}{spreadShift} bp</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -289,7 +289,7 @@ export function LiveBondMarketTerminal() {
             <CallPutExerciseDialog bond={selectedBond} onConfirm={(message) => routeAction(message)} />
 
             <div className="grid gap-2 sm:grid-cols-2">
-              <Button type="button" className="bg-cyan-400 text-slate-950 hover:bg-cyan-300" onClick={() => routeAction('Vector call/put review generated and sent to approval queue.')}>
+              <Button type="button" className="bg-cyan-400 text-[#030A06] hover:bg-cyan-300" onClick={() => routeAction('Vector call/put review generated and sent to approval queue.')}>
                 <Activity className="mr-2 h-4 w-4" /> Run call/put review
               </Button>
               <Button type="button" variant="outline" className="border-emerald-300/35 bg-emerald-400/10 text-emerald-100 hover:bg-emerald-400/15" onClick={() => routeAction('Sterling investor grid refreshed with selected bond and scenario assumptions.')}>
@@ -307,7 +307,7 @@ export function LiveBondMarketTerminal() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
-        <Card className="border-amber-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-amber-300/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-100">
               <LineChart className="h-5 w-5" /> Scenario ladder
@@ -322,7 +322,7 @@ export function LiveBondMarketTerminal() {
               <div key={String(label)} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                 <div>
                   <p className="font-semibold text-white">{label}</p>
-                  <p className="text-xs text-slate-400">{action}</p>
+                  <p className="text-xs text-[#7A9A82]">{action}</p>
                 </div>
                 <div className="text-right font-mono text-sm">
                   <p className="text-[#EDE8DC]">{Number(spread).toFixed(0)} bp</p>
@@ -333,7 +333,7 @@ export function LiveBondMarketTerminal() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#C4A048]/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-[#EDE8DC]">
               <ClipboardCheck className="h-5 w-5" /> Desk action log
@@ -341,7 +341,7 @@ export function LiveBondMarketTerminal() {
           </CardHeader>
           <CardContent className="space-y-2">
             {deskLog.map((event, index) => (
-              <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
+              <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-[#EDE8DC]">
                 {index === 0 ? <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 2 ? <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" /> : <ArrowDownRight className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}
                 <span>{event}</span>
               </div>

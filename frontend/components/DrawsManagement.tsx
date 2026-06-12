@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { CircleDollarSign, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-const inputClass = "rounded-xl border border-emerald-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-emerald-300/55 focus:ring-2 focus:ring-emerald-300/10";
+const inputClass = "rounded-xl border border-emerald-300/20 bg-black/45 px-3 py-2 text-sm text-[#EDE8DC] outline-none placeholder:text-[#7A9A82] focus:border-emerald-300/55 focus:ring-2 focus:ring-emerald-300/10";
 
 function formatMoney(value: string | number) {
   const numeric = Number(value ?? 0);
@@ -37,30 +37,30 @@ export function DrawsManagement({ dealId }: { dealId: number }) {
   const draws = drawsQuery.data ?? [];
 
   return (
-    <div className="space-y-5 text-slate-100">
+    <div className="space-y-5 text-[#EDE8DC]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-emerald-200"><CircleDollarSign size={17} /> Funding workflow</div>
-          <p className="mt-1 text-sm leading-6 text-slate-400">Backend-connected construction draw requests, approval state, and funding status.</p>
+          <p className="mt-1 text-sm leading-6 text-[#7A9A82]">Backend-connected construction draw requests, approval state, and funding status.</p>
         </div>
         <span className="w-fit rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-emerald-100">{draws.length} draw records</span>
       </div>
 
       {drawsQuery.isLoading ? (
-        <div className="flex items-center justify-center rounded-2xl border border-emerald-300/20 bg-black/30 p-8 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-emerald-200" size={16} /> Loading draws...</div>
+        <div className="flex items-center justify-center rounded-2xl border border-emerald-300/20 bg-black/30 p-8 text-sm text-[#7A9A82]"><Loader2 className="mr-2 animate-spin text-emerald-200" size={16} /> Loading draws...</div>
       ) : (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="overflow-hidden rounded-2xl border border-emerald-300/20 bg-black/30 shadow-[0_0_32px_rgba(52,211,153,0.08)]">
             {draws.length === 0 ? (
-              <div className="p-6 text-sm text-slate-400">No draw requests yet. Request a draw to activate the approval rail.</div>
+              <div className="p-6 text-sm text-[#7A9A82]">No draw requests yet. Request a draw to activate the approval rail.</div>
             ) : (
               <div className="divide-y divide-white/10">
                 {draws.map((draw) => (
                   <article key={draw.id} className="grid gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_8rem_7rem] sm:items-center">
                     <div>
                       <h3 className="font-mono font-semibold uppercase tracking-[0.05em] text-white">Draw #{draw.drawNumber}</h3>
-                      <p className="mt-1 text-sm text-slate-400">{draw.description || "No description supplied"}</p>
-                      {draw.approvalNotes && <p className="mt-1 text-xs text-slate-600">Notes: {draw.approvalNotes}</p>}
+                      <p className="mt-1 text-sm text-[#7A9A82]">{draw.description || "No description supplied"}</p>
+                      {draw.approvalNotes && <p className="mt-1 text-xs text-[#7A9A82]">Notes: {draw.approvalNotes}</p>}
                     </div>
                     <span className="font-mono text-sm font-semibold text-emerald-100">{formatMoney(draw.amount)}</span>
                     <div className="flex flex-col gap-2 sm:items-end">

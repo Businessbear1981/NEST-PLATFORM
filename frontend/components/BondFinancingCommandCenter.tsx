@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * Bond Financing Command Center
  * ==============================
@@ -59,7 +59,7 @@ const moduleCards = [
     title: "AI Audit & Readiness",
     description: "KPMG/Moss Adams benchmark analysis",
     icon: FileCheck,
-    color: "from-cyan-500 to-blue-600",
+    color: "from-cyan-500 to-[#C4A048]",
     metrics: [
       { label: "Working Capital", value: "12%", status: "compliant" },
       { label: "DSCR", value: "1.35x", status: "compliant" },
@@ -147,12 +147,12 @@ export function BondFinancingCommandCenter() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">Bond Financing Command Center</h1>
-            <p className="text-slate-400">Elite institutional bond structuring & AI evaluation</p>
+            <p className="text-[#7A9A82]">Elite institutional bond structuring & AI evaluation</p>
           </div>
           <Button
             onClick={handleRunEvaluation}
             disabled={isRunningEvaluation}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+            className="bg-gradient-to-r from-cyan-500 to-[#C4A048] hover:from-cyan-600 hover:to-[#C4A048] text-white"
           >
             <Play className="w-4 h-4 mr-2" />
             {isRunningEvaluation ? "Running Evaluation..." : "Run Full AI Evaluation"}
@@ -160,15 +160,15 @@ export function BondFinancingCommandCenter() {
         </div>
 
         {/* Deal Info Card */}
-        <Card className="bg-slate-800 border-slate-700 p-4">
+        <Card className="bg-[#0D2218] border-[#1E4A2E] p-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">{workflow.dealName}</h2>
-              <p className="text-sm text-slate-400">Deal ID: {workflow.dealId}</p>
+              <p className="text-sm text-[#7A9A82]">Deal ID: {workflow.dealId}</p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-[#C4A048]">{workflow.overallReadinessScore}%</div>
-              <p className="text-sm text-slate-400">Overall Readiness</p>
+              <p className="text-sm text-[#7A9A82]">Overall Readiness</p>
             </div>
           </div>
         </Card>
@@ -190,10 +190,10 @@ export function BondFinancingCommandCenter() {
                 whileTap={{ scale: 0.95 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
                   isActive
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-[#C4A048]/50"
+                    ? "bg-gradient-to-r from-cyan-500 to-[#C4A048] text-white shadow-lg shadow-[#C4A048]/50"
                     : isCompleted
                       ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
-                      : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                      : "bg-[#1E4A2E] text-[#EDE8DC] hover:bg-[#2D6B3D]"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -207,7 +207,7 @@ export function BondFinancingCommandCenter() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="modules" className="mb-8">
-        <TabsList className="bg-slate-800 border-slate-700">
+        <TabsList className="bg-[#0D2218] border-[#1E4A2E]">
           <TabsTrigger value="modules">Modules</TabsTrigger>
           <TabsTrigger value="evaluation">AI Evaluation</TabsTrigger>
           <TabsTrigger value="structuring">Bond Structuring</TabsTrigger>
@@ -228,26 +228,26 @@ export function BondFinancingCommandCenter() {
                   onClick={() => setExpandedModule(isExpanded ? null : module.title)}
                   className="cursor-pointer"
                 >
-                  <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 p-6 hover:border-slate-600 transition-all">
+                  <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-[#1E4A2E] p-6 hover:border-[#1E4A2E] transition-all">
                     <div className="flex items-start justify-between mb-4">
                       <div className={`bg-gradient-to-br ${module.color} p-3 rounded-lg`}>
                         <Icon className="w-6 h-6 text-white" />
                       </div>
                       <ChevronDown
-                        className={`w-5 h-5 text-slate-400 transition-transform ${
+                        className={`w-5 h-5 text-[#7A9A82] transition-transform ${
                           isExpanded ? "rotate-180" : ""
                         }`}
                       />
                     </div>
 
                     <h3 className="text-lg font-semibold text-white mb-1">{module.title}</h3>
-                    <p className="text-sm text-slate-400 mb-4">{module.description}</p>
+                    <p className="text-sm text-[#7A9A82] mb-4">{module.description}</p>
 
                     {/* Metrics Grid */}
                     <div className="space-y-3">
                       {module.metrics.map((metric, midx) => (
                         <div key={midx} className="flex items-center justify-between">
-                          <span className="text-sm text-slate-300">{metric.label}</span>
+                          <span className="text-sm text-[#EDE8DC]">{metric.label}</span>
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-white">{metric.value}</span>
                             <div
@@ -270,9 +270,9 @@ export function BondFinancingCommandCenter() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mt-4 pt-4 border-t border-slate-700"
+                        className="mt-4 pt-4 border-t border-[#1E4A2E]"
                       >
-                        <p className="text-sm text-slate-400 mb-3">
+                        <p className="text-sm text-[#7A9A82] mb-3">
                           {module.title === "AI Audit & Readiness"
                             ? "Comprehensive project readiness audit against KPMG/Moss Adams standards. Identifies gaps in documentation, insurance, and financial metrics."
                             : module.title === "Bond Structuring Studio"
@@ -281,7 +281,7 @@ export function BondFinancingCommandCenter() {
                                 ? "AI-powered rating estimation using Moody's and S&P methodologies. Includes climate risk and operational benchmarking."
                                 : "3C underwriting scoring (Character, Capacity, Capital). Recommends LC strategy and surety premium."}
                         </p>
-                        <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white">
+                        <Button className="w-full bg-[#1E4A2E] hover:bg-[#2D6B3D] text-white">
                           Open Module
                         </Button>
                       </motion.div>
@@ -295,43 +295,43 @@ export function BondFinancingCommandCenter() {
 
         {/* AI Evaluation Tab */}
         <TabsContent value="evaluation" className="space-y-4">
-          <Card className="bg-slate-800 border-slate-700 p-6">
+          <Card className="bg-[#0D2218] border-[#1E4A2E] p-6">
             <h3 className="text-xl font-semibold text-white mb-4">AI Evaluation Results</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {/* Surety Score */}
-              <div className="bg-slate-700 rounded-lg p-4">
+              <div className="bg-[#1E4A2E] rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-300">Surety Score</span>
+                  <span className="text-sm font-medium text-[#EDE8DC]">Surety Score</span>
                   <Shield className="w-4 h-4 text-red-400" />
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">
                   {workflow.aiEvaluationSummary.surety.overallScore}
                 </div>
                 <Progress value={workflow.aiEvaluationSummary.surety.overallScore} className="h-2" />
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-[#7A9A82] mt-2">
                   Recommendation: {workflow.aiEvaluationSummary.surety.recommendation}
                 </p>
               </div>
 
               {/* Rating */}
-              <div className="bg-slate-700 rounded-lg p-4">
+              <div className="bg-[#1E4A2E] rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-300">Estimated Rating</span>
+                  <span className="text-sm font-medium text-[#EDE8DC]">Estimated Rating</span>
                   <TrendingUp className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">
                   {workflow.aiEvaluationSummary.rating.estimatedRating}
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#7A9A82]">
                   Climate: {workflow.aiEvaluationSummary.rating.fitchClimateVS}
                 </p>
               </div>
 
               {/* Audit Score */}
-              <div className="bg-slate-700 rounded-lg p-4">
+              <div className="bg-[#1E4A2E] rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-300">Audit Readiness</span>
+                  <span className="text-sm font-medium text-[#EDE8DC]">Audit Readiness</span>
                   <FileCheck className="w-4 h-4 text-[#C4A048]" />
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">
@@ -343,7 +343,7 @@ export function BondFinancingCommandCenter() {
 
             {/* Gaps & Issues */}
             {workflow.aiEvaluationSummary.audit.gaps.length > 0 && (
-              <div className="bg-slate-900 rounded-lg p-4">
+              <div className="bg-[#030A06] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <AlertCircle className="w-5 h-5 text-amber-500" />
                   <h4 className="font-semibold text-white">Identified Gaps</h4>
@@ -351,7 +351,7 @@ export function BondFinancingCommandCenter() {
                 <div className="space-y-2">
                   {workflow.aiEvaluationSummary.audit.gaps.map((gap, idx) => (
                     <div key={idx} className="flex items-center justify-between text-sm">
-                      <span className="text-slate-300">{gap.category}</span>
+                      <span className="text-[#EDE8DC]">{gap.category}</span>
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
                           gap.severity === "high"
@@ -373,16 +373,16 @@ export function BondFinancingCommandCenter() {
 
         {/* Bond Structuring Tab */}
         <TabsContent value="structuring" className="space-y-4">
-          <Card className="bg-slate-800 border-slate-700 p-6">
+          <Card className="bg-[#0D2218] border-[#1E4A2E] p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Capital Stack Structuring</h3>
-            <p className="text-slate-400 mb-4">Design optimal bond tranches with waterfall modeling</p>
+            <p className="text-[#7A9A82] mb-4">Design optimal bond tranches with waterfall modeling</p>
 
             <div className="space-y-4">
               {["Senior (AAA/A)", "Mezzanine (BBB)", "Subordinated (Equity)"].map((tranche, idx) => (
-                <div key={idx} className="bg-slate-700 rounded-lg p-4">
+                <div key={idx} className="bg-[#1E4A2E] rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-white">{tranche}</span>
-                    <span className="text-sm text-slate-400">
+                    <span className="text-sm text-[#7A9A82]">
                       {idx === 0 ? "$80M" : idx === 1 ? "$15M" : "$5M"}
                     </span>
                   </div>
@@ -398,7 +398,7 @@ export function BondFinancingCommandCenter() {
 
         {/* Compliance Tab */}
         <TabsContent value="compliance" className="space-y-4">
-          <Card className="bg-slate-800 border-slate-700 p-6">
+          <Card className="bg-[#0D2218] border-[#1E4A2E] p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Covenant Compliance</h3>
             <div className="space-y-3">
               {[
@@ -406,11 +406,11 @@ export function BondFinancingCommandCenter() {
                 { name: "LTV", value: 72, threshold: 75, status: "compliant" },
                 { name: "Working Capital", value: 14, threshold: 12, status: "compliant" },
               ].map((covenant, idx) => (
-                <div key={idx} className="bg-slate-700 rounded-lg p-4">
+                <div key={idx} className="bg-[#1E4A2E] rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-white">{covenant.name}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-400">
+                      <span className="text-sm text-[#7A9A82]">
                         {covenant.value} / {covenant.threshold}
                       </span>
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />

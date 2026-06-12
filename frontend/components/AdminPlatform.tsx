@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from "react";
 import { Activity, AlertTriangle, CheckCircle, Clock, Settings, ShieldCheck, Users, Wrench } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,7 +83,7 @@ export function AdminPlatform() {
       case "pending":
         return "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]";
       default:
-        return "border-slate-600 bg-slate-800 text-slate-300";
+        return "border-[#1E4A2E] bg-[#0D2218] text-[#EDE8DC]";
     }
   };
 
@@ -121,7 +121,7 @@ export function AdminPlatform() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-[#C4A048]/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
+      <div className="rounded-3xl border border-[#C4A048]/20 bg-black/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
         <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#E8C87A]">
           <Settings className="h-4 w-4" /> Admin Platform · working control plane
         </p>
@@ -173,12 +173,12 @@ export function AdminPlatform() {
             <CardHeader><CardTitle className="flex items-center gap-2 text-[#C4A048]"><Users className="h-5 w-5" /> User Management</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {users.map((user) => (
-                <div key={user.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+                <div key={user.id} className="rounded-lg border border-[#1E4A2E] bg-[#0D2218] p-4">
                   <div className="mb-2 flex items-start justify-between gap-3">
                     <div><p className="font-semibold text-foreground">{user.name}</p><p className="text-sm text-muted-foreground">{user.email}</p></div>
-                    <div className="flex flex-wrap justify-end gap-2"><Badge variant="outline" className="border-slate-600 bg-slate-900 text-[#EDE8DC]">{user.role}</Badge><Badge variant="outline" className={getStatusColor(user.status)}>{user.status.toUpperCase()}</Badge></div>
+                    <div className="flex flex-wrap justify-end gap-2"><Badge variant="outline" className="border-[#1E4A2E] bg-[#030A06] text-[#EDE8DC]">{user.role}</Badge><Badge variant="outline" className={getStatusColor(user.status)}>{user.status.toUpperCase()}</Badge></div>
                   </div>
-                  <div className="flex flex-col gap-2 border-t border-slate-700 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-col gap-2 border-t border-[#1E4A2E] pt-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs text-muted-foreground">Last login: {user.lastLogin.toLocaleString()}</p>
                     <Button size="sm" variant="outline" onClick={() => cycleUserRole(user.id)} className="border-[#C4A048]/40 text-[#EDE8DC]">Cycle Role</Button>
                   </div>
@@ -193,7 +193,7 @@ export function AdminPlatform() {
             <CardHeader><CardTitle className="text-[#C4A048]">Module Status & Performance</CardTitle></CardHeader>
             <CardContent><div className="space-y-4">
               {modules.map((module) => (
-                <div key={module.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+                <div key={module.id} className="rounded-lg border border-[#1E4A2E] bg-[#0D2218] p-4">
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div><p className="font-semibold text-foreground">{module.name}</p><div className="mt-1 flex gap-4 text-sm"><span className="text-muted-foreground">Requests: <span className="text-[#C4A048]">{module.requests.toLocaleString()}</span></span><span className="text-muted-foreground">Errors: <span className="text-red-400">{module.errors}</span></span></div></div>
                     <Badge variant="outline" className={getStatusColor(module.status)}>{module.status.toUpperCase()}</Badge>
@@ -211,9 +211,9 @@ export function AdminPlatform() {
             <CardHeader><CardTitle className="text-[#C4A048]">Approval Queue</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {approvals.map((item) => (
-                <div key={item.id} className={`rounded-lg border p-4 ${item.status === "approved" ? "border-green-500/30 bg-green-500/10" : item.status === "rejected" ? "border-red-500/30 bg-red-500/10" : "border-slate-700 bg-slate-800"}`}>
+                <div key={item.id} className={`rounded-lg border p-4 ${item.status === "approved" ? "border-green-500/30 bg-green-500/10" : item.status === "rejected" ? "border-red-500/30 bg-red-500/10" : "border-[#1E4A2E] bg-[#0D2218]"}`}>
                   <div className="mb-3 flex items-start justify-between gap-3"><div className="flex-1"><p className="font-semibold text-foreground">{item.type}</p><p className="mt-1 text-sm text-muted-foreground">{item.description}</p><p className="mt-2 text-xs text-muted-foreground">Requested by {item.requester} • {item.submittedAt.toLocaleString()}</p></div><Badge variant="outline" className={getStatusColor(item.status)}>{item.status.toUpperCase()}</Badge></div>
-                  {item.status === "pending" ? <div className="flex gap-2 border-t border-slate-700 pt-3"><Button size="sm" className="flex-1 bg-green-600 text-white hover:bg-green-700" onClick={() => resolveApproval(item.id, "approved")}><CheckCircle className="mr-2 h-4 w-4" /> Approve</Button><Button size="sm" className="flex-1 bg-red-600 text-white hover:bg-red-700" onClick={() => resolveApproval(item.id, "rejected")}><AlertTriangle className="mr-2 h-4 w-4" /> Reject</Button></div> : <p className="border-t border-current/20 pt-3 text-xs text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" /> Decision retained in approval audit log.</p>}
+                  {item.status === "pending" ? <div className="flex gap-2 border-t border-[#1E4A2E] pt-3"><Button size="sm" className="flex-1 bg-green-600 text-white hover:bg-green-700" onClick={() => resolveApproval(item.id, "approved")}><CheckCircle className="mr-2 h-4 w-4" /> Approve</Button><Button size="sm" className="flex-1 bg-red-600 text-white hover:bg-red-700" onClick={() => resolveApproval(item.id, "rejected")}><AlertTriangle className="mr-2 h-4 w-4" /> Reject</Button></div> : <p className="border-t border-current/20 pt-3 text-xs text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" /> Decision retained in approval audit log.</p>}
                 </div>
               ))}
             </div></CardContent>

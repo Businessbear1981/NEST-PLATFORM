@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo, useState } from 'react';
 import React from 'react';
 import {
@@ -164,7 +164,7 @@ export function BondOfferingSalesDesk() {
   };
 
   return (
-    <div className="space-y-6 text-slate-100" data-testid="bond-offering-sales-desk">
+    <div className="space-y-6 text-[#EDE8DC]" data-testid="bond-offering-sales-desk">
       <section className="relative overflow-hidden rounded-[1.8rem] border border-emerald-300/25 bg-[#06110e] p-5 shadow-[0_0_85px_rgba(16,185,129,0.11)] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(16,185,129,0.18),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(251,191,36,0.16),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.74),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
@@ -174,7 +174,7 @@ export function BondOfferingSalesDesk() {
               <Badge className="border-emerald-300/30 bg-emerald-400/10 text-emerald-100">pooled sale workflow</Badge>
             </div>
             <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">Bond Offering Sales Desk</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#EDE8DC] sm:text-base">
               Package one or multiple bonds into an institutional offering, shape senior/mezzanine/retained slices, stage investor outreach, and keep distribution behind surety, rating, and human compliance gates. The model borrows CMBS-style pooled security distribution logic without presenting itself as a live public securities sale.
             </p>
           </div>
@@ -185,11 +185,11 @@ export function BondOfferingSalesDesk() {
               ['Surety exceptions', pendingSurety.toString(), 'wrap/rating follow-up'],
               ['Book progress', `${subscriptionPercent}%`, `${outreachWave} outreach waves`],
             ].map(([label, value, detail]) => (
-              <Card key={label} className="border-white/10 bg-white/[0.045] text-slate-100 shadow-none">
+              <Card key={label} className="border-white/10 bg-white/[0.045] text-[#EDE8DC] shadow-none">
                 <CardContent className="p-4">
-                  <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-slate-400">{label}</p>
+                  <p className="font-mono text-[0.63rem] uppercase tracking-[0.18em] text-[#7A9A82]">{label}</p>
                   <p className="mt-2 text-2xl font-black text-white">{value}</p>
-                  <p className="mt-1 text-xs text-slate-400">{detail}</p>
+                  <p className="mt-1 text-xs text-[#7A9A82]">{detail}</p>
                 </CardContent>
               </Card>
             ))}
@@ -199,17 +199,17 @@ export function BondOfferingSalesDesk() {
 
       <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6" aria-label="Bond offering sales pipeline stages">
         {offeringStages.map(([stage, detail]) => (
-          <Card key={stage} className="border-emerald-300/15 bg-slate-950/70 text-slate-100">
+          <Card key={stage} className="border-emerald-300/15 bg-black/70 text-[#EDE8DC]">
             <CardContent className="p-4">
               <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-emerald-200">{stage}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">{detail}</p>
+              <p className="mt-2 text-xs leading-5 text-[#7A9A82]">{detail}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#0D2218] bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-emerald-100">
               <Layers3 className="h-5 w-5" /> Offering pool builder
@@ -229,19 +229,19 @@ export function BondOfferingSalesDesk() {
                     <div>
                       <p className="font-mono text-[0.67rem] uppercase tracking-[0.16em] text-emerald-200">{bond.id}</p>
                       <h2 className="mt-1 text-lg font-bold text-white">{bond.issuer}</h2>
-                      <p className="mt-1 text-xs leading-5 text-slate-400">{bond.collateral} · {bond.useCase}</p>
+                      <p className="mt-1 text-xs leading-5 text-[#7A9A82]">{bond.collateral} · {bond.useCase}</p>
                     </div>
-                    <Badge className={bond.surety === 'wrapped' ? 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100' : bond.surety === 'pending' ? 'border-amber-300/30 bg-amber-400/10 text-amber-100' : 'border-slate-500/30 bg-slate-600/20 text-slate-200'}>
+                    <Badge className={bond.surety === 'wrapped' ? 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100' : bond.surety === 'pending' ? 'border-amber-300/30 bg-amber-400/10 text-amber-100' : 'border-[#2D6B3D]/30 bg-[#2D6B3D]/20 text-[#EDE8DC]'}>
                       {bond.surety === 'wrapped' ? 'surety wrapped' : bond.surety === 'pending' ? 'surety pending' : 'benchmark only'}
                     </Badge>
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">Face <strong className="block text-sm text-white">{money(bond.faceValue)}</strong></span>
-                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">Coupon <strong className="block text-sm text-white">{bond.coupon.toFixed(2)}%</strong></span>
-                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">Rating path <strong className="block text-sm text-white">{bond.rating}</strong></span>
-                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">DSCR / ICR <strong className="block text-sm text-white">{bond.dscr.toFixed(2)}x / {bond.icr.toFixed(1)}x</strong></span>
-                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">LTV <strong className="block text-sm text-white">{bond.ltv}%</strong></span>
-                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">Climate signal <strong className="block text-sm text-white">{bond.climate}</strong></span>
+                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-[#EDE8DC]">Face <strong className="block text-sm text-white">{money(bond.faceValue)}</strong></span>
+                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-[#EDE8DC]">Coupon <strong className="block text-sm text-white">{bond.coupon.toFixed(2)}%</strong></span>
+                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-[#EDE8DC]">Rating path <strong className="block text-sm text-white">{bond.rating}</strong></span>
+                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-[#EDE8DC]">DSCR / ICR <strong className="block text-sm text-white">{bond.dscr.toFixed(2)}x / {bond.icr.toFixed(1)}x</strong></span>
+                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-[#EDE8DC]">LTV <strong className="block text-sm text-white">{bond.ltv}%</strong></span>
+                    <span className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-[#EDE8DC]">Climate signal <strong className="block text-sm text-white">{bond.climate}</strong></span>
                   </div>
                 </button>
               );
@@ -249,7 +249,7 @@ export function BondOfferingSalesDesk() {
           </CardContent>
         </Card>
 
-        <Card className="border-amber-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-amber-300/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-100">
               <BookOpenCheck className="h-5 w-5" /> Offering memo and tranche grid
@@ -258,7 +258,7 @@ export function BondOfferingSalesDesk() {
           <CardContent className="space-y-4">
             <div className="rounded-2xl border border-amber-300/25 bg-amber-400/10 p-4">
               <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-amber-200">Draft memo thesis</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">
+              <p className="mt-2 text-sm leading-6 text-[#EDE8DC]">
                 NEST pooled offering aggregates qualified bond lanes, attaches surety and rating evidence, and prepares an investor-ready distribution book with approval-locked outreach.
               </p>
             </div>
@@ -267,16 +267,16 @@ export function BondOfferingSalesDesk() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-white">{tranche.label}</p>
-                    <p className="mt-1 text-xs text-slate-400">Attach: {tranche.attach} · Buyers: {tranche.target}</p>
-                    <p className="mt-2 text-xs leading-5 text-slate-400">Rating: {tranche.rating} · Suitability: {tranche.suitability}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">Protection: {tranche.covenant}</p>
+                    <p className="mt-1 text-xs text-[#7A9A82]">Attach: {tranche.attach} · Buyers: {tranche.target}</p>
+                    <p className="mt-2 text-xs leading-5 text-[#7A9A82]">Rating: {tranche.rating} · Suitability: {tranche.suitability}</p>
+                    <p className="mt-1 text-xs leading-5 text-[#7A9A82]">Protection: {tranche.covenant}</p>
                   </div>
                   <span className="font-mono text-xs text-[#EDE8DC]">{tranche.spread}</span>
                 </div>
               </div>
             ))}
             <div className="grid gap-2 sm:grid-cols-2">
-              <Button type="button" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300" onClick={launchOutreach} disabled={!canLaunch}>
+              <Button type="button" className="bg-emerald-400 text-[#030A06] hover:bg-emerald-300" onClick={launchOutreach} disabled={!canLaunch}>
                 <Send className="mr-2 h-4 w-4" /> Stage outreach wave
               </Button>
               <Button type="button" variant="outline" className="border-amber-300/35 bg-amber-400/10 text-amber-100 hover:bg-amber-400/15" onClick={() => addLog('Offering memo routed to insurance/surety desk for wrap evidence and carrier quote confirmation.')}>
@@ -296,7 +296,7 @@ export function BondOfferingSalesDesk() {
         </Card>
       </div>
 
-      <Card className="border-violet-300/20 bg-slate-950/75 text-slate-100">
+      <Card className="border-violet-300/20 bg-black/75 text-[#EDE8DC]">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-emerald-100">
               <BookOpenCheck className="h-5 w-5" /> post-sale monitoring handoff
@@ -305,14 +305,14 @@ export function BondOfferingSalesDesk() {
           {monitoringHandoffs.map(([title, detail]) => (
             <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
               <p className="font-semibold text-white">{title}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">{detail}</p>
+              <p className="mt-2 text-xs leading-5 text-[#7A9A82]">{detail}</p>
             </div>
           ))}
         </CardContent>
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#C4A048]/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-[#EDE8DC]">
               <Users className="h-5 w-5" /> Investor segmentation and outreach queue
@@ -324,7 +324,7 @@ export function BondOfferingSalesDesk() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-white">{channel.name}</p>
-                    <p className="mt-1 text-xs text-slate-400">Appetite {channel.appetite} · {channel.focus}</p>
+                    <p className="mt-1 text-xs text-[#7A9A82]">Appetite {channel.appetite} · {channel.focus}</p>
                   </div>
                   <Badge className={channelBadge(channel.status)}>{channel.status}</Badge>
                 </div>
@@ -333,7 +333,7 @@ export function BondOfferingSalesDesk() {
           </CardContent>
         </Card>
 
-        <Card className="border-emerald-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-emerald-300/20 bg-black/75 text-[#EDE8DC]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-emerald-100">
               <ClipboardList className="h-5 w-5" /> Sales action log
@@ -342,10 +342,10 @@ export function BondOfferingSalesDesk() {
           <CardContent className="space-y-3">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <div className="flex items-center justify-between gap-3">
-                <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-slate-400">Subscription progress</span>
+                <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[#7A9A82]">Subscription progress</span>
                 <span className="font-mono text-sm text-emerald-100">{subscriptionPercent}% indicated</span>
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-800">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#0D2218]">
                 <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-300 to-amber-300 transition-all" style={{ width: `${subscriptionPercent}%` }} />
               </div>
             </div>
@@ -356,7 +356,7 @@ export function BondOfferingSalesDesk() {
               <RadioTower className="mr-2 h-4 w-4" /> Log reverse inquiry
             </Button>
             {salesLog.map((event, index) => (
-              <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
+              <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-[#EDE8DC]">
                 {index === 0 ? <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" />}
                 <span>{event}</span>
               </div>

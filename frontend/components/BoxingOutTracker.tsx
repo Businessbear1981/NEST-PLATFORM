@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -26,15 +26,15 @@ interface BoxingOutTrackerProps {
 // ── Outcome colors ───────────────────────────────────────────────
 
 const OUTCOME_COLORS: Record<TouchOutcome, string> = {
-  sent: "text-slate-400 bg-slate-500/15 border-slate-400/30",
+  sent: "text-[#7A9A82] bg-[#2D6B3D]/15 border-[#2D6B3D]/30",
   opened: "text-amber-200 bg-amber-400/15 border-amber-300/30",
   clicked: "text-[#E8C87A] bg-[#C4A048]/15 border-[#C4A048]/30",
   replied: "text-emerald-200 bg-emerald-400/15 border-emerald-300/30",
-  voicemail: "text-slate-300 bg-slate-500/15 border-slate-400/30",
+  voicemail: "text-[#EDE8DC] bg-[#2D6B3D]/15 border-[#2D6B3D]/30",
   connected: "text-green-200 bg-green-400/15 border-green-300/30",
   meeting_booked: "text-amber-100 bg-amber-400/20 border-amber-300/40",
   no_answer: "text-red-300 bg-red-500/15 border-red-400/30",
-  pending: "text-slate-500 bg-slate-600/15 border-slate-500/30",
+  pending: "text-[#7A9A82] bg-[#2D6B3D]/15 border-[#2D6B3D]/30",
 };
 
 const TOUCH_TYPE_ICONS: Record<string, typeof Mail> = {
@@ -101,13 +101,13 @@ export default function BoxingOutTracker({
           <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-amber-100">
             <Target size={17} /> Boxing Out — Contact Cadence Engine
           </div>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-[#7A9A82]">
             8-10 touches to close. Stay around the basket. Every prospect tracked, every touch logged.
           </p>
         </div>
         <Button
           onClick={() => setShowCadence(!showCadence)}
-          className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 font-mono text-[0.62rem] uppercase text-slate-300 hover:bg-white/[0.06]"
+          className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 font-mono text-[0.62rem] uppercase text-[#EDE8DC] hover:bg-white/[0.06]"
         >
           {showCadence ? <ChevronUp size={13} className="mr-1" /> : <ChevronDown size={13} className="mr-1" />}
           Cadence Reference
@@ -130,7 +130,7 @@ export default function BoxingOutTracker({
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-400/20 font-mono text-[0.56rem] font-bold text-amber-200">
                       {step.num}
                     </span>
-                    <span className="font-mono text-[0.56rem] text-slate-300">{step.label}</span>
+                    <span className="font-mono text-[0.56rem] text-[#EDE8DC]">{step.label}</span>
                   </div>
                 ))}
               </div>
@@ -147,12 +147,12 @@ export default function BoxingOutTracker({
           { label: "Meetings", value: meetingsCount, tone: "text-amber-100", icon: Calendar },
           { label: "Converted", value: convertedCount, tone: "text-emerald-200", icon: CheckCircle },
           { label: "Content Queue", value: contentReady, tone: "text-[#E8C87A]", icon: FileText },
-          { label: "Avg Touches", value: avgTouches, tone: "text-slate-200", icon: BarChart3 },
+          { label: "Avg Touches", value: avgTouches, tone: "text-[#EDE8DC]", icon: BarChart3 },
         ].map(stat => (
           <div key={stat.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
             <div className="flex items-center gap-1.5">
-              <stat.icon size={11} className="text-slate-500" />
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{stat.label}</p>
+              <stat.icon size={11} className="text-[#7A9A82]" />
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{stat.label}</p>
             </div>
             <p className={`mt-1 font-mono text-lg font-semibold ${stat.tone}`}>{stat.value}</p>
           </div>
@@ -229,10 +229,10 @@ function ProspectCard({
               {prospect.status.replace("_", " ")}
             </span>
           </div>
-          <p className="mt-0.5 text-sm text-slate-400">
+          <p className="mt-0.5 text-sm text-[#7A9A82]">
             {prospect.contactName} — {prospect.contactTitle}
           </p>
-          <p className="mt-1 font-mono text-[0.56rem] text-slate-500">
+          <p className="mt-1 font-mono text-[0.56rem] text-[#7A9A82]">
             Source: {prospect.source}
           </p>
         </div>
@@ -248,7 +248,7 @@ function ProspectCard({
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <div className="flex items-center justify-end gap-2 font-mono text-[0.56rem] text-slate-500">
+          <div className="flex items-center justify-end gap-2 font-mono text-[0.56rem] text-[#7A9A82]">
             <span><Mail size={9} className="inline" /> {prospect.emailOpens} opens</span>
             <span>{prospect.emailClicks} clicks</span>
           </div>
@@ -258,8 +258,8 @@ function ProspectCard({
       {/* Last / Next touch */}
       <div className="mt-3 flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2">
         <div className="flex-1">
-          <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-slate-500">Last Touch</p>
-          <p className="font-mono text-[0.68rem] text-slate-300">
+          <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-[#7A9A82]">Last Touch</p>
+          <p className="font-mono text-[0.68rem] text-[#EDE8DC]">
             {lastTouch?.label} — {lastTouch?.date ? formatDate(lastTouch.date) : "—"}
             {lastTouch && (
               <span className={`ml-2 inline-block rounded-full border px-1.5 py-0 font-mono text-[0.5rem] uppercase ${OUTCOME_COLORS[lastTouch.outcome]}`}>
@@ -269,7 +269,7 @@ function ProspectCard({
           </p>
         </div>
         <div className="flex-1">
-          <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-slate-500">Next Touch</p>
+          <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-[#7A9A82]">Next Touch</p>
           <p className="font-mono text-[0.68rem] text-amber-100">
             {prospect.nextTouchType.replace("_", " ")} — {formatDate(prospect.nextTouchDate)}
           </p>
@@ -301,7 +301,7 @@ function ProspectCard({
         </div>
         <Button
           onClick={onToggle}
-          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[0.62rem] uppercase text-slate-400 hover:bg-white/[0.06]"
+          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[0.62rem] uppercase text-[#7A9A82] hover:bg-white/[0.06]"
         >
           {expanded ? <ChevronUp size={11} className="mr-1" /> : <ChevronDown size={11} className="mr-1" />}
           {expanded ? "Hide" : "History"}
@@ -318,7 +318,7 @@ function ProspectCard({
             className="overflow-hidden"
           >
             <div className="mt-4 border-t border-white/5 pt-4">
-              <p className="mb-3 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
+              <p className="mb-3 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">
                 Touch Timeline
               </p>
               <div className="relative ml-3 space-y-3 border-l border-white/10 pl-5">
@@ -343,7 +343,7 @@ function TouchTimelineItem({ touch }: { touch: Touch }) {
     <div className="relative">
       {/* Dot on timeline */}
       <div className="absolute -left-[1.625rem] top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/20 bg-[#0D2218]">
-        <Icon size={8} className="text-slate-400" />
+        <Icon size={8} className="text-[#7A9A82]" />
       </div>
 
       <div className="flex items-start justify-between gap-3">
@@ -357,10 +357,10 @@ function TouchTimelineItem({ touch }: { touch: Touch }) {
             </span>
           </div>
           {touch.notes && (
-            <p className="mt-0.5 font-mono text-[0.62rem] text-slate-500">{touch.notes}</p>
+            <p className="mt-0.5 font-mono text-[0.62rem] text-[#7A9A82]">{touch.notes}</p>
           )}
         </div>
-        <span className="font-mono text-[0.56rem] text-slate-600">
+        <span className="font-mono text-[0.56rem] text-[#7A9A82]">
           {touch.date ? formatDate(touch.date) : "—"}
         </span>
       </div>
@@ -379,7 +379,7 @@ function ContentCard({
   onApprove: () => void;
   onSend: () => void;
 }) {
-  const typeColor = CONTENT_TYPE_COLORS[item.type] || "border-white/10 bg-white/5 text-slate-300";
+  const typeColor = CONTENT_TYPE_COLORS[item.type] || "border-white/10 bg-white/5 text-[#EDE8DC]";
 
   return (
     <div className="rounded-xl border border-white/10 bg-black/35 p-3">
@@ -394,14 +394,14 @@ function ContentCard({
                 ? "border-green-300/30 bg-green-400/10 text-green-200"
                 : item.status === "approved"
                 ? "border-amber-300/30 bg-amber-400/10 text-amber-200"
-                : "border-slate-400/30 bg-slate-500/10 text-slate-300"
+                : "border-[#2D6B3D]/30 bg-[#2D6B3D]/10 text-[#EDE8DC]"
             }`}>
               {item.status}
             </span>
           </div>
           <h4 className="mt-1.5 font-mono text-[0.72rem] font-semibold text-white">{item.title}</h4>
-          <p className="mt-1 font-mono text-[0.62rem] text-slate-400 line-clamp-2">{item.body}</p>
-          <p className="mt-1.5 font-mono text-[0.56rem] text-slate-600">
+          <p className="mt-1 font-mono text-[0.62rem] text-[#7A9A82] line-clamp-2">{item.body}</p>
+          <p className="mt-1.5 font-mono text-[0.56rem] text-[#7A9A82]">
             <Clock size={9} className="mr-1 inline" />
             Scheduled: {formatDate(item.scheduledFor)}
           </p>

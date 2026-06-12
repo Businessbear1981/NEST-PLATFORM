@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { Loader2, ShieldCheck, Building2, FileCheck2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
@@ -53,7 +53,7 @@ export default function SuretyUnderwritingDashboard({ dealId }: { dealId?: strin
             { label: "Rating", value: "A+" },
           ].map((m) => (
             <div key={m.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
-              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{m.label}</p>
+              <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{m.label}</p>
               <p className="font-mono text-sm font-semibold text-white">{m.value}</p>
             </div>
           ))}
@@ -70,7 +70,7 @@ export default function SuretyUnderwritingDashboard({ dealId }: { dealId?: strin
               { label: "LGD (Surety)", value: `${data.credit_metrics?.lgd_with_surety_pct ?? "—"}%`, tone: "text-[#EDE8DC]" },
             ].map((m) => (
               <div key={m.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
-                <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{m.label}</p>
+                <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{m.label}</p>
                 <p className={`font-mono text-xl font-bold ${m.tone}`}>{m.value}</p>
               </div>
             ))}
@@ -88,7 +88,7 @@ export default function SuretyUnderwritingDashboard({ dealId }: { dealId?: strin
                 { label: "Bank Conduit", value: `${data.credit_metrics?.lgd_bank_conduit_pct}%` },
               ].map((m) => (
                 <div key={m.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5 text-center">
-                  <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{m.label}</p>
+                  <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">{m.label}</p>
                   <p className="font-mono text-lg font-semibold text-emerald-100">{m.value}</p>
                 </div>
               ))}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * Client Dashboard — the borrower/sponsor's view of their deal.
  *
@@ -100,13 +100,13 @@ export default function ClientDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Hero — Deal Summary + Readiness */}
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-[#EDE8DC] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.12),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1fr_0.5fr]">
           <div>
             <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#C4A048]">Client Portal · Your Deal Dashboard</div>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>Jacaranda Trace — Series 2026</h1>
-            <p className="mt-2 text-sm text-slate-400">Convivial Jacaranda Trace, LLC · Venice, FL · 501(c)(3) CCRC</p>
+            <p className="mt-2 text-sm text-[#7A9A82]">Convivial Jacaranda Trace, LLC · Venice, FL · 501(c)(3) CCRC</p>
 
             {/* Action Items */}
             <div className="flex gap-3 mt-4">
@@ -116,7 +116,7 @@ export default function ClientDashboardPage() {
               <Badge variant="outline" className="text-xs border-[#C4A048]/30 text-[#C4A048]">
                 {readiness.questions_total - readiness.questions_answered} Questions Pending
               </Badge>
-              <Badge variant="outline" className="text-xs border-slate-500 text-slate-400">
+              <Badge variant="outline" className="text-xs border-[#2D6B3D] text-[#7A9A82]">
                 {readiness.docs_required - readiness.docs_complete} Docs Needed
               </Badge>
             </div>
@@ -132,18 +132,18 @@ export default function ClientDashboardPage() {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="font-mono text-3xl font-black text-white">{readiness.score}%</span>
-                <span className="font-mono text-[0.5rem] uppercase text-slate-500">Ready</span>
+                <span className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Ready</span>
               </div>
             </div>
             <div className="flex gap-4 mt-3 text-center">
               <div>
-                <p className="font-mono text-lg font-bold text-slate-400">{readiness.rating_current}</p>
-                <p className="font-mono text-[0.5rem] text-slate-600">Current</p>
+                <p className="font-mono text-lg font-bold text-[#7A9A82]">{readiness.rating_current}</p>
+                <p className="font-mono text-[0.5rem] text-[#7A9A82]">Current</p>
               </div>
               <div className="text-[#C4A048]">→</div>
               <div>
                 <p className="font-mono text-lg font-bold text-[#C4A048]">{readiness.rating_target}</p>
-                <p className="font-mono text-[0.5rem] text-slate-600">Target</p>
+                <p className="font-mono text-[0.5rem] text-[#7A9A82]">Target</p>
               </div>
             </div>
           </div>
@@ -168,14 +168,14 @@ export default function ClientDashboardPage() {
                 <div key={b.id} className={`flex items-start gap-3 rounded-lg border p-3 ${
                   b.severity === "critical" ? "border-red-500/30 bg-red-500/5" :
                   b.severity === "warning" ? "border-yellow-500/20 bg-yellow-500/5" :
-                  "border-slate-700 bg-white/[0.02]"
+                  "border-[#1E4A2E] bg-white/[0.02]"
                 }`}>
                   <span className={`mt-0.5 w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                    b.severity === "critical" ? "bg-red-500" : b.severity === "warning" ? "bg-yellow-500" : "bg-blue-500"
+                    b.severity === "critical" ? "bg-red-500" : b.severity === "warning" ? "bg-yellow-500" : "bg-[#C4A048]"
                   }`} />
                   <div className="flex-1">
                     <p className="text-sm text-white">{b.message}</p>
-                    <p className="text-xs text-slate-500 mt-1">{b.action}</p>
+                    <p className="text-xs text-[#7A9A82] mt-1">{b.action}</p>
                   </div>
                   <Badge variant={b.severity === "critical" ? "destructive" : "secondary"} className="text-[0.55rem]">{b.type}</Badge>
                 </div>
@@ -194,7 +194,7 @@ export default function ClientDashboardPage() {
                       <p className="text-sm font-semibold text-white">{imp.lever}</p>
                       <p className="text-xs text-emerald-400 mt-1">{imp.impact}</p>
                     </div>
-                    <Badge variant="outline" className="text-[0.55rem] border-slate-600 text-slate-400 whitespace-nowrap">{imp.effort}</Badge>
+                    <Badge variant="outline" className="text-[0.55rem] border-[#1E4A2E] text-[#7A9A82] whitespace-nowrap">{imp.effort}</Badge>
                   </div>
                 </div>
               ))}
@@ -203,23 +203,23 @@ export default function ClientDashboardPage() {
 
           {/* Progress Bars */}
           <div className="grid grid-cols-3 gap-4">
-            <Card className="border-slate-700 bg-[#0D2218]">
+            <Card className="border-[#1E4A2E] bg-[#0D2218]">
               <CardContent className="p-4">
-                <p className="font-mono text-[0.6rem] uppercase text-slate-500">Documents</p>
+                <p className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">Documents</p>
                 <p className="font-mono text-2xl font-bold text-white mt-1">{readiness.docs_complete}/{readiness.docs_required}</p>
                 <Progress value={(readiness.docs_complete / readiness.docs_required) * 100} className="mt-2 h-1.5" />
               </CardContent>
             </Card>
-            <Card className="border-slate-700 bg-[#0D2218]">
+            <Card className="border-[#1E4A2E] bg-[#0D2218]">
               <CardContent className="p-4">
-                <p className="font-mono text-[0.6rem] uppercase text-slate-500">Questions</p>
+                <p className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">Questions</p>
                 <p className="font-mono text-2xl font-bold text-white mt-1">{readiness.questions_answered}/{readiness.questions_total}</p>
                 <Progress value={(readiness.questions_answered / readiness.questions_total) * 100} className="mt-2 h-1.5" />
               </CardContent>
             </Card>
-            <Card className="border-slate-700 bg-[#0D2218]">
+            <Card className="border-[#1E4A2E] bg-[#0D2218]">
               <CardContent className="p-4">
-                <p className="font-mono text-[0.6rem] uppercase text-slate-500">Rating Path</p>
+                <p className="font-mono text-[0.6rem] uppercase text-[#7A9A82]">Rating Path</p>
                 <p className="font-mono text-2xl font-bold text-[#C4A048] mt-1">{readiness.rating_current} → {readiness.rating_target}</p>
                 <Progress value={60} className="mt-2 h-1.5" />
               </CardContent>
@@ -238,10 +238,10 @@ export default function ClientDashboardPage() {
             { id: "equity_contribution", section: "Sources & Uses", question: "How much equity is being contributed? Is it cash at closing or deferred? Is there rollover equity?", answered: false },
             { id: "top_risks", section: "Risk Factors", question: "What are the top 3-5 risks you see in this project? What could go wrong, and what mitigants exist?", answered: false },
           ].map((q) => (
-            <Card key={q.id} className={`border-slate-700 bg-[#0D2218] ${q.answered ? "opacity-60" : ""}`}>
+            <Card key={q.id} className={`border-[#1E4A2E] bg-[#0D2218] ${q.answered ? "opacity-60" : ""}`}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="outline" className="text-[0.55rem] border-slate-600 text-slate-400">{q.section}</Badge>
+                  <Badge variant="outline" className="text-[0.55rem] border-[#1E4A2E] text-[#7A9A82]">{q.section}</Badge>
                   {q.answered && <Badge variant="default" className="text-[0.55rem]">Answered</Badge>}
                 </div>
                 <p className="text-sm text-white mb-3">{q.question}</p>
@@ -250,13 +250,13 @@ export default function ClientDashboardPage() {
                   onChange={(e) => setResponses(prev => ({ ...prev, [q.id]: e.target.value }))}
                   rows={3}
                   placeholder="Type your response..."
-                  className="w-full rounded-lg border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 resize-vertical"
+                  className="w-full rounded-lg border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white placeholder:text-[#7A9A82] resize-vertical"
                 />
                 <div className="flex gap-2 mt-2">
                   <Button onClick={() => submitResponse(q.id)} size="sm" className="bg-[#C4A048] text-[#030A06] hover:bg-[#E8C87A] text-xs">
                     Submit Response
                   </Button>
-                  <Button variant="outline" size="sm" className="border-slate-600 text-slate-400 text-xs"
+                  <Button variant="outline" size="sm" className="border-[#1E4A2E] text-[#7A9A82] text-xs"
                     onClick={() => { setActiveTab("bernard"); setBernardInput(`Help me answer: ${q.question}`); }}>
                     Ask Bernard for Help
                   </Button>
@@ -268,10 +268,10 @@ export default function ClientDashboardPage() {
 
         {/* Documents for Review */}
         <TabsContent value="documents" className="mt-6 space-y-3">
-          <Card className="border-slate-700 bg-[#0D2218]">
+          <Card className="border-[#1E4A2E] bg-[#0D2218]">
             <CardContent className="p-6 text-center">
-              <p className="text-sm text-slate-400">Documents pending your review will appear here.</p>
-              <p className="text-xs text-slate-600 mt-1">Credit memos, term sheets, engagement letters — review and sign electronically.</p>
+              <p className="text-sm text-[#7A9A82]">Documents pending your review will appear here.</p>
+              <p className="text-xs text-[#7A9A82] mt-1">Credit memos, term sheets, engagement letters — review and sign electronically.</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -292,7 +292,7 @@ export default function ClientDashboardPage() {
                     <div className={`max-w-[80%] rounded-xl px-4 py-2.5 ${
                       msg.role === "client"
                         ? "bg-[#C4A048]/10 border border-[#C4A048]/25 text-white"
-                        : "bg-white/[0.04] border border-white/10 text-slate-300"
+                        : "bg-white/[0.04] border border-white/10 text-[#EDE8DC]"
                     }`}>
                       <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                       {msg.note && <p className="text-xs text-emerald-400 mt-1">{msg.note}</p>}
@@ -301,7 +301,7 @@ export default function ClientDashboardPage() {
                 ))}
                 {bernardLoading && (
                   <div className="flex justify-start">
-                    <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-400">
+                    <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-[#7A9A82]">
                       Bernard is thinking...
                     </div>
                   </div>
@@ -314,7 +314,7 @@ export default function ClientDashboardPage() {
                   onChange={(e) => setBernardInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendBernardMessage()}
                   placeholder="Ask Bernard anything about your deal..."
-                  className="flex-1 rounded-xl border border-slate-700 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600"
+                  className="flex-1 rounded-xl border border-[#1E4A2E] bg-black/40 px-3 py-2 text-sm text-white placeholder:text-[#7A9A82]"
                 />
                 <Button onClick={sendBernardMessage} disabled={bernardLoading} className="bg-[#C4A048] text-[#030A06] hover:bg-[#E8C87A]">
                   Send

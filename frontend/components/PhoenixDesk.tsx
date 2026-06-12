@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 import {
   AlertTriangle,
@@ -110,7 +110,7 @@ function money(n: number): string {
 }
 
 const STAGE_COLORS: Record<string, string> = {
-  sourced: "border-slate-400/30 bg-slate-500/10 text-slate-200",
+  sourced: "border-[#2D6B3D]/30 bg-[#2D6B3D]/10 text-[#EDE8DC]",
   underwriting: "border-amber-300/30 bg-amber-400/10 text-amber-100",
   loi: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]",
   due_diligence: "border-fuchsia-300/30 bg-fuchsia-500/10 text-fuchsia-100",
@@ -157,7 +157,7 @@ export function PhoenixDesk() {
     return (
       <div className="flex items-center justify-center py-20">
         <RefreshCw className="mr-2 h-5 w-5 animate-spin text-red-200" />
-        <span className="font-mono text-sm text-slate-400">Loading Phoenix data...</span>
+        <span className="font-mono text-sm text-[#7A9A82]">Loading Phoenix data...</span>
       </div>
     );
   }
@@ -176,7 +176,7 @@ export function PhoenixDesk() {
         ].map((m) => (
           <article key={m.label} className={`relative overflow-hidden rounded-[1.25rem] border p-4 ${m.tone}`}>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{m.label}</span>
               <m.icon size={16} />
             </div>
             <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{m.value}</strong>
@@ -193,7 +193,7 @@ export function PhoenixDesk() {
             className={`flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] transition ${
               tab === t.id
                 ? "bg-red-400/15 text-red-100 shadow-[0_0_18px_rgba(248,113,113,0.12)]"
-                : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
+                : "text-[#7A9A82] hover:bg-white/5 hover:text-[#EDE8DC]"
             }`}
           >
             <t.icon size={14} />
@@ -225,7 +225,7 @@ export function PhoenixDesk() {
                             {deal.stage.replace("_", " ")}
                           </Badge>
                         </div>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                        <div className="mt-1 flex items-center gap-2 text-xs text-[#7A9A82]">
                           <MapPin size={12} />
                           <span>{deal.address}</span>
                           <span>|</span>
@@ -237,7 +237,7 @@ export function PhoenixDesk() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-mono text-xs text-slate-400">Market: {money(deal.market_value)}</p>
+                        <p className="font-mono text-xs text-[#7A9A82]">Market: {money(deal.market_value)}</p>
                         <p className="font-mono text-sm font-semibold text-amber-200">{money(deal.purchase_price)}</p>
                       </div>
                     </div>
@@ -250,7 +250,7 @@ export function PhoenixDesk() {
                         { label: "No P&I", value: `${deal.no_pi_months}mo`, color: "text-[#C4A048]" },
                       ].map((m) => (
                         <div key={m.label} className="rounded-lg border border-white/5 bg-white/[0.02] p-2 text-center">
-                          <span className="font-mono text-[0.5rem] uppercase text-slate-500">{m.label}</span>
+                          <span className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">{m.label}</span>
                           <p className={`font-mono text-sm font-semibold ${m.color}`}>{m.value}</p>
                         </div>
                       ))}
@@ -272,7 +272,7 @@ export function PhoenixDesk() {
                 key={f}
                 onClick={() => setRadarFilter(f)}
                 className={`rounded-lg px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.12em] transition ${
-                  radarFilter === f ? "bg-[#C4A048]/15 text-[#EDE8DC]" : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
+                  radarFilter === f ? "bg-[#C4A048]/15 text-[#EDE8DC]" : "text-[#7A9A82] hover:bg-white/5 hover:text-[#EDE8DC]"
                 }`}
               >
                 {f === "all" ? "All" : TRACK_LABEL[f] ?? f}
@@ -290,27 +290,27 @@ export function PhoenixDesk() {
             <CardContent>
               <Table>
                 <TableHeader>
-                  <TableRow className="border-slate-700 hover:bg-transparent">
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Address</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Type</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Value</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500 text-right">Asking</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Discount</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Track</TableHead>
-                    <TableHead className="font-mono text-[0.6rem] text-slate-500">Score</TableHead>
+                  <TableRow className="border-[#1E4A2E] hover:bg-transparent">
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Address</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Type</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Value</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82] text-right">Asking</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Discount</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Track</TableHead>
+                    <TableHead className="font-mono text-[0.6rem] text-[#7A9A82]">Score</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredRadar.map((item) => (
-                    <TableRow key={item.id} className="border-slate-800 hover:bg-slate-900/50">
+                    <TableRow key={item.id} className="border-[#0D2218] hover:bg-[#030A06]/50">
                       <TableCell>
                         <div>
                           <p className="font-mono text-xs text-white">{item.address}</p>
-                          <p className="font-mono text-[0.56rem] text-slate-500">{item.msa}</p>
+                          <p className="font-mono text-[0.56rem] text-[#7A9A82]">{item.msa}</p>
                         </div>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-slate-300">{item.type}</TableCell>
-                      <TableCell className="text-right font-mono text-xs text-slate-300">{money(item.value)}</TableCell>
+                      <TableCell className="font-mono text-xs text-[#EDE8DC]">{item.type}</TableCell>
+                      <TableCell className="text-right font-mono text-xs text-[#EDE8DC]">{money(item.value)}</TableCell>
                       <TableCell className="text-right font-mono text-xs text-amber-200">{money(item.asking)}</TableCell>
                       <TableCell>
                         <span className="font-mono text-xs text-red-300">{item.discount}%</span>
@@ -349,7 +349,7 @@ export function PhoenixDesk() {
               { label: "Exits Realized", value: money(economics.total_exits_realized), tone: "border-fuchsia-300/30 bg-fuchsia-500/8 text-fuchsia-200" },
             ].map((m) => (
               <article key={m.label} className={`rounded-[1.25rem] border p-4 ${m.tone}`}>
-                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>
+                <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{m.label}</span>
                 <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{m.value}</strong>
               </article>
             ))}
@@ -369,12 +369,12 @@ export function PhoenixDesk() {
                   <div key={asset.deal_id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
                     <div>
                       <p className="font-mono text-sm font-semibold text-white">{asset.name}</p>
-                      <p className="font-mono text-[0.6rem] text-slate-500">Acquired: {money(asset.acquisition_price)} | Current: {money(asset.current_estimated_value ?? 0)}</p>
+                      <p className="font-mono text-[0.6rem] text-[#7A9A82]">Acquired: {money(asset.acquisition_price)} | Current: {money(asset.current_estimated_value ?? 0)}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-mono text-xs text-emerald-300">{asset.occupancy_pct}% occupied</p>
                       <p className="font-mono text-xs text-amber-200">Cash: {money(asset.cash_accumulated ?? 0)}</p>
-                      <p className="font-mono text-[0.56rem] text-slate-500">{asset.months_to_maturity}mo to maturity</p>
+                      <p className="font-mono text-[0.56rem] text-[#7A9A82]">{asset.months_to_maturity}mo to maturity</p>
                     </div>
                   </div>
                 ))}
@@ -396,11 +396,11 @@ export function PhoenixDesk() {
                   <div key={asset.deal_id} className="flex items-center justify-between rounded-lg border border-emerald-300/15 bg-emerald-400/5 px-4 py-3">
                     <div>
                       <p className="font-mono text-sm font-semibold text-white">{asset.name}</p>
-                      <p className="font-mono text-[0.6rem] text-slate-500">Acquired: {money(asset.acquisition_price)} → Exited: {money(asset.exit_price ?? 0)}</p>
+                      <p className="font-mono text-[0.6rem] text-[#7A9A82]">Acquired: {money(asset.acquisition_price)} → Exited: {money(asset.exit_price ?? 0)}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-mono text-lg font-semibold text-emerald-300">+{money(asset.realized_gain ?? 0)}</p>
-                      <p className="font-mono text-[0.6rem] text-slate-400">{asset.hold_months}mo | {asset.irr}% IRR | {asset.multiple}x</p>
+                      <p className="font-mono text-[0.6rem] text-[#7A9A82]">{asset.hold_months}mo | {asset.irr}% IRR | {asset.multiple}x</p>
                     </div>
                   </div>
                 ))}

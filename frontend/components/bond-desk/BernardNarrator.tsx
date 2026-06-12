@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useBernard, type BernardMode } from "@/contexts/BernardContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,7 +17,7 @@ export default function BernardNarrator() {
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-[Cormorant_Garamond] text-sm font-semibold tracking-wide text-slate-200">
+          <span className="font-[Cormorant_Garamond] text-sm font-semibold tracking-wide text-[#EDE8DC]">
             Bernard
           </span>
         </div>
@@ -29,7 +29,7 @@ export default function BernardNarrator() {
               className={`rounded-md px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider transition-all ${
                 mode === m
                   ? "bg-white/15 text-white"
-                  : "text-slate-500 hover:text-slate-300"
+                  : "text-[#7A9A82] hover:text-[#EDE8DC]"
               }`}
             >
               {m[0]}
@@ -44,10 +44,10 @@ export default function BernardNarrator() {
         className={`mb-3 flex items-center gap-2 rounded-lg border px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-wider transition-all ${
           optimizerOn
             ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
-            : "border-white/10 bg-white/[0.02] text-slate-500"
+            : "border-white/10 bg-white/[0.02] text-[#7A9A82]"
         }`}
       >
-        <div className={`h-1.5 w-1.5 rounded-full ${optimizerOn ? "bg-amber-400" : "bg-slate-600"}`} />
+        <div className={`h-1.5 w-1.5 rounded-full ${optimizerOn ? "bg-amber-400" : "bg-[#2D6B3D]"}`} />
         Deal Optimizer {optimizerOn ? "ON" : "OFF"}
       </button>
 
@@ -74,10 +74,10 @@ export default function BernardNarrator() {
                     Optimizer
                   </div>
                 )}
-                <p className="font-[Space_Grotesk] text-[0.75rem] leading-relaxed text-slate-200">
+                <p className="font-[Space_Grotesk] text-[0.75rem] leading-relaxed text-[#EDE8DC]">
                   {event.depths[mode]}
                 </p>
-                <div className="mt-1.5 font-mono text-[0.5rem] text-slate-600">
+                <div className="mt-1.5 font-mono text-[0.5rem] text-[#7A9A82]">
                   {new Date(event.timestamp).toLocaleTimeString()}
                 </div>
               </motion.div>
@@ -87,7 +87,7 @@ export default function BernardNarrator() {
         {events.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-2 text-2xl opacity-30">B</div>
-            <p className="font-mono text-[0.6rem] text-slate-600">
+            <p className="font-mono text-[0.6rem] text-[#7A9A82]">
               Bernard is watching. Add a tranche to begin.
             </p>
           </div>
@@ -96,7 +96,7 @@ export default function BernardNarrator() {
 
       {/* Mode Description */}
       <div className="mt-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
-        <p className="font-mono text-[0.55rem] text-slate-500">
+        <p className="font-mono text-[0.55rem] text-[#7A9A82]">
           {mode === "expert" && "Headlines only. You know what you're doing."}
           {mode === "standard" && "Key implications surfaced. Expands on complex moves."}
           {mode === "educational" && "Full cause-and-effect chains. Every decision explained."}

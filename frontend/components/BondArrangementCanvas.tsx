@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -38,8 +38,8 @@ export default function BondArrangementCanvas({
       {/* ── Left: Available Deals ─────────────────────────────── */}
       <div className="col-span-4 space-y-3">
         <div className="flex items-center gap-2">
-          <Building2 size={14} className="text-slate-400" />
-          <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
+          <Building2 size={14} className="text-[#7A9A82]" />
+          <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">
             Available Deals
           </span>
         </div>
@@ -48,7 +48,7 @@ export default function BondArrangementCanvas({
         ))}
         {availableDeals.length === 0 && (
           <div className="rounded-xl border border-dashed border-white/10 p-6 text-center">
-            <p className="font-mono text-[0.68rem] text-slate-500">All deals in pool</p>
+            <p className="font-mono text-[0.68rem] text-[#7A9A82]">All deals in pool</p>
           </div>
         )}
       </div>
@@ -70,7 +70,7 @@ export default function BondArrangementCanvas({
               CMBS Pool — {formatM(totalPoolCommitment)}
             </span>
           </div>
-          <span className="font-mono text-[0.56rem] text-slate-500">
+          <span className="font-mono text-[0.56rem] text-[#7A9A82]">
             {poolDeals.length} deal{poolDeals.length !== 1 ? "s" : ""} · {allPoolBonds.length} mini-bonds
           </span>
         </div>
@@ -93,7 +93,7 @@ export default function BondArrangementCanvas({
           <div className="rounded-2xl border-2 border-dashed border-amber-400/20 bg-amber-400/5 p-8 text-center">
             <Layers size={32} className="text-amber-400/30 mx-auto" />
             <p className="font-mono text-sm text-amber-200/60 mt-3">Add deals to build your CMBS offering</p>
-            <p className="font-mono text-[0.62rem] text-slate-500 mt-1">Drag deals from the left or click "Add to Pool"</p>
+            <p className="font-mono text-[0.62rem] text-[#7A9A82] mt-1">Drag deals from the left or click "Add to Pool"</p>
           </div>
         )}
       </div>
@@ -123,8 +123,8 @@ function DealCard({
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             <h3 className="font-mono text-[0.78rem] font-semibold text-white">{deal.name}</h3>
-            <p className="font-mono text-[0.56rem] text-slate-400 mt-0.5">{deal.projectType}</p>
-            <p className="font-mono text-[0.52rem] text-slate-500 mt-0.5">
+            <p className="font-mono text-[0.56rem] text-[#7A9A82] mt-0.5">{deal.projectType}</p>
+            <p className="font-mono text-[0.52rem] text-[#7A9A82] mt-0.5">
               <MapPin size={9} className="inline mr-0.5" />{deal.location} · {deal.sponsor}
             </p>
           </div>
@@ -208,7 +208,7 @@ function MiniBondCard({
           </div>
 
           {/* Metrics row */}
-          <div className="flex items-center gap-3 mt-1 font-mono text-[0.56rem] text-slate-400">
+          <div className="flex items-center gap-3 mt-1 font-mono text-[0.56rem] text-[#7A9A82]">
             <span className="text-amber-100 font-semibold">{formatM(bond.amount)}</span>
             <span>{bond.termLabel}</span>
             <span>{formatPct(bond.coupon)}</span>
@@ -231,7 +231,7 @@ function MiniBondCard({
 
           {/* Draw + DSCR row */}
           <div className="flex items-center justify-between mt-1.5">
-            <div className="flex items-center gap-3 font-mono text-[0.52rem] text-slate-500">
+            <div className="flex items-center gap-3 font-mono text-[0.52rem] text-[#7A9A82]">
               <span>Draw: {drawWindow} ({bond.drawSchedule.length} draws)</span>
               {bond.dscr > 0 && <span>DSCR: <span className={bond.dscr >= 1.25 ? "text-emerald-300" : "text-amber-200"}>{bond.dscr.toFixed(2)}x</span></span>}
               <span>LTV: <span className={bond.ltv <= 65 ? "text-emerald-300" : bond.ltv <= 75 ? "text-amber-200" : "text-red-300"}>{bond.ltv}%</span></span>
@@ -249,7 +249,7 @@ function MiniBondCard({
                 transition={{ duration: 0.8, ease: "easeOut" }}
               />
             </div>
-            <span className="font-mono text-[0.48rem] text-slate-500">{drawPct.toFixed(0)}% drawn</span>
+            <span className="font-mono text-[0.48rem] text-[#7A9A82]">{drawPct.toFixed(0)}% drawn</span>
           </div>
         </div>
       </div>
@@ -263,8 +263,8 @@ function CapitalStackBar({ bonds, total }: { bonds: MiniBond[]; total: number })
   return (
     <div className="rounded-xl border border-white/10 bg-black/35 p-3">
       <div className="flex items-center gap-2 mb-2">
-        <Layers size={12} className="text-slate-400" />
-        <span className="font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-slate-400">Capital Stack</span>
+        <Layers size={12} className="text-[#7A9A82]" />
+        <span className="font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[#7A9A82]">Capital Stack</span>
         <span className="font-mono text-[0.56rem] text-amber-100 ml-auto">{formatM(total)}</span>
       </div>
       <div className="flex h-6 rounded-lg overflow-hidden gap-px">
@@ -285,7 +285,7 @@ function CapitalStackBar({ bonds, total }: { bonds: MiniBond[]; total: number })
               {/* Tooltip */}
               <div className="absolute bottom-full mb-1 hidden group-hover:block z-20 rounded-md bg-[#0D2218] border border-white/10 px-2 py-1 whitespace-nowrap">
                 <p className="font-mono text-[0.56rem] text-white">{bond.label}</p>
-                <p className="font-mono text-[0.48rem] text-slate-400">{formatM(bond.amount)} · {formatPct(bond.coupon)} · {bond.rating}</p>
+                <p className="font-mono text-[0.48rem] text-[#7A9A82]">{formatM(bond.amount)} · {formatPct(bond.coupon)} · {bond.rating}</p>
               </div>
             </motion.div>
           );
@@ -296,7 +296,7 @@ function CapitalStackBar({ bonds, total }: { bonds: MiniBond[]; total: number })
         {bonds.map(bond => (
           <div key={bond.id} className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: bond.color }} />
-            <span className="font-mono text-[0.48rem] text-slate-400">{bond.letter}: {formatM(bond.amount)} ({bond.rating})</span>
+            <span className="font-mono text-[0.48rem] text-[#7A9A82]">{bond.letter}: {formatM(bond.amount)} ({bond.rating})</span>
           </div>
         ))}
       </div>
@@ -317,13 +317,13 @@ function PoolStats({ bonds, total }: { bonds: MiniBond[]; total: number }) {
       {[
         { label: "Commitment", value: formatM(total), tone: "text-amber-100" },
         { label: "Blended Cpn", value: formatPct(blendedCoupon), tone: "text-amber-200" },
-        { label: "WAL", value: `${wal.toFixed(1)}yr`, tone: "text-slate-200" },
+        { label: "WAL", value: `${wal.toFixed(1)}yr`, tone: "text-[#EDE8DC]" },
         { label: "Avg Spread", value: formatBps(avgSpread), tone: "text-[#E8C87A]" },
         { label: "Senior %", value: `${seniorPct.toFixed(0)}%`, tone: "text-emerald-200" },
         { label: "Mini-Bonds", value: `${bonds.length}`, tone: "text-white" },
       ].map(stat => (
         <div key={stat.label} className="rounded-lg border border-white/5 bg-white/[0.02] p-2 text-center">
-          <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-slate-500">{stat.label}</p>
+          <p className="font-mono text-[0.48rem] uppercase tracking-[0.12em] text-[#7A9A82]">{stat.label}</p>
           <p className={`font-mono text-sm font-semibold ${stat.tone}`}>{stat.value}</p>
         </div>
       ))}

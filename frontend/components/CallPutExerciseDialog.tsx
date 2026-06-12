@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from 'react';
 import { CalendarClock, CheckCircle2, ClipboardCheck, LockKeyhole, PlayCircle, ShieldCheck, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -62,22 +62,22 @@ export function CallPutExerciseDialog({ bond, onConfirm }: { bond: CallPutBond; 
           <div className="flex items-center gap-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-amber-200">
             <CalendarClock className="h-4 w-4" /> Call / put exercise workflow
           </div>
-          <p className="mt-2 text-sm leading-6 text-slate-300">Open a controlled exercise ticket, review schedule economics, and confirm routing to the human approval gate.</p>
+          <p className="mt-2 text-sm leading-6 text-[#EDE8DC]">Open a controlled exercise ticket, review schedule economics, and confirm routing to the human approval gate.</p>
         </div>
         <Badge className={statusClass(status)}>{status}</Badge>
       </div>
 
-      <Button type="button" className="mt-4 bg-amber-300 text-slate-950 hover:bg-amber-200" onClick={() => setOpen((value) => !value)}>
+      <Button type="button" className="mt-4 bg-amber-300 text-[#030A06] hover:bg-amber-200" onClick={() => setOpen((value) => !value)}>
         <PlayCircle className="mr-2 h-4 w-4" /> {open ? 'Hide exercise dialog' : 'Open exercise dialog'}
       </Button>
 
       {open ? (
-        <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-slate-950/80 p-4 shadow-[0_0_45px_rgba(251,191,36,0.08)]">
+        <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-black/80 p-4 shadow-[0_0_45px_rgba(251,191,36,0.08)]">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-slate-500">{bond.id}</p>
+              <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[#7A9A82]">{bond.id}</p>
               <h3 className="mt-1 text-xl font-black text-white">{bond.issuer}</h3>
-              <p className="mt-1 text-sm text-slate-400">{money(bond.faceValue)} face · {bond.coupon.toFixed(2)}% coupon · {bond.price.toFixed(2)} px · +{bond.spread} bp</p>
+              <p className="mt-1 text-sm text-[#7A9A82]">{money(bond.faceValue)} face · {bond.coupon.toFixed(2)}% coupon · {bond.price.toFixed(2)} px · +{bond.spread} bp</p>
             </div>
             <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-2">
               <Button type="button" size="sm" variant={exerciseType === 'call' ? 'default' : 'outline'} onClick={() => { setExerciseType('call'); setStatus('draft'); }}>Call</Button>
@@ -87,15 +87,15 @@ export function CallPutExerciseDialog({ bond, onConfirm }: { bond: CallPutBond; 
 
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-              <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-slate-500">Window</p>
+              <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-[#7A9A82]">Window</p>
               <p className="mt-1 text-lg font-black text-white">{schedule.windowLabel}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-              <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-slate-500">Economics</p>
+              <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-[#7A9A82]">Economics</p>
               <p className="mt-1 text-lg font-black text-emerald-100">{money(schedule.economics)}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-              <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-slate-500">Approval</p>
+              <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-[#7A9A82]">Approval</p>
               <p className="mt-1 text-lg font-black text-amber-100">Human gate</p>
             </div>
           </div>
@@ -109,7 +109,7 @@ export function CallPutExerciseDialog({ bond, onConfirm }: { bond: CallPutBond; 
             <Button type="button" variant="outline" className="border-[#C4A048]/35 bg-[#C4A048]/10 text-[#EDE8DC] hover:bg-[#C4A048]/15" onClick={routeReview}>
               <ShieldCheck className="mr-2 h-4 w-4" /> Route review
             </Button>
-            <Button type="button" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300" onClick={confirmExercise}>
+            <Button type="button" className="bg-emerald-400 text-[#030A06] hover:bg-emerald-300" onClick={confirmExercise}>
               <CheckCircle2 className="mr-2 h-4 w-4" /> Confirm exercise routing
             </Button>
             <Button type="button" variant="outline" className="border-rose-300/35 bg-rose-400/10 text-rose-100 hover:bg-rose-400/15" onClick={() => { setOpen(false); setStatus('draft'); }}>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { X, MapPin, Building2, Briefcase, Users, FileText, Zap, Target, Send, ArrowUpRight, AlertTriangle, Shield, Clock, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -62,14 +62,14 @@ export default function EagleEyeSignalDetail({
                 <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.56rem] font-semibold uppercase ${STATUS_COLORS[signal.status]}`}>
                   {signal.status}
                 </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[0.56rem] uppercase text-slate-300">
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[0.56rem] uppercase text-[#EDE8DC]">
                   {isMA(signal) ? "M&A" : "CRE"}
                 </span>
-                <span className="font-mono text-[0.62rem] text-slate-500">
+                <span className="font-mono text-[0.62rem] text-[#7A9A82]">
                   <MapPin size={10} className="inline mr-0.5" />
                   {signal.city}, {signal.state}
                 </span>
-                <span className="font-mono text-[0.62rem] text-slate-500">
+                <span className="font-mono text-[0.62rem] text-[#7A9A82]">
                   NAICS {signal.naics}
                 </span>
               </div>
@@ -79,7 +79,7 @@ export default function EagleEyeSignalDetail({
                 <div className="flex items-center justify-end gap-1">
                   <Target size={14} className={isMA(signal) ? "text-[#C4A048]" : "text-emerald-300"} />
                   <span className="font-mono text-xl font-bold text-white">{signal.score}</span>
-                  <span className="font-mono text-[0.62rem] text-slate-500">/100</span>
+                  <span className="font-mono text-[0.62rem] text-[#7A9A82]">/100</span>
                 </div>
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function EagleEyeSignalDetail({
                     {signal.portcoSignals.map((pc, i) => (
                       <div key={i} className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
                         <p className="font-mono text-[0.72rem] text-white">
-                          {pc.name} <span className="text-slate-500">({pc.sponsor}, {pc.revenue})</span>
+                          {pc.name} <span className="text-[#7A9A82]">({pc.sponsor}, {pc.revenue})</span>
                         </p>
                         <p className="mt-0.5 font-mono text-[0.62rem] text-emerald-200/70">{pc.relevance}</p>
                       </div>
@@ -163,7 +163,7 @@ export default function EagleEyeSignalDetail({
                 <Section title="CAPITAL FORMATION" icon={<DollarSign size={12} className="text-amber-300" />}>
                   <ul className="space-y-1">
                     {signal.capitalFormation.map((item, i) => (
-                      <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-slate-300">
+                      <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-[#EDE8DC]">
                         <span className="text-amber-400 mt-0.5">•</span> {item}
                       </li>
                     ))}
@@ -181,10 +181,10 @@ export default function EagleEyeSignalDetail({
                           <span className="font-mono text-[0.68rem] font-semibold text-white">{ucc.filingType}</span>
                           <span className="font-mono text-[0.68rem] text-amber-100">{formatMoney(ucc.amount)}</span>
                         </div>
-                        <p className="font-mono text-[0.62rem] text-slate-400">
+                        <p className="font-mono text-[0.62rem] text-[#7A9A82]">
                           {ucc.lender} · {ucc.date}
                         </p>
-                        <p className="mt-0.5 font-mono text-[0.62rem] text-slate-500">{ucc.detail}</p>
+                        <p className="mt-0.5 font-mono text-[0.62rem] text-[#7A9A82]">{ucc.detail}</p>
                       </div>
                     ))}
                   </div>
@@ -212,11 +212,11 @@ export default function EagleEyeSignalDetail({
                     </div>
                     <div className="rounded-lg border border-red-400/15 bg-red-500/5 p-3">
                       <p className="font-mono text-[0.62rem] font-semibold uppercase text-red-300">Why Equity Fails</p>
-                      <p className="mt-1 font-mono text-[0.72rem] text-slate-300">{signal.darkZone.whyEquityFails}</p>
+                      <p className="mt-1 font-mono text-[0.72rem] text-[#EDE8DC]">{signal.darkZone.whyEquityFails}</p>
                     </div>
                     <div className="rounded-lg border border-emerald-400/15 bg-emerald-500/5 p-3">
                       <p className="font-mono text-[0.62rem] font-semibold uppercase text-emerald-300">Bond Structure Viable</p>
-                      <p className="mt-1 font-mono text-[0.72rem] text-slate-300">{signal.darkZone.bondCouponViable}</p>
+                      <p className="mt-1 font-mono text-[0.72rem] text-[#EDE8DC]">{signal.darkZone.bondCouponViable}</p>
                     </div>
                     <div className="rounded-lg border border-amber-400/15 bg-amber-500/5 p-3">
                       <p className="font-mono text-[0.62rem] font-semibold uppercase text-amber-200">Bond Structure Summary</p>
@@ -243,7 +243,7 @@ export default function EagleEyeSignalDetail({
               {/* Environmental */}
               {signal.environmentalStatus && (
                 <Section title="ENVIRONMENTAL STATUS" icon={<AlertTriangle size={12} className="text-yellow-300" />}>
-                  <p className="font-mono text-[0.72rem] text-slate-300">{signal.environmentalStatus}</p>
+                  <p className="font-mono text-[0.72rem] text-[#EDE8DC]">{signal.environmentalStatus}</p>
                 </Section>
               )}
 
@@ -251,7 +251,7 @@ export default function EagleEyeSignalDetail({
               {(signal.permitDetails || signal.rezoningStatus) && (
                 <Section title="PERMIT / REZONING" icon={<FileText size={12} className="text-emerald-300" />}>
                   {signal.rezoningStatus && <p className="font-mono text-[0.72rem] text-emerald-200/80">{signal.rezoningStatus}</p>}
-                  {signal.permitDetails && <p className="mt-1 font-mono text-[0.72rem] text-slate-300">{signal.permitDetails}</p>}
+                  {signal.permitDetails && <p className="mt-1 font-mono text-[0.72rem] text-[#EDE8DC]">{signal.permitDetails}</p>}
                 </Section>
               )}
 
@@ -263,8 +263,8 @@ export default function EagleEyeSignalDetail({
               )}
 
               {/* Owner Intel */}
-              <Section title="OWNER INTELLIGENCE" icon={<Users size={12} className="text-slate-300" />}>
-                <p className="font-mono text-[0.72rem] text-slate-300">{signal.ownerIntel}</p>
+              <Section title="OWNER INTELLIGENCE" icon={<Users size={12} className="text-[#EDE8DC]" />}>
+                <p className="font-mono text-[0.72rem] text-[#EDE8DC]">{signal.ownerIntel}</p>
               </Section>
             </>
           )}
@@ -283,7 +283,7 @@ export default function EagleEyeSignalDetail({
           </div>
 
           {/* Source + Date */}
-          <div className="flex items-center justify-between font-mono text-[0.56rem] text-slate-600">
+          <div className="flex items-center justify-between font-mono text-[0.56rem] text-[#7A9A82]">
             <span>Source: {signal.source}</span>
             <span>Discovered: {formatDate(signal.discoveredAt)}</span>
           </div>
@@ -332,7 +332,7 @@ function Section({
     <div className={`rounded-xl border p-3 ${highlight ? "border-red-400/20 bg-red-500/5" : "border-white/5 bg-white/[0.02]"}`}>
       <div className="flex items-center gap-2 mb-2">
         {icon}
-        <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-slate-400">{title}</span>
+        <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">{title}</span>
       </div>
       {children}
     </div>
@@ -352,7 +352,7 @@ function FinStat({
 }) {
   return (
     <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-      <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-slate-500">{label}</p>
+      <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-[#7A9A82]">{label}</p>
       <p className="font-mono text-base font-semibold text-amber-100">{value}</p>
       {highlight && highlightLabel && (
         <p className="font-mono text-[0.52rem] text-red-300 mt-0.5">{highlightLabel}</p>
@@ -376,8 +376,8 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-2">
-      <span className={`font-mono ${small ? "text-[0.56rem]" : "text-[0.62rem]"} text-slate-500`}>{label}</span>
-      <span className={`font-mono ${small ? "text-[0.56rem]" : "text-[0.68rem]"} text-right ${warn ? "text-red-300" : good ? "text-emerald-300" : "text-slate-200"}`}>
+      <span className={`font-mono ${small ? "text-[0.56rem]" : "text-[0.62rem]"} text-[#7A9A82]`}>{label}</span>
+      <span className={`font-mono ${small ? "text-[0.56rem]" : "text-[0.68rem]"} text-right ${warn ? "text-red-300" : good ? "text-emerald-300" : "text-[#EDE8DC]"}`}>
         {value}
       </span>
     </div>

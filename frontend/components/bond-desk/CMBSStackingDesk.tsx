@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
@@ -129,9 +129,9 @@ const WaterfallTooltip = ({ active, payload }: any) => {
   const d = payload[0].payload;
   return (
     <div className="rounded-xl border border-white/10 bg-[#060E1A]/95 p-3 shadow-xl font-mono text-[0.6rem]">
-      <div className="mb-1 font-semibold text-slate-200">{d.label}</div>
+      <div className="mb-1 font-semibold text-[#EDE8DC]">{d.label}</div>
       <div className="text-[#C4A048]">${(d.amount / 1e6).toFixed(1)}M &nbsp; {d.pct.toFixed(1)}%</div>
-      <div className="mt-1 text-slate-500">
+      <div className="mt-1 text-[#7A9A82]">
         Attach {d.attach.toFixed(1)}% → Detach {d.detach.toFixed(1)}%
       </div>
     </div>
@@ -264,10 +264,10 @@ export default function CMBSStackingDesk() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-[Cormorant_Garamond] text-xl font-semibold text-slate-200">
+          <h2 className="font-[Cormorant_Garamond] text-xl font-semibold text-[#EDE8DC]">
             CMBS Stacking Desk
           </h2>
-          <p className="font-mono text-[0.6rem] text-slate-500">
+          <p className="font-mono text-[0.6rem] text-[#7A9A82]">
             Pool structured deals into a CMBS offering
           </p>
         </div>
@@ -309,20 +309,20 @@ export default function CMBSStackingDesk() {
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-4">
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-            <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+            <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
               Active Deal
             </h4>
             {state.activeDeal && state.metrics ? (
               <div className="space-y-3">
                 <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                  <div className="font-[Space_Grotesk] text-sm text-slate-200">{state.activeDeal.name}</div>
+                  <div className="font-[Space_Grotesk] text-sm text-[#EDE8DC]">{state.activeDeal.name}</div>
                   <div className="mt-1 grid grid-cols-2 gap-1 font-mono text-[0.6rem]">
-                    <span className="text-slate-500">Debt</span>
+                    <span className="text-[#7A9A82]">Debt</span>
                     <span className="text-right text-[#C4A048]">${(state.metrics.total_debt_usd / 1e6).toFixed(0)}M</span>
-                    <span className="text-slate-500">Grade</span>
-                    <span className="text-right text-slate-200">{state.metrics.obligor_grade}</span>
-                    <span className="text-slate-500">DSCR</span>
-                    <span className="text-right text-slate-200">{state.metrics.dscr.toFixed(2)}x</span>
+                    <span className="text-[#7A9A82]">Grade</span>
+                    <span className="text-right text-[#EDE8DC]">{state.metrics.obligor_grade}</span>
+                    <span className="text-[#7A9A82]">DSCR</span>
+                    <span className="text-right text-[#EDE8DC]">{state.metrics.dscr.toFixed(2)}x</span>
                   </div>
                 </div>
                 <button
@@ -334,7 +334,7 @@ export default function CMBSStackingDesk() {
                 </button>
               </div>
             ) : (
-              <p className="font-mono text-[0.65rem] text-slate-600">
+              <p className="font-mono text-[0.65rem] text-[#7A9A82]">
                 Structure a deal above to add it to the pool
               </p>
             )}
@@ -343,7 +343,7 @@ export default function CMBSStackingDesk() {
 
         <div className="col-span-8">
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-            <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+            <h4 className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
               CMBS Pool ({state.cmbsPool.length} deals)
             </h4>
             {state.cmbsPool.length > 0 ? (
@@ -357,15 +357,15 @@ export default function CMBSStackingDesk() {
                     className="group rounded-xl border border-[#C4A048]/20 bg-cyan-500/[0.04] p-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-[Space_Grotesk] text-sm text-slate-200">{p.deal.name}</span>
+                      <span className="font-[Space_Grotesk] text-sm text-[#EDE8DC]">{p.deal.name}</span>
                       <button
                         onClick={() => handleRemoveFromPool(p.deal.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-400 text-xs transition-all"
+                        className="opacity-0 group-hover:opacity-100 text-[#7A9A82] hover:text-rose-400 text-xs transition-all"
                       >
                         ✕
                       </button>
                     </div>
-                    <div className="mt-1 flex gap-3 font-mono text-[0.55rem] text-slate-400">
+                    <div className="mt-1 flex gap-3 font-mono text-[0.55rem] text-[#7A9A82]">
                       <span>${(p.metrics.total_debt_usd / 1e6).toFixed(0)}M</span>
                       <span>{p.metrics.obligor_grade}</span>
                       <span>{p.metrics.dscr.toFixed(2)}x</span>
@@ -376,7 +376,7 @@ export default function CMBSStackingDesk() {
               </div>
             ) : (
               <div className="flex h-24 items-center justify-center rounded-xl border border-dashed border-white/[0.06]">
-                <p className="font-mono text-[0.65rem] text-slate-600">No deals in pool yet</p>
+                <p className="font-mono text-[0.65rem] text-[#7A9A82]">No deals in pool yet</p>
               </div>
             )}
           </div>
@@ -387,7 +387,7 @@ export default function CMBSStackingDesk() {
       {state.cmbsPool.length > 0 && sectorBreakdown.length > 0 && (
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+            <h4 className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
               Pool Composition
             </h4>
             {hasConcentrationRisk && (
@@ -403,12 +403,12 @@ export default function CMBSStackingDesk() {
           <div className="grid grid-cols-2 gap-4">
             {/* Sector diversification bars */}
             <div className="space-y-2">
-              <div className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-600 mb-2">
+              <div className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-2">
                 Sector Allocation
               </div>
               {sectorBreakdown.map(({ sector, amount, pct }) => (
                 <div key={sector} className="flex items-center gap-2">
-                  <div className="w-20 font-mono text-[0.55rem] capitalize text-slate-400 truncate">{sector}</div>
+                  <div className="w-20 font-mono text-[0.55rem] capitalize text-[#7A9A82] truncate">{sector}</div>
                   <div className="flex-1 h-4 rounded-sm bg-white/[0.04] overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
@@ -424,7 +424,7 @@ export default function CMBSStackingDesk() {
                   <div className="w-12 text-right font-mono text-[0.55rem]" style={{ color: pct > 40 ? AMBER : SLATE }}>
                     {pct.toFixed(0)}%
                   </div>
-                  <div className="w-12 text-right font-mono text-[0.5rem] text-slate-600">
+                  <div className="w-12 text-right font-mono text-[0.5rem] text-[#7A9A82]">
                     ${(amount / 1e6).toFixed(0)}M
                   </div>
                 </div>
@@ -433,7 +433,7 @@ export default function CMBSStackingDesk() {
 
             {/* Deal count by rating + sector legend */}
             <div className="space-y-2">
-              <div className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-600 mb-2">
+              <div className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-2">
                 Deals by Rating Grade
               </div>
               {(() => {
@@ -456,15 +456,15 @@ export default function CMBSStackingDesk() {
                             : RED,
                         }}
                       />
-                      <span className="font-mono text-[0.6rem] text-slate-300 w-12">{grade}</span>
+                      <span className="font-mono text-[0.6rem] text-[#EDE8DC] w-12">{grade}</span>
                       <div className="flex gap-1">
                         {Array.from({ length: count }).map((_, i) => (
                           <div key={i} className="h-4 w-4 rounded bg-white/10 border border-white/10 flex items-center justify-center">
-                            <span className="font-mono text-[0.45rem] text-slate-400">{i + 1}</span>
+                            <span className="font-mono text-[0.45rem] text-[#7A9A82]">{i + 1}</span>
                           </div>
                         ))}
                       </div>
-                      <span className="font-mono text-[0.55rem] text-slate-500 ml-1">
+                      <span className="font-mono text-[0.55rem] text-[#7A9A82] ml-1">
                         {count} deal{count > 1 ? "s" : ""}
                       </span>
                     </div>
@@ -484,7 +484,7 @@ export default function CMBSStackingDesk() {
 
             {/* Capital Structure Waterfall */}
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-              <h4 className="mb-3 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+              <h4 className="mb-3 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
                 Capital Structure Waterfall
               </h4>
 
@@ -527,7 +527,7 @@ export default function CMBSStackingDesk() {
                           <div className="font-mono text-[0.55rem] font-semibold" style={{ color: band.color }}>
                             {band.label}
                           </div>
-                          <div className="font-mono text-[0.45rem] text-slate-600">
+                          <div className="font-mono text-[0.45rem] text-[#7A9A82]">
                             {band.attach.toFixed(1)}% → {band.detach.toFixed(1)}%
                           </div>
                         </div>
@@ -537,7 +537,7 @@ export default function CMBSStackingDesk() {
                 </div>
               ) : (
                 <div className="flex h-32 items-center justify-center">
-                  <p className="font-mono text-[0.6rem] text-slate-600">Calculating tranches…</p>
+                  <p className="font-mono text-[0.6rem] text-[#7A9A82]">Calculating tranches…</p>
                 </div>
               )}
             </div>
@@ -545,7 +545,7 @@ export default function CMBSStackingDesk() {
             {/* Enhanced Leverage Slider */}
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-500">
+                <span className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">
                   Push Leverage / Subordination
                 </span>
                 <span className="font-mono text-sm font-semibold" style={{ color: leverageColor }}>
@@ -589,7 +589,7 @@ export default function CMBSStackingDesk() {
                 <div className="font-mono text-[0.55rem] font-semibold" style={{ color: leverageColor }}>
                   {leverageLabel}
                 </div>
-                <div className="mt-1 font-mono text-[0.5rem] text-slate-500 leading-relaxed">
+                <div className="mt-1 font-mono text-[0.5rem] text-[#7A9A82] leading-relaxed">
                   {getRatingHint(subordination)}
                 </div>
               </div>
@@ -598,7 +598,7 @@ export default function CMBSStackingDesk() {
 
           {/* Right: Pool Economics */}
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
-            <h4 className="mb-3 font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">
+            <h4 className="mb-3 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">
               Pool Economics
             </h4>
             <div className="grid grid-cols-2 gap-3">
@@ -615,7 +615,7 @@ export default function CMBSStackingDesk() {
             {/* Tranche class quick legend */}
             {poolMetrics.tranche_classes && (
               <div className="mt-4 space-y-1.5">
-                <div className="font-mono text-[0.5rem] uppercase tracking-wider text-slate-600 mb-2">
+                <div className="font-mono text-[0.5rem] uppercase tracking-wider text-[#7A9A82] mb-2">
                   Tranche Breakdown
                 </div>
                 {Object.entries(poolMetrics.tranche_classes as Record<string, number>)
@@ -629,7 +629,7 @@ export default function CMBSStackingDesk() {
                       : RED;
                     return (
                       <div key={cls} className="flex items-center gap-2">
-                        <div className="w-16 font-mono text-[0.55rem] capitalize text-slate-400">{cls}</div>
+                        <div className="w-16 font-mono text-[0.55rem] capitalize text-[#7A9A82]">{cls}</div>
                         <div className="flex-1 h-3 rounded-sm bg-white/[0.04] overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
@@ -642,7 +642,7 @@ export default function CMBSStackingDesk() {
                         <div className="w-12 text-right font-mono text-[0.55rem]" style={{ color }}>
                           ${(amount / 1e6).toFixed(0)}M
                         </div>
-                        <div className="w-8 text-right font-mono text-[0.5rem] text-slate-600">
+                        <div className="w-8 text-right font-mono text-[0.5rem] text-[#7A9A82]">
                           {pct.toFixed(0)}%
                         </div>
                       </div>
@@ -661,7 +661,7 @@ export default function CMBSStackingDesk() {
 function PoolStat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
-      <div className="font-mono text-[0.5rem] uppercase tracking-wider text-slate-600">{label}</div>
+      <div className="font-mono text-[0.5rem] uppercase tracking-wider text-[#7A9A82]">{label}</div>
       <div className="font-mono text-sm font-semibold text-[#C4A048]">{value}</div>
     </div>
   );
@@ -670,8 +670,8 @@ function PoolStat({ label, value }: { label: string; value: string | number }) {
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-center">
-      <div className="font-mono text-[0.45rem] uppercase tracking-wider text-slate-600">{label}</div>
-      <div className="font-mono text-xs font-semibold text-slate-300">{value}</div>
+      <div className="font-mono text-[0.45rem] uppercase tracking-wider text-[#7A9A82]">{label}</div>
+      <div className="font-mono text-xs font-semibold text-[#EDE8DC]">{value}</div>
     </div>
   );
 }

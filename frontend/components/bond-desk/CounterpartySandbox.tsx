@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDealState } from "@/contexts/DealStateContext";
@@ -40,7 +40,7 @@ const ROLE_CONFIG: Record<CounterpartyRole, {
     firm: "Moody's Investors Service",
     analyst: "Sarah Chen, VP — Structured Finance",
     color: "text-[#C4A048]",
-    borderColor: "border-[#C4A048]/30 bg-blue-500/[0.06]",
+    borderColor: "border-[#C4A048]/30 bg-[#C4A048]/[0.06]",
     canModify: ["DSCR covenant", "Rating inputs", "Enhancement suggestions", "Subordination floor"],
     cannotTouch: ["Tranche sizes", "Coupons", "Spreads"],
   },
@@ -190,10 +190,10 @@ export default function CounterpartySandbox() {
         className="flex w-full items-center justify-between px-5 py-3 transition-colors hover:bg-white/[0.02]"
       >
         <div className="flex items-center gap-4">
-          <h2 className="font-[Cormorant_Garamond] text-lg font-semibold text-slate-200">
+          <h2 className="font-[Cormorant_Garamond] text-lg font-semibold text-[#EDE8DC]">
             Counterparty Sandboxes
           </h2>
-          <div className="flex items-center gap-3 font-mono text-[0.6rem] text-slate-500">
+          <div className="flex items-center gap-3 font-mono text-[0.6rem] text-[#7A9A82]">
             <span>{activeSandboxes.length} active</span>
             {totalPending > 0 && (
               <>
@@ -203,7 +203,7 @@ export default function CounterpartySandbox() {
             )}
           </div>
         </div>
-        <span className="font-mono text-xs text-slate-600">{collapsed ? "▸" : "▾"}</span>
+        <span className="font-mono text-xs text-[#7A9A82]">{collapsed ? "▸" : "▾"}</span>
       </button>
 
       <AnimatePresence>
@@ -227,7 +227,7 @@ export default function CounterpartySandbox() {
                       disabled={exists}
                       className={`flex-1 rounded-xl border px-4 py-2.5 font-mono text-[0.65rem] transition-all ${
                         exists
-                          ? "border-white/5 bg-white/[0.01] text-slate-600 cursor-not-allowed"
+                          ? "border-white/5 bg-white/[0.01] text-[#7A9A82] cursor-not-allowed"
                           : `${config.borderColor} ${config.color} hover:scale-[1.02]`
                       }`}
                     >
@@ -259,7 +259,7 @@ export default function CounterpartySandbox() {
                             {config.firm}
                           </span>
                         </div>
-                        <div className="mt-0.5 font-mono text-[0.55rem] text-slate-500">
+                        <div className="mt-0.5 font-mono text-[0.55rem] text-[#7A9A82]">
                           {config.analyst} · Token expires in {sandbox.tokenExpiresHrs}hrs
                         </div>
                       </div>
@@ -281,8 +281,8 @@ export default function CounterpartySandbox() {
                     {/* Guardrails */}
                     <div className="mb-3 flex gap-4 font-mono text-[0.5rem]">
                       <div>
-                        <span className="text-slate-600">CAN MODIFY: </span>
-                        <span className="text-slate-400">{config.canModify.join(" · ")}</span>
+                        <span className="text-[#7A9A82]">CAN MODIFY: </span>
+                        <span className="text-[#7A9A82]">{config.canModify.join(" · ")}</span>
                       </div>
                     </div>
 
@@ -304,7 +304,7 @@ export default function CounterpartySandbox() {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="font-[Space_Grotesk] text-[0.75rem] font-medium text-slate-200">
+                                <span className="font-[Space_Grotesk] text-[0.75rem] font-medium text-[#EDE8DC]">
                                   {proposal.label}
                                 </span>
                                 {proposal.status !== "pending" && (
@@ -318,11 +318,11 @@ export default function CounterpartySandbox() {
                                 )}
                               </div>
                               <div className="mt-1 flex items-center gap-3 font-mono text-[0.6rem]">
-                                <span className="text-slate-500">{proposal.currentValue}</span>
-                                <span className="text-slate-600">→</span>
+                                <span className="text-[#7A9A82]">{proposal.currentValue}</span>
+                                <span className="text-[#7A9A82]">→</span>
                                 <span className={config.color}>{proposal.proposedValue}</span>
                               </div>
-                              <p className="mt-1.5 font-[Space_Grotesk] text-[0.65rem] leading-relaxed text-slate-400">
+                              <p className="mt-1.5 font-[Space_Grotesk] text-[0.65rem] leading-relaxed text-[#7A9A82]">
                                 {proposal.rationale}
                               </p>
                             </div>
@@ -361,10 +361,10 @@ export default function CounterpartySandbox() {
               {sandboxes.filter((s) => s.status === "burned").map((sandbox) => (
                 <div key={sandbox.id} className="rounded-xl border border-white/5 bg-white/[0.01] p-3 opacity-40">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[0.6rem] text-slate-600 line-through">
+                    <span className="font-mono text-[0.6rem] text-[#7A9A82] line-through">
                       {ROLE_CONFIG[sandbox.role].firm}
                     </span>
-                    <span className="rounded-full bg-slate-700/50 px-1.5 py-0.5 font-mono text-[0.45rem] text-slate-500">
+                    <span className="rounded-full bg-[#1E4A2E]/50 px-1.5 py-0.5 font-mono text-[0.45rem] text-[#7A9A82]">
                       TOKEN BURNED
                     </span>
                   </div>
@@ -372,7 +372,7 @@ export default function CounterpartySandbox() {
               ))}
 
               {activeSandboxes.length === 0 && sandboxes.length === 0 && (
-                <div className="py-4 text-center font-mono text-[0.65rem] text-slate-600">
+                <div className="py-4 text-center font-mono text-[0.65rem] text-[#7A9A82]">
                   Invite counterparties to begin the negotiation process
                 </div>
               )}

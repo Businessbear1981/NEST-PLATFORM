@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState } from "react";
 import { AlertTriangle, CheckCircle, Clock, FileText, RadioTower, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -137,7 +137,7 @@ export default function RatingIntelligence() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-[#C4A048]/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
+      <div className="rounded-3xl border border-[#C4A048]/20 bg-black/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#E8C87A]">
@@ -150,28 +150,28 @@ export default function RatingIntelligence() {
           </div>
           <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-              <p className="text-slate-500">Actions</p>
+              <p className="text-[#7A9A82]">Actions</p>
               <p className="text-lg font-semibold text-[#EDE8DC]">{DEMO_RATING_ACTIONS.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-              <p className="text-slate-500">Memos</p>
+              <p className="text-[#7A9A82]">Memos</p>
               <p className="text-lg font-semibold text-amber-100">{DEMO_CREDIT_MEMOS.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-              <p className="text-slate-500">Mode</p>
+              <p className="text-[#7A9A82]">Mode</p>
               <p className="text-lg font-semibold text-emerald-100">LIVE</p>
             </div>
           </div>
         </div>
       </div>
 
-      <Card className="border-[#C4A048]/20 bg-[#06111d]/90 p-4 text-slate-100">
+      <Card className="border-[#C4A048]/20 bg-[#06111d]/90 p-4 text-[#EDE8DC]">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[#E8C87A]">
               <RadioTower size={14} /> Recon subscription pulse
             </p>
-            <p className="mt-1 text-sm text-slate-300">
+            <p className="mt-1 text-sm text-[#EDE8DC]">
               Pulse {reconPulse}: {currentReconEvent}
             </p>
           </div>

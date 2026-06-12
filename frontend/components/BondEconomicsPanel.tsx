@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -50,10 +50,10 @@ export default function BondEconomicsPanel({
       {/* ── Treasury Rates Bar ──────────────────────────────── */}
       <div className="rounded-xl border border-white/10 bg-black/35 px-4 py-2">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[0.52rem] font-semibold uppercase tracking-[0.14em] text-slate-500">
+          <span className="font-mono text-[0.52rem] font-semibold uppercase tracking-[0.14em] text-[#7A9A82]">
             US Treasury Curve
           </span>
-          <span className="font-mono text-[0.48rem] text-slate-600">
+          <span className="font-mono text-[0.48rem] text-[#7A9A82]">
             {new Date(TREASURY_RATES.lastUpdated).toLocaleTimeString()}
           </span>
         </div>
@@ -62,7 +62,7 @@ export default function BondEconomicsPanel({
             const rate = TREASURY_RATES[tenor];
             return (
               <div key={tenor} className="flex-shrink-0 rounded-md border border-white/5 bg-white/[0.02] px-2 py-1 text-center">
-                <p className="font-mono text-[0.48rem] uppercase text-slate-500">{tenor}</p>
+                <p className="font-mono text-[0.48rem] uppercase text-[#7A9A82]">{tenor}</p>
                 <p className={`font-mono text-[0.62rem] font-semibold ${rate > 5 ? "text-red-300" : rate > 4.5 ? "text-amber-200" : "text-emerald-200"}`}>
                   {rate.toFixed(2)}%
                 </p>
@@ -102,12 +102,12 @@ export default function BondEconomicsPanel({
           <EconMetric label="NEST Fee" value={formatPct(economics.nestArrangementFee)} base={formatPct(baseEconomics.nestArrangementFee)} changed={false} icon={DollarSign} />
           <EconMetric label="NEST Revenue" value={`$${economics.nestRevenue.toFixed(0)}K`} base={`$${baseEconomics.nestRevenue.toFixed(0)}K`} changed={economics.nestRevenue !== baseEconomics.nestRevenue} icon={DollarSign} large goodIfUp />
           <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-            <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-slate-500">Senior / Sub Split</p>
+            <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-[#7A9A82]">Senior / Sub Split</p>
             <div className="mt-1 flex items-center gap-2">
               <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
                 <div className="h-full bg-emerald-400/60 rounded-full" style={{ width: `${economics.seniorPct}%` }} />
               </div>
-              <span className="font-mono text-[0.56rem] text-slate-300">
+              <span className="font-mono text-[0.56rem] text-[#EDE8DC]">
                 {economics.seniorPct.toFixed(0)}% / {economics.subPct.toFixed(0)}%
               </span>
             </div>
@@ -137,7 +137,7 @@ export default function BondEconomicsPanel({
                 className={`rounded-xl border px-3 py-2 font-mono text-[0.62rem] font-semibold uppercase transition ${
                   isActive
                     ? `${style.border} ${style.bg} ${style.text}`
-                    : "border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06]"
+                    : "border-white/10 bg-white/[0.03] text-[#7A9A82] hover:bg-white/[0.06]"
                 }`}
               >
                 <Icon size={12} className="mr-1.5" />
@@ -156,12 +156,12 @@ export default function BondEconomicsPanel({
             exit={{ opacity: 0, y: -8 }}
             className="mt-4 rounded-xl border border-white/5 bg-white/[0.02] p-4"
           >
-            <p className="font-mono text-[0.72rem] text-slate-200">{activeScenarioData.description}</p>
+            <p className="font-mono text-[0.72rem] text-[#EDE8DC]">{activeScenarioData.description}</p>
             <div className="mt-3 space-y-1.5">
               {activeScenarioData.actions.map((action, i) => (
                 <div key={i} className="flex gap-2 font-mono text-[0.68rem]">
                   <ChevronRight size={12} className="text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-300">{action}</span>
+                  <span className="text-[#EDE8DC]">{action}</span>
                 </div>
               ))}
             </div>
@@ -199,8 +199,8 @@ function EconMetric({
   return (
     <div className={`rounded-lg border p-2 transition ${changed ? (isGood ? "border-emerald-400/20 bg-emerald-500/5" : "border-red-400/20 bg-red-500/5") : "border-white/5 bg-white/[0.02]"}`}>
       <div className="flex items-center gap-1">
-        <Icon size={10} className="text-slate-500" />
-        <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-slate-500">{label}</p>
+        <Icon size={10} className="text-[#7A9A82]" />
+        <p className="font-mono text-[0.52rem] uppercase tracking-[0.12em] text-[#7A9A82]">{label}</p>
       </div>
       <p className={`font-mono ${large ? "text-lg" : "text-base"} font-semibold text-amber-100 mt-0.5`}>
         {value}

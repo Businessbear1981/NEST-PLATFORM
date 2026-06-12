@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 /**
  * EMMA — MSRB Electronic Municipal Market Access.
  * Muni bond corpus, comparable transactions, sector templates, parsing.
@@ -76,7 +76,7 @@ function BondCard({ bond }: { bond: Bond }) {
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex-1 min-w-0">
             <p className="font-[Cormorant_Garamond] text-lg text-amber-100 truncate">{bond.borrower || bond.issuer || "Unnamed"}</p>
-            <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mt-0.5">
+            <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mt-0.5">
               {bond.issuer && bond.borrower && bond.borrower !== bond.issuer ? `via ${bond.issuer}` : ""}
               {bond.cusip ? ` · CUSIP ${bond.cusip}` : ""}
             </p>
@@ -87,36 +87,36 @@ function BondCard({ bond }: { bond: Bond }) {
         </div>
         <div className="grid grid-cols-4 gap-2 mt-3 font-mono text-[0.65rem]">
           <div>
-            <p className="text-slate-500 text-[0.5rem] uppercase tracking-wider">Par</p>
+            <p className="text-[#7A9A82] text-[0.5rem] uppercase tracking-wider">Par</p>
             <p className="text-[#C4A048] mt-0.5">{fmtUSD(bond.par_amount)}</p>
           </div>
           <div>
-            <p className="text-slate-500 text-[0.5rem] uppercase tracking-wider">Coupon</p>
+            <p className="text-[#7A9A82] text-[0.5rem] uppercase tracking-wider">Coupon</p>
             <p className="text-amber-100 mt-0.5">{bond.coupon_rate != null ? `${bond.coupon_rate}%` : "—"}</p>
           </div>
           <div>
-            <p className="text-slate-500 text-[0.5rem] uppercase tracking-wider">State</p>
+            <p className="text-[#7A9A82] text-[0.5rem] uppercase tracking-wider">State</p>
             <p className="text-amber-100 mt-0.5">{bond.state || "—"}</p>
           </div>
           <div>
-            <p className="text-slate-500 text-[0.5rem] uppercase tracking-wider">Sector</p>
+            <p className="text-[#7A9A82] text-[0.5rem] uppercase tracking-wider">Sector</p>
             <p className="text-amber-100 mt-0.5 truncate">{(bond.sector || "—").replace(/_/g, " ")}</p>
           </div>
         </div>
         {bond.enhancement?.type && bond.enhancement.type !== "none" && (
           <div className="mt-3 pt-2 border-t border-white/5 flex items-center gap-2 font-mono text-[0.55rem]">
-            <span className="text-slate-500 uppercase tracking-wider">Enhancement</span>
+            <span className="text-[#7A9A82] uppercase tracking-wider">Enhancement</span>
             <span className="text-emerald-300">{bond.enhancement.type}</span>
-            {bond.enhancement.provider && <span className="text-slate-400">· {bond.enhancement.provider}</span>}
+            {bond.enhancement.provider && <span className="text-[#7A9A82]">· {bond.enhancement.provider}</span>}
             {bond.enhancement.enhanced_rating && <Badge variant="outline" className="border-emerald-400/30 bg-emerald-400/10 text-emerald-200 font-mono text-[0.5rem]">→ {bond.enhancement.enhanced_rating}</Badge>}
           </div>
         )}
         {bond.counterparties && (bond.counterparties.underwriter || bond.counterparties.bond_counsel || bond.counterparties.trustee) && (
-          <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[0.55rem] text-slate-400">
-            {bond.counterparties.underwriter && <div><span className="text-slate-500 uppercase tracking-wider">Uw </span>{bond.counterparties.underwriter}</div>}
-            {bond.counterparties.bond_counsel && <div><span className="text-slate-500 uppercase tracking-wider">BC </span>{bond.counterparties.bond_counsel}</div>}
-            {bond.counterparties.trustee && <div><span className="text-slate-500 uppercase tracking-wider">Tr </span>{bond.counterparties.trustee}</div>}
-            {bond.counterparties.financial_advisor && <div><span className="text-slate-500 uppercase tracking-wider">FA </span>{bond.counterparties.financial_advisor}</div>}
+          <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[0.55rem] text-[#7A9A82]">
+            {bond.counterparties.underwriter && <div><span className="text-[#7A9A82] uppercase tracking-wider">Uw </span>{bond.counterparties.underwriter}</div>}
+            {bond.counterparties.bond_counsel && <div><span className="text-[#7A9A82] uppercase tracking-wider">BC </span>{bond.counterparties.bond_counsel}</div>}
+            {bond.counterparties.trustee && <div><span className="text-[#7A9A82] uppercase tracking-wider">Tr </span>{bond.counterparties.trustee}</div>}
+            {bond.counterparties.financial_advisor && <div><span className="text-[#7A9A82] uppercase tracking-wider">FA </span>{bond.counterparties.financial_advisor}</div>}
           </div>
         )}
       </CardContent>
@@ -197,13 +197,13 @@ export default function EMMAPage() {
   return (
     <div className="space-y-6">
       {/* Hero — gold on dark forest, no purple */}
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 shadow-[0_0_85px_rgba(196,160,72,0.08)] sm:p-7">
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-[#EDE8DC] shadow-[0_0_85px_rgba(196,160,72,0.08)] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.12),transparent_34%),linear-gradient(135deg,rgba(13,34,24,0.76),rgba(3,10,6,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1fr_0.6fr]">
           <div>
             <div className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[#C4A048]">EMMA · MSRB Electronic Municipal Market Access</div>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight text-amber-100 sm:text-5xl" style={{ fontFamily: "Cormorant Garamond, serif" }}>EMMA Intelligence</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#EDE8DC]">
               Municipal bond corpus. Parse Official Statements into structured profiles. Find comparable transactions by sector, size, rating, and state.
               Generate sector templates from real market data.
             </p>
@@ -211,14 +211,14 @@ export default function EMMAPage() {
           {stats && (
             <div className="grid grid-cols-2 gap-3">
               <Card className="border-[#C4A048]/20 bg-white/[0.03]"><CardContent className="p-3">
-                <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-500">Parsed Bonds</p>
+                <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">Parsed Bonds</p>
                 <p className="mt-1 font-mono text-2xl text-[#C4A048]">{stats.total_parsed}</p>
-                <p className="font-mono text-[0.55rem] text-slate-500 mt-0.5">{stats.valid_parsed} valid · {stats.errors} errors</p>
+                <p className="font-mono text-[0.55rem] text-[#7A9A82] mt-0.5">{stats.valid_parsed} valid · {stats.errors} errors</p>
               </CardContent></Card>
               <Card className="border-[#C4A048]/20 bg-white/[0.03]"><CardContent className="p-3">
-                <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-500">Sectors Covered</p>
+                <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82]">Sectors Covered</p>
                 <p className="mt-1 font-mono text-2xl text-amber-100">{Object.keys(stats.by_sector || {}).length}</p>
-                <p className="font-mono text-[0.55rem] text-slate-500 mt-0.5">{Object.keys(stats.by_state || {}).length} states</p>
+                <p className="font-mono text-[0.55rem] text-[#7A9A82] mt-0.5">{Object.keys(stats.by_state || {}).length} states</p>
               </CardContent></Card>
             </div>
           )}
@@ -236,24 +236,24 @@ export default function EMMAPage() {
         <TabsContent value="comps" className="mt-6 space-y-4">
           <div className="flex flex-wrap gap-3 items-end">
             <div className="min-w-[200px]">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">Sector</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">Sector</p>
               <select value={compsSector} onChange={e => setCompsSector(e.target.value)} className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-3 py-2 text-sm text-amber-100">
                 {SECTORS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
             </div>
             <div className="w-24">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">State</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">State</p>
               <select value={compsState} onChange={e => setCompsState(e.target.value)} className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-3 py-2 text-sm text-amber-100">
                 <option value="">All</option>
                 {STATES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="w-32">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">Par Min ($M)</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">Par Min ($M)</p>
               <input type="number" value={compsMinPar} onChange={e => setCompsMinPar(e.target.value)} placeholder="0" className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-3 py-2 text-sm text-amber-100" />
             </div>
             <div className="w-32">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">Par Max ($M)</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">Par Max ($M)</p>
               <input type="number" value={compsMaxPar} onChange={e => setCompsMaxPar(e.target.value)} placeholder="No limit" className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-3 py-2 text-sm text-amber-100" />
             </div>
             <Button onClick={() => runComps(compsSector, compsState, compsMinPar, compsMaxPar)} disabled={compsLoading}
@@ -264,7 +264,7 @@ export default function EMMAPage() {
 
           {comps.length === 0 && !compsLoading && (
             <Card className="border-white/[0.06] bg-white/[0.02]"><CardContent className="p-6 text-center">
-              <p className="font-mono text-xs text-slate-500">No comparable bonds returned for these filters.</p>
+              <p className="font-mono text-xs text-[#7A9A82]">No comparable bonds returned for these filters.</p>
             </CardContent></Card>
           )}
 
@@ -277,13 +277,13 @@ export default function EMMAPage() {
         <TabsContent value="search" className="mt-6 space-y-4">
           <div className="flex flex-wrap gap-3 items-end">
             <div className="flex-1 min-w-[280px]">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">Issuer / Borrower Name</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">Issuer / Borrower Name</p>
               <input value={searchIssuer} onChange={e => setSearchIssuer(e.target.value)} onKeyDown={e => e.key === "Enter" && runSearch()}
                 placeholder="e.g., Jacaranda Trace, Florida Development Finance Corp"
-                className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-4 py-2 text-sm text-amber-100 placeholder:text-slate-500" />
+                className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-4 py-2 text-sm text-amber-100 placeholder:text-[#7A9A82]" />
             </div>
             <div className="w-24">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">State</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">State</p>
               <select value={searchState} onChange={e => setSearchState(e.target.value)} className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-3 py-2 text-sm text-amber-100">
                 <option value="">All</option>
                 {STATES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -297,7 +297,7 @@ export default function EMMAPage() {
 
           {searchResults.length === 0 && (
             <Card className="border-white/[0.06] bg-white/[0.02]"><CardContent className="p-6 text-center">
-              <p className="font-mono text-xs text-slate-500">{searchLoading ? "Searching…" : "Enter an issuer name and hit Search."}</p>
+              <p className="font-mono text-xs text-[#7A9A82]">{searchLoading ? "Searching…" : "Enter an issuer name and hit Search."}</p>
             </CardContent></Card>
           )}
 
@@ -310,7 +310,7 @@ export default function EMMAPage() {
         <TabsContent value="templates" className="mt-6 space-y-4">
           <div className="flex gap-3 items-end">
             <div className="flex-1 max-w-md">
-              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-slate-400 mb-1">Sector</p>
+              <p className="font-mono text-[0.55rem] uppercase tracking-wider text-[#7A9A82] mb-1">Sector</p>
               <select value={templateSector} onChange={e => setTemplateSector(e.target.value)} className="w-full rounded-lg border border-[#C4A048]/20 bg-black/40 px-3 py-2 text-sm text-amber-100">
                 {SECTORS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
@@ -333,7 +333,7 @@ export default function EMMAPage() {
               <CardContent className="space-y-2">
                 {template.template && Object.entries(template.template).map(([k, v]) => (
                   <div key={k} className="flex items-start justify-between gap-3 py-1 border-b border-white/5 last:border-0">
-                    <span className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-400">{k.replace(/_/g, " ")}</span>
+                    <span className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">{k.replace(/_/g, " ")}</span>
                     <span className="font-mono text-xs text-amber-100 text-right">{typeof v === "object" ? JSON.stringify(v) : String(v)}</span>
                   </div>
                 ))}
@@ -351,7 +351,7 @@ export default function EMMAPage() {
             <CardContent className="space-y-1.5">
               {sectorTiles.map(([sector, count]) => (
                 <div key={sector} className="flex items-center justify-between font-mono text-xs">
-                  <span className="text-slate-300">{sector.replace(/_/g, " ")}</span>
+                  <span className="text-[#EDE8DC]">{sector.replace(/_/g, " ")}</span>
                   <span className="text-[#C4A048]">{count}</span>
                 </div>
               ))}
@@ -362,7 +362,7 @@ export default function EMMAPage() {
             <CardContent className="space-y-1.5">
               {Object.entries(stats.by_state || {}).sort((a, b) => b[1] - a[1]).map(([st, count]) => (
                 <div key={st} className="flex items-center justify-between font-mono text-xs">
-                  <span className="text-slate-300">{st}</span>
+                  <span className="text-[#EDE8DC]">{st}</span>
                   <span className="text-[#C4A048]">{count}</span>
                 </div>
               ))}

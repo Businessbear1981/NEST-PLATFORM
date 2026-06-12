@@ -1,4 +1,4 @@
-/*
+﻿/*
 Design philosophy: Bloomberg Terminal x Spider-Verse institutional command cockpit.
 Draw Management module tracks construction draws with photo evidence, permit gates, budget variance, and approval workflow.
 */
@@ -41,18 +41,18 @@ function getStatusColor(status: Draw["status"]): string {
     case "under-review":
       return "text-yellow-400";
     case "submitted":
-      return "text-slate-400";
+      return "text-[#7A9A82]";
     case "rejected":
       return "text-red-400";
     default:
-      return "text-slate-400";
+      return "text-[#7A9A82]";
   }
 }
 
 function getVarianceClass(variance: number): string {
   if (variance > 0) return "text-red-400"; // Over budget
   if (variance < 0) return "text-emerald-400"; // Under budget
-  return "text-slate-400"; // On budget
+  return "text-[#7A9A82]"; // On budget
 }
 
 export default function DrawManagement({
@@ -72,13 +72,13 @@ export default function DrawManagement({
       <div className="draw-metrics-grid">
         <Card className="draw-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Total Requested</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Total Requested</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-2xl font-bold text-[#C4A048]">${(totalDrawsRequested / 1_000_000).toFixed(1)}M</p>
-                <p className="text-xs text-slate-500 mt-1">{draws.length} draws</p>
+                <p className="text-xs text-[#7A9A82] mt-1">{draws.length} draws</p>
               </div>
               <DollarSign size={20} className="text-[#C4A048] opacity-50" />
             </div>
@@ -87,13 +87,13 @@ export default function DrawManagement({
 
         <Card className="draw-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Approved / Disbursed</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Approved / Disbursed</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-2xl font-bold text-emerald-400">${(totalDrawsApproved / 1_000_000).toFixed(1)}M</p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-[#7A9A82] mt-1">
                   {draws.filter((d) => d.status === "disbursed").length} disbursed
                 </p>
               </div>
@@ -104,24 +104,24 @@ export default function DrawManagement({
 
         <Card className="draw-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Remaining Capacity</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Remaining Capacity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
               <div>
-                <p className={`text-2xl font-bold ${remainingCapacity > 0 ? "text-slate-300" : "text-red-400"}`}>
+                <p className={`text-2xl font-bold ${remainingCapacity > 0 ? "text-[#EDE8DC]" : "text-red-400"}`}>
                   ${(remainingCapacity / 1_000_000).toFixed(1)}M
                 </p>
-                <p className="text-xs text-slate-500 mt-1">{((remainingCapacity / totalBudget) * 100).toFixed(0)}% left</p>
+                <p className="text-xs text-[#7A9A82] mt-1">{((remainingCapacity / totalBudget) * 100).toFixed(0)}% left</p>
               </div>
-              <TrendingDown size={20} className={remainingCapacity > 0 ? "text-slate-500 opacity-50" : "text-red-400 opacity-50"} />
+              <TrendingDown size={20} className={remainingCapacity > 0 ? "text-[#7A9A82] opacity-50" : "text-red-400 opacity-50"} />
             </div>
           </CardContent>
         </Card>
 
         <Card className="draw-metric-card">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-mono text-slate-300">Contingency Burn</CardTitle>
+            <CardTitle className="text-sm font-mono text-[#EDE8DC]">Contingency Burn</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
@@ -129,9 +129,9 @@ export default function DrawManagement({
                 <p className={`text-2xl font-bold ${contingencyBurn > 50 ? "text-red-400" : contingencyBurn > 25 ? "text-yellow-400" : "text-emerald-400"}`}>
                   {contingencyBurn.toFixed(0)}%
                 </p>
-                <p className="text-xs text-slate-500 mt-1">of budget consumed</p>
+                <p className="text-xs text-[#7A9A82] mt-1">of budget consumed</p>
               </div>
-              <AlertCircle size={20} className={contingencyBurn > 50 ? "text-red-400 opacity-50" : "text-slate-500 opacity-50"} />
+              <AlertCircle size={20} className={contingencyBurn > 50 ? "text-red-400 opacity-50" : "text-[#7A9A82] opacity-50"} />
             </div>
           </CardContent>
         </Card>
@@ -147,11 +147,11 @@ export default function DrawManagement({
           <div className="space-y-3">
             {draws.slice(0, 5).map((draw) => (
               <div key={draw.drawId} className="flex items-center gap-3">
-                <span className="text-xs font-mono text-slate-400 w-16">Draw {draw.drawNumber}</span>
-                <div className="flex-1 h-6 bg-slate-800 rounded border border-slate-700 overflow-hidden relative">
+                <span className="text-xs font-mono text-[#7A9A82] w-16">Draw {draw.drawNumber}</span>
+                <div className="flex-1 h-6 bg-[#0D2218] rounded border border-[#1E4A2E] overflow-hidden relative">
                   {/* Budgeted bar */}
                   <div
-                    className="absolute h-full bg-slate-600 opacity-40"
+                    className="absolute h-full bg-[#2D6B3D] opacity-40"
                     style={{ width: `${(draw.budgetedAmount / Math.max(draw.budgetedAmount, draw.approvedAmount)) * 100}%` }}
                   />
                   {/* Actual bar */}
@@ -180,29 +180,29 @@ export default function DrawManagement({
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-700 hover:bg-transparent">
-                  <TableHead className="text-xs font-mono text-slate-400">Draw</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Requested</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Status</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Photos</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Permit</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Engineer</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Inspection</TableHead>
-                  <TableHead className="text-xs font-mono text-slate-400">Variance</TableHead>
+                <TableRow className="border-[#1E4A2E] hover:bg-transparent">
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Draw</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Requested</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Status</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Photos</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Permit</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Engineer</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Inspection</TableHead>
+                  <TableHead className="text-xs font-mono text-[#7A9A82]">Variance</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {draws.map((draw) => (
-                  <TableRow key={draw.drawId} className="border-slate-700 hover:bg-slate-900/50">
-                    <TableCell className="text-xs font-mono text-slate-300">#{draw.drawNumber}</TableCell>
+                  <TableRow key={draw.drawId} className="border-[#1E4A2E] hover:bg-[#030A06]/50">
+                    <TableCell className="text-xs font-mono text-[#EDE8DC]">#{draw.drawNumber}</TableCell>
                     <TableCell className="text-xs font-mono text-[#C4A048]">${(draw.requestedAmount / 1000).toFixed(0)}K</TableCell>
                     <TableCell>
                       <span className={`text-xs font-mono ${getStatusColor(draw.status)}`}>{draw.status}</span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Image size={14} className="text-slate-500" />
-                        <span className="text-xs text-slate-400">{draw.photos}</span>
+                        <Image size={14} className="text-[#7A9A82]" />
+                        <span className="text-xs text-[#7A9A82]">{draw.photos}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -211,12 +211,12 @@ export default function DrawManagement({
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={`text-xs ${draw.engineerCert ? "text-emerald-400" : "text-slate-500"}`}>
+                      <span className={`text-xs ${draw.engineerCert ? "text-emerald-400" : "text-[#7A9A82]"}`}>
                         {draw.engineerCert ? "✓" : "—"}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={`text-xs ${draw.inspectionSignOff ? "text-emerald-400" : "text-slate-500"}`}>
+                      <span className={`text-xs ${draw.inspectionSignOff ? "text-emerald-400" : "text-[#7A9A82]"}`}>
                         {draw.inspectionSignOff ? "✓" : "—"}
                       </span>
                     </TableCell>
@@ -246,11 +246,11 @@ export default function DrawManagement({
             {draws
               .filter((d) => d.status === "under-review" || d.status === "submitted")
               .map((draw) => (
-                <div key={draw.drawId} className="p-3 border border-slate-700 rounded bg-slate-900/50 space-y-2">
+                <div key={draw.drawId} className="p-3 border border-[#1E4A2E] rounded bg-[#030A06]/50 space-y-2">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-sm font-mono text-slate-300">Draw #{draw.drawNumber}</p>
-                      <p className="text-xs text-slate-500">{draw.description}</p>
+                      <p className="text-sm font-mono text-[#EDE8DC]">Draw #{draw.drawNumber}</p>
+                      <p className="text-xs text-[#7A9A82]">{draw.description}</p>
                     </div>
                     <span className="text-sm font-mono text-[#C4A048]">${(draw.requestedAmount / 1000).toFixed(0)}K</span>
                   </div>
@@ -268,7 +268,7 @@ export default function DrawManagement({
                 </div>
               ))}
             {draws.filter((d) => d.status === "under-review" || d.status === "submitted").length === 0 && (
-              <p className="text-xs text-slate-500 italic">No pending approvals</p>
+              <p className="text-xs text-[#7A9A82] italic">No pending approvals</p>
             )}
           </div>
         </CardContent>

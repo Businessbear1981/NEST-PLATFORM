@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Building2, RefreshCw, AlertTriangle, TrendingDown, Clock, ArrowRight, Activity } from "lucide-react";
@@ -45,13 +45,13 @@ function HeatBar({ score }: { score: number }) {
     score >= 80 ? "bg-red-400" :
     score >= 65 ? "bg-amber-400" :
     score >= 50 ? "bg-amber-300/70" :
-    "bg-slate-500";
+    "bg-[#2D6B3D]";
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 flex-1 rounded-full bg-white/10">
         <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
       </div>
-      <span className="w-7 text-right font-mono text-[0.65rem] text-slate-400">{score}</span>
+      <span className="w-7 text-right font-mono text-[0.65rem] text-[#7A9A82]">{score}</span>
     </div>
   );
 }
@@ -72,19 +72,19 @@ function StateCard({ st, index }: { st: StateHeat; index: number }) {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-[#0D2218] border border-white/10 flex items-center justify-center">
-            <span className="font-mono text-xs font-bold text-slate-200">{st.state}</span>
+            <span className="font-mono text-xs font-bold text-[#EDE8DC]">{st.state}</span>
           </div>
           <div>
-            <div className="text-sm font-semibold text-slate-100">{st.signal_count} signals</div>
-            <div className="font-mono text-[0.65rem] text-slate-400">{fmt(st.pipeline_usd)} pipeline</div>
+            <div className="text-sm font-semibold text-[#EDE8DC]">{st.signal_count} signals</div>
+            <div className="font-mono text-[0.65rem] text-[#7A9A82]">{fmt(st.pipeline_usd)} pipeline</div>
           </div>
         </div>
       </div>
       <HeatBar score={st.heat_score} />
-      <p className="mt-2 text-[0.68rem] text-slate-400 leading-relaxed line-clamp-2">{st.top_signal}</p>
+      <p className="mt-2 text-[0.68rem] text-[#7A9A82] leading-relaxed line-clamp-2">{st.top_signal}</p>
       <div className="mt-2 flex flex-wrap gap-1">
         {st.deal_types.slice(0, 3).map(dt => (
-          <span key={dt} className="rounded px-1.5 py-0.5 bg-white/5 border border-white/10 font-mono text-[0.58rem] text-slate-400">
+          <span key={dt} className="rounded px-1.5 py-0.5 bg-white/5 border border-white/10 font-mono text-[0.58rem] text-[#7A9A82]">
             {dt.replace("_", " ")}
           </span>
         ))}
@@ -110,15 +110,15 @@ function PropertyCard({ prop, index }: { prop: CREProperty; index: number }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-slate-100 truncate">{prop.name}</span>
+            <span className="font-semibold text-[#EDE8DC] truncate">{prop.name}</span>
             <Badge className={`text-[0.58rem] border ${sig.color}`}>
               <SigIcon size={9} className="mr-1" />{sig.label}
             </Badge>
           </div>
-          <div className="flex items-center gap-2 mt-0.5 text-[0.7rem] text-slate-400">
+          <div className="flex items-center gap-2 mt-0.5 text-[0.7rem] text-[#7A9A82]">
             <MapPin size={10} />
             <span>{prop.city}, {prop.state}</span>
-            <span className="text-slate-600">·</span>
+            <span className="text-[#7A9A82]">·</span>
             <span className="capitalize">{prop.asset_type.replace("_", " ")}</span>
           </div>
         </div>
@@ -132,12 +132,12 @@ function PropertyCard({ prop, index }: { prop: CREProperty; index: number }) {
 
       <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
-          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Est. NOI</div>
+          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Est. NOI</div>
           <div className="font-mono text-sm font-semibold text-emerald-400">{fmt(prop.estimated_noi_usd)}</div>
         </div>
         <div>
-          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-slate-500">Cap Rate</div>
-          <div className="font-mono text-sm font-semibold text-slate-200">
+          <div className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Cap Rate</div>
+          <div className="font-mono text-sm font-semibold text-[#EDE8DC]">
             {((prop.estimated_noi_usd / prop.loan_amount_usd) * 100).toFixed(1)}%
           </div>
         </div>
@@ -151,17 +151,17 @@ function PropertyCard({ prop, index }: { prop: CREProperty; index: number }) {
               style={{ width: `${prop.opportunity_score}%` }}
             />
           </div>
-          <span className="font-mono text-[0.65rem] text-slate-400 w-7 text-right">{prop.opportunity_score}</span>
+          <span className="font-mono text-[0.65rem] text-[#7A9A82] w-7 text-right">{prop.opportunity_score}</span>
         </div>
       </div>
 
-      <p className="mt-2 text-[0.72rem] text-slate-400 leading-relaxed">{prop.thesis}</p>
+      <p className="mt-2 text-[0.72rem] text-[#7A9A82] leading-relaxed">{prop.thesis}</p>
 
       <div className="mt-3 flex gap-2">
         <Button size="sm" className="h-7 bg-[#C4A048] text-[#030A06] hover:bg-[#E8C87A] text-[0.7rem]">
           <ArrowRight size={11} className="mr-1" /> Underwrite
         </Button>
-        <Button size="sm" variant="outline" className="h-7 border-white/10 text-slate-300 hover:bg-white/5 text-[0.7rem]">
+        <Button size="sm" variant="outline" className="h-7 border-white/10 text-[#EDE8DC] hover:bg-white/5 text-[0.7rem]">
           Scout Area
         </Button>
       </div>
@@ -208,15 +208,15 @@ export default function EagleEyeCRETab() {
             <h2 className="mt-1 text-lg font-black text-white" style={{ fontFamily: "Cormorant Garamond, serif" }}>
               Real Estate Heat Map
             </h2>
-            <p className="text-[0.72rem] text-slate-400 mt-0.5">
+            <p className="text-[0.72rem] text-[#7A9A82] mt-0.5">
               Bridge maturities · CMBS special servicing · Stabilized refi windows
             </p>
           </div>
           <div className="flex items-center gap-3">
             {data && (
               <div className="text-right">
-                <div className="font-mono text-xs text-slate-400">{fmt(data.total_pipeline_usd)} total pipeline</div>
-                <div className="font-mono text-xs text-slate-400">{data.total_signals} active signals</div>
+                <div className="font-mono text-xs text-[#7A9A82]">{fmt(data.total_pipeline_usd)} total pipeline</div>
+                <div className="font-mono text-xs text-[#7A9A82]">{data.total_signals} active signals</div>
               </div>
             )}
             <Button
@@ -240,7 +240,7 @@ export default function EagleEyeCRETab() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <RefreshCw size={22} className="mx-auto animate-spin text-red-400" />
-            <p className="mt-3 text-sm text-slate-400">Building heat map…</p>
+            <p className="mt-3 text-sm text-[#7A9A82]">Building heat map…</p>
           </div>
         </div>
       )}
@@ -253,7 +253,7 @@ export default function EagleEyeCRETab() {
         <>
           {/* State heat grid */}
           <div>
-            <div className="font-mono text-[0.65rem] uppercase tracking-wider text-slate-500 mb-3">
+            <div className="font-mono text-[0.65rem] uppercase tracking-wider text-[#7A9A82] mb-3">
               State Heat Scores — sorted by distress intensity
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
@@ -265,7 +265,7 @@ export default function EagleEyeCRETab() {
 
           {/* Top properties */}
           <div>
-            <div className="font-mono text-[0.65rem] uppercase tracking-wider text-slate-500 mb-3">
+            <div className="font-mono text-[0.65rem] uppercase tracking-wider text-[#7A9A82] mb-3">
               Top Property Opportunities — ranked by NEST opportunity score
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
