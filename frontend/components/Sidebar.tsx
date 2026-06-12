@@ -8,11 +8,12 @@ import clsx from "clsx";
 
 const NAV = [
   { silo:"Deal Pipeline", items:[
-    { href:"/deals",            label:"Active Deals",        st:"active" },
-    { href:"/deal-input",       label:"Deal Intake",         st:"active" },
-    { href:"/preflight",        label:"Preflight Interview", st:"shell"  },
-    { href:"/workflow",         label:"Pipeline Workflow",   st:"shell"  },
-    { href:"/operations/deals", label:"Operations",          st:"active" },
+    { href:"/workbench",        label:"Operational Workbench", st:"active" },
+    { href:"/deals",            label:"Active Deals",           st:"active" },
+    { href:"/deal-input",       label:"Deal Intake",            st:"active" },
+    { href:"/preflight",        label:"Preflight Interview",    st:"shell"  },
+    { href:"/workflow",         label:"Pipeline Workflow",      st:"shell"  },
+    { href:"/operations/deals", label:"Operations",             st:"active" },
   ]},
   { silo:"EagleEye Intelligence", items:[
     { href:"/eagleeye",    label:"M&A + CRE Heat Map",  st:"active" },
