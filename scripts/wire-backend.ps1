@@ -14,7 +14,7 @@ $VENV     = Join-Path $BACKEND ".venv"
 $ENVFILE  = Join-Path $BACKEND ".env"
 $PID_FILE = Join-Path $BACKEND ".backend.pid"
 
-# ── Stop mode ────────────────────────────────────────────────
+# -- Stop mode ---------------------------------------------------------------
 if ($Stop) {
   if (Test-Path $PID_FILE) {
     $pid = Get-Content $PID_FILE
@@ -29,10 +29,10 @@ if ($Stop) {
 
 Write-Host ""
 Write-Host "  NEST BACKEND WIRE" -ForegroundColor DarkYellow
-Write-Host "  ─────────────────────────────────────────" -ForegroundColor DarkGreen
+Write-Host "  -----------------------------------------" -ForegroundColor DarkGreen
 Write-Host ""
 
-# ── Step 1: Python check ─────────────────────────────────────
+# -- Step 1: Python check ----------------------------------------------------
 $py = Get-Command python -ErrorAction SilentlyContinue
 if (-not $py) {
   Write-Host "  [FAIL] Python not found. Install Python 3.11+ and retry." -ForegroundColor Red
@@ -41,7 +41,7 @@ if (-not $py) {
 $pyVer = & python --version 2>&1
 Write-Host "  [OK] $pyVer" -ForegroundColor DarkYellow
 
-# ── Step 2: Virtual env ──────────────────────────────────────
+# -- Step 2: Virtual env -----------------------------------------------------
 if (-not (Test-Path $VENV)) {
   Write-Host "  [SETUP] Creating virtual environment..." -ForegroundColor Cyan
   & python -m venv $VENV
@@ -49,13 +49,13 @@ if (-not (Test-Path $VENV)) {
 $PYTHON = Join-Path $VENV "Scripts\python.exe"
 if (-not (Test-Path $PYTHON)) { $PYTHON = "python" }
 
-# ── Step 3: Install dependencies ────────────────────────────
+# -- Step 3: Install dependencies --------------------------------------------
 if (-not $SkipInstall) {
   Write-Host "  [INSTALL] Installing requirements..." -ForegroundColor Cyan
   $req = Join-Path $BACKEND "requirements.txt"
   & $PYTHON -m pip install -r $req -q
   if ($LASTEXITCODE -ne 0) {
-    Write-Host "  [WARN] pip install had errors — attempting to continue..." -ForegroundColor Yellow
+    Write-Host "  [WARN] pip install had errors -- attempting to continue..." -ForegroundColor Yellow
   } else {
     Write-Host "  [OK] Dependencies installed" -ForegroundColor DarkYellow
   }
@@ -63,7 +63,7 @@ if (-not $SkipInstall) {
   Write-Host "  [SKIP] Install skipped (-SkipInstall)" -ForegroundColor DarkGray
 }
 
-# ── Step 4: Validate .env ────────────────────────────────────
+# -- Step 4: Validate .env ---------------------------------------------------
 Write-Host ""
 Write-Host "  ENV CHECK" -ForegroundColor DarkYellow
 $required = @("ANTHROPIC_API_KEY", "JWT_SECRET_KEY", "SECRET_KEY")
@@ -82,7 +82,7 @@ foreach ($k in $required) {
   if ($envVars[$k] -and $envVars[$k].Length -gt 0 -and $envVars[$k] -ne "your-key-here") {
     Write-Host "  [SET] $k" -ForegroundColor DarkYellow
   } else {
-    Write-Host "  [MISSING] $k  <-- add to backend/.env" -ForegroundColor Red
+    Write-Host "  [MISSING] $k  (add to backend/.env)" -ForegroundColor Red
     $missing++
   }
 }
@@ -105,16 +105,16 @@ if ($envContent -notmatch "^PORT=") {
   Set-Content $ENVFILE $envContent -NoNewline
 }
 
-# ── Step 5: Kill any process already on the port ────────────
+# -- Step 5: Kill any process already on the port ---------------------------
 $existing = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
 if ($existing) {
   $procId = $existing.OwningProcess | Select-Object -First 1
-  Write-Host "  [WARN] Port $Port in use by PID $procId — stopping it..." -ForegroundColor Yellow
+  Write-Host "  [WARN] Port $Port in use by PID $procId -- stopping it..." -ForegroundColor Yellow
   Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
-  Start-Sleep -Milliseconds 800
+  Start-Sleep -Seconds 5
 }
 
-# ── Step 6: Start Flask ──────────────────────────────────────
+# -- Step 6: Start Flask -----------------------------------------------------
 Write-Host ""
 Write-Host "  STARTING BACKEND on port $Port..." -ForegroundColor Cyan
 $appFile = Join-Path $BACKEND "app.py"
@@ -123,12 +123,12 @@ $proc = Start-Process -FilePath $PYTHON -ArgumentList $appFile -WorkingDirectory
   -RedirectStandardError (Join-Path $BACKEND "nest-backend-err.log")
 $proc.Id | Set-Content $PID_FILE
 
-Write-Host "  [STARTED] PID $($proc.Id) — waiting for health check..." -ForegroundColor DarkYellow
+Write-Host "  [STARTED] PID $($proc.Id) -- waiting for health check..." -ForegroundColor DarkYellow
 
-# ── Step 7: Health check (retry 12× / 6s) ───────────────────
+# -- Step 7: Health check (retry 12x / 6s) ----------------------------------
 $healthy = $false
-for ($i = 1; $i -le 12; $i++) {
-  Start-Sleep -Milliseconds 500
+for ($i = 1; $i -le 20; $i++) {
+  Start-Sleep -Milliseconds 750
   try {
     $r = Invoke-WebRequest -Uri "http://localhost:$Port/api/health" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
     if ($r.StatusCode -eq 200) { $healthy = $true; break }
@@ -146,7 +146,7 @@ if (-not $healthy) {
 
 Write-Host "  [HEALTHY] http://localhost:$Port/api/health" -ForegroundColor Green
 
-# ── Step 8: Update frontend .env.local ──────────────────────
+# -- Step 8: Update frontend .env.local -------------------------------------
 $feEnv = Join-Path $FRONTEND ".env.local"
 $apiLine = "NEXT_PUBLIC_API_URL=http://localhost:$Port"
 if (Test-Path $feEnv) {
@@ -160,9 +160,9 @@ if (Test-Path $feEnv) {
 } else {
   $apiLine | Set-Content $feEnv
 }
-Write-Host "  [WIRED] frontend/.env.local → localhost:$Port" -ForegroundColor DarkYellow
+Write-Host "  [WIRED] frontend/.env.local -> localhost:$Port" -ForegroundColor DarkYellow
 
-# ── Step 9: Smoke test critical endpoints ───────────────────
+# -- Step 9: Smoke test critical endpoints ----------------------------------
 Write-Host ""
 Write-Host "  ENDPOINT SMOKE TEST" -ForegroundColor DarkYellow
 $endpoints = @(
@@ -178,7 +178,7 @@ $endpoints = @(
 foreach ($ep in $endpoints) {
   try {
     $r = Invoke-WebRequest -Uri "http://localhost:$Port$ep" -TimeoutSec 3 -UseBasicParsing -ErrorAction Stop
-    $status = if ($r.StatusCode -eq 200) { "[OK]  " } else { "[${$r.StatusCode}]" }
+    $status = if ($r.StatusCode -eq 200) { "[OK]  " } else { "[$($r.StatusCode)]" }
     $color  = if ($r.StatusCode -eq 200) { "DarkYellow" } else { "Yellow" }
     Write-Host "  $status $ep" -ForegroundColor $color
   } catch {
@@ -190,7 +190,7 @@ foreach ($ep in $endpoints) {
 
 Write-Host ""
 Write-Host "  NEST BACKEND LIVE" -ForegroundColor Green
-Write-Host "  ─────────────────────────────────────────────────────" -ForegroundColor DarkGreen
+Write-Host "  -----------------------------------------------------" -ForegroundColor DarkGreen
 Write-Host "  Backend : http://localhost:$Port" -ForegroundColor DarkYellow
 Write-Host "  Logs    : $BACKEND\nest-backend.log" -ForegroundColor DarkGray
 Write-Host "  Errors  : $BACKEND\nest-backend-err.log" -ForegroundColor DarkGray
@@ -198,8 +198,8 @@ Write-Host "  Stop    : .\scripts\wire-backend.ps1 -Stop" -ForegroundColor DarkG
 Write-Host ""
 if ($missing -gt 0) {
   Write-Host "  ACTION: Add $missing missing key(s) to backend/.env then restart." -ForegroundColor Yellow
-  Write-Host "  Most important: ANTHROPIC_API_KEY (Bernard will return errors without it)" -ForegroundColor Yellow
+  Write-Host "  Most important: ANTHROPIC_API_KEY (Bernard returns errors without it)" -ForegroundColor Yellow
   Write-Host ""
 }
-Write-Host "  401 on deal/agent routes = normal (auth required). Login via /api/auth/login first." -ForegroundColor DarkGray
+Write-Host "  401 on deal/agent routes is normal -- auth required. Login via /api/auth/login first." -ForegroundColor DarkGray
 Write-Host ""

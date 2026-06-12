@@ -1,13 +1,34 @@
 import sys
 import os
+import math
 import threading
 import time
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
+from flask.json.provider import DefaultJSONProvider
 
 # Ensure backend dir is on path for model imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+
+def _sanitize(obj):
+    """Recursively replace inf/nan floats with None so JSON serialization never breaks."""
+    if isinstance(obj, float):
+        return None if not math.isfinite(obj) else obj
+    if isinstance(obj, dict):
+        return {k: _sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_sanitize(v) for v in obj]
+    return obj
+
+
+class _SafeJSONProvider(DefaultJSONProvider):
+    def dumps(self, obj, **kwargs):
+        return super().dumps(_sanitize(obj), **kwargs)
+
+    def response(self, *args, **kwargs):
+        return super().response(*_sanitize(args), **kwargs)
 
 from config import Config
 from routes.fund import fund_bp, register_fund_socket_events
