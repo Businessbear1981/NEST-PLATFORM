@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Active Deals" silo="Deal Pipeline" api="/api/deals" status="active" />;
-}
+"use client";
+import DealsPage from "@/components/v4/DealsPage";
+export default function Page() { return <DealsPage />; }

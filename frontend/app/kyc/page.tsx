@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="KYC" silo="NightVision Compliance" api="/api/nightvision" status="active" />;
-}
+"use client";
+import { KYCCompliancePage } from "@/components/OperationalModulesPages";
+export default function Page() { return <KYCCompliancePage />; }

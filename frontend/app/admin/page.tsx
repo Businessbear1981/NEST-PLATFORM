@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Admin Platform" silo="Admin & Agents" api="/api/auth" status="active" />;
-}
+"use client";
+import { AdminPlatformPage } from "@/components/OperationalModulesPages";
+export default function Page() { return <AdminPlatformPage />; }

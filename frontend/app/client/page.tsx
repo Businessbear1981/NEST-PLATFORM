@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Client Dashboard" silo="Client Portal" api="/api/client" status="active" />;
-}
+"use client";
+import ClientDashboardPage from "@/components/v4/ClientDashboardPage";
+export default function Page() { return <ClientDashboardPage />; }

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Marketing Studio" silo="Business Development" api="/api/marketing" status="active" />;
-}
+"use client";
+import MarketingStudio from "@/components/MarketingStudio";
+export default function Page() { return <MarketingStudio />; }

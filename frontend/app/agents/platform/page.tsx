@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Agent Platform" silo="Admin & Agents" api="/api/agents" status="active" />;
-}
+"use client";
+import { AgentPlatformPage } from "@/components/OperationalModulesPages";
+export default function Page() { return <AgentPlatformPage />; }

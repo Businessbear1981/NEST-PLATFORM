@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Study Portal" silo="Admin & Agents" api="/api/engines" status="active" />;
-}
+"use client";
+import StudyPage from "@/components/v4/StudyPage";
+export default function Page() { return <StudyPage />; }

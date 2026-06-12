@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Client Deposits" silo="Treasury" api="/api/client" status="active" />;
-}
+"use client";
+import { ClientDepositPage } from "@/components/OperationalModulesPages";
+export default function Page() { return <ClientDepositPage />; }

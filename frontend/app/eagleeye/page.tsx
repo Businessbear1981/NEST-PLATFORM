@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="EagleEye" silo="EagleEye Intelligence" api="/api/eagleeye" status="active" />;
-}
+"use client";
+import EagleEyeMain from "@/components/EagleEyeMain";
+export default function Page() { return <EagleEyeMain />; }

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Central Nervous System" silo="Bernard / AI Engine" api="/api/nervous-system" status="active" />;
-}
+"use client";
+import CentralNervousSystem from "@/components/CentralNervousSystem";
+export default function Page() { return <CentralNervousSystem />; }

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Bernard" silo="Bernard / AI Engine" api="/api/bernard" status="active" />;
-}
+"use client";
+import BernardPage from "@/components/v4/BernardPage";
+export default function Page() { return <BernardPage />; }

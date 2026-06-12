@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Bond Desk" silo="Bond Desk / ALADDIN" api="/api/bond-desk" status="active" />;
-}
+"use client";
+import BondDeskPage from "@/components/bond-desk/BondDeskPage";
+export default function Page() { return <BondDeskPage />; }

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="EMMA" silo="EMMA" api="/api/emma" status="active" />;
-}
+"use client";
+import EMMAPage from "@/components/v4/EMMAPage";
+export default function Page() { return <EMMAPage />; }

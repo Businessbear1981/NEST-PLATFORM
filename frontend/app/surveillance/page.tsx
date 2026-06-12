@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Deal Surveillance" silo="Surveillance" api="/api/surveillance" status="active" />;
-}
+"use client";
+import SurveillancePage from "@/components/v4/SurveillancePage";
+export default function Page() { return <SurveillancePage />; }

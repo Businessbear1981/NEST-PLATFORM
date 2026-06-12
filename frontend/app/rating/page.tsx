@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Rating Intelligence" silo="Credit Underwriting" api="/api/rating" status="active" />;
-}
+"use client";
+import { RatingIntelligencePage } from "@/components/OperationalModulesPages";
+export default function Page() { return <RatingIntelligencePage />; }

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="About NEST" silo="Research" api="/api/health" status="active" />;
-}
+"use client";
+import AboutNest from "@/components/AboutNest";
+export default function Page() { return <AboutNest />; }

@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Covenant Monitoring" silo="Surveillance" api="/api/covenants" status="active" />;
-}
+"use client";
+import { CovenantMonitoringPage } from "@/components/OperationalModulesPages";
+export default function Page() { return <CovenantMonitoringPage />; }

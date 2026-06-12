@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Institutional Dashboard" silo="Hawkeye Placement" api="/api/hawkeye" status="active" />;
-}
+"use client";
+import InstitutionalDashboard from "@/components/InstitutionalDashboard";
+export default function Page() { return <InstitutionalDashboard />; }

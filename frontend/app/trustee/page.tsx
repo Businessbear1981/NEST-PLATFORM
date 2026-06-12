@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Trustee Management" silo="Surveillance" api="/api/rating-esg" status="active" />;
-}
+"use client";
+import TrusteePage from "@/components/v4/TrusteePage";
+export default function Page() { return <TrusteePage />; }
