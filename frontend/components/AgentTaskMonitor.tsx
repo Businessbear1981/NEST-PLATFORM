@@ -11,7 +11,7 @@ interface AgentTaskMonitorProps {
 
 const STATUS_COLORS = {
   idle: 'bg-slate-500/20 text-slate-700',
-  running: 'bg-blue-500/20 text-blue-700',
+  running: 'bg-[#C4A048]/20 text-[#C4A048]',
   completed: 'bg-emerald-500/20 text-emerald-700',
   error: 'bg-red-500/20 text-red-700',
   paused: 'bg-yellow-500/20 text-yellow-700',
@@ -54,9 +54,9 @@ export function AgentTaskMonitor({ dealId }: AgentTaskMonitorProps) {
           <p className="text-xs text-muted-foreground mb-1">Total Tasks</p>
           <p className="text-2xl font-bold text-foreground">{allTasks.length}</p>
         </Card>
-        <Card className="p-4 border-border bg-blue-500/5">
-          <p className="text-xs text-blue-700 mb-1">Running</p>
-          <p className="text-2xl font-bold text-blue-600">{runningTasks.length}</p>
+        <Card className="p-4 border-border bg-[#C4A048]/5">
+          <p className="text-xs text-[#C4A048] mb-1">Running</p>
+          <p className="text-2xl font-bold text-[#C4A048]">{runningTasks.length}</p>
         </Card>
         <Card className="p-4 border-border bg-emerald-500/5">
           <p className="text-xs text-emerald-700 mb-1">Completed</p>
@@ -73,7 +73,7 @@ export function AgentTaskMonitor({ dealId }: AgentTaskMonitorProps) {
         <div className="space-y-3">
           <h3 className="text-lg font-semibold text-foreground">Active Tasks</h3>
           {runningTasks.map((task) => (
-            <Card key={task.id} className="p-4 border-border bg-blue-500/5">
+            <Card key={task.id} className="p-4 border-border bg-[#C4A048]/5">
               <div className="space-y-3">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4">

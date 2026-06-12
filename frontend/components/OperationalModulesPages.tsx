@@ -20,7 +20,7 @@ function ModuleSuspense({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={
-        <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-6 font-mono text-xs uppercase tracking-[0.2em] text-cyan-100">
+        <div className="rounded-2xl border border-[#C4A048]/25 bg-[#C4A048]/10 p-6 font-mono text-xs uppercase tracking-[0.2em] text-[#EDE8DC]">
           Loading workflow module
         </div>
       }
@@ -32,15 +32,15 @@ function ModuleSuspense({ children }: { children: ReactNode }) {
 
 function WorkflowRouteHeader({ title, copy }: { title: string; copy: string }) {
   return (
-    <section className="mb-5 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 p-4 text-cyan-50" data-testid="workflow-route-header">
+    <section className="mb-5 rounded-2xl border border-[#C4A048]/30 bg-[#C4A048]/10 p-4 text-cyan-50" data-testid="workflow-route-header">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Stateful routed module</p>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">Stateful routed module</p>
           <h1 className="mt-1 text-xl font-semibold text-white">{title}</h1>
           <p className="mt-1 text-sm leading-6 text-cyan-50/85">{copy}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/operations/deals" className="rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-100">Open deal workspace →</Link>
+          <Link href="/operations/deals" className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/10 px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-[#EDE8DC]">Open deal workspace →</Link>
           <Link href="/dashboard" className="rounded-xl border border-white/15 bg-white/[0.04] px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-white">Portfolio dashboard →</Link>
         </div>
       </div>

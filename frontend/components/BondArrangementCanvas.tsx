@@ -218,7 +218,7 @@ function MiniBondCard({
           {/* Put/Call row */}
           <div className="flex items-center gap-3 mt-1 font-mono text-[0.52rem]">
             {bond.call.type !== "none" && (
-              <span className="text-cyan-300">
+              <span className="text-[#C4A048]">
                 {bond.call.type === "hard" ? "Hard" : "Soft"} Call @ {bond.call.price}
               </span>
             )}
@@ -318,7 +318,7 @@ function PoolStats({ bonds, total }: { bonds: MiniBond[]; total: number }) {
         { label: "Commitment", value: formatM(total), tone: "text-amber-100" },
         { label: "Blended Cpn", value: formatPct(blendedCoupon), tone: "text-amber-200" },
         { label: "WAL", value: `${wal.toFixed(1)}yr`, tone: "text-slate-200" },
-        { label: "Avg Spread", value: formatBps(avgSpread), tone: "text-cyan-200" },
+        { label: "Avg Spread", value: formatBps(avgSpread), tone: "text-[#E8C87A]" },
         { label: "Senior %", value: `${seniorPct.toFixed(0)}%`, tone: "text-emerald-200" },
         { label: "Mini-Bonds", value: `${bonds.length}`, tone: "text-white" },
       ].map(stat => (

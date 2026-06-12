@@ -98,7 +98,7 @@ const initialTasks: AgentTask[] = [
 ];
 
 const statusClasses: Record<AgentStatus, string> = {
-  ready: 'border-cyan-300/30 bg-cyan-400/10 text-cyan-100',
+  ready: 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]',
   running: 'border-violet-300/30 bg-violet-400/10 text-violet-100',
   review: 'border-amber-300/35 bg-amber-400/10 text-amber-100',
   approved: 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100',
@@ -153,7 +153,7 @@ export function LiveAgentDashboard() {
   return (
     <div className="space-y-6 text-slate-100" data-testid="live-agent-platform">
       <section className="relative overflow-hidden rounded-[1.8rem] border border-violet-300/25 bg-[#060716] p-5 shadow-[0_0_85px_rgba(139,92,246,0.13)] sm:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_13%_10%,rgba(139,92,246,0.2),transparent_35%),radial-gradient(circle_at_88%_0%,rgba(34,211,238,0.15),transparent_32%),linear-gradient(135deg,rgba(15,23,42,0.78),rgba(2,6,23,0.97))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_13%_10%,rgba(139,92,246,0.2),transparent_35%),radial-gradient(circle_at_88%_0%,rgba(196,160,72,0.15),transparent_32%),linear-gradient(135deg,rgba(15,23,42,0.78),rgba(2,6,23,0.97))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1fr_0.95fr]">
           <div>
             <div className="flex flex-wrap items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.22em] text-violet-200">
@@ -195,7 +195,7 @@ export function LiveAgentDashboard() {
         <TabsContent value="tasks" className="mt-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
           <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-cyan-100"><Bot className="h-5 w-5" /> Runnable agent task board</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><Bot className="h-5 w-5" /> Runnable agent task board</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {tasks.map((task) => (
@@ -203,7 +203,7 @@ export function LiveAgentDashboard() {
                   key={task.id}
                   type="button"
                   onClick={() => setSelectedId(task.id)}
-                  className={`w-full rounded-2xl border p-4 text-left transition hover:border-cyan-300/40 ${selectedTask.id === task.id ? 'border-cyan-300/35 bg-cyan-400/10' : 'border-white/10 bg-white/[0.035]'}`}
+                  className={`w-full rounded-2xl border p-4 text-left transition hover:border-[#C4A048]/40 ${selectedTask.id === task.id ? 'border-[#C4A048]/35 bg-[#C4A048]/10' : 'border-white/10 bg-white/[0.035]'}`}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -235,7 +235,7 @@ export function LiveAgentDashboard() {
               <div className="grid gap-3 sm:grid-cols-2">
                 {selectedTask.inputs.map((input) => (
                   <div key={input} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-300">
-                    <DatabaseZap className="h-4 w-4 text-cyan-300" /> {input}
+                    <DatabaseZap className="h-4 w-4 text-[#C4A048]" /> {input}
                   </div>
                 ))}
               </div>
@@ -283,8 +283,8 @@ export function LiveAgentDashboard() {
         </TabsContent>
 
         <TabsContent value="events" className="mt-5 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-          <Card className="border-cyan-300/20 bg-slate-950/75 text-slate-100">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-100"><Activity className="h-5 w-5" /> Control actions</CardTitle></CardHeader>
+          <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
+            <CardHeader><CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><Activity className="h-5 w-5" /> Control actions</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               <Button type="button" className="w-full justify-between bg-cyan-400 text-slate-950 hover:bg-cyan-300" onClick={() => advanceTask('vector-call-put')}>Run Vector <ArrowRight className="h-4 w-4" /></Button>
               <Button type="button" className="w-full justify-between bg-violet-400 text-slate-950 hover:bg-violet-300" onClick={() => advanceTask('merlin-ma')}>Run Merlin <ArrowRight className="h-4 w-4" /></Button>
@@ -292,11 +292,11 @@ export function LiveAgentDashboard() {
             </CardContent>
           </Card>
           <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-white"><RadioTower className="h-5 w-5 text-cyan-300" /> Agent event stream</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-white"><RadioTower className="h-5 w-5 text-[#C4A048]" /> Agent event stream</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {events.map((event, index) => (
                 <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
-                  {index === 0 ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 3 === 0 ? <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /> : <Target className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />}
+                  {index === 0 ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 3 === 0 ? <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /> : <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" />}
                   <span>{event}</span>
                 </div>
               ))}

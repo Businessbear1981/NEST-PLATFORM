@@ -75,7 +75,7 @@ const TYPE_ICONS: Record<string, typeof Activity> = {
 
 const SEVERITY_STYLES: Record<string, string> = {
   info: "border-slate-500/30 bg-slate-500/10 text-slate-400",
-  low: "border-blue-400/30 bg-blue-500/10 text-blue-300",
+  low: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#C4A048]",
   medium: "border-amber-400/30 bg-amber-500/10 text-amber-300",
   high: "border-orange-400/30 bg-orange-500/10 text-orange-300",
   critical: "border-red-400/30 bg-red-500/10 text-red-300",
@@ -91,7 +91,7 @@ const DIRECTION_STYLES: Record<string, { icon: typeof Activity; color: string }>
 
 const REC_STYLES: Record<string, string> = {
   execute_call: "border-emerald-400/40 bg-emerald-500/15 text-emerald-300",
-  call_eligible: "border-cyan-400/40 bg-cyan-500/15 text-cyan-300",
+  call_eligible: "border-[#C4A048]/40 bg-[#C4A048]/15 text-[#C4A048]",
   monitor: "border-amber-400/40 bg-amber-500/15 text-amber-300",
   hold: "border-slate-400/40 bg-slate-500/15 text-slate-300",
   put_alert: "border-red-400/40 bg-red-500/15 text-red-300",
@@ -136,7 +136,7 @@ function SignalCard({ signal }: { signal: SignalEvent }) {
   const dirStyle = signal.direction ? DIRECTION_STYLES[signal.direction] : null;
   const DirIcon = dirStyle?.icon || Minus;
   const categoryColor = signal.category === "macro_market"
-    ? "border-cyan-300/20 bg-cyan-400/8 text-cyan-200"
+    ? "border-[#C4A048]/20 bg-[#C4A048]/8 text-[#E8C87A]"
     : signal.category === "deal_sourcing"
     ? "border-emerald-300/20 bg-emerald-400/8 text-emerald-200"
     : signal.category === "regulatory"
@@ -148,7 +148,7 @@ function SignalCard({ signal }: { signal: SignalEvent }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <Icon size={13} className="text-cyan-300 shrink-0" />
+            <Icon size={13} className="text-[#C4A048] shrink-0" />
             <span className="font-mono text-xs font-semibold text-white truncate">
               {signal.signal_type.replace(/_/g, " ")}
             </span>
@@ -224,7 +224,7 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
   const recStyle = REC_STYLES[rec] || REC_STYLES.monitor;
   const putStyle = PUT_RISK_STYLES[snapshot.put_risk_level || "LOW"] || PUT_RISK_STYLES.LOW;
 
-  const scoreColor = score >= 82 ? "text-emerald-400" : score >= 65 ? "text-cyan-400" : score >= 45 ? "text-amber-400" : score >= 25 ? "text-slate-300" : "text-red-400";
+  const scoreColor = score >= 82 ? "text-emerald-400" : score >= 65 ? "text-[#C4A048]" : score >= 45 ? "text-amber-400" : score >= 25 ? "text-slate-300" : "text-red-400";
   const arcPct = score / 100;
 
   return (
@@ -275,7 +275,7 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
         <div className="space-y-1">
           {snapshot.reasoning.map((reason, i) => (
             <div key={i} className="flex items-start gap-2 text-[0.68rem] text-slate-400">
-              <ChevronRight size={11} className="text-cyan-400/60 mt-0.5 shrink-0" />
+              <ChevronRight size={11} className="text-[#C4A048]/60 mt-0.5 shrink-0" />
               <span>{reason}</span>
             </div>
           ))}
@@ -302,7 +302,7 @@ function StatsPanel({ stats }: { stats: StatsData | null }) {
           <p className="font-mono text-[0.5rem] uppercase text-slate-500">Total</p>
         </div>
         <div className="text-center">
-          <p className="font-mono text-2xl font-bold text-cyan-400">{stats.by_category?.macro_market || 0}</p>
+          <p className="font-mono text-2xl font-bold text-[#C4A048]">{stats.by_category?.macro_market || 0}</p>
           <p className="font-mono text-[0.5rem] uppercase text-slate-500">Market</p>
         </div>
         <div className="text-center">
@@ -385,8 +385,8 @@ export default function SignalIntelligenceFeed() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-500/10">
-              <Activity size={18} className="text-cyan-300" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#C4A048]/20 bg-[#C4A048]/10">
+              <Activity size={18} className="text-[#C4A048]" />
             </div>
             <div>
               <h1 className="font-[Cormorant_Garamond] text-2xl font-semibold tracking-wide text-white">
@@ -401,14 +401,14 @@ export default function SignalIntelligenceFeed() {
 
         <div className="flex items-center gap-3">
           {signalsQuery.isFetching && (
-            <span className="font-mono text-[0.5rem] text-cyan-400/60 flex items-center gap-1">
+            <span className="font-mono text-[0.5rem] text-[#C4A048]/60 flex items-center gap-1">
               <RefreshCw size={10} className="animate-spin" /> syncing
             </span>
           )}
           <Button
             onClick={handlePollFred}
             disabled={polling}
-            className="h-8 gap-1.5 rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-3 font-mono text-[0.65rem] uppercase tracking-wider text-cyan-200 hover:bg-cyan-500/20 disabled:opacity-50"
+            className="h-8 gap-1.5 rounded-lg border border-[#C4A048]/30 bg-[#C4A048]/10 px-3 font-mono text-[0.65rem] uppercase tracking-wider text-[#E8C87A] hover:bg-[#C4A048]/20 disabled:opacity-50"
             variant="ghost"
           >
             {polling ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
@@ -427,7 +427,7 @@ export default function SignalIntelligenceFeed() {
                 <TabsTrigger value="all" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-white/10 data-[state=active]:text-white text-slate-500">
                   All ({allSignals.length})
                 </TabsTrigger>
-                <TabsTrigger value="macro_market" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-200 text-slate-500">
+                <TabsTrigger value="macro_market" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-[#C4A048]/15 data-[state=active]:text-[#E8C87A] text-slate-500">
                   Market
                 </TabsTrigger>
                 <TabsTrigger value="deal_sourcing" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-200 text-slate-500">
@@ -445,7 +445,7 @@ export default function SignalIntelligenceFeed() {
             <TabsContent value={activeCategory} forceMount className="mt-0">
               {signalsQuery.isLoading ? (
                 <div className="flex items-center justify-center py-16">
-                  <RefreshCw size={20} className="animate-spin text-cyan-400/40" />
+                  <RefreshCw size={20} className="animate-spin text-[#C4A048]/40" />
                 </div>
               ) : filteredSignals.length === 0 ? (
                 <div className="rounded-2xl border border-white/8 bg-black/20 p-12 text-center">

@@ -42,10 +42,10 @@ export function AgentTelemetryGraphic({
 
   return (
     <div className="grid gap-5 text-slate-100 xl:grid-cols-[minmax(0,1fr)_22rem]">
-      <div className="rounded-2xl border border-cyan-300/20 bg-black/35 p-4 shadow-[0_0_36px_rgba(34,211,238,0.08)]">
+      <div className="rounded-2xl border border-[#C4A048]/20 bg-black/35 p-4 shadow-[0_0_36px_rgba(196,160,72,0.08)]">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-200">
+            <div className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#E8C87A]">
               <BrainCircuit size={16} /> AI nervous-system telemetry
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-400">Live demo signal map from backend deal, approval, and acquisition records. Agent actions remain supervised by the approval rail; no autonomous external execution is enabled.</p>
@@ -91,10 +91,10 @@ export function AgentTelemetryGraphic({
 
       <div className="grid gap-3">
         {agents.map(([name, role, status, Icon]) => (
-          <article key={name} className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-4 shadow-[0_0_24px_rgba(34,211,238,0.05)]">
+          <article key={name} className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-4 shadow-[0_0_24px_rgba(196,160,72,0.05)]">
             <div className="absolute right-3 top-3 h-2 w-2 animate-pulse rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.8)]" />
             <div className="flex items-center gap-3">
-              <div className="rounded-xl border border-cyan-300/25 bg-cyan-400/10 p-2 text-cyan-100"><Icon size={17} /></div>
+              <div className="rounded-xl border border-[#C4A048]/25 bg-[#C4A048]/10 p-2 text-[#EDE8DC]"><Icon size={17} /></div>
               <div>
                 <h3 className="font-mono text-sm font-semibold uppercase tracking-[0.08em] text-white">{name}</h3>
                 <p className="text-xs text-slate-500">{role}</p>

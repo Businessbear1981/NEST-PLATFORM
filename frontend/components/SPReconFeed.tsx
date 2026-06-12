@@ -10,7 +10,7 @@ export default function SPReconFeed({ dealId, summaryMode }: { dealId?: string; 
   if (summaryMode) {
     return (
       <div className="p-4">
-        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CheckCircle2 size={14} /> S&P Recon
         </div>
         <p className="mt-2 font-mono text-sm text-slate-400">Reconciliation feed + alerts</p>
@@ -20,15 +20,15 @@ export default function SPReconFeed({ dealId, summaryMode }: { dealId?: string; 
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+      <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
         <CheckCircle2 size={17} /> S&P Recon Feed
       </div>
 
       {status.data && (
         <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4">
           <div className="grid grid-cols-3 gap-3">
-            <div><span className="text-slate-400 text-[0.56rem]">Rating:</span> <span className="text-cyan-100 font-bold">{status.data.sp_rating}</span></div>
-            <div><span className="text-slate-400 text-[0.56rem]">Outlook:</span> <span className="text-cyan-100 font-bold">{status.data.outlook}</span></div>
+            <div><span className="text-slate-400 text-[0.56rem]">Rating:</span> <span className="text-[#EDE8DC] font-bold">{status.data.sp_rating}</span></div>
+            <div><span className="text-slate-400 text-[0.56rem]">Outlook:</span> <span className="text-[#EDE8DC] font-bold">{status.data.outlook}</span></div>
             <div><span className="text-slate-400 text-[0.56rem]">Status:</span> <span className="text-emerald-100 font-bold">Compliant</span></div>
           </div>
         </div>

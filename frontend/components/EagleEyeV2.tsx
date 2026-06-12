@@ -86,16 +86,16 @@ const CATEGORIES = [
 
 const STATUS_OPTIONS = [
   { key: "all", label: "All", color: "text-slate-300" },
-  { key: "new", label: "New", color: "text-cyan-300" },
-  { key: "reviewed", label: "Reviewed", color: "text-blue-300" },
+  { key: "new", label: "New", color: "text-[#C4A048]" },
+  { key: "reviewed", label: "Reviewed", color: "text-[#C4A048]" },
   { key: "actionable", label: "Actionable", color: "text-amber-300" },
   { key: "acted_on", label: "Acted On", color: "text-emerald-300" },
   { key: "dismissed", label: "Dismissed", color: "text-slate-500" },
 ] as const;
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  new: { label: "New", color: "text-cyan-300", bg: "bg-cyan-400/10", border: "border-cyan-400/25" },
-  reviewed: { label: "Reviewed", color: "text-blue-300", bg: "bg-blue-400/10", border: "border-blue-400/25" },
+  new: { label: "New", color: "text-[#C4A048]", bg: "bg-[#C4A048]/10", border: "border-[#C4A048]/25" },
+  reviewed: { label: "Reviewed", color: "text-[#C4A048]", bg: "bg-[#C4A048]/10", border: "border-[#C4A048]/25" },
   actionable: { label: "Actionable", color: "text-amber-300", bg: "bg-amber-400/10", border: "border-amber-400/25" },
   acted_on: { label: "Acted On", color: "text-emerald-300", bg: "bg-emerald-400/10", border: "border-emerald-400/25" },
   dismissed: { label: "Dismissed", color: "text-slate-500", bg: "bg-slate-400/10", border: "border-slate-400/25" },
@@ -112,7 +112,7 @@ const SEVERITY_CONFIG: Record<string, { dots: number; color: string; border: str
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
-  deal_sourcing: "text-cyan-300 bg-cyan-400/10 border-cyan-400/25",
+  deal_sourcing: "text-[#C4A048] bg-[#C4A048]/10 border-[#C4A048]/25",
   regulatory: "text-violet-300 bg-violet-400/10 border-violet-400/25",
   macro_market: "text-amber-300 bg-amber-400/10 border-amber-400/25",
   property: "text-emerald-300 bg-emerald-400/10 border-emerald-400/25",
@@ -548,7 +548,7 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <div className="flex items-center gap-2 mb-2">
-          <Brain size={12} className="text-cyan-400 animate-pulse" />
+          <Brain size={12} className="text-[#C4A048] animate-pulse" />
           <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
             Scanning for correlations...
           </span>
@@ -572,13 +572,13 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Brain size={12} className="text-cyan-400" />
+          <Brain size={12} className="text-[#C4A048]" />
           <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-slate-400">
             Correlation Analysis
           </span>
         </div>
         {related.length > 0 && (
-          <Badge variant="outline" className="font-mono text-[0.5rem] border-cyan-400/25 text-cyan-300">
+          <Badge variant="outline" className="font-mono text-[0.5rem] border-[#C4A048]/25 text-[#C4A048]">
             {related.length} related
           </Badge>
         )}
@@ -607,7 +607,7 @@ function CorrelationPanel({ signal }: { signal: SignalEvent }) {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="rounded bg-cyan-400/10 border border-cyan-400/20 px-1.5 py-0.5 font-mono text-[0.44rem] uppercase tracking-wider text-cyan-300">
+                      <span className="rounded bg-[#C4A048]/10 border border-[#C4A048]/20 px-1.5 py-0.5 font-mono text-[0.44rem] uppercase tracking-wider text-[#C4A048]">
                         {matchLabel}
                       </span>
                       <span className="font-mono text-[0.48rem] text-slate-500">
@@ -684,7 +684,7 @@ function SignalDetailSheet({
   );
 
   const statusActions: { status: string; label: string; icon: typeof Eye; color: string }[] = [
-    { status: "reviewed", label: "Mark Reviewed", icon: Eye, color: "text-blue-300 border-blue-400/20 bg-blue-400/8" },
+    { status: "reviewed", label: "Mark Reviewed", icon: Eye, color: "text-[#C4A048] border-[#C4A048]/20 bg-[#C4A048]/8" },
     { status: "actionable", label: "Escalate", icon: Flag, color: "text-amber-300 border-amber-400/20 bg-amber-400/8" },
     { status: "acted_on", label: "Mark Acted On", icon: CheckCircle2, color: "text-emerald-300 border-emerald-400/20 bg-emerald-400/8" },
     { status: "dismissed", label: "Dismiss", icon: XCircle, color: "text-slate-400 border-slate-400/20 bg-slate-400/8" },
@@ -701,7 +701,7 @@ function SignalDetailSheet({
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <Icon size={14} className="text-cyan-300" />
+                <Icon size={14} className="text-[#C4A048]" />
                 <h2 className="font-mono text-sm font-semibold text-white">
                   {signal.entity_name || signal.signal_type.replace(/_/g, " ")}
                 </h2>
@@ -1003,7 +1003,7 @@ function FindSimilarPanel() {
                     className={`shrink-0 text-[0.5rem] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
                       a.priority === "high"
                         ? "bg-rose-500/20 text-rose-200 border border-rose-400/30"
-                        : "bg-cyan-500/20 text-cyan-200 border border-cyan-400/30"
+                        : "bg-[#C4A048]/20 text-[#E8C87A] border border-[#C4A048]/30"
                     }`}
                   >
                     {a.priority}
@@ -1012,7 +1012,7 @@ function FindSimilarPanel() {
                 <div className="font-mono text-[0.62rem] text-slate-400 mt-0.5 line-clamp-2">
                   {a.description}
                 </div>
-                <div className="font-mono text-[0.58rem] text-cyan-300 mt-1 truncate">
+                <div className="font-mono text-[0.58rem] text-[#C4A048] mt-1 truncate">
                   → {a.action}
                 </div>
               </div>
@@ -1044,7 +1044,7 @@ function FindSimilarPanel() {
                     {c.sector} · {c.state} · ${(c.par_amount / 1e6).toFixed(0)}M ·{" "}
                     {c.ratings?.sp || c.ratings?.moodys || "NR"}
                   </div>
-                  <div className="font-mono text-[0.58rem] text-cyan-300 mt-0.5">
+                  <div className="font-mono text-[0.58rem] text-[#C4A048] mt-0.5">
                     coupon {c.coupon_rate}% · {c.amortization}
                   </div>
                 </div>
@@ -1270,8 +1270,8 @@ export default function EagleEyeV2() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-500/10">
-                <Eye size={14} className="text-cyan-300" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#C4A048]/20 bg-[#C4A048]/10">
+                <Eye size={14} className="text-[#C4A048]" />
               </div>
               <div>
                 <h1
@@ -1293,7 +1293,7 @@ export default function EagleEyeV2() {
                 </span>
               )}
               {dealSourcingCount > 0 && (
-                <span className="text-cyan-300">
+                <span className="text-[#C4A048]">
                   <span className="font-semibold">{dealSourcingCount}</span> deal sourcing
                 </span>
               )}
@@ -1312,7 +1312,7 @@ export default function EagleEyeV2() {
               </span>
             )}
             {signalsQuery.isFetching && !statusMutation.isPending && (
-              <span className="font-mono text-[0.48rem] text-cyan-400/60 flex items-center gap-1">
+              <span className="font-mono text-[0.48rem] text-[#C4A048]/60 flex items-center gap-1">
                 <RefreshCw size={9} className="animate-spin" /> syncing
               </span>
             )}
@@ -1405,7 +1405,7 @@ export default function EagleEyeV2() {
                     onClick={() => handleCategoryChange(cat.key)}
                     className={`rounded-md px-2.5 py-1 font-mono text-[0.52rem] uppercase tracking-wider transition-all ${
                       isActive
-                        ? cat.key === "deal_sourcing" ? "bg-cyan-500/15 text-cyan-200 border border-cyan-400/30"
+                        ? cat.key === "deal_sourcing" ? "bg-[#C4A048]/15 text-[#E8C87A] border border-[#C4A048]/30"
                         : cat.key === "regulatory" ? "bg-violet-500/15 text-violet-200 border border-violet-400/30"
                         : cat.key === "macro_market" ? "bg-amber-500/15 text-amber-200 border border-amber-400/30"
                         : cat.key === "property" ? "bg-emerald-500/15 text-emerald-200 border border-emerald-400/30"
@@ -1473,7 +1473,7 @@ export default function EagleEyeV2() {
           {/* Signal List */}
           {signalsQuery.isLoading ? (
             <div className="flex items-center justify-center py-16">
-              <RefreshCw size={18} className="animate-spin text-cyan-400/40" />
+              <RefreshCw size={18} className="animate-spin text-[#C4A048]/40" />
             </div>
           ) : displaySignals.length === 0 ? (
             <div className="rounded-xl border border-white/[0.06] bg-black/20 p-8 text-center">

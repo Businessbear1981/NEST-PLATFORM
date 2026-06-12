@@ -195,7 +195,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
       {/* ── Overview Metrics ─────────────────────────────────────── */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: "Escrow Prefunded", value: money(overview?.total_loaded ?? 0), icon: Wallet, tone: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8" },
+          { label: "Escrow Prefunded", value: money(overview?.total_loaded ?? 0), icon: Wallet, tone: "text-[#E8C87A] border-[#C4A048]/30 bg-[#C4A048]/8" },
           { label: "Auto-Pay Disbursed", value: money(overview?.total_spent ?? 0), icon: DollarSign, tone: "text-amber-200 border-amber-300/35 bg-amber-300/9" },
           { label: "Active Cards", value: String(overview?.active_cards ?? 0), icon: CreditCard, tone: "text-emerald-200 border-emerald-300/30 bg-emerald-400/8" },
           { label: "1.5% Rebate", value: money(overview?.rebate_accrued ?? 0), icon: Banknote, tone: "text-fuchsia-200 border-fuchsia-300/30 bg-fuchsia-500/8" },
@@ -232,9 +232,9 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
       {tab === "pcard" && (
         <div className="space-y-5">
           {/* Prefund Timeline */}
-          <Card className="border-cyan-300/20 bg-[#07101a]/88">
+          <Card className="border-[#C4A048]/20 bg-[#07101a]/88">
             <CardHeader>
-              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-cyan-200">
+              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-[#E8C87A]">
                 <Landmark className="mr-2 inline h-4 w-4" />
                 Draw → Prefund Cycle
               </CardTitle>
@@ -372,7 +372,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
                     <TableRow key={line.category_id} className="border-slate-800 hover:bg-slate-900/50">
                       <TableCell className="font-mono text-xs text-white">{line.category_name}</TableCell>
                       <TableCell className="text-right font-mono text-xs text-slate-300">{money(line.budgeted)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs text-cyan-300">{money(line.drawn)}</TableCell>
+                      <TableCell className="text-right font-mono text-xs text-[#C4A048]">{money(line.drawn)}</TableCell>
                       <TableCell className="text-right font-mono text-xs text-amber-200">{money(line.spent)}</TableCell>
                       <TableCell className="text-right font-mono text-xs text-slate-400">{money(line.remaining)}</TableCell>
                       <TableCell>
@@ -397,9 +397,9 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
           </Card>
 
           {/* Reconciliation */}
-          <Card className="border-cyan-300/20 bg-[#07101a]/88">
+          <Card className="border-[#C4A048]/20 bg-[#07101a]/88">
             <CardHeader>
-              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-cyan-200">
+              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-[#E8C87A]">
                 <ShieldCheck className="mr-2 inline h-4 w-4" />
                 Draw ↔ Spend Reconciliation
               </CardTitle>
@@ -449,7 +449,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
               <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">Rebate Earned</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white">{money(nestCosts.rebate_earned)}</strong>
             </article>
-            <article className="rounded-[1.25rem] border border-cyan-300/30 bg-cyan-400/8 p-4">
+            <article className="rounded-[1.25rem] border border-[#C4A048]/30 bg-[#C4A048]/8 p-4">
               <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">Reimbursement</span>
               <strong className="mt-2 block font-mono text-2xl font-semibold tracking-[-0.03em] text-white capitalize">{nestCosts.reimbursement_status}</strong>
             </article>
@@ -501,7 +501,7 @@ export function TreasuryDesk({ dealId }: { dealId: string }) {
               { label: "Rebate Rate", value: pct(rebate.rate), tone: "border-amber-300/35 bg-amber-300/9 text-amber-200" },
               { label: "Accrued (this deal)", value: money(rebate.accrued), tone: "border-fuchsia-300/30 bg-fuchsia-500/8 text-fuchsia-200" },
               { label: "Realized", value: money(rebate.realized), tone: "border-emerald-300/30 bg-emerald-400/8 text-emerald-200" },
-              { label: "Projected (36mo)", value: money(rebate.projected_36mo), tone: "border-cyan-300/30 bg-cyan-400/8 text-cyan-200" },
+              { label: "Projected (36mo)", value: money(rebate.projected_36mo), tone: "border-[#C4A048]/30 bg-[#C4A048]/8 text-[#E8C87A]" },
             ].map((m) => (
               <article key={m.label} className={`rounded-[1.25rem] border p-4 ${m.tone}`}>
                 <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-slate-500">{m.label}</span>

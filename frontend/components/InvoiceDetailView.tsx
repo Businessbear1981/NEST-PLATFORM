@@ -158,13 +158,13 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
       {/* Payment Summary */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-cyan-400">Payment Summary</CardTitle>
+          <CardTitle className="text-[#C4A048]">Payment Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
               <p className="text-sm text-muted-foreground mb-1">Total Amount</p>
-              <p className="text-2xl font-bold text-cyan-400">${(invoice.amount / 1000).toFixed(0)}K</p>
+              <p className="text-2xl font-bold text-[#C4A048]">${(invoice.amount / 1000).toFixed(0)}K</p>
             </div>
             <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
               <p className="text-sm text-muted-foreground mb-1">Paid</p>
@@ -179,7 +179,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
           <div>
             <div className="flex justify-between items-center mb-2">
               <p className="text-sm font-semibold text-foreground">Payment Progress</p>
-              <p className="text-sm text-cyan-400">{paymentProgress.toFixed(0)}%</p>
+              <p className="text-sm text-[#C4A048]">{paymentProgress.toFixed(0)}%</p>
             </div>
             <Progress value={paymentProgress} className="h-2" />
           </div>
@@ -199,7 +199,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
         <TabsContent value="overview" className="space-y-4 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-cyan-400">Invoice Details</CardTitle>
+              <CardTitle className="text-[#C4A048]">Invoice Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -228,7 +228,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
         <TabsContent value="lineItems" className="space-y-4 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-cyan-400">Invoice Line Items</CardTitle>
+              <CardTitle className="text-[#C4A048]">Invoice Line Items</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -241,14 +241,14 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
                           {item.quantity} × ${item.unitPrice.toLocaleString()}
                         </p>
                       </div>
-                      <p className="font-bold text-cyan-400">${item.total.toLocaleString()}</p>
+                      <p className="font-bold text-[#C4A048]">${item.total.toLocaleString()}</p>
                     </div>
                   </div>
                 ))}
                 <div className="p-4 bg-slate-700 rounded-lg border border-slate-600 mt-4">
                   <div className="flex justify-between items-center">
                     <p className="font-semibold text-foreground">Total</p>
-                    <p className="text-2xl font-bold text-cyan-400">${invoice.amount.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-[#C4A048]">${invoice.amount.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -260,7 +260,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
         <TabsContent value="payments" className="space-y-4 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-cyan-400">Payment History</CardTitle>
+              <CardTitle className="text-[#C4A048]">Payment History</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {invoice.paymentHistory.map((payment) => (
@@ -298,7 +298,7 @@ export function InvoiceDetailView({ invoiceId }: { invoiceId?: string }) {
         <TabsContent value="documents" className="space-y-4 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-cyan-400">Linked Documents</CardTitle>
+              <CardTitle className="text-[#C4A048]">Linked Documents</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {invoice.linkedDocuments.map((doc) => (

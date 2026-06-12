@@ -76,7 +76,7 @@ export function StressScenarioBuilder() {
           ))}
 
           <div className="grid grid-cols-3 gap-2 pt-2 text-center">
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">DSCR</p><p className="font-mono text-lg font-semibold text-cyan-100">{results.dscr.toFixed(2)}x</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">DSCR</p><p className="font-mono text-lg font-semibold text-[#EDE8DC]">{results.dscr.toFixed(2)}x</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">IRR</p><p className="font-mono text-lg font-semibold text-emerald-100">{results.irr.toFixed(1)}%</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><p className="text-xs text-slate-500">Equity</p><p className="font-mono text-lg font-semibold text-amber-100">${results.equity.toFixed(1)}M</p></div>
           </div>

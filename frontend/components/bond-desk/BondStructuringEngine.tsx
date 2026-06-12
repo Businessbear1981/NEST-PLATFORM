@@ -16,8 +16,8 @@ const SERIES_COLORS: Record<string, string> = {
 const GRADE_COLORS: Record<string, string> = {
   A: "text-emerald-400",
   "BBB+": "text-emerald-300",
-  BBB: "text-cyan-400",
-  "BBB-": "text-cyan-300",
+  BBB: "text-[#C4A048]",
+  "BBB-": "text-[#C4A048]",
   "BB+": "text-amber-400",
   BB: "text-amber-300",
   "Sub-IG": "text-rose-400",
@@ -255,7 +255,7 @@ export default function BondStructuringEngine() {
                       </span>
                     ))}
                     {(t as any).put_schedule?.map((p: any, i: number) => (
-                      <span key={`put-${i}`} className="rounded bg-cyan-500/15 px-1.5 py-0.5 font-mono text-[0.5rem] text-cyan-400">
+                      <span key={`put-${i}`} className="rounded bg-[#C4A048]/15 px-1.5 py-0.5 font-mono text-[0.5rem] text-[#C4A048]">
                         PUT: {p.trigger} @ {p.date?.slice(0, 7)}
                       </span>
                     ))}
@@ -341,7 +341,7 @@ export default function BondStructuringEngine() {
                     onClick={() => setShowPutFields(!showPutFields)}
                     className={`w-full rounded-lg border px-3 py-1.5 font-mono text-[0.6rem] transition-all ${
                       showPutFields
-                        ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-400"
+                        ? "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#C4A048]"
                         : "border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-400"
                     }`}
                   >
@@ -428,7 +428,7 @@ export default function BondStructuringEngine() {
                       onClick={() => setActiveStress(name)}
                       className={`rounded-lg border p-2 text-left transition-all ${
                         activeStress === name
-                          ? "border-cyan-500/40 bg-cyan-500/10"
+                          ? "border-[#C4A048]/40 bg-[#C4A048]/10"
                           : "border-white/5 bg-white/[0.02] hover:border-white/10"
                       }`}
                     >
@@ -480,7 +480,7 @@ export default function BondStructuringEngine() {
                         <span key={`c-${i}`} className="text-emerald-400">CALL {c.type} @ {c.date?.slice(0, 7)}</span>
                       ))}
                       {t.put_schedule?.map((p: any, i: number) => (
-                        <span key={`p-${i}`} className="text-cyan-400">PUT {p.trigger} @ {p.date?.slice(0, 7)}</span>
+                        <span key={`p-${i}`} className="text-[#C4A048]">PUT {p.trigger} @ {p.date?.slice(0, 7)}</span>
                       ))}
                     </div>
                   ))}
@@ -493,7 +493,7 @@ export default function BondStructuringEngine() {
                       <span className="font-mono text-[0.55rem] uppercase text-slate-500">Recommendation</span>
                       <span className={`rounded-full px-2 py-0.5 font-mono text-[0.6rem] font-bold ${
                         callPutResult.recommendation === "EXECUTE_CALL" ? "bg-emerald-500/20 text-emerald-400" :
-                        callPutResult.recommendation === "CALL_ELIGIBLE" ? "bg-cyan-500/20 text-cyan-400" :
+                        callPutResult.recommendation === "CALL_ELIGIBLE" ? "bg-[#C4A048]/20 text-[#C4A048]" :
                         callPutResult.recommendation === "PUT_ALERT" ? "bg-rose-500/20 text-rose-400" :
                         callPutResult.recommendation === "MONITOR" ? "bg-amber-500/20 text-amber-400" :
                         "bg-slate-500/20 text-slate-400"

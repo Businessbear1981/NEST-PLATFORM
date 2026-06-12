@@ -42,7 +42,7 @@ export function BridgeFinancing() {
 
   const statusColor: Record<string, string> = {
     active: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10",
-    repaid: "text-cyan-300 border-cyan-400/30 bg-cyan-400/10",
+    repaid: "text-[#C4A048] border-[#C4A048]/30 bg-[#C4A048]/10",
     underwriting: "text-amber-300 border-amber-400/30 bg-amber-400/10",
   };
 
@@ -70,7 +70,7 @@ export function BridgeFinancing() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
           { label: "Fund AUM Target", value: fmt(FUND_PARAMS.target_aum_usd), icon: DollarSign, color: "text-emerald-200" },
-          { label: "Deployed", value: fmt(totalDeployed), icon: TrendingUp, color: "text-cyan-200" },
+          { label: "Deployed", value: fmt(totalDeployed), icon: TrendingUp, color: "text-[#E8C87A]" },
           { label: "Available", value: fmt(available), icon: Shield, color: "text-amber-200" },
           { label: "Equity Positions", value: String(totalEquity), icon: Percent, color: "text-fuchsia-200" },
         ].map(m => (
@@ -90,7 +90,7 @@ export function BridgeFinancing() {
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm sm:grid-cols-3">
           <div><span className="text-slate-500">Interest Rate:</span> <span className="font-semibold text-emerald-200">{FUND_PARAMS.interest_rate_pct}%</span></div>
           <div><span className="text-slate-500">Equity Kicker:</span> <span className="font-semibold text-fuchsia-200">{FUND_PARAMS.equity_kicker_pct_range[0]}–{FUND_PARAMS.equity_kicker_pct_range[1]}%</span></div>
-          <div><span className="text-slate-500">Term:</span> <span className="font-semibold text-cyan-200">{FUND_PARAMS.term_months_range[0]}–{FUND_PARAMS.term_months_range[1]} months</span></div>
+          <div><span className="text-slate-500">Term:</span> <span className="font-semibold text-[#E8C87A]">{FUND_PARAMS.term_months_range[0]}–{FUND_PARAMS.term_months_range[1]} months</span></div>
           <div><span className="text-slate-500">Max Single Loan:</span> <span className="font-semibold text-amber-200">{FUND_PARAMS.max_single_loan_pct}% of AUM</span></div>
           <div><span className="text-slate-500">Takeout:</span> <span className="font-semibold text-white">{FUND_PARAMS.takeout}</span></div>
           <div><span className="text-slate-500">Risk:</span> <span className="font-semibold text-emerald-200">{FUND_PARAMS.risk_level}</span></div>
@@ -133,7 +133,7 @@ export function BridgeFinancing() {
                 <div className="mt-3 grid grid-cols-2 gap-3 border-t border-white/10 pt-3 sm:grid-cols-4">
                   <div><p className="font-mono text-[0.5rem] uppercase text-slate-500">Use of Proceeds</p><p className="text-sm text-white">{loan.use}</p></div>
                   <div><p className="font-mono text-[0.5rem] uppercase text-slate-500">Term</p><p className="text-sm text-white">{loan.term} months</p></div>
-                  <div><p className="font-mono text-[0.5rem] uppercase text-slate-500">Takeout Bond</p><p className="text-sm text-cyan-200">{loan.takeout_bond}</p></div>
+                  <div><p className="font-mono text-[0.5rem] uppercase text-slate-500">Takeout Bond</p><p className="text-sm text-[#E8C87A]">{loan.takeout_bond}</p></div>
                   <div><p className="font-mono text-[0.5rem] uppercase text-slate-500">Equity Type</p><p className="text-sm text-fuchsia-200">{FUND_PARAMS.equity_type}</p></div>
                 </div>
               )}

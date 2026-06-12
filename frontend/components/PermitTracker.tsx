@@ -11,7 +11,7 @@ interface PermitTrackerProps {
 
 const STATUS_COLORS: Record<PermitStatus, string> = {
   not_started: 'bg-muted text-muted-foreground',
-  in_progress: 'bg-cyan-500/20 text-cyan-700',
+  in_progress: 'bg-[#C4A048]/20 text-cyan-700',
   approved: 'bg-emerald-500/20 text-emerald-700',
   denied: 'bg-red-500/20 text-red-700',
   expired: 'bg-yellow-500/20 text-yellow-700',
@@ -54,7 +54,7 @@ export function PermitTracker({ dealId }: PermitTrackerProps) {
           <p className="text-xs text-emerald-700 mb-1">Approved</p>
           <p className="text-2xl font-bold text-emerald-600">{completedPermits.length}</p>
         </Card>
-        <Card className="p-4 border-border bg-cyan-500/5">
+        <Card className="p-4 border-border bg-[#C4A048]/5">
           <p className="text-xs text-cyan-700 mb-1">In Progress</p>
           <p className="text-2xl font-bold text-cyan-600">{inProgressPermits.length}</p>
         </Card>

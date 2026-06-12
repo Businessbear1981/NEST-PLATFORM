@@ -22,7 +22,7 @@ export default function BondDeskPage() {
           className="min-h-screen text-slate-100"
           style={{
             background:
-              "radial-gradient(ellipse at 8% 0%, rgba(34,211,238,0.09) 0%, transparent 45%)," +
+              "radial-gradient(ellipse at 8% 0%, rgba(196,160,72,0.09) 0%, transparent 45%)," +
               "radial-gradient(ellipse at 92% 0%, rgba(196,160,72,0.11) 0%, transparent 40%)," +
               "radial-gradient(ellipse at 50% 100%, rgba(196,160,72,0.05) 0%, transparent 50%)," +
               "linear-gradient(180deg,#020b14 0%,#030A06 40%,#020b14 100%)",
@@ -64,7 +64,7 @@ export default function BondDeskPage() {
               <div className="flex items-center gap-6">
                 {[
                   { label: "ENGINE", value: "ACTIVE", color: "text-emerald-400" },
-                  { label: "FRED FEED", value: "LIVE", color: "text-cyan-400" },
+                  { label: "FRED FEED", value: "LIVE", color: "text-[#C4A048]" },
                   { label: "CMBS DESK", value: "OPEN", color: "text-[#C4A048]" },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex flex-col items-end gap-0.5">

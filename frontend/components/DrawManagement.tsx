@@ -37,7 +37,7 @@ function getStatusColor(status: Draw["status"]): string {
     case "disbursed":
       return "text-emerald-400";
     case "approved":
-      return "text-cyan-400";
+      return "text-[#C4A048]";
     case "under-review":
       return "text-yellow-400";
     case "submitted":
@@ -77,10 +77,10 @@ export default function DrawManagement({
           <CardContent>
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-2xl font-bold text-cyan-400">${(totalDrawsRequested / 1_000_000).toFixed(1)}M</p>
+                <p className="text-2xl font-bold text-[#C4A048]">${(totalDrawsRequested / 1_000_000).toFixed(1)}M</p>
                 <p className="text-xs text-slate-500 mt-1">{draws.length} draws</p>
               </div>
-              <DollarSign size={20} className="text-cyan-400 opacity-50" />
+              <DollarSign size={20} className="text-[#C4A048] opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -195,7 +195,7 @@ export default function DrawManagement({
                 {draws.map((draw) => (
                   <TableRow key={draw.drawId} className="border-slate-700 hover:bg-slate-900/50">
                     <TableCell className="text-xs font-mono text-slate-300">#{draw.drawNumber}</TableCell>
-                    <TableCell className="text-xs font-mono text-cyan-400">${(draw.requestedAmount / 1000).toFixed(0)}K</TableCell>
+                    <TableCell className="text-xs font-mono text-[#C4A048]">${(draw.requestedAmount / 1000).toFixed(0)}K</TableCell>
                     <TableCell>
                       <span className={`text-xs font-mono ${getStatusColor(draw.status)}`}>{draw.status}</span>
                     </TableCell>
@@ -252,7 +252,7 @@ export default function DrawManagement({
                       <p className="text-sm font-mono text-slate-300">Draw #{draw.drawNumber}</p>
                       <p className="text-xs text-slate-500">{draw.description}</p>
                     </div>
-                    <span className="text-sm font-mono text-cyan-400">${(draw.requestedAmount / 1000).toFixed(0)}K</span>
+                    <span className="text-sm font-mono text-[#C4A048]">${(draw.requestedAmount / 1000).toFixed(0)}K</span>
                   </div>
                   <div className="flex gap-2 text-xs">
                     <span className={draw.photos > 0 ? "text-emerald-400" : "text-red-400"}>

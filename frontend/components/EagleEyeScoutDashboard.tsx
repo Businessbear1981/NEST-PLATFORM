@@ -36,12 +36,12 @@ function SignalCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            {isMA ? <Briefcase size={14} className="text-cyan-300" /> : <Building2 size={14} className="text-emerald-300" />}
+            {isMA ? <Briefcase size={14} className="text-[#C4A048]" /> : <Building2 size={14} className="text-emerald-300" />}
             <h3 className="font-mono text-sm font-semibold text-white">{signal.entity}</h3>
             <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.56rem] font-semibold uppercase ${STATUS_COLORS[signal.status]}`}>
               {signal.status}
             </span>
-            <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.52rem] uppercase ${isMA ? "border-cyan-300/20 bg-cyan-400/8 text-cyan-200" : "border-emerald-300/20 bg-emerald-400/8 text-emerald-200"}`}>
+            <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.52rem] uppercase ${isMA ? "border-[#C4A048]/20 bg-[#C4A048]/8 text-[#E8C87A]" : "border-emerald-300/20 bg-emerald-400/8 text-emerald-200"}`}>
               {isMA ? "M&A" : "CRE"}
             </span>
             {creSignal?.darkZone && (
@@ -100,7 +100,7 @@ function SignalCard({
                 </span>
               )}
               {maSignal.techEnabled && (
-                <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase text-cyan-300">
+                <span className="rounded-full border border-[#C4A048]/30 bg-[#C4A048]/10 px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase text-[#C4A048]">
                   Tech-Enabled
                 </span>
               )}
@@ -123,7 +123,7 @@ function SignalCard({
             </p>
           )}
           <div className="flex items-center justify-end gap-1">
-            <Target size={12} className={isMA ? "text-cyan-300" : "text-emerald-300"} />
+            <Target size={12} className={isMA ? "text-[#C4A048]" : "text-emerald-300"} />
             <span className="font-mono text-sm font-semibold text-white">{signal.score}/100</span>
           </div>
         </div>
@@ -183,13 +183,13 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
   if (summaryMode) {
     return (
       <div className="p-4">
-        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <Eye size={14} /> EagleEye Scout
         </div>
         <div className="mt-3 grid grid-cols-4 gap-3">
           <div>
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">M&A Signals</p>
-            <p className="font-mono text-xl font-semibold text-cyan-200">{maCount}</p>
+            <p className="font-mono text-xl font-semibold text-[#E8C87A]">{maCount}</p>
           </div>
           <div>
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">CRE Signals</p>
@@ -214,7 +214,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
             <Eye size={17} /> EagleEye — Deal Intelligence Radar
           </div>
           <p className="mt-1 text-sm text-slate-400">
@@ -229,7 +229,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
       <div className="grid grid-cols-6 gap-3">
         {[
           { label: "Total Signals", value: `${allSignals.length}`, tone: "text-white" },
-          { label: "M&A Targets", value: `${maCount}`, tone: "text-cyan-200" },
+          { label: "M&A Targets", value: `${maCount}`, tone: "text-[#E8C87A]" },
           { label: "CRE Deals", value: `${creCount}`, tone: "text-emerald-200" },
           { label: "Hot Leads", value: `${hotCount}`, tone: "text-red-200" },
           { label: "Pipeline", value: formatMoney(totalPipeline), tone: "text-amber-100" },
@@ -279,7 +279,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
           {activeState && (
             <div className="flex items-center gap-2">
               <span className="font-mono text-[0.62rem] text-slate-400">
-                Filtered: <span className="text-cyan-200">{activeState}</span>
+                Filtered: <span className="text-[#E8C87A]">{activeState}</span>
               </span>
               <Button
                 onClick={() => setActiveState(null)}
@@ -292,7 +292,7 @@ export default function EagleEyeScoutDashboard({ summaryMode }: { summaryMode?: 
 
           {/* Signal Feed */}
           <div className="flex items-center justify-between">
-            <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+            <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A]">
               M&A Signals — ${30}M-$150M Rev, Sub-$20M EBITDA
             </h3>
             <span className="font-mono text-[0.62rem] text-slate-500">

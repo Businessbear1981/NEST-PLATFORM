@@ -117,7 +117,7 @@ function statusBadge(status: BondStatus) {
   if (status === 'ready') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
   if (status === 'blocked') return 'border-red-300/30 bg-red-500/10 text-red-100';
   if (status === 'review') return 'border-amber-300/35 bg-amber-400/10 text-amber-100';
-  return 'border-cyan-300/30 bg-cyan-400/10 text-cyan-100';
+  return 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]';
 }
 
 export function LiveBondMarketTerminal() {
@@ -149,7 +149,7 @@ export function LiveBondMarketTerminal() {
   return (
     <div className="space-y-6 text-slate-100" data-testid="live-bond-desk">
       <section className="relative overflow-hidden rounded-[1.8rem] border border-rose-300/25 bg-[#06070d] p-5 shadow-[0_0_85px_rgba(244,63,94,0.11)] sm:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(244,63,94,0.19),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(34,211,238,0.14),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.74),rgba(2,6,23,0.96))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(244,63,94,0.19),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(196,160,72,0.14),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.74),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <div className="flex flex-wrap items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.22em] text-rose-200">
@@ -185,7 +185,7 @@ export function LiveBondMarketTerminal() {
       <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-cyan-100">
+            <CardTitle className="flex items-center gap-2 text-[#EDE8DC]">
               <RadioTower className="h-5 w-5" /> Interactive market tape
             </CardTitle>
           </CardHeader>
@@ -209,7 +209,7 @@ export function LiveBondMarketTerminal() {
                     <tr
                       key={bond.id}
                       onClick={() => setSelectedId(bond.id)}
-                      className={`cursor-pointer border-b border-slate-900 transition hover:bg-cyan-400/5 ${isSelected ? 'bg-cyan-400/10' : ''}`}
+                      className={`cursor-pointer border-b border-slate-900 transition hover:bg-[#C4A048]/5 ${isSelected ? 'bg-[#C4A048]/10' : ''}`}
                     >
                       <td className="py-4 pr-4">
                         <p className="font-semibold text-white">{bond.id}</p>
@@ -259,10 +259,10 @@ export function LiveBondMarketTerminal() {
                     <p className="mt-2 text-3xl font-black text-emerald-200">{money(savingsEstimate)}</p>
                   </div>
                 </div>
-                <div className="space-y-3 rounded-2xl border border-cyan-300/20 bg-cyan-400/5 p-4">
+                <div className="space-y-3 rounded-2xl border border-[#C4A048]/20 bg-[#C4A048]/5 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-sm text-slate-300">Curve shift</span>
-                    <span className="font-mono text-cyan-100">{rateShift >= 0 ? '+' : ''}{rateShift} bp</span>
+                    <span className="font-mono text-[#EDE8DC]">{rateShift >= 0 ? '+' : ''}{rateShift} bp</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {[-50, -25, 0, 25, 50].map((shift) => (
@@ -273,7 +273,7 @@ export function LiveBondMarketTerminal() {
                   </div>
                   <div className="flex items-center justify-between gap-3 pt-2">
                     <span className="text-sm text-slate-300">Spread shift</span>
-                    <span className="font-mono text-cyan-100">{spreadShift >= 0 ? '+' : ''}{spreadShift} bp</span>
+                    <span className="font-mono text-[#EDE8DC]">{spreadShift >= 0 ? '+' : ''}{spreadShift} bp</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {[-20, 0, 25, 50, 75].map((shift) => (
@@ -325,7 +325,7 @@ export function LiveBondMarketTerminal() {
                   <p className="text-xs text-slate-400">{action}</p>
                 </div>
                 <div className="text-right font-mono text-sm">
-                  <p className="text-cyan-100">{Number(spread).toFixed(0)} bp</p>
+                  <p className="text-[#EDE8DC]">{Number(spread).toFixed(0)} bp</p>
                   <p className="text-emerald-100">{Number(price).toFixed(2)} px</p>
                 </div>
               </div>
@@ -333,16 +333,16 @@ export function LiveBondMarketTerminal() {
           </CardContent>
         </Card>
 
-        <Card className="border-cyan-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-cyan-100">
+            <CardTitle className="flex items-center gap-2 text-[#EDE8DC]">
               <ClipboardCheck className="h-5 w-5" /> Desk action log
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {deskLog.map((event, index) => (
               <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
-                {index === 0 ? <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 2 ? <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" /> : <ArrowDownRight className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}
+                {index === 0 ? <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 2 ? <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" /> : <ArrowDownRight className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}
                 <span>{event}</span>
               </div>
             ))}

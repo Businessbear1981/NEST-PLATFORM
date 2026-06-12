@@ -34,7 +34,7 @@ export function DealsDashboard() {
   };
 
   const getStatusColor = (status: string) => {
-    if (status === "active") return "bg-cyan-950/50 border-cyan-900/50 text-cyan-400";
+    if (status === "active") return "bg-[#C4A048]/50 border-[#C4A048]/50 text-[#C4A048]";
     if (status === "closed") return "bg-green-950/50 border-green-900/50 text-green-400";
     if (status === "pipeline") return "bg-amber-950/50 border-amber-900/50 text-amber-400";
     return "bg-gray-950/50 border-gray-900/50 text-gray-400";
@@ -44,7 +44,7 @@ export function DealsDashboard() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Landmark className="text-blue-400" />
+          <Landmark className="text-[#C4A048]" />
           Deals Dashboard
         </h2>
         <p className="text-sm text-gray-400 mt-1">
@@ -62,7 +62,7 @@ export function DealsDashboard() {
           {dealsQuery.data && dealsQuery.data.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {dealsQuery.data.map((deal) => (
-                <Card key={deal.id} className="p-4 border-blue-900/50 bg-blue-950/20">
+                <Card key={deal.id} className="p-4 border-[#C4A048]/50 bg-[#C4A048]/20">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h3 className="font-bold text-lg">{deal.name}</h3>
@@ -75,7 +75,7 @@ export function DealsDashboard() {
 
                   <div className="mb-3">
                     <span className="text-gray-500 text-sm">Amount</span>
-                    <p className="font-mono text-blue-300 font-bold">
+                    <p className="font-mono text-[#C4A048] font-bold">
                       ${parseFloat(deal.amount).toLocaleString()}M
                     </p>
                   </div>
@@ -89,7 +89,7 @@ export function DealsDashboard() {
           )}
 
           {/* Create New Deal */}
-          <Card className="p-6 border-blue-900/50 bg-blue-950/20">
+          <Card className="p-6 border-[#C4A048]/50 bg-[#C4A048]/20">
             <h3 className="font-bold mb-4">Create New Deal</h3>
 
             <div className="grid grid-cols-2 gap-4 mb-4">

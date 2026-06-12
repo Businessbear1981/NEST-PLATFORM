@@ -9,7 +9,7 @@ export default function CovenantMonitoring({ dealId, summaryMode }: { dealId?: s
   if (summaryMode) {
     return (
       <div className="p-4">
-        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CheckCircle2 size={14} /> Covenant Monitoring
         </div>
         <p className="mt-2 font-mono text-sm text-slate-400">Real-time covenant compliance tracking</p>
@@ -20,12 +20,12 @@ export default function CovenantMonitoring({ dealId, summaryMode }: { dealId?: s
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CheckCircle2 size={17} /> Covenant Monitoring
         </div>
         <button
           onClick={() => covenantMutation.mutate({ dealId: dealId || "demo-deal", covenants: [] })}
-          className="rounded-lg border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/20"
+          className="rounded-lg border border-[#C4A048]/30 bg-[#C4A048]/10 px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-wider text-[#E8C87A] hover:bg-[#C4A048]/20"
         >
           {covenantMutation.isPending ? "Running..." : "Run Covenant Sweep"}
         </button>
@@ -42,7 +42,7 @@ export default function CovenantMonitoring({ dealId, summaryMode }: { dealId?: s
           <div className="grid grid-cols-3 gap-2 text-[0.56rem] text-slate-400">
             <div>Threshold: {c.threshold ?? c.threshold_value}</div>
             <div>Current: {c.current ?? c.current_value}</div>
-            <div className="text-cyan-200">Margin: {c.margin_pct ?? "—"}%</div>
+            <div className="text-[#E8C87A]">Margin: {c.margin_pct ?? "—"}%</div>
           </div>
         </div>
       ))}

@@ -9,7 +9,7 @@ interface AgentEventStreamProps {
 }
 
 const SEVERITY_COLORS = {
-  info: 'bg-blue-500/20 text-blue-700 border-blue-500/30',
+  info: 'bg-[#C4A048]/20 text-[#C4A048] border-[#C4A048]/30',
   warning: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30',
   error: 'bg-red-500/20 text-red-700 border-red-500/30',
   success: 'bg-emerald-500/20 text-emerald-700 border-emerald-500/30',

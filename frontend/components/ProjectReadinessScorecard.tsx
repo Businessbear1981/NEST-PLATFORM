@@ -18,7 +18,7 @@ const STATUS_ICONS = {
 
 const STATUS_COLORS = {
   complete: 'bg-emerald-500/10 text-emerald-700',
-  in_progress: 'bg-cyan-500/10 text-cyan-700',
+  in_progress: 'bg-[#C4A048]/10 text-cyan-700',
   not_started: 'bg-muted text-muted-foreground',
   blocked: 'bg-red-500/10 text-red-700',
 };
@@ -35,7 +35,7 @@ export function ProjectReadinessScorecard({ dealId }: ProjectReadinessScorecardP
 
   const getScoreBg = (score: number) => {
     if (score >= 80) return 'bg-emerald-500/10';
-    if (score >= 60) return 'bg-cyan-500/10';
+    if (score >= 60) return 'bg-[#C4A048]/10';
     if (score >= 40) return 'bg-yellow-500/10';
     return 'bg-red-500/10';
   };

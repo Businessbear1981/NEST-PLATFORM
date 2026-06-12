@@ -489,9 +489,9 @@ function ESGPanel({ esgMutation }: { esgMutation: any }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cyan-200">ESG Scoring & Green Bond Eligibility</h3>
+        <h3 className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A]">ESG Scoring & Green Bond Eligibility</h3>
         <Button onClick={() => esgMutation.mutate({ scores: {} })} disabled={esgMutation.isPending}
-          className="rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2 font-mono text-[0.68rem] font-semibold uppercase text-cyan-100 hover:bg-cyan-400/20">
+          className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2 font-mono text-[0.68rem] font-semibold uppercase text-[#EDE8DC] hover:bg-[#C4A048]/20">
           {esgMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Run ESG Score"}
         </Button>
       </div>
@@ -504,7 +504,7 @@ function ESGPanel({ esgMutation }: { esgMutation: any }) {
               <p className="font-mono text-[0.52rem] text-slate-500">Grade: {data.esg_grade}</p>
             </div>
             {["environmental", "social", "governance"].map((pillar) => {
-              const colors: Record<string, string> = { environmental: "text-emerald-200 border-emerald-300/25 bg-emerald-400/8", social: "text-cyan-200 border-cyan-300/25 bg-cyan-400/8", governance: "text-amber-200 border-amber-300/25 bg-amber-300/8" };
+              const colors: Record<string, string> = { environmental: "text-emerald-200 border-emerald-300/25 bg-emerald-400/8", social: "text-[#E8C87A] border-[#C4A048]/25 bg-[#C4A048]/8", governance: "text-amber-200 border-amber-300/25 bg-amber-300/8" };
               return (
                 <div key={pillar} className={`rounded-xl border p-3 text-center ${colors[pillar]}`}>
                   <p className="font-mono text-[0.56rem] uppercase text-slate-500">{pillar}</p>

@@ -22,8 +22,8 @@ interface InvoiceListProps {
 
 const STATUS_COLORS: Record<InvoiceStatus, string> = {
   draft: 'bg-slate-500/20 text-slate-700',
-  sent: 'bg-blue-500/20 text-blue-700',
-  viewed: 'bg-cyan-500/20 text-cyan-700',
+  sent: 'bg-[#C4A048]/20 text-[#C4A048]',
+  viewed: 'bg-[#C4A048]/20 text-cyan-700',
   partial: 'bg-yellow-500/20 text-yellow-700',
   paid: 'bg-emerald-500/20 text-emerald-700',
   overdue: 'bg-red-500/20 text-red-700',

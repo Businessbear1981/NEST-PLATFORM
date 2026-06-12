@@ -77,7 +77,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
         </h2>
         <p className="text-muted-foreground mt-1">Amount Due: ${paymentAmount.toLocaleString()}</p>
         {invoiceId && (
-          <p className="mt-1 font-mono text-xs uppercase tracking-[0.2em] text-cyan-400">
+          <p className="mt-1 font-mono text-xs uppercase tracking-[0.2em] text-[#C4A048]">
             Payment prefilled for {invoiceId}
           </p>
         )}
@@ -86,7 +86,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
       {step === 'method' && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-cyan-400">Select Payment Method</CardTitle>
+            <CardTitle className="text-[#C4A048]">Select Payment Method</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
@@ -96,7 +96,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
                   onClick={() => setSelectedMethod(method.id)}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition ${
                     selectedMethod === method.id
-                      ? 'border-cyan-500 bg-cyan-500/10'
+                      ? 'border-cyan-500 bg-[#C4A048]/10'
                       : 'border-slate-700 bg-slate-800 hover:border-slate-600'
                   }`}
                 >
@@ -121,7 +121,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
             <div className="pt-4 border-t border-slate-700">
               <label className="text-sm font-semibold text-foreground mb-2 block">Payment Amount</label>
               <div className="flex gap-2">
-                <span className="text-2xl font-bold text-cyan-400">$</span>
+                <span className="text-2xl font-bold text-[#C4A048]">$</span>
                 <input
                   type="number"
                   value={paymentAmount}
@@ -142,14 +142,14 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
       {step === 'review' && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-cyan-400">Review Payment</CardTitle>
+            <CardTitle className="text-[#C4A048]">Review Payment</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 space-y-3">
               {invoiceId && (
                 <div className="flex justify-between">
                   <p className="text-muted-foreground">Invoice</p>
-                  <p className="font-mono text-cyan-400">{invoiceId}</p>
+                  <p className="font-mono text-[#C4A048]">{invoiceId}</p>
                 </div>
               )}
               <div className="flex justify-between">
@@ -158,7 +158,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               </div>
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Amount</p>
-                <p className="font-bold text-cyan-400">${paymentAmount.toLocaleString()}</p>
+                <p className="font-bold text-[#C4A048]">${paymentAmount.toLocaleString()}</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Processing Fee</p>
@@ -166,7 +166,7 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               </div>
               <div className="border-t border-slate-600 pt-3 flex justify-between">
                 <p className="font-semibold text-foreground">Total</p>
-                <p className="text-xl font-bold text-cyan-400">${paymentAmount.toLocaleString()}</p>
+                <p className="text-xl font-bold text-[#C4A048]">${paymentAmount.toLocaleString()}</p>
               </div>
             </div>
 
@@ -202,12 +202,12 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               {invoiceId && (
                 <div className="flex justify-between">
                   <p className="text-muted-foreground">Invoice</p>
-                  <p className="font-mono text-cyan-400">{invoiceId}</p>
+                  <p className="font-mono text-[#C4A048]">{invoiceId}</p>
                 </div>
               )}
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Receipt ID</p>
-                <p className="font-mono text-cyan-400">{receipt.id}</p>
+                <p className="font-mono text-[#C4A048]">{receipt.id}</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Reference</p>
@@ -235,15 +235,15 @@ export function PaymentProcessing({ amount, invoiceId }: { amount: number; invoi
               <p className="text-sm text-muted-foreground mb-2">What happens next?</p>
               <ul className="space-y-2 text-sm text-foreground">
                 <li className="flex gap-2">
-                  <span className="text-cyan-400">•</span>
+                  <span className="text-[#C4A048]">•</span>
                   <span>Your bank will process the payment within 1-2 business days</span>
                 </li>
                 <li className="flex gap-2">
-                  <span className="text-cyan-400">•</span>
+                  <span className="text-[#C4A048]">•</span>
                   <span>You'll receive a confirmation email once the payment clears</span>
                 </li>
                 <li className="flex gap-2">
-                  <span className="text-cyan-400">•</span>
+                  <span className="text-[#C4A048]">•</span>
                   <span>Your invoice will be updated to reflect the payment</span>
                 </li>
               </ul>

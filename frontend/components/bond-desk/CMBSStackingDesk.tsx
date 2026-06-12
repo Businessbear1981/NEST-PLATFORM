@@ -328,7 +328,7 @@ export default function CMBSStackingDesk() {
                 <button
                   onClick={handleAddToPool}
                   disabled={poolDealIds.has(state.activeDeal.id)}
-                  className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-400 px-4 py-2 font-mono text-xs font-semibold text-[#030A06] disabled:opacity-30 transition-all hover:shadow-[0_0_16px_rgba(34,211,238,0.3)]"
+                  className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-400 px-4 py-2 font-mono text-xs font-semibold text-[#030A06] disabled:opacity-30 transition-all hover:shadow-[0_0_16px_rgba(196,160,72,0.3)]"
                 >
                   {poolDealIds.has(state.activeDeal.id) ? "Already in Pool" : "Add to CMBS Pool"}
                 </button>
@@ -354,7 +354,7 @@ export default function CMBSStackingDesk() {
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="group rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3"
+                    className="group rounded-xl border border-[#C4A048]/20 bg-cyan-500/[0.04] p-3"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-[Space_Grotesk] text-sm text-slate-200">{p.deal.name}</span>

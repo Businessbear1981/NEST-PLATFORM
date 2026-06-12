@@ -75,7 +75,7 @@ export function CompliancePortal() {
     switch (status) {
       case "approved": return "border-green-500/30 bg-green-500/10 text-green-100";
       case "rejected": return "border-red-500/30 bg-red-500/10 text-red-100";
-      case "pending": return "border-cyan-500/30 bg-cyan-500/10 text-cyan-100";
+      case "pending": return "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]";
       case "archived": return "border-slate-600 bg-slate-700 text-slate-200";
       default: return "border-slate-700 bg-slate-800 text-slate-300";
     }
@@ -108,8 +108,8 @@ export function CompliancePortal() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-cyan-300/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
-        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-cyan-200"><ShieldCheck className="h-4 w-4" /> Compliance Portal · working governance console</p>
+      <div className="rounded-3xl border border-[#C4A048]/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
+        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#E8C87A]"><ShieldCheck className="h-4 w-4" /> Compliance Portal · working governance console</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Compliance Portal</h1>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-muted-foreground">Approval workflows, communication archive, surveillance alerts, and retention records now expose stateful actions instead of static status badges.</p>
         <p className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-4 text-sm text-emerald-100"><CheckCircle2 className="mr-2 inline h-4 w-4" /> {complianceLog}</p>
@@ -125,7 +125,7 @@ export function CompliancePortal() {
 
         <TabsContent value="approvals" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><Mail className="h-5 w-5" /> Communication Approval Queue</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-[#C4A048]"><Mail className="h-5 w-5" /> Communication Approval Queue</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {communications.map((comm) => (
                 <div key={comm.id} className={`rounded-lg border p-4 ${getStatusColor(comm.status)}`}>
@@ -139,7 +139,7 @@ export function CompliancePortal() {
 
         <TabsContent value="surveillance" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><AlertTriangle className="h-5 w-5" /> Surveillance Alerts</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-[#C4A048]"><AlertTriangle className="h-5 w-5" /> Surveillance Alerts</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {alerts.map((alert) => {
                 const isAcknowledged = acknowledgedAlerts.includes(alert.id);
@@ -151,7 +151,7 @@ export function CompliancePortal() {
 
         <TabsContent value="archive" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><Archive className="h-5 w-5" /> Communication Archive</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-[#C4A048]"><Archive className="h-5 w-5" /> Communication Archive</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {communications.filter((c) => c.status === "approved" || c.status === "archived").map((comm) => (
                 <div key={comm.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4"><div className="mb-2 flex items-start justify-between gap-3"><div className="flex-1"><p className="font-semibold text-foreground">{comm.subject}</p><p className="text-sm text-muted-foreground">{comm.from} → {comm.to}</p></div><Badge className={comm.status === "archived" ? "bg-slate-600 text-white" : "bg-green-600 text-white"}>{comm.status === "archived" ? "ARCHIVE LOCKED" : "APPROVED"}</Badge></div><div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs text-muted-foreground">{comm.timestamp.toLocaleString()}</p>{comm.status === "approved" && <Button size="sm" variant="outline" className="text-xs" onClick={() => resolveCommunication(comm.id, "archived")}><Archive className="mr-2 h-3 w-3" /> Lock Archive</Button>}</div></div>
@@ -162,7 +162,7 @@ export function CompliancePortal() {
 
         <TabsContent value="records" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-cyan-400">Retained Records</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-[#C4A048]">Retained Records</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {records.map((record) => (
                 <div key={record.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4"><div className="mb-2 flex items-start justify-between gap-3"><div className="flex-1"><div className="mb-1 flex items-center gap-2"><p className="font-semibold text-foreground">{record.description}</p>{record.locked && <Badge variant="outline" className="text-xs"><FileLock2 className="mr-1 h-3 w-3" /> Locked</Badge>}</div><p className="text-sm text-muted-foreground">{record.type}</p></div><Button size="sm" variant="outline" onClick={() => extendRetention(record.id)}>Extend Retention</Button></div><div className="flex items-center justify-between text-xs text-muted-foreground"><span>Filed: {record.date.toLocaleDateString()}</span><span>Retention: {record.retentionDays} days</span></div></div>

@@ -26,7 +26,7 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
   if (summaryMode) {
     return (
       <div className="p-4">
-        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CloudRain size={14} /> Climate Resilience
         </div>
         <p className="mt-2 font-mono text-sm text-slate-400">Physical + transition risk scoring</p>
@@ -37,15 +37,15 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <CloudRain size={17} /> Climate Resilience Assessment
         </div>
         <div className="flex gap-2">
-          <select value={state} onChange={(e) => setState(e.target.value)} className="rounded-xl border border-cyan-300/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none">
+          <select value={state} onChange={(e) => setState(e.target.value)} className="rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 font-mono text-sm text-slate-100 outline-none">
             {["FL", "CA", "TX", "AZ", "WA"].map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <Button onClick={() => transitionRisk.mutate({ dealId: dealId || "demo-deal", sector: "healthcare" })} disabled={transitionRisk.isPending || physicalRisk.isLoading}
-            className="rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-cyan-100 hover:bg-cyan-400/20">
+            className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-[#EDE8DC] hover:bg-[#C4A048]/20">
             {transitionRisk.isPending || physicalRisk.isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Assess"}
           </Button>
         </div>
@@ -99,7 +99,7 @@ export default function ClimateResilienceDashboard({ dealId, summaryMode }: { de
               {transition.mitigation_actions.map((m: string, i: number) => (
                 <div key={i} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2">
                   <span className="font-mono text-sm text-white">{m}</span>
-                  <span className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-2 py-0.5 font-mono text-[0.56rem] uppercase text-cyan-200">Action</span>
+                  <span className="rounded-full border border-[#C4A048]/30 bg-[#C4A048]/10 px-2 py-0.5 font-mono text-[0.56rem] uppercase text-[#E8C87A]">Action</span>
                 </div>
               ))}
             </div>

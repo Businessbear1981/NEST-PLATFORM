@@ -344,7 +344,7 @@ export function ArchitecturePage() {
           ].map(([label, value, tone]) => (
             <article key={label as string} className="rounded-2xl border border-white/10 bg-black/30 p-3">
               <span className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-slate-400">{label}</span>
-              <strong className={`mt-2 block font-mono text-xl ${tone === "cyan" ? "text-cyan-200" : tone === "violet" ? "text-fuchsia-200" : tone === "gold" ? "text-amber-200" : tone === "green" ? "text-emerald-200" : "text-red-200"}`}>{formatCompactCurrency(Number(value) * 1_000_000)}</strong>
+              <strong className={`mt-2 block font-mono text-xl ${tone === "cyan" ? "text-[#E8C87A]" : tone === "violet" ? "text-fuchsia-200" : tone === "gold" ? "text-amber-200" : tone === "green" ? "text-emerald-200" : "text-red-200"}`}>{formatCompactCurrency(Number(value) * 1_000_000)}</strong>
             </article>
           ))}
         </div>
@@ -376,12 +376,12 @@ export function PortalsPage() {
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="workbench-list-panel">
           {portalRows.map(([name, copy, href]) => (
-            <article key={name} className={`portal-workflow-link ${activePortal === name ? "border-cyan-300/55 bg-cyan-300/10" : ""}`} data-testid="portal-entry-point">
+            <article key={name} className={`portal-workflow-link ${activePortal === name ? "border-[#C4A048]/55 bg-[#C4A048]/10" : ""}`} data-testid="portal-entry-point">
               <button type="button" onClick={() => setActivePortal(name)} className="block w-full text-left">
                 <h2>{name}</h2>
                 <p>{copy}</p>
               </button>
-              <Link href={href} className="mt-3 inline-flex font-mono text-xs uppercase tracking-[0.12em] text-cyan-100">Launch governed workspace →</Link>
+              <Link href={href} className="mt-3 inline-flex font-mono text-xs uppercase tracking-[0.12em] text-[#EDE8DC]">Launch governed workspace →</Link>
             </article>
           ))}
         </div>

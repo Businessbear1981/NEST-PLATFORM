@@ -57,7 +57,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   pass: { color: "border-emerald-300/30 bg-emerald-400/10 text-emerald-200", label: "PASS" },
   warning: { color: "border-amber-300/30 bg-amber-300/10 text-amber-200", label: "WARNING" },
   fail: { color: "border-red-400/30 bg-red-500/10 text-red-200", label: "FAIL" },
-  review: { color: "border-cyan-300/30 bg-cyan-400/10 text-cyan-200", label: "REVIEW" },
+  review: { color: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]", label: "REVIEW" },
   na: { color: "border-slate-400/30 bg-slate-500/10 text-slate-300", label: "N/A" },
 };
 
@@ -109,7 +109,7 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
           { label: "Pass", count: passCount, color: "text-emerald-200 border-emerald-300/30 bg-emerald-400/8" },
           { label: "Warnings", count: warnCount, color: "text-amber-200 border-amber-300/30 bg-amber-300/8" },
           { label: "Failures", count: failCount, color: "text-red-200 border-red-400/30 bg-red-500/8" },
-          { label: "Review", count: reviewCount, color: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8" },
+          { label: "Review", count: reviewCount, color: "text-[#E8C87A] border-[#C4A048]/30 bg-[#C4A048]/8" },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border p-3 text-center ${s.color}`}>
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em]">{s.label}</p>
@@ -148,7 +148,7 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
                           {check.status === "pass" ? <CheckCircle2 size={13} className="text-emerald-400" /> :
                            check.status === "warning" ? <AlertTriangle size={13} className="text-amber-300" /> :
                            check.status === "fail" ? <AlertTriangle size={13} className="text-red-400" /> :
-                           <Eye size={13} className="text-cyan-300" />}
+                           <Eye size={13} className="text-[#C4A048]" />}
                           <span className="font-mono text-[0.72rem] text-slate-200">{check.rule}</span>
                         </div>
                         <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.52rem] font-semibold uppercase ${cfg.color}`}>

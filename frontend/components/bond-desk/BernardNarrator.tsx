@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const MODE_COLORS: Record<BernardMode, string> = {
   expert: "border-amber-500/60 bg-amber-500/10",
-  standard: "border-cyan-500/60 bg-cyan-500/10",
+  standard: "border-[#C4A048]/60 bg-[#C4A048]/10",
   educational: "border-emerald-500/60 bg-emerald-500/10",
 };
 

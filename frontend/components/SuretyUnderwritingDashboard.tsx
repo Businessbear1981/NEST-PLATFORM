@@ -67,7 +67,7 @@ export default function SuretyUnderwritingDashboard({ dealId }: { dealId?: strin
               { label: "DSCR", value: `${data.credit_metrics?.dscr ?? "—"}x`, tone: "text-emerald-200" },
               { label: "LTV", value: `${data.credit_metrics?.ltv_pct ?? "—"}%`, tone: data.credit_metrics?.ltv_pct > 75 ? "text-red-200" : "text-amber-100" },
               { label: "Rating", value: data.indicative_rating ?? "—", tone: "text-amber-100" },
-              { label: "LGD (Surety)", value: `${data.credit_metrics?.lgd_with_surety_pct ?? "—"}%`, tone: "text-cyan-100" },
+              { label: "LGD (Surety)", value: `${data.credit_metrics?.lgd_with_surety_pct ?? "—"}%`, tone: "text-[#EDE8DC]" },
             ].map((m) => (
               <div key={m.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-center">
                 <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">{m.label}</p>

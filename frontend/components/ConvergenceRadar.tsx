@@ -64,7 +64,7 @@ async function fetchData<T>(path: string): Promise<T | null> {
 const URGENCY = {
   critical: { border: "border-red-500/40", bg: "bg-red-500/15", text: "text-red-300", label: "CRITICAL", glow: "shadow-[0_0_20px_rgba(239,68,68,0.3)]" },
   high: { border: "border-amber-400/40", bg: "bg-amber-400/15", text: "text-amber-300", label: "HIGH", glow: "shadow-[0_0_16px_rgba(251,191,36,0.2)]" },
-  medium: { border: "border-cyan-300/30", bg: "bg-cyan-400/10", text: "text-cyan-300", label: "MEDIUM", glow: "" },
+  medium: { border: "border-[#C4A048]/30", bg: "bg-[#C4A048]/10", text: "text-[#C4A048]", label: "MEDIUM", glow: "" },
   low: { border: "border-slate-400/20", bg: "bg-slate-500/10", text: "text-slate-400", label: "LOW", glow: "" },
 };
 
@@ -76,7 +76,7 @@ const DEAL_TYPE_BADGE: Record<string, string> = {
 };
 
 const AGENT_COLOR: Record<string, string> = {
-  merlin: "text-cyan-300 border-cyan-300/30",
+  merlin: "text-[#C4A048] border-[#C4A048]/30",
   lender_scout: "text-amber-200 border-amber-300/30",
   sentinel: "text-red-300 border-red-400/30",
   maxwell: "text-emerald-300 border-emerald-300/30",
@@ -130,7 +130,7 @@ export function ConvergenceRadar() {
         {stats && (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {[
-              { label: "Signals Tracked", value: String(stats.total_signals), tone: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8" },
+              { label: "Signals Tracked", value: String(stats.total_signals), tone: "text-[#E8C87A] border-[#C4A048]/30 bg-[#C4A048]/8" },
               { label: "HEAT Events", value: String(stats.heat_events), tone: "text-red-200 border-red-400/30 bg-red-500/8" },
               { label: "Critical", value: String(stats.critical_events), tone: "text-red-300 border-red-500/40 bg-red-500/15" },
               { label: "Entities Monitored", value: String(stats.unique_entities), tone: "text-amber-200 border-amber-300/35 bg-amber-300/9" },

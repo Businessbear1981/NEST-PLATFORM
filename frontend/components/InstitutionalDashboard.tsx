@@ -171,7 +171,7 @@ export default function InstitutionalDashboard() {
                       </span>
                       <span className={`rounded px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider ${
                         status === "active" || status === "underwriting"
-                          ? "bg-cyan-800/50 text-cyan-300"
+                          ? "bg-[#C4A048]/50 text-[#C4A048]"
                           : "bg-slate-800/60 text-slate-400"
                       }`}>
                         {status.replace(/_/g, " ")}

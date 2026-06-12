@@ -28,8 +28,8 @@ function PageShell({ eyebrow, title, subtitle, children }: { eyebrow: string; ti
   return (
     <main className="min-h-screen bg-[#03060b] px-6 py-8 text-slate-100">
       <div className="mx-auto max-w-6xl space-y-5">
-        <div className="rounded-[1.5rem] border border-cyan-300/20 bg-[#07101a]/80 p-6">
-          <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-cyan-300">{eyebrow}</p>
+        <div className="rounded-[1.5rem] border border-[#C4A048]/20 bg-[#07101a]/80 p-6">
+          <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#C4A048]">{eyebrow}</p>
           <h1 className="mt-2 font-mono text-xl font-bold uppercase tracking-[0.06em] text-white">{title}</h1>
           <p className="mt-2 text-sm text-slate-400">{subtitle}</p>
         </div>
@@ -82,14 +82,14 @@ function StatusBadge({ status, variant = "default" }: { status: string; variant?
     green: "border-emerald-300/30 bg-emerald-400/10 text-emerald-200",
     amber: "border-amber-300/30 bg-amber-400/10 text-amber-200",
     red: "border-red-400/30 bg-red-500/10 text-red-200",
-    cyan: "border-cyan-300/30 bg-cyan-400/10 text-cyan-200",
+    cyan: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]",
     default: "border-white/20 bg-white/5 text-slate-300",
   };
   return <Badge variant="outline" className={`text-[0.56rem] ${colors[variant]}`}>{status}</Badge>;
 }
 
 const C = {
-  cyan: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8",
+  cyan: "text-[#E8C87A] border-[#C4A048]/30 bg-[#C4A048]/8",
   gold: "text-amber-200 border-amber-300/35 bg-amber-300/9",
   green: "text-emerald-200 border-emerald-300/30 bg-emerald-400/8",
   red: "text-red-200 border-red-400/30 bg-red-500/8",
@@ -571,23 +571,23 @@ export function NapkinPage() {
         { label: "Rate", value: `${interestRate}%`, tone: C.violet },
       ]} />
       <div className="grid gap-5 xl:grid-cols-2">
-        <div className="rounded-[1.25rem] border border-cyan-300/20 bg-[#07101a]/88 p-5 space-y-4">
+        <div className="rounded-[1.25rem] border border-[#C4A048]/20 bg-[#07101a]/88 p-5 space-y-4">
           <div className="flex gap-2">
             {(["ou", "investor"] as const).map((t) => (
-              <button key={t} onClick={() => setCalcType(t)} className={`rounded-lg px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] transition ${calcType === t ? "bg-cyan-400/15 text-cyan-100" : "text-slate-500 hover:bg-white/5"}`}>
+              <button key={t} onClick={() => setCalcType(t)} className={`rounded-lg px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] transition ${calcType === t ? "bg-[#C4A048]/15 text-[#EDE8DC]" : "text-slate-500 hover:bg-white/5"}`}>
                 {t === "ou" ? "Owner/User" : "Investor RE"}
               </button>
             ))}
           </div>
           <div className="space-y-3">
             <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">Purchase Price</span>
-              <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} className="mt-1 w-full rounded-xl border border-cyan-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyan-300/55" type="number" /></label>
+              <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" /></label>
             <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">Down Payment %</span>
-              <input value={downPayment} onChange={(e) => setDownPayment(e.target.value)} className="mt-1 w-full rounded-xl border border-cyan-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyan-300/55" type="number" /></label>
+              <input value={downPayment} onChange={(e) => setDownPayment(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" /></label>
             <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">Interest Rate %</span>
-              <input value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className="mt-1 w-full rounded-xl border border-cyan-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyan-300/55" type="number" step="0.1" /></label>
+              <input value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" step="0.1" /></label>
             <label className="block"><span className="font-mono text-[0.6rem] uppercase text-slate-500">{calcType === "ou" ? "Annual NOI" : "NOI"}</span>
-              <input value={noi} onChange={(e) => setNoi(e.target.value)} className="mt-1 w-full rounded-xl border border-cyan-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyan-300/55" type="number" /></label>
+              <input value={noi} onChange={(e) => setNoi(e.target.value)} className="mt-1 w-full rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none focus:border-[#C4A048]/55" type="number" /></label>
             <button onClick={runCalc} disabled={loading} className="w-full rounded-xl border border-amber-300/35 bg-amber-300/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-amber-100 hover:bg-amber-300/20 disabled:opacity-60">
               {loading ? "Calculating..." : "Run Napkin"}
             </button>

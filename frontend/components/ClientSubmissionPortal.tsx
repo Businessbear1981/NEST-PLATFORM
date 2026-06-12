@@ -14,7 +14,7 @@ interface ClientSubmissionPortalProps {
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-500/20 text-yellow-700',
-  received: 'bg-blue-500/20 text-blue-700',
+  received: 'bg-[#C4A048]/20 text-[#C4A048]',
   approved: 'bg-emerald-500/20 text-emerald-700',
   rejected: 'bg-red-500/20 text-red-700',
 };
@@ -129,7 +129,7 @@ export function ClientSubmissionPortal({ dealId }: ClientSubmissionPortalProps) 
                         ? 'bg-yellow-500/20 text-yellow-700'
                         : submission.status === 'rejected'
                           ? 'bg-red-500/20 text-red-700'
-                          : 'bg-blue-500/20 text-blue-700'
+                          : 'bg-[#C4A048]/20 text-[#C4A048]'
                   }`}
                 >
                   {STATUS_ICONS[submission.status]}

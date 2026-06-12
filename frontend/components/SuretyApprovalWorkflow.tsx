@@ -39,7 +39,7 @@ const APPROVAL_STAGES: ApprovalStage[] = [
 
 function statusStyle(status: ApprovalStage['status']) {
   if (status === 'completed') return 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200';
-  if (status === 'in-progress') return 'border-cyan-400/30 bg-cyan-400/10 text-cyan-200';
+  if (status === 'in-progress') return 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]';
   return 'border-slate-600 bg-slate-800 text-slate-300';
 }
 
@@ -56,7 +56,7 @@ export function SuretyApprovalWorkflow() {
   return (
     <Card className="border-slate-700 bg-slate-950/80" data-testid="surety-approval-workflow">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-cyan-300">
+        <CardTitle className="flex items-center gap-2 text-[#C4A048]">
           <Users className="h-5 w-5" />
           Approval Workflow
         </CardTitle>
@@ -68,10 +68,10 @@ export function SuretyApprovalWorkflow() {
         <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Workflow progress</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">Workflow progress</p>
               <p className="mt-1 text-2xl font-bold text-foreground">{workflowProgress}% released</p>
             </div>
-            <FileSignature className="h-9 w-9 text-cyan-300" />
+            <FileSignature className="h-9 w-9 text-[#C4A048]" />
           </div>
           <Progress value={workflowProgress} className="mt-3 h-2" />
         </div>

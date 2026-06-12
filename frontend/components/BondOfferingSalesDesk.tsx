@@ -123,7 +123,7 @@ function channelBadge(status: string) {
   if (status === 'ready') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
   if (status === 'approval') return 'border-amber-300/30 bg-amber-400/10 text-amber-100';
   if (status === 'locked') return 'border-red-300/30 bg-red-500/10 text-red-100';
-  return 'border-cyan-300/30 bg-cyan-400/10 text-cyan-100';
+  return 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]';
 }
 
 export function BondOfferingSalesDesk() {
@@ -223,7 +223,7 @@ export function BondOfferingSalesDesk() {
                   type="button"
                   key={bond.id}
                   onClick={() => toggleBond(bond.id)}
-                  className={`w-full rounded-2xl border p-4 text-left transition ${selected ? 'border-emerald-300/45 bg-emerald-400/10' : 'border-white/10 bg-white/[0.035] hover:border-cyan-300/35 hover:bg-cyan-400/5'}`}
+                  className={`w-full rounded-2xl border p-4 text-left transition ${selected ? 'border-emerald-300/45 bg-emerald-400/10' : 'border-white/10 bg-white/[0.035] hover:border-[#C4A048]/35 hover:bg-[#C4A048]/5'}`}
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
@@ -271,7 +271,7 @@ export function BondOfferingSalesDesk() {
                     <p className="mt-2 text-xs leading-5 text-slate-400">Rating: {tranche.rating} · Suitability: {tranche.suitability}</p>
                     <p className="mt-1 text-xs leading-5 text-slate-500">Protection: {tranche.covenant}</p>
                   </div>
-                  <span className="font-mono text-xs text-cyan-100">{tranche.spread}</span>
+                  <span className="font-mono text-xs text-[#EDE8DC]">{tranche.spread}</span>
                 </div>
               </div>
             ))}
@@ -312,9 +312,9 @@ export function BondOfferingSalesDesk() {
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <Card className="border-cyan-300/20 bg-slate-950/75 text-slate-100">
+        <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-cyan-100">
+            <CardTitle className="flex items-center gap-2 text-[#EDE8DC]">
               <Users className="h-5 w-5" /> Investor segmentation and outreach queue
             </CardTitle>
           </CardHeader>
@@ -352,12 +352,12 @@ export function BondOfferingSalesDesk() {
             <Button type="button" variant="outline" className="w-full border-red-300/35 bg-red-500/10 text-red-100 hover:bg-red-500/15" onClick={() => addLog('Compliance lock engaged: outreach package retained for human review before release.')}>
               <LockKeyhole className="mr-2 h-4 w-4" /> Compliance gate: lock for approval
             </Button>
-            <Button type="button" variant="outline" className="w-full border-cyan-300/35 bg-cyan-400/10 text-cyan-100 hover:bg-cyan-400/15" onClick={() => addLog('Investor reverse inquiry note added to offering book and routed to Sterling for follow-up.')}>
+            <Button type="button" variant="outline" className="w-full border-[#C4A048]/35 bg-[#C4A048]/10 text-[#EDE8DC] hover:bg-[#C4A048]/15" onClick={() => addLog('Investor reverse inquiry note added to offering book and routed to Sterling for follow-up.')}>
               <RadioTower className="mr-2 h-4 w-4" /> Log reverse inquiry
             </Button>
             {salesLog.map((event, index) => (
               <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
-                {index === 0 ? <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : <Target className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />}
+                {index === 0 ? <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" />}
                 <span>{event}</span>
               </div>
             ))}

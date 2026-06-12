@@ -127,17 +127,17 @@ export function AnimatedBondDesk() {
       case 'hold':
         return 'text-amber-400 border-amber-400/30';
       case 'watch':
-        return 'text-cyan-400 border-cyan-400/30';
+        return 'text-[#C4A048] border-[#C4A048]/30';
       default:
         return 'text-gray-400 border-gray-400/30';
     }
   };
 
   return (
-    <div className="space-y-6 p-6 bg-black/40 rounded-lg border border-cyan-400/20">
+    <div className="space-y-6 p-6 bg-black/40 rounded-lg border border-[#C4A048]/20">
       {/* Header */}
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-cyan-300">BOND DESK</h2>
+        <h2 className="text-2xl font-bold text-[#C4A048]">BOND DESK</h2>
         <p className="text-sm text-cyan-200/60">Bloomberg Terminal · Real-time Market Grid</p>
       </div>
 
@@ -184,7 +184,7 @@ export function AnimatedBondDesk() {
 
       {/* Yield Curve */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-cyan-300">YIELD CURVE</h3>
+        <h3 className="text-sm font-semibold text-[#C4A048]">YIELD CURVE</h3>
         <div className="grid grid-cols-3 gap-3">
           {yields.map((y, i) => (
             <motion.div
@@ -192,9 +192,9 @@ export function AnimatedBondDesk() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="p-3 bg-cyan-400/5 border border-cyan-400/20 rounded"
+              className="p-3 bg-[#C4A048]/5 border border-[#C4A048]/20 rounded"
             >
-              <p className="text-xs text-cyan-300 font-mono">{y.period}</p>
+              <p className="text-xs text-[#C4A048] font-mono">{y.period}</p>
               <motion.p
                 key={`${y.period}-${y.yield}`}
                 animate={{ color: y.change > 0 ? '#22c55e' : '#ef4444' }}
@@ -212,7 +212,7 @@ export function AnimatedBondDesk() {
 
       {/* Bond Grid */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-cyan-300">ACTIVE BONDS</h3>
+        <h3 className="text-sm font-semibold text-[#C4A048]">ACTIVE BONDS</h3>
         <div className="space-y-2">
           {bonds.map((bond, i) => (
             <motion.div
@@ -225,11 +225,11 @@ export function AnimatedBondDesk() {
               <div className="grid grid-cols-6 gap-4 text-sm">
                 <div>
                   <p className="text-xs text-gray-400">TRANCHE</p>
-                  <p className="font-bold text-cyan-300">{bond.tranche}</p>
+                  <p className="font-bold text-[#C4A048]">{bond.tranche}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">SIZE</p>
-                  <p className="font-bold text-cyan-300">{bond.size}</p>
+                  <p className="font-bold text-[#C4A048]">{bond.size}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">PRICE</p>

@@ -25,7 +25,7 @@ interface BondEconomicsPanelProps {
 
 const SCENARIO_STYLES: Record<string, { border: string; bg: string; text: string; icon: typeof Zap }> = {
   base: { border: "border-emerald-400/40", bg: "bg-emerald-400/10", text: "text-emerald-200", icon: Activity },
-  rates_down_50: { border: "border-cyan-400/40", bg: "bg-cyan-400/10", text: "text-cyan-200", icon: TrendingDown },
+  rates_down_50: { border: "border-[#C4A048]/40", bg: "bg-[#C4A048]/10", text: "text-[#E8C87A]", icon: TrendingDown },
   rates_up_75: { border: "border-red-400/40", bg: "bg-red-400/10", text: "text-red-200", icon: TrendingUp },
   project_delay_6mo: { border: "border-amber-400/40", bg: "bg-amber-400/10", text: "text-amber-200", icon: AlertTriangle },
   early_retire_a: { border: "border-emerald-400/40", bg: "bg-emerald-400/10", text: "text-emerald-200", icon: Zap },
@@ -70,9 +70,9 @@ export default function BondEconomicsPanel({
             );
           })}
           <div className="mx-1 h-6 w-px bg-white/10" />
-          <div className="flex-shrink-0 rounded-md border border-cyan-300/20 bg-cyan-400/5 px-2 py-1 text-center">
-            <p className="font-mono text-[0.48rem] text-cyan-400">SOFR</p>
-            <p className="font-mono text-[0.62rem] font-semibold text-cyan-200">{SOFR_RATE.toFixed(2)}%</p>
+          <div className="flex-shrink-0 rounded-md border border-[#C4A048]/20 bg-[#C4A048]/5 px-2 py-1 text-center">
+            <p className="font-mono text-[0.48rem] text-[#C4A048]">SOFR</p>
+            <p className="font-mono text-[0.62rem] font-semibold text-[#E8C87A]">{SOFR_RATE.toFixed(2)}%</p>
           </div>
           <div className="flex-shrink-0 rounded-md border border-amber-300/20 bg-amber-400/5 px-2 py-1 text-center">
             <p className="font-mono text-[0.48rem] text-amber-400">PRIME</p>
@@ -118,8 +118,8 @@ export default function BondEconomicsPanel({
       {/* ── Scenario Engine ─────────────────────────────────── */}
       <div className="rounded-2xl border border-white/10 bg-black/35 p-4">
         <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle size={14} className="text-cyan-200" />
-          <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+          <AlertTriangle size={14} className="text-[#E8C87A]" />
+          <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A]">
             Scenario Engine
           </span>
         </div>

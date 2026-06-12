@@ -22,7 +22,7 @@ const TRUSTEE_BANKS = [
 
 const STATUS_COLOR: Record<string, string> = {
   pending: "border-slate-500 text-slate-400",
-  in_progress: "border-cyan-400/40 text-cyan-300",
+  in_progress: "border-[#C4A048]/40 text-[#C4A048]",
   completed: "border-emerald-400/40 text-emerald-300",
   blocked: "border-red-400/40 text-red-400",
 };
@@ -72,11 +72,11 @@ export default function TrusteePage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-cyan-300/25 bg-[#060E1A] p-5 text-slate-100 shadow-[0_0_85px_rgba(34,211,238,0.11)] sm:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(34,211,238,0.12),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#060E1A] p-5 text-slate-100 shadow-[0_0_85px_rgba(196,160,72,0.11)] sm:p-7">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.12),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative flex items-start justify-between">
           <div>
-            <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-cyan-200">Trustee Liaison Desk · 5 Agents</div>
+            <div className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#E8C87A]">Trustee Liaison Desk · 5 Agents</div>
             <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl" style={{ fontFamily: "Cormorant Garamond, serif" }}>Trustee Management</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">Trustee selection, fee benchmarking, performance tracking, document coordination, and reporting. Every bond has a trustee — this desk manages those relationships.</p>
           </div>
@@ -100,11 +100,11 @@ export default function TrusteePage() {
         <TabsContent value="providers" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {TRUSTEE_BANKS.map((t) => (
-              <Card key={t.name} className="border-slate-700 bg-[#0D2218] hover:border-cyan-500/40 transition">
+              <Card key={t.name} className="border-slate-700 bg-[#0D2218] hover:border-[#C4A048]/40 transition">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-sm text-white">{t.name}</CardTitle>
-                    <Badge variant="outline" className={t.tier === "dominant" ? "border-cyan-400/40 text-cyan-300" : t.tier === "major" ? "border-emerald-400/40 text-emerald-300" : "border-slate-500 text-slate-400"}>{t.tier}</Badge>
+                    <Badge variant="outline" className={t.tier === "dominant" ? "border-[#C4A048]/40 text-[#C4A048]" : t.tier === "major" ? "border-emerald-400/40 text-emerald-300" : "border-slate-500 text-slate-400"}>{t.tier}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -136,7 +136,7 @@ export default function TrusteePage() {
           ) : (
             Object.entries(grouped).map(([phase, phaseTasks]) => (
               <div key={phase} className="mb-6">
-                <h3 className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-cyan-300 mb-3">{PHASE_LABEL[phase] || phase}</h3>
+                <h3 className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-[#C4A048] mb-3">{PHASE_LABEL[phase] || phase}</h3>
                 <div className="space-y-2">
                   {(phaseTasks as any[]).map(task => (
                     <Card key={task.id} className="border-slate-700 bg-[#0D2218]">
@@ -155,7 +155,7 @@ export default function TrusteePage() {
                               onClick={() => patchTask(task.id, "completed")}>Done</Button>
                           )}
                           {task.status === "pending" && (
-                            <Button size="sm" variant="outline" className="border-cyan-700/50 text-cyan-400 h-7 text-xs"
+                            <Button size="sm" variant="outline" className="border-[#C4A048]/50 text-[#C4A048] h-7 text-xs"
                               onClick={() => patchTask(task.id, "in_progress")}>Start</Button>
                           )}
                         </div>

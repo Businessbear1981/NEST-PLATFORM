@@ -41,7 +41,7 @@ function RatingBadge({ rating }: { rating: string }) {
   const colors: Record<string, string> = {
     "AAA": "bg-emerald-900 text-emerald-300",
     "AA": "bg-emerald-800 text-emerald-300",
-    "A": "bg-blue-900 text-blue-300",
+    "A": "bg-blue-900 text-[#C4A048]",
     "BBB": "bg-yellow-900 text-yellow-300",
     "BB": "bg-orange-900 text-orange-300",
     "B": "bg-red-900 text-red-300",
@@ -64,10 +64,10 @@ export function RatingGradingRoom({ ratings, onSubmitForApproval, onApprove, onR
 
   return (
     <div className="space-y-6" data-testid="rating-grading-room">
-      <div className="rounded-2xl border border-cyan-300/25 bg-slate-950/85 p-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
+      <div className="rounded-2xl border border-[#C4A048]/25 bg-slate-950/85 p-4 shadow-[0_0_40px_rgba(196,160,72,0.08)]">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-cyan-200">
+            <div className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#E8C87A]">
               <TrendingUp size={14} /> Rating live/demo surface
               <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-2 py-0.5 text-emerald-100">interactive cues active</span>
             </div>
@@ -78,7 +78,7 @@ export function RatingGradingRoom({ ratings, onSubmitForApproval, onApprove, onR
           <button
             type="button"
             onClick={() => setMethodologySignal("Methodology pulse routed: affected deals rescored, reviewer queue refreshed, and rating memo update flagged for human approval.")}
-            className="rounded-xl border border-cyan-300/30 bg-cyan-400/10 px-4 py-2 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-cyan-100 hover:bg-cyan-400/20"
+            className="rounded-xl border border-[#C4A048]/30 bg-[#C4A048]/10 px-4 py-2 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-[#EDE8DC] hover:bg-[#C4A048]/20"
           >
             Pulse methodology feed
           </button>
@@ -108,7 +108,7 @@ export function RatingGradingRoom({ ratings, onSubmitForApproval, onApprove, onR
         </div>
         <div className="border border-slate-700 rounded p-3">
           <p className="text-xs text-slate-500 mb-1">Published</p>
-          <p className="text-2xl font-bold text-cyan-400">{ratings.filter((r) => r.status === "Published").length}</p>
+          <p className="text-2xl font-bold text-[#C4A048]">{ratings.filter((r) => r.status === "Published").length}</p>
         </div>
       </div>
 
@@ -160,7 +160,7 @@ export function RatingGradingRoom({ ratings, onSubmitForApproval, onApprove, onR
                     : rating.status === "Pending Approval"
                       ? "bg-yellow-900 text-yellow-300"
                       : rating.status === "Published"
-                        ? "bg-cyan-900 text-cyan-300"
+                        ? "bg-cyan-900 text-[#C4A048]"
                         : "bg-slate-700 text-slate-300"
                 }`}
               >
@@ -212,7 +212,7 @@ export function RatingGradingRoom({ ratings, onSubmitForApproval, onApprove, onR
               </div>
               <div className="border-t border-slate-700 mt-3 pt-3 flex items-center justify-between">
                 <span className="text-sm font-mono text-slate-300">Composite Score</span>
-                <span className="text-lg font-bold text-cyan-400">{selected.scoringModel.compositeScore}</span>
+                <span className="text-lg font-bold text-[#C4A048]">{selected.scoringModel.compositeScore}</span>
               </div>
             </div>
 
@@ -261,7 +261,7 @@ export function RatingGradingRoom({ ratings, onSubmitForApproval, onApprove, onR
               {selected.status === "Draft" && (
                 <button
                   onClick={() => onSubmitForApproval?.(selected.id)}
-                  className="flex-1 px-3 py-2 bg-cyan-900 text-cyan-300 rounded text-xs font-mono hover:bg-cyan-800 flex items-center justify-center gap-2"
+                  className="flex-1 px-3 py-2 bg-cyan-900 text-[#C4A048] rounded text-xs font-mono hover:bg-cyan-800 flex items-center justify-center gap-2"
                 >
                   <Send size={12} /> Submit for Approval
                 </button>

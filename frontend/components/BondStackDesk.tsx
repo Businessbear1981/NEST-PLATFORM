@@ -90,13 +90,13 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
                       <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-amber-200">Tranche {bond.tranche}</p>
                       <h3 className="mt-1 font-mono text-xl font-semibold tracking-[-0.03em] text-white">{money(bond.size)}</h3>
                     </div>
-                    <span className="rounded-full border border-cyan-300/25 bg-cyan-400/10 px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.13em] text-cyan-100">{bond.status}</span>
+                    <span className="rounded-full border border-[#C4A048]/25 bg-[#C4A048]/10 px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.13em] text-[#EDE8DC]">{bond.status}</span>
                   </div>
                   <div className="mt-4 grid grid-cols-4 gap-2 text-sm">
                     <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">LTC</span><p className="font-mono font-semibold text-amber-100">{percent(bond.ltc)}</p></div>
                     <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">LTV</span><p className="font-mono font-semibold text-amber-100">{percent(bond.ltv)}</p></div>
                     <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">DSCR</span><p className="font-mono font-semibold text-emerald-100">{Number(bond.dscr).toFixed(2)}x</p></div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Spread</span><p className="font-mono font-semibold text-cyan-100">+{Number(bond.spread).toFixed(0)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Spread</span><p className="font-mono font-semibold text-[#EDE8DC]">+{Number(bond.spread).toFixed(0)}</p></div>
                   </div>
                 </article>
               ))
@@ -143,7 +143,7 @@ export function BondStackDesk({ dealId }: { dealId: number }) {
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
             <span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">IG Spread</span>
-            <p className="font-mono text-lg font-semibold text-cyan-100">
+            <p className="font-mono text-lg font-semibold text-[#EDE8DC]">
               {marketRatesQuery.isLoading ? "..." : marketRatesQuery.data?.ig_spread_bps != null ? `+${marketRatesQuery.data.ig_spread_bps}bp` : "—"}
             </p>
           </div>

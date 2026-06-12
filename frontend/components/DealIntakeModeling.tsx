@@ -21,8 +21,8 @@ export function DealIntakeModeling() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-cyan-300/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
-        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+      <div className="rounded-3xl border border-[#C4A048]/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
+        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#E8C87A]">
           <FolderKanban className="h-4 w-4" /> Deal Intake & Modeling · working demo console
         </p>
         <h1 className="mt-2 flex items-center gap-2 text-3xl font-bold text-foreground">
@@ -45,10 +45,10 @@ export function DealIntakeModeling() {
         </TabsContent>
 
         <TabsContent value="permits" className="mt-6 space-y-4">
-          <Card className="border-cyan-300/25 bg-[#06111c]/90 p-5 text-slate-100">
+          <Card className="border-[#C4A048]/25 bg-[#06111c]/90 p-5 text-slate-100">
             <div className="mb-5 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
-                <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-cyan-200">
+                <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#E8C87A]">
                   <FileCheck2 size={14} /> Permit checklist auto-population
                 </p>
                 <h2 className="mt-2 font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">Routed permit package</h2>
@@ -56,7 +56,7 @@ export function DealIntakeModeling() {
                   This route proves the intake output can become operational work across Roots, Rating, Surety, and the permit tracker.
                 </p>
               </div>
-              <Badge className="w-fit border border-cyan-300/30 bg-cyan-400/10 text-cyan-100">AUTO-POPULATED</Badge>
+              <Badge className="w-fit border border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]">AUTO-POPULATED</Badge>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">

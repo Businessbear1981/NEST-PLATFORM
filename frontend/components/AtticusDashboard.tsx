@@ -134,7 +134,7 @@ export default function AtticusDashboard({ dealId }: { dealId?: string }) {
         {/* Covenant Monitor */}
         <TabsContent value="covenants" className="space-y-4 mt-4">
           <Button onClick={runCovenantReview} disabled={covenantMutation.isPending}
-            className="rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-cyan-100 hover:bg-cyan-400/20">
+            className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-[#EDE8DC] hover:bg-[#C4A048]/20">
             {covenantMutation.isPending ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Scale className="mr-2 h-3.5 w-3.5" />}
             Run Covenant Review
           </Button>

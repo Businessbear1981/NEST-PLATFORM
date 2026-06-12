@@ -26,7 +26,7 @@ function money(value: number) {
 function statusClass(status: ExerciseStatus) {
   if (status === 'confirmed') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
   if (status === 'review') return 'border-amber-300/35 bg-amber-400/10 text-amber-100';
-  return 'border-cyan-300/30 bg-cyan-400/10 text-cyan-100';
+  return 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]';
 }
 
 export function CallPutExerciseDialog({ bond, onConfirm }: { bond: CallPutBond; onConfirm?: (message: string) => void }) {
@@ -100,13 +100,13 @@ export function CallPutExerciseDialog({ bond, onConfirm }: { bond: CallPutBond; 
             </div>
           </div>
 
-          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/10 p-4 text-sm text-cyan-100">
+          <div className="rounded-2xl border border-[#C4A048]/20 bg-[#C4A048]/10 p-4 text-sm text-[#EDE8DC]">
             <div className="flex items-center gap-2 font-semibold text-cyan-50"><ClipboardCheck className="h-4 w-4" /> Exercise package recommendation</div>
             <p className="mt-2">{schedule.recommendation}</p>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-3">
-            <Button type="button" variant="outline" className="border-cyan-300/35 bg-cyan-400/10 text-cyan-100 hover:bg-cyan-400/15" onClick={routeReview}>
+            <Button type="button" variant="outline" className="border-[#C4A048]/35 bg-[#C4A048]/10 text-[#EDE8DC] hover:bg-[#C4A048]/15" onClick={routeReview}>
               <ShieldCheck className="mr-2 h-4 w-4" /> Route review
             </Button>
             <Button type="button" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300" onClick={confirmExercise}>

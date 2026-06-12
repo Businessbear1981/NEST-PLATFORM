@@ -32,10 +32,10 @@ export function PodCodeIntakeForm() {
   const permits = permitMatrix[assetClass] ?? [];
 
   return (
-    <Card className="border-cyan-300/25 bg-[#06111c]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(34,211,238,0.10)]">
+    <Card className="border-[#C4A048]/25 bg-[#06111c]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(196,160,72,0.10)]">
       <div className="mb-5 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-cyan-200">
+          <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#E8C87A]">
             <ClipboardList size={14} /> Pod code intake · auto-permit checklist
           </p>
           <h2 className="mt-2 font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">Deal intake compiler</h2>
@@ -43,7 +43,7 @@ export function PodCodeIntakeForm() {
             Select asset class and jurisdiction to generate the operational pod code and auto-populate the first permit evidence checklist.
           </p>
         </div>
-        <Badge className="w-fit border border-cyan-300/30 bg-cyan-400/10 text-cyan-100">{generated ? "POD GENERATED" : "DRAFT MODE"}</Badge>
+        <Badge className="w-fit border border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]">{generated ? "POD GENERATED" : "DRAFT MODE"}</Badge>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
@@ -84,9 +84,9 @@ export function PodCodeIntakeForm() {
           </Button>
         </div>
 
-        <div className="rounded-2xl border border-cyan-300/20 bg-black/30 p-5">
+        <div className="rounded-2xl border border-[#C4A048]/20 bg-black/30 p-5">
           <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">Generated pod code</p>
-          <p className="mt-2 break-all rounded-xl border border-cyan-300/20 bg-cyan-400/10 p-4 font-mono text-xl font-semibold text-cyan-100">{podCode}</p>
+          <p className="mt-2 break-all rounded-xl border border-[#C4A048]/20 bg-[#C4A048]/10 p-4 font-mono text-xl font-semibold text-[#EDE8DC]">{podCode}</p>
           <div className="mt-5">
             <p className="mb-3 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">Auto-populated permit checklist</p>
             <div className="space-y-2">

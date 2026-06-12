@@ -55,7 +55,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
 ];
 
 const STATUS_STYLES: Record<EvidenceStatus, string> = {
-  received: 'border-cyan-400/30 bg-cyan-400/10 text-cyan-200',
+  received: 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]',
   'in-review': 'border-amber-400/30 bg-amber-400/10 text-amber-200',
   missing: 'border-red-400/30 bg-red-400/10 text-red-200',
   approved: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200',
@@ -69,7 +69,7 @@ export function SuretySubmissionChecklist() {
   return (
     <Card className="border-slate-700 bg-slate-950/80" data-testid="surety-submission-checklist">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-cyan-300">
+        <CardTitle className="flex items-center gap-2 text-[#C4A048]">
           <FileCheck2 className="h-5 w-5" />
           Surety Submission Checklist
         </CardTitle>
@@ -105,12 +105,12 @@ export function SuretySubmissionChecklist() {
                     ) : item.blocking ? (
                       <AlertCircle className="h-4 w-4 text-red-300" />
                     ) : (
-                      <ShieldCheck className="h-4 w-4 text-cyan-300" />
+                      <ShieldCheck className="h-4 w-4 text-[#C4A048]" />
                     )}
                     <p className="font-semibold text-foreground">{item.category}</p>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">{item.document}</p>
-                  <p className="mt-2 text-xs text-cyan-200">Coverage: {item.coverageType}</p>
+                  <p className="mt-2 text-xs text-[#E8C87A]">Coverage: {item.coverageType}</p>
                 </div>
                 <div className="text-left md:text-right">
                   <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${STATUS_STYLES[item.status]}`}>

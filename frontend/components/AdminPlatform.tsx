@@ -81,7 +81,7 @@ export function AdminPlatform() {
       case "rejected":
         return "border-red-500/30 bg-red-500/10 text-red-100";
       case "pending":
-        return "border-cyan-500/30 bg-cyan-500/10 text-cyan-100";
+        return "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]";
       default:
         return "border-slate-600 bg-slate-800 text-slate-300";
     }
@@ -121,8 +121,8 @@ export function AdminPlatform() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-cyan-300/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
-        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+      <div className="rounded-3xl border border-[#C4A048]/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
+        <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#E8C87A]">
           <Settings className="h-4 w-4" /> Admin Platform · working control plane
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Admin Platform</h1>
@@ -144,14 +144,14 @@ export function AdminPlatform() {
 
         <TabsContent value="overview" className="mt-6 space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Active Users</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-cyan-400">{users.filter((u) => u.status === "active").length}</p><p className="mt-1 text-xs text-muted-foreground">of {users.length} total</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Active Users</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-[#C4A048]">{users.filter((u) => u.status === "active").length}</p><p className="mt-1 text-xs text-muted-foreground">of {users.length} total</p></CardContent></Card>
             <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">System Uptime</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{healthScore}%</p><p className="mt-1 text-xs text-muted-foreground">Module weighted average</p></CardContent></Card>
             <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Pending Approvals</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-yellow-400">{approvals.filter((a) => a.status === "pending").length}</p><p className="mt-1 text-xs text-muted-foreground">Awaiting action</p></CardContent></Card>
             <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Module Status</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{modules.filter((m) => m.status === "operational").length}/{modules.length}</p><p className="mt-1 text-xs text-muted-foreground">Operational</p></CardContent></Card>
           </div>
 
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><Activity className="h-5 w-5" /> System Health</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-[#C4A048]"><Activity className="h-5 w-5" /> System Health</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {[
                 { name: "API Response Time", value: 145, target: 200, unit: "ms" },
@@ -170,17 +170,17 @@ export function AdminPlatform() {
 
         <TabsContent value="users" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-400"><Users className="h-5 w-5" /> User Management</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-[#C4A048]"><Users className="h-5 w-5" /> User Management</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {users.map((user) => (
                 <div key={user.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
                   <div className="mb-2 flex items-start justify-between gap-3">
                     <div><p className="font-semibold text-foreground">{user.name}</p><p className="text-sm text-muted-foreground">{user.email}</p></div>
-                    <div className="flex flex-wrap justify-end gap-2"><Badge variant="outline" className="border-slate-600 bg-slate-900 text-cyan-100">{user.role}</Badge><Badge variant="outline" className={getStatusColor(user.status)}>{user.status.toUpperCase()}</Badge></div>
+                    <div className="flex flex-wrap justify-end gap-2"><Badge variant="outline" className="border-slate-600 bg-slate-900 text-[#EDE8DC]">{user.role}</Badge><Badge variant="outline" className={getStatusColor(user.status)}>{user.status.toUpperCase()}</Badge></div>
                   </div>
                   <div className="flex flex-col gap-2 border-t border-slate-700 pt-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs text-muted-foreground">Last login: {user.lastLogin.toLocaleString()}</p>
-                    <Button size="sm" variant="outline" onClick={() => cycleUserRole(user.id)} className="border-cyan-500/40 text-cyan-100">Cycle Role</Button>
+                    <Button size="sm" variant="outline" onClick={() => cycleUserRole(user.id)} className="border-[#C4A048]/40 text-[#EDE8DC]">Cycle Role</Button>
                   </div>
                 </div>
               ))}
@@ -190,12 +190,12 @@ export function AdminPlatform() {
 
         <TabsContent value="modules" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-cyan-400">Module Status & Performance</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-[#C4A048]">Module Status & Performance</CardTitle></CardHeader>
             <CardContent><div className="space-y-4">
               {modules.map((module) => (
                 <div key={module.id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
                   <div className="mb-3 flex items-start justify-between gap-3">
-                    <div><p className="font-semibold text-foreground">{module.name}</p><div className="mt-1 flex gap-4 text-sm"><span className="text-muted-foreground">Requests: <span className="text-cyan-400">{module.requests.toLocaleString()}</span></span><span className="text-muted-foreground">Errors: <span className="text-red-400">{module.errors}</span></span></div></div>
+                    <div><p className="font-semibold text-foreground">{module.name}</p><div className="mt-1 flex gap-4 text-sm"><span className="text-muted-foreground">Requests: <span className="text-[#C4A048]">{module.requests.toLocaleString()}</span></span><span className="text-muted-foreground">Errors: <span className="text-red-400">{module.errors}</span></span></div></div>
                     <Badge variant="outline" className={getStatusColor(module.status)}>{module.status.toUpperCase()}</Badge>
                   </div>
                   <div className="space-y-2"><div className="flex items-center justify-between text-xs"><span className="text-muted-foreground">Uptime</span><span className="text-green-400">{module.uptime}%</span></div><Progress value={module.uptime} className="h-2" /></div>
@@ -208,7 +208,7 @@ export function AdminPlatform() {
 
         <TabsContent value="approvals" className="mt-6 space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-cyan-400">Approval Queue</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-[#C4A048]">Approval Queue</CardTitle></CardHeader>
             <CardContent><div className="space-y-3">
               {approvals.map((item) => (
                 <div key={item.id} className={`rounded-lg border p-4 ${item.status === "approved" ? "border-green-500/30 bg-green-500/10" : item.status === "rejected" ? "border-red-500/30 bg-red-500/10" : "border-slate-700 bg-slate-800"}`}>

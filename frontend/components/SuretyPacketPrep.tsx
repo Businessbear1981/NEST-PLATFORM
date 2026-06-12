@@ -21,7 +21,7 @@ const APPROVAL_QUEUE = [
 function statusClass(status: string) {
   if (status === 'Complete') return 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200';
   if (status === 'Blocking gap') return 'border-red-400/30 bg-red-400/10 text-red-200';
-  if (status === 'In review' || status === 'Ready for review') return 'border-cyan-400/30 bg-cyan-400/10 text-cyan-200';
+  if (status === 'In review' || status === 'Ready for review') return 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]';
   return 'border-slate-600 bg-slate-800 text-slate-300';
 }
 
@@ -31,7 +31,7 @@ export function SuretyPacketPrep() {
   return (
     <Card className="border-slate-700 bg-slate-950/80" data-testid="surety-packet-prep">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-cyan-300">
+        <CardTitle className="flex items-center gap-2 text-[#C4A048]">
           <FileStack className="h-5 w-5" />
           Surety Packet Prep
         </CardTitle>
@@ -40,14 +40,14 @@ export function SuretyPacketPrep() {
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
-        <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/10 p-4">
+        <div className="rounded-xl border border-[#C4A048]/20 bg-[#C4A048]/10 p-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Packet readiness</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">Packet readiness</p>
               <p className="mt-1 text-3xl font-bold text-foreground">{packetReadiness}%</p>
               <p className="text-sm text-muted-foreground">Carrier draft can be released after financial-statement gap clears.</p>
             </div>
-            <Archive className="h-10 w-10 text-cyan-300" />
+            <Archive className="h-10 w-10 text-[#C4A048]" />
           </div>
           <Progress value={packetReadiness} className="mt-4 h-2" />
         </div>

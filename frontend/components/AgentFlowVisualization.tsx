@@ -31,7 +31,7 @@ const phaseLabels: Record<FlowPhase, string> = {
 };
 
 const phaseClasses: Record<FlowPhase, string> = {
-  ingest: 'border-cyan-300/30 bg-cyan-400/10 text-cyan-100',
+  ingest: 'border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]',
   reason: 'border-violet-300/30 bg-violet-400/10 text-violet-100',
   draft: 'border-amber-300/35 bg-amber-400/10 text-amber-100',
   review: 'border-rose-300/35 bg-rose-400/10 text-rose-100',
@@ -133,7 +133,7 @@ export function AgentFlowVisualization() {
     <section className="space-y-5 text-slate-100" data-testid="agent-flow-visualization">
       <Card className="overflow-hidden border-violet-300/20 bg-slate-950/75 text-slate-100">
         <CardHeader className="relative">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(139,92,246,0.18),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(34,211,238,0.12),transparent_28%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(139,92,246,0.18),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(196,160,72,0.12),transparent_28%)]" />
           <div className="relative flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-violet-100">
@@ -143,7 +143,7 @@ export function AgentFlowVisualization() {
                 A live-demo orchestration lane showing how evidence enters the NEST nervous system, moves through agent reasoning and workpaper drafting, then stops at human review before external action.
               </p>
             </div>
-            <Badge className="w-fit border-cyan-300/30 bg-cyan-400/10 font-mono uppercase tracking-[0.14em] text-cyan-100">
+            <Badge className="w-fit border-[#C4A048]/30 bg-[#C4A048]/10 font-mono uppercase tracking-[0.14em] text-[#EDE8DC]">
               simulated live · frontend demo
             </Badge>
           </div>
@@ -166,7 +166,7 @@ export function AgentFlowVisualization() {
       <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
         <Card className="border-slate-800 bg-slate-950/75 text-slate-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-cyan-100"><RadioTower className="h-5 w-5" /> Live agent state lanes</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><RadioTower className="h-5 w-5" /> Live agent state lanes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {flows.map((flow) => {
@@ -176,7 +176,7 @@ export function AgentFlowVisualization() {
                   key={flow.id}
                   type="button"
                   onClick={() => setSelectedId(flow.id)}
-                  className={`w-full rounded-2xl border p-4 text-left transition ${isSelected ? 'border-cyan-300/40 bg-cyan-400/10 shadow-[0_0_30px_rgba(34,211,238,0.09)]' : 'border-white/10 bg-white/[0.035] hover:border-cyan-300/30'}`}
+                  className={`w-full rounded-2xl border p-4 text-left transition ${isSelected ? 'border-[#C4A048]/40 bg-[#C4A048]/10 shadow-[0_0_30px_rgba(196,160,72,0.09)]' : 'border-white/10 bg-white/[0.035] hover:border-[#C4A048]/30'}`}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -210,7 +210,7 @@ export function AgentFlowVisualization() {
             <div className="grid gap-2 sm:grid-cols-2">
               {selectedFlow.evidence.map((item) => (
                 <div key={item} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-300">
-                  <DatabaseZap className="h-4 w-4 shrink-0 text-cyan-300" /> {item}
+                  <DatabaseZap className="h-4 w-4 shrink-0 text-[#C4A048]" /> {item}
                 </div>
               ))}
             </div>
@@ -232,12 +232,12 @@ export function AgentFlowVisualization() {
         </Card>
       </div>
 
-      <Card className="border-cyan-300/20 bg-slate-950/75 text-slate-100">
-        <CardHeader><CardTitle className="flex items-center gap-2 text-cyan-100"><Clock3 className="h-5 w-5" /> Agent state event stream</CardTitle></CardHeader>
+      <Card className="border-[#C4A048]/20 bg-slate-950/75 text-slate-100">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-[#EDE8DC]"><Clock3 className="h-5 w-5" /> Agent state event stream</CardTitle></CardHeader>
         <CardContent className="grid gap-2 lg:grid-cols-2">
           {events.map((event, index) => (
             <div key={`${event}-${index}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300">
-              {index === 0 ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 2 === 0 ? <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" /> : <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}
+              {index === 0 ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" /> : index % 2 === 0 ? <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-[#C4A048]" /> : <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}
               <span>{event}</span>
             </div>
           ))}

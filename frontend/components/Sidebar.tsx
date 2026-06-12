@@ -113,7 +113,7 @@ export default function Sidebar() {
     <aside className="fixed inset-y-0 left-0 w-64 bg-[#030A06] border-r border-[#1E4A2E] flex flex-col z-40 overflow-hidden">
       <div className="px-5 py-4 border-b border-[#1E4A2E] flex-shrink-0 bg-[#0D2218]">
         <div className="flex items-center gap-3">
-          <Image src="/nest-logo.png" alt="NEST" width={36} height={36} style={{ objectFit: "contain" }} priority />
+          <Image src="/nest-logo.png" alt="NEST" width={80} height={80} style={{ objectFit: "contain" }} priority />
           <div>
             <div className="font-display text-xl text-[#C4A048] tracking-widest leading-none">NEST ADVISORS</div>
             <div className="font-body text-[9px] text-[#7A9A82] tracking-wider mt-1 uppercase">A Digital Commercial Investment Bank</div>

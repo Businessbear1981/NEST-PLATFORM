@@ -22,7 +22,7 @@ interface PipelineDeal {
 
 const PHASES: { key: Deal["phase"]; label: string; color: string; glow: string }[] = [
   { key: "sourcing", label: "Sourcing", color: "border-slate-500/30 bg-slate-500/[0.06]", glow: "bg-slate-400" },
-  { key: "structuring", label: "Structuring", color: "border-cyan-500/30 bg-cyan-500/[0.06]", glow: "bg-cyan-400" },
+  { key: "structuring", label: "Structuring", color: "border-[#C4A048]/30 bg-cyan-500/[0.06]", glow: "bg-cyan-400" },
   { key: "placement", label: "Placement", color: "border-amber-500/30 bg-amber-500/[0.06]", glow: "bg-amber-400" },
   { key: "closing", label: "Closing", color: "border-emerald-500/30 bg-emerald-500/[0.06]", glow: "bg-emerald-400" },
 ];
@@ -66,8 +66,8 @@ const DEMO_PIPELINE: PipelineDeal[] = [
 ];
 
 const GRADE_COLORS: Record<string, string> = {
-  A: "text-emerald-400", "BBB+": "text-emerald-300", BBB: "text-cyan-400",
-  "BBB-": "text-cyan-300", "BB+": "text-amber-400", "Sub-IG": "text-rose-400",
+  A: "text-emerald-400", "BBB+": "text-emerald-300", BBB: "text-[#C4A048]",
+  "BBB-": "text-[#C4A048]", "BB+": "text-amber-400", "Sub-IG": "text-rose-400",
 };
 
 export default function DealPipelineDashboard() {

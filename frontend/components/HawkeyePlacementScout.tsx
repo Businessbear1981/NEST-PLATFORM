@@ -172,7 +172,7 @@ const orderStatusColors: Record<string, string> = {
 const appetiteIcon = (appetite: string) => {
   if (appetite === "hot") return <Flame size={13} className="text-red-400" />;
   if (appetite === "warm") return <ThermometerSun size={13} className="text-amber-400" />;
-  return <Snowflake size={13} className="text-blue-400" />;
+  return <Snowflake size={13} className="text-[#C4A048]" />;
 };
 
 const meetingStatusStyle: Record<string, string> = {
@@ -687,7 +687,7 @@ export default function HawkeyePlacementScout({
             <Button className="flex-1 rounded-lg border border-fuchsia-300/25 bg-fuchsia-500/8 px-2 py-1.5 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-fuchsia-200 hover:bg-fuchsia-500/15">
               <Phone size={10} className="mr-1" /> Schedule Meeting
             </Button>
-            <Button className="flex-1 rounded-lg border border-cyan-300/25 bg-cyan-500/8 px-2 py-1.5 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-cyan-200 hover:bg-cyan-500/15">
+            <Button className="flex-1 rounded-lg border border-[#C4A048]/25 bg-[#C4A048]/8 px-2 py-1.5 font-mono text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[#E8C87A] hover:bg-[#C4A048]/15">
               <ClipboardList size={10} className="mr-1" /> Log Feedback
             </Button>
           </div>
@@ -698,10 +698,10 @@ export default function HawkeyePlacementScout({
       </div>
 
       {/* ═══ Section 3: AI Teaser ═══ */}
-      <div className="rounded-2xl border border-cyan-300/20 bg-black/30 p-5">
+      <div className="rounded-2xl border border-[#C4A048]/20 bg-black/30 p-5">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 font-[Cormorant_Garamond] text-base font-semibold text-white">
-            <FileText size={15} className="text-cyan-300" /> AI Investor Teaser
+            <FileText size={15} className="text-[#C4A048]" /> AI Investor Teaser
           </h2>
           <div className="flex gap-2">
             <Button
@@ -750,7 +750,7 @@ export default function HawkeyePlacementScout({
                 );
               }}
               disabled={teaserGenerating}
-              className="rounded-lg border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-cyan-100 hover:bg-cyan-400/20"
+              className="rounded-lg border border-[#C4A048]/30 bg-[#C4A048]/10 px-3 py-1.5 font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[#EDE8DC] hover:bg-[#C4A048]/20"
             >
               {teaserGenerating ? (
                 <Loader2 className="mr-1 h-3 w-3 animate-spin" />
@@ -768,7 +768,7 @@ export default function HawkeyePlacementScout({
         </div>
 
         {teaserContent ? (
-          <div className="mt-4 rounded-xl border border-cyan-300/15 bg-black/20 p-4">
+          <div className="mt-4 rounded-xl border border-[#C4A048]/15 bg-black/20 p-4">
             <pre className="whitespace-pre-wrap font-mono text-[0.72rem] leading-5 text-slate-300">
               {teaserContent}
             </pre>

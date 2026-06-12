@@ -109,11 +109,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={`mb-0.5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs transition-all ${
                       active
-                        ? "bg-cyan-400/15 text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.1)]"
+                        ? "bg-[#C4A048]/15 text-[#E8C87A] shadow-[0_0_12px_rgba(196,160,72,0.1)]"
                         : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                     }`}
                   >
-                    <Icon size={14} className={active ? "text-cyan-300" : "text-slate-500"} />
+                    <Icon size={14} className={active ? "text-[#C4A048]" : "text-slate-500"} />
                     <span className="font-mono text-[0.68rem] uppercase tracking-[0.06em]">{item.label}</span>
                   </Link>
                 );

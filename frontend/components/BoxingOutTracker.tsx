@@ -28,7 +28,7 @@ interface BoxingOutTrackerProps {
 const OUTCOME_COLORS: Record<TouchOutcome, string> = {
   sent: "text-slate-400 bg-slate-500/15 border-slate-400/30",
   opened: "text-amber-200 bg-amber-400/15 border-amber-300/30",
-  clicked: "text-cyan-200 bg-cyan-400/15 border-cyan-300/30",
+  clicked: "text-[#E8C87A] bg-[#C4A048]/15 border-[#C4A048]/30",
   replied: "text-emerald-200 bg-emerald-400/15 border-emerald-300/30",
   voicemail: "text-slate-300 bg-slate-500/15 border-slate-400/30",
   connected: "text-green-200 bg-green-400/15 border-green-300/30",
@@ -49,7 +49,7 @@ const TOUCH_TYPE_ICONS: Record<string, typeof Mail> = {
 };
 
 const CONTENT_TYPE_COLORS: Record<string, string> = {
-  market_intel: "border-cyan-300/30 bg-cyan-400/10 text-cyan-200",
+  market_intel: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#E8C87A]",
   case_study: "border-emerald-300/30 bg-emerald-400/10 text-emerald-200",
   trend_report: "border-amber-300/30 bg-amber-400/10 text-amber-200",
   targeted_intel: "border-red-300/30 bg-red-400/10 text-red-200",
@@ -146,7 +146,7 @@ export default function BoxingOutTracker({
           { label: "Hot", value: hotCount, tone: "text-red-200", icon: Zap },
           { label: "Meetings", value: meetingsCount, tone: "text-amber-100", icon: Calendar },
           { label: "Converted", value: convertedCount, tone: "text-emerald-200", icon: CheckCircle },
-          { label: "Content Queue", value: contentReady, tone: "text-cyan-200", icon: FileText },
+          { label: "Content Queue", value: contentReady, tone: "text-[#E8C87A]", icon: FileText },
           { label: "Avg Touches", value: avgTouches, tone: "text-slate-200", icon: BarChart3 },
         ].map(stat => (
           <div key={stat.label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
@@ -175,7 +175,7 @@ export default function BoxingOutTracker({
 
       {/* Content Queue */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A]">
           <FileText size={14} /> Content Queue — Bernard Auto-Generated
         </div>
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -294,7 +294,7 @@ function ProspectCard({
           </Button>
           <Button
             onClick={onSendNext}
-            className="rounded-lg border border-cyan-300/25 bg-cyan-400/10 px-3 py-1.5 font-mono text-[0.62rem] uppercase text-cyan-200 hover:bg-cyan-400/20"
+            className="rounded-lg border border-[#C4A048]/25 bg-[#C4A048]/10 px-3 py-1.5 font-mono text-[0.62rem] uppercase text-[#E8C87A] hover:bg-[#C4A048]/20"
           >
             <Send size={11} className="mr-1" /> Send Next
           </Button>

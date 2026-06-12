@@ -42,7 +42,7 @@ function LazyWorkspace({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={
-        <div className="rounded-[1.25rem] border border-cyan-300/25 bg-cyan-300/10 p-6 font-mono text-xs uppercase tracking-[0.18em] text-cyan-100">
+        <div className="rounded-[1.25rem] border border-[#C4A048]/25 bg-[#C4A048]/10 p-6 font-mono text-xs uppercase tracking-[0.18em] text-[#EDE8DC]">
           Loading active workspace
         </div>
       }
@@ -52,7 +52,7 @@ function LazyWorkspace({ children }: { children: ReactNode }) {
   );
 }
 
-const terminalInput = "rounded-xl border border-cyan-300/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-cyan-300/55 focus:ring-2 focus:ring-cyan-300/10";
+const terminalInput = "rounded-xl border border-[#C4A048]/20 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-[#C4A048]/55 focus:ring-2 focus:ring-cyan-300/10";
 const terminalButton = "rounded-xl border border-amber-300/35 bg-amber-300/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-amber-100 shadow-[0_0_24px_rgba(251,191,36,0.13)] transition hover:bg-amber-300/20 disabled:opacity-60";
 
 function formatMoney(value?: string | number | null) {
@@ -71,7 +71,7 @@ function formatDate(value?: Date | string | null) {
 
 function MetricCard({ label, value, detail, icon: Icon, tone = "cyan" }: { label: string; value: string; detail: string; icon: LucideIcon; tone?: "cyan" | "gold" | "red" | "green" | "violet" }) {
   const toneMap = {
-    cyan: "border-cyan-300/30 bg-cyan-400/8 text-cyan-200 shadow-[0_0_34px_rgba(34,211,238,0.12)]",
+    cyan: "border-[#C4A048]/30 bg-[#C4A048]/8 text-[#E8C87A] shadow-[0_0_34px_rgba(196,160,72,0.12)]",
     gold: "border-amber-300/35 bg-amber-300/9 text-amber-200 shadow-[0_0_34px_rgba(251,191,36,0.13)]",
     red: "border-red-400/30 bg-red-500/9 text-red-200 shadow-[0_0_34px_rgba(248,113,113,0.12)]",
     green: "border-emerald-300/30 bg-emerald-400/8 text-emerald-200 shadow-[0_0_34px_rgba(52,211,153,0.12)]",
@@ -93,14 +93,14 @@ function MetricCard({ label, value, detail, icon: Icon, tone = "cyan" }: { label
 
 function TerminalPanel({ title, eyebrow, children, tone = "cyan" }: { title: string; eyebrow?: string; children: ReactNode; tone?: "cyan" | "gold" | "red" | "green" | "violet" }) {
   const border = {
-    cyan: "border-cyan-300/25 shadow-[0_0_46px_rgba(34,211,238,0.09)]",
+    cyan: "border-[#C4A048]/25 shadow-[0_0_46px_rgba(196,160,72,0.09)]",
     gold: "border-amber-300/30 shadow-[0_0_46px_rgba(251,191,36,0.10)]",
     red: "border-red-400/25 shadow-[0_0_46px_rgba(248,113,113,0.09)]",
     green: "border-emerald-300/25 shadow-[0_0_46px_rgba(52,211,153,0.09)]",
     violet: "border-fuchsia-300/25 shadow-[0_0_46px_rgba(217,70,239,0.09)]",
   }[tone];
   const text = {
-    cyan: "text-cyan-200",
+    cyan: "text-[#E8C87A]",
     gold: "text-amber-200",
     red: "text-red-200",
     green: "text-emerald-200",
@@ -126,7 +126,7 @@ function WorkbenchShell({ children, title, subtitle }: { children: ReactNode; ti
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#03060b] text-slate-200">
-        <Loader2 className="mr-2 animate-spin text-cyan-200" /> Loading NEST command workspace...
+        <Loader2 className="mr-2 animate-spin text-[#E8C87A]" /> Loading NEST command workspace...
       </main>
     );
   }
@@ -134,11 +134,11 @@ function WorkbenchShell({ children, title, subtitle }: { children: ReactNode; ti
   if (!isAuthenticated) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#03060b] px-4 text-slate-200">
-        <section className="max-w-md rounded-[1.75rem] border border-cyan-300/25 bg-[#07101a]/92 p-7 text-center shadow-[0_0_80px_rgba(34,211,238,0.12)]">
+        <section className="max-w-md rounded-[1.75rem] border border-[#C4A048]/25 bg-[#07101a]/92 p-7 text-center shadow-[0_0_80px_rgba(196,160,72,0.12)]">
           <img src={TREE_LOGO} alt="NEST tree logo" className="mx-auto h-14 w-14 rounded-xl bg-[#f8edd1] p-1.5 shadow-[0_0_28px_rgba(251,191,36,0.22)]" />
           <h1 className="mt-5 font-mono text-xl font-semibold uppercase tracking-[0.06em] text-white">Sign in to the NEST workbench</h1>
           <p className="mt-3 text-sm leading-6 text-slate-400">This is the dark operational command layer for deals, approvals, bonds, covenants, draws, tenants, and AI desk work.</p>
-          <a href={getLoginUrl()} className="mt-5 inline-flex items-center justify-center rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-cyan-100 hover:bg-cyan-400/20">Login</a>
+          <a href={getLoginUrl()} className="mt-5 inline-flex items-center justify-center rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2.5 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#EDE8DC] hover:bg-[#C4A048]/20">Login</a>
         </section>
       </main>
     );
@@ -152,11 +152,11 @@ function WorkbenchShell({ children, title, subtitle }: { children: ReactNode; ti
   return (
     <main
       className="min-h-screen bg-[#03060b] text-slate-100"
-      style={{ background: "radial-gradient(circle at 12% 4%, rgba(34,211,238,0.20), transparent 28rem), radial-gradient(circle at 84% 9%, rgba(251,191,36,0.16), transparent 25rem), linear-gradient(135deg,#02050a 0%,#07101a 50%,#04070d 100%)" }}
+      style={{ background: "radial-gradient(circle at 12% 4%, rgba(196,160,72,0.20), transparent 28rem), radial-gradient(circle at 84% 9%, rgba(251,191,36,0.16), transparent 25rem), linear-gradient(135deg,#02050a 0%,#07101a 50%,#04070d 100%)" }}
     >
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.20] [background-image:radial-gradient(circle,rgba(255,255,255,0.75)_0.75px,transparent_0.9px),linear-gradient(118deg,transparent_0%,transparent_45%,rgba(34,211,238,0.30)_45.25%,transparent_46%),linear-gradient(63deg,transparent_0%,transparent_58%,rgba(251,191,36,0.24)_58.25%,transparent_59%)] [background-size:16px_16px,100%_100%,100%_100%]" />
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.20] [background-image:radial-gradient(circle,rgba(255,255,255,0.75)_0.75px,transparent_0.9px),linear-gradient(118deg,transparent_0%,transparent_45%,rgba(196,160,72,0.30)_45.25%,transparent_46%),linear-gradient(63deg,transparent_0%,transparent_58%,rgba(251,191,36,0.24)_58.25%,transparent_59%)] [background-size:16px_16px,100%_100%,100%_100%]" />
       <div className="relative z-10 grid min-h-screen grid-cols-1 lg:grid-cols-[17.5rem_minmax(0,1fr)]">
-        <aside className="border-r border-cyan-300/20 bg-black/55 px-5 py-5 shadow-[18px_0_80px_rgba(0,0,0,0.58)] backdrop-blur-xl lg:sticky lg:top-0 lg:h-screen">
+        <aside className="border-r border-[#C4A048]/20 bg-black/55 px-5 py-5 shadow-[18px_0_80px_rgba(0,0,0,0.58)] backdrop-blur-xl lg:sticky lg:top-0 lg:h-screen">
           <div className="overflow-hidden rounded-[1.15rem] border border-amber-300/35 bg-gradient-to-br from-amber-300/12 via-cyan-400/8 to-black px-3 py-3 [clip-path:polygon(0_0,92%_0,100%_18%,100%_100%,8%_100%,0_82%)]">
             <div className="flex items-center gap-3">
               <img src={TREE_LOGO} alt="NEST tree logo" className="h-12 w-12 rounded-xl bg-[#f8edd1] p-1.5 shadow-[0_0_22px_rgba(251,191,36,0.25)]" />
@@ -172,30 +172,30 @@ function WorkbenchShell({ children, title, subtitle }: { children: ReactNode; ti
               <button
                 key={label}
                 onClick={() => router.push(href)}
-                className="flex w-full items-center gap-3 rounded-xl border border-white/5 bg-white/[0.035] px-3 py-2.5 text-left font-mono text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-300 transition hover:border-cyan-300/45 hover:bg-cyan-300/10 hover:text-cyan-100"
+                className="flex w-full items-center gap-3 rounded-xl border border-white/5 bg-white/[0.035] px-3 py-2.5 text-left font-mono text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-300 transition hover:border-[#C4A048]/45 hover:bg-[#C4A048]/10 hover:text-[#EDE8DC]"
               >
-                <Icon size={16} className="text-cyan-300" />
+                <Icon size={16} className="text-[#C4A048]" />
                 <span>{label}</span>
               </button>
             ))}
           </nav>
 
-          <button onClick={() => router.push("/")} className="mt-8 inline-flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-cyan-200 hover:text-amber-200">
+          <button onClick={() => router.push("/")} className="mt-8 inline-flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A] hover:text-amber-200">
             <ArrowLeft size={15} /> Back to command
           </button>
 
           <div className="mt-8 rounded-2xl border border-emerald-300/25 bg-emerald-400/8 p-4 text-sm text-slate-300">
             <p className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-emerald-100">{user?.name ?? "NEST user"}</p>
-            <button onClick={() => logout()} className="mt-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-cyan-200 hover:text-amber-200">Logout</button>
+            <button onClick={() => logout()} className="mt-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[#E8C87A] hover:text-amber-200">Logout</button>
           </div>
         </aside>
 
         <section className="min-w-0 px-4 py-4 sm:px-6 lg:px-8">
-          <header className="relative overflow-hidden rounded-[1.5rem] border border-cyan-300/25 bg-black/45 p-5 shadow-[0_0_70px_rgba(34,211,238,0.10)] sm:p-6">
+          <header className="relative overflow-hidden rounded-[1.5rem] border border-[#C4A048]/25 bg-black/45 p-5 shadow-[0_0_70px_rgba(196,160,72,0.10)] sm:p-6">
             <img src={HERO} alt="Terminal market texture" className="absolute inset-0 h-full w-full object-cover opacity-[0.14] mix-blend-screen" />
             <div className="absolute inset-0 bg-gradient-to-br from-[#02050a]/70 via-[#07101a]/90 to-black/65" />
             <div className="relative">
-              <p className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-cyan-200">Spider-Verse / Bloomberg terminal workbench</p>
+              <p className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[#E8C87A]">Spider-Verse / Bloomberg terminal workbench</p>
               <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <h1 className="font-mono text-2xl font-semibold uppercase tracking-[0.04em] text-white sm:text-3xl">{title}</h1>
@@ -248,24 +248,24 @@ export function OperationsDealsPage() {
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
           <TerminalPanel title="Live deal portfolio" eyebrow="Command pipeline" tone="cyan">
             {dealsQuery.isLoading ? (
-              <div className="flex items-center justify-center p-8 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-cyan-200" size={16} /> Loading deals...</div>
+              <div className="flex items-center justify-center p-8 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-[#E8C87A]" size={16} /> Loading deals...</div>
             ) : deals.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-cyan-300/25 bg-cyan-400/5 p-8 text-center">
-                <Building2 className="mx-auto text-cyan-200" />
+              <div className="rounded-2xl border border-dashed border-[#C4A048]/25 bg-[#C4A048]/5 p-8 text-center">
+                <Building2 className="mx-auto text-[#E8C87A]" />
                 <h3 className="mt-3 font-mono font-semibold uppercase tracking-[0.07em] text-white">No deals yet</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-400">Create the first deal to activate the bond stack, tenant roll, draws, covenants, and approval workflows.</p>
               </div>
             ) : (
               <div className="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-black/25">
                 {deals.map((deal) => (
-                  <button key={deal.id} onClick={() => router.push(`/operations/deal/${deal.id}`)} className="grid w-full gap-3 bg-white/[0.025] p-4 text-left transition hover:bg-cyan-300/8 sm:grid-cols-[minmax(0,1fr)_9rem_7rem_2rem] sm:items-center">
+                  <button key={deal.id} onClick={() => router.push(`/operations/deal/${deal.id}`)} className="grid w-full gap-3 bg-white/[0.025] p-4 text-left transition hover:bg-[#C4A048]/8 sm:grid-cols-[minmax(0,1fr)_9rem_7rem_2rem] sm:items-center">
                     <div>
                       <h3 className="font-mono font-semibold uppercase tracking-[0.05em] text-white">{deal.name}</h3>
                       <p className="mt-1 text-sm text-slate-500">{deal.issuer} · Created {formatDate(deal.createdAt)}</p>
                     </div>
                     <span className="font-mono text-sm font-semibold text-amber-100">{formatMoney(deal.amount)}</span>
-                    <span className="w-fit rounded-full border border-cyan-300/25 bg-cyan-400/10 px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-cyan-100">{deal.status}</span>
-                    <ChevronRight size={17} className="text-cyan-200" />
+                    <span className="w-fit rounded-full border border-[#C4A048]/25 bg-[#C4A048]/10 px-2.5 py-1 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[#EDE8DC]">{deal.status}</span>
+                    <ChevronRight size={17} className="text-[#E8C87A]" />
                   </button>
                 ))}
               </div>
@@ -378,7 +378,7 @@ export function OperationsDealDetailPage({ dealId }: { dealId: string }) {
   return (
     <WorkbenchShell title={deal?.name ?? "Deal workspace"} subtitle="Deal-level command workbench where every completed NEST module is reachable as a working tab tied to the selected backend deal.">
       {dealQuery.isLoading ? (
-        <div className="flex items-center justify-center rounded-[1.5rem] border border-cyan-300/25 bg-[#07101a]/88 p-10 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-cyan-200" size={16} /> Loading deal...</div>
+        <div className="flex items-center justify-center rounded-[1.5rem] border border-[#C4A048]/25 bg-[#07101a]/88 p-10 text-sm text-slate-400"><Loader2 className="mr-2 animate-spin text-[#E8C87A]" size={16} /> Loading deal...</div>
       ) : !deal ? (
         <div className="rounded-[1.5rem] border border-red-400/25 bg-[#07101a]/88 p-10 text-center shadow-[0_0_46px_rgba(248,113,113,0.09)]">
           <h2 className="font-mono text-lg font-semibold uppercase tracking-[0.06em] text-white">Deal not found</h2>
@@ -403,7 +403,7 @@ export function OperationsDealDetailPage({ dealId }: { dealId: string }) {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveWorkspace(tab.id)}
-                    className={`rounded-2xl border p-4 text-left transition ${selected ? "border-cyan-300/55 bg-cyan-300/12 shadow-[0_0_28px_rgba(34,211,238,0.12)]" : "border-white/10 bg-black/25 hover:border-cyan-300/25 hover:bg-white/5"}`}
+                    className={`rounded-2xl border p-4 text-left transition ${selected ? "border-[#C4A048]/55 bg-[#C4A048]/12 shadow-[0_0_28px_rgba(196,160,72,0.12)]" : "border-white/10 bg-black/25 hover:border-[#C4A048]/25 hover:bg-white/5"}`}
                     aria-pressed={selected}
                   >
                     <span className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.15em] text-slate-400"><Icon size={15} /> {tab.label}</span>

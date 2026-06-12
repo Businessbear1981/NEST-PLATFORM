@@ -169,7 +169,7 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
             <div className="mt-4 grid grid-cols-2 gap-3">
               {[
                 { label: "Series A (Senior)", value: money(structureResult.a_face_usd), tone: "text-amber-100" },
-                { label: "Series B (Sub)", value: money(structureResult.b_face_usd), tone: "text-cyan-100" },
+                { label: "Series B (Sub)", value: money(structureResult.b_face_usd), tone: "text-[#EDE8DC]" },
                 { label: "Total Raise", value: money(structureResult.total_raise_usd), tone: "text-white" },
                 { label: "CLTV", value: `${structureResult.cltv_pct.toFixed(1)}%`, tone: structureResult.cltv_pct > 75 ? "text-red-300" : "text-emerald-200" },
                 { label: "Net Proceeds", value: money(structureResult.project_proceeds_usd), tone: "text-emerald-200" },
@@ -216,8 +216,8 @@ export default function StructuringStudio({ dealId, summaryMode }: { dealId?: st
 
       {/* Rating result */}
       {ratingResult && (
-        <div className="rounded-2xl border border-cyan-300/25 bg-black/35 p-5">
-          <h3 className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+        <div className="rounded-2xl border border-[#C4A048]/25 bg-black/35 p-5">
+          <h3 className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#E8C87A]">
             <TrendingUp size={14} /> Rating Intelligence
           </h3>
           <div className="mt-3 grid grid-cols-3 gap-4">

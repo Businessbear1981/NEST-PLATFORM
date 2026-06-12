@@ -23,7 +23,7 @@ interface BullseyePitchEngineProps {
 const PITCH_STATUS_COLORS: Record<string, string> = {
   draft: "border-slate-400/30 bg-slate-500/15 text-slate-300",
   approved: "border-emerald-300/30 bg-emerald-400/15 text-emerald-200",
-  deployed: "border-cyan-300/30 bg-cyan-400/15 text-cyan-200",
+  deployed: "border-[#C4A048]/30 bg-[#C4A048]/15 text-[#E8C87A]",
   converted: "border-amber-300/30 bg-amber-400/15 text-amber-100",
 };
 
@@ -89,7 +89,7 @@ export default function BullseyePitchEngine({
             { label: "Total", value: pitches.length, tone: "text-white" },
             { label: "Draft", value: draftCount, tone: "text-slate-300" },
             { label: "Approved", value: approvedCount, tone: "text-emerald-200" },
-            { label: "Deployed", value: deployedCount, tone: "text-cyan-200" },
+            { label: "Deployed", value: deployedCount, tone: "text-[#E8C87A]" },
             { label: "Converted", value: convertedCount, tone: "text-amber-100" },
           ].map(stat => (
             <div key={stat.label} className="text-center">
@@ -134,7 +134,7 @@ export default function BullseyePitchEngine({
                     </div>
                     <p className="mt-1 text-sm text-slate-400">
                       <ArrowUpRight size={12} className="inline mr-1" />
-                      Approach: <span className="text-cyan-200">{pitch.targetFirm}</span> — {pitch.targetContact} ({pitch.targetTitle})
+                      Approach: <span className="text-[#E8C87A]">{pitch.targetFirm}</span> — {pitch.targetContact} ({pitch.targetTitle})
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function BullseyePitchEngine({
                       {/* WHY THEM */}
                       <CollapsibleSection
                         title="WHY THEM"
-                        icon={<Shield size={12} className="text-cyan-300" />}
+                        icon={<Shield size={12} className="text-[#C4A048]" />}
                         isOpen={isSectionOpen(pitch.id, "whyThem")}
                         onToggle={() => toggleSection(pitch.id, "whyThem")}
                         defaultOpen
@@ -165,7 +165,7 @@ export default function BullseyePitchEngine({
                         <ul className="space-y-1">
                           {pitch.whyThem.map((item, i) => (
                             <li key={i} className="flex gap-2 font-mono text-[0.72rem] text-slate-300">
-                              <span className="text-cyan-400 mt-0.5">•</span> {item}
+                              <span className="text-[#C4A048] mt-0.5">•</span> {item}
                             </li>
                           ))}
                         </ul>
@@ -239,7 +239,7 @@ export default function BullseyePitchEngine({
                       {/* EMAIL TEMPLATE */}
                       <CollapsibleSection
                         title="EMAIL TEMPLATE"
-                        icon={<Mail size={12} className="text-cyan-300" />}
+                        icon={<Mail size={12} className="text-[#C4A048]" />}
                         isOpen={isSectionOpen(pitch.id, "email")}
                         onToggle={() => toggleSection(pitch.id, "email")}
                       >
@@ -280,7 +280,7 @@ export default function BullseyePitchEngine({
                       <div className="flex gap-2 pt-2 border-t border-white/5">
                         <Button
                           onClick={() => onDeployOutreach(pitch.id)}
-                          className="rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2 font-mono text-[0.62rem] font-semibold uppercase text-cyan-100 hover:bg-cyan-400/20"
+                          className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2 font-mono text-[0.62rem] font-semibold uppercase text-[#EDE8DC] hover:bg-[#C4A048]/20"
                         >
                           <Send size={12} className="mr-1.5" /> Deploy Outreach
                         </Button>

@@ -65,7 +65,7 @@ export const moodysReconItems: RatingReconItem[] = [
 
 const actionStyles: Record<ReconSeverity, string> = {
   upgrade: "border-emerald-300/35 bg-emerald-400/12 text-emerald-100",
-  affirm: "border-cyan-300/35 bg-cyan-400/12 text-cyan-100",
+  affirm: "border-[#C4A048]/35 bg-[#C4A048]/12 text-[#EDE8DC]",
   watch: "border-amber-300/40 bg-amber-300/12 text-amber-100",
   downgrade: "border-red-400/35 bg-red-500/12 text-red-100",
 };
@@ -86,10 +86,10 @@ export function MoodysReconFeed() {
   };
 
   return (
-    <Card className="overflow-hidden border-cyan-300/25 bg-[#07101a]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(34,211,238,0.10)]">
+    <Card className="overflow-hidden border-[#C4A048]/25 bg-[#07101a]/90 p-5 text-slate-100 shadow-[0_0_42px_rgba(196,160,72,0.10)]">
       <div className="mb-4 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-cyan-200">
+          <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#E8C87A]">
             <RadioTower size={14} /> Moody's recon feed · live-demo subscription
           </p>
           <h2 className="mt-2 font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">
@@ -99,7 +99,7 @@ export function MoodysReconFeed() {
             Simulates a governed recon stream, maps each agency event to affected deals, and requires desk acknowledgement before routing to credit memo updates.
           </p>
         </div>
-        <Badge className="w-fit border border-cyan-300/30 bg-cyan-400/10 text-cyan-100">
+        <Badge className="w-fit border border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]">
           {acknowledged.length}/{moodysReconItems.length} acknowledged
         </Badge>
       </div>
@@ -115,7 +115,7 @@ export function MoodysReconFeed() {
             size="sm"
             variant={filter === option ? "default" : "outline"}
             onClick={() => setFilter(option)}
-            className={filter === option ? "bg-cyan-600 text-white hover:bg-cyan-500" : "border-slate-700 bg-black/20 text-slate-300 hover:border-cyan-300/45"}
+            className={filter === option ? "bg-cyan-600 text-white hover:bg-cyan-500" : "border-slate-700 bg-black/20 text-slate-300 hover:border-[#C4A048]/45"}
           >
             {option.toUpperCase()}
           </Button>
@@ -133,7 +133,7 @@ export function MoodysReconFeed() {
                 type="button"
                 onClick={() => setSelectedId(item.id)}
                 className={`w-full rounded-2xl border p-4 text-left transition ${
-                  isSelected ? "border-cyan-300/55 bg-cyan-400/12" : "border-white/10 bg-white/[0.035] hover:border-cyan-300/35"
+                  isSelected ? "border-[#C4A048]/55 bg-[#C4A048]/12" : "border-white/10 bg-white/[0.035] hover:border-[#C4A048]/35"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -146,7 +146,7 @@ export function MoodysReconFeed() {
                   </Badge>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">{item.previousRating} → <strong className="text-cyan-200">{item.currentRating}</strong></span>
+                  <span className="text-slate-400">{item.previousRating} → <strong className="text-[#E8C87A]">{item.currentRating}</strong></span>
                   <span className={isAcked ? "text-emerald-200" : "text-amber-200"}>{isAcked ? "ACKED" : "NEEDS REVIEW"}</span>
                 </div>
               </button>
@@ -154,7 +154,7 @@ export function MoodysReconFeed() {
           })}
         </div>
 
-        <div className="rounded-2xl border border-cyan-300/20 bg-black/30 p-5">
+        <div className="rounded-2xl border border-[#C4A048]/20 bg-black/30 p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="font-mono text-lg font-semibold uppercase tracking-[0.05em] text-white">{selected.issuer}</h3>
@@ -163,7 +163,7 @@ export function MoodysReconFeed() {
             {selected.action === "upgrade" ? <TrendingUp className="text-emerald-300" /> : <Clock3 className="text-amber-300" />}
           </div>
           <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.035] p-4">
-            <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-cyan-200">Agency evidence</p>
+            <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-[#E8C87A]">Agency evidence</p>
             <p className="mt-2 text-sm leading-6 text-slate-300">{selected.evidence}</p>
           </div>
           <div className="mt-4">

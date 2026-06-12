@@ -118,7 +118,7 @@ export default function RatingIntelligence() {
       case "watch":
         return "bg-yellow-500/20 text-yellow-100 border-yellow-500/30";
       case "affirm":
-        return "bg-blue-500/20 text-blue-100 border-blue-500/30";
+        return "bg-[#C4A048]/20 text-[#C4A048] border-[#C4A048]/30";
       default:
         return "bg-gray-500/20 text-gray-100 border-gray-500/30";
     }
@@ -137,10 +137,10 @@ export default function RatingIntelligence() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-cyan-300/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
+      <div className="rounded-3xl border border-[#C4A048]/20 bg-slate-950/80 p-6 shadow-[0_0_50px_rgba(196,160,72,0.08)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+            <p className="flex items-center gap-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#E8C87A]">
               <RadioTower size={14} /> Rating Intelligence & Recon · working demo console
             </p>
             <h1 className="mt-2 text-3xl font-bold text-foreground">Rating Intelligence & Recon</h1>
@@ -151,7 +151,7 @@ export default function RatingIntelligence() {
           <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
               <p className="text-slate-500">Actions</p>
-              <p className="text-lg font-semibold text-cyan-100">{DEMO_RATING_ACTIONS.length}</p>
+              <p className="text-lg font-semibold text-[#EDE8DC]">{DEMO_RATING_ACTIONS.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
               <p className="text-slate-500">Memos</p>
@@ -165,10 +165,10 @@ export default function RatingIntelligence() {
         </div>
       </div>
 
-      <Card className="border-cyan-300/20 bg-[#06111d]/90 p-4 text-slate-100">
+      <Card className="border-[#C4A048]/20 bg-[#06111d]/90 p-4 text-slate-100">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-cyan-200">
+            <p className="flex items-center gap-2 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[#E8C87A]">
               <RadioTower size={14} /> Recon subscription pulse
             </p>
             <p className="mt-1 text-sm text-slate-300">
@@ -205,7 +205,7 @@ export default function RatingIntelligence() {
                     key={action.id}
                     onClick={() => setSelectedAction(action)}
                     className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      selectedAction?.id === action.id ? "border-cyan-500/50 bg-cyan-500/10" : "border-border hover:border-border/80 hover:bg-muted/30"
+                      selectedAction?.id === action.id ? "border-[#C4A048]/50 bg-[#C4A048]/10" : "border-border hover:border-border/80 hover:bg-muted/30"
                     }`}
                   >
                     <div className="mb-1 flex items-start justify-between">
@@ -224,7 +224,7 @@ export default function RatingIntelligence() {
             </Card>
 
             {selectedAction && (
-              <Card className="border-cyan-500/30 bg-cyan-500/5 p-6 lg:col-span-2">
+              <Card className="border-[#C4A048]/30 bg-[#C4A048]/5 p-6 lg:col-span-2">
                 <div className="space-y-6">
                   <div>
                     <div className="mb-4 flex items-start justify-between">
@@ -291,7 +291,7 @@ export default function RatingIntelligence() {
               <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <div><p className="mb-1 text-xs text-muted-foreground">Issuer</p><p className="text-lg font-bold text-foreground">{memo.issuer}</p></div>
                 <div><p className="mb-1 text-xs text-muted-foreground">Rating</p><p className="text-lg font-bold text-amber-400">{memo.rating}</p></div>
-                <div><p className="mb-1 text-xs text-muted-foreground">Outlook</p><p className="text-lg font-bold text-blue-400">{memo.outlook}</p></div>
+                <div><p className="mb-1 text-xs text-muted-foreground">Outlook</p><p className="text-lg font-bold text-[#C4A048]">{memo.outlook}</p></div>
                 <div><p className="mb-1 text-xs text-muted-foreground">Recommendation</p><Badge className={memo.recommendation === "buy" ? "bg-emerald-500/20 text-emerald-100" : memo.recommendation === "hold" ? "bg-yellow-500/20 text-yellow-100" : "bg-red-500/20 text-red-100"}>{memo.recommendation.toUpperCase()}</Badge></div>
               </div>
 
@@ -309,7 +309,7 @@ export default function RatingIntelligence() {
               <div>
                 <h4 className="mb-3 text-sm font-semibold text-foreground">Key Metrics</h4>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {Object.entries(memo.keyMetrics).map(([key, value]) => <div key={key} className="rounded-lg bg-muted/30 p-3"><p className="mb-1 text-xs text-muted-foreground">{key}</p><p className="text-lg font-bold text-cyan-400">{value}</p></div>)}
+                  {Object.entries(memo.keyMetrics).map(([key, value]) => <div key={key} className="rounded-lg bg-muted/30 p-3"><p className="mb-1 text-xs text-muted-foreground">{key}</p><p className="text-lg font-bold text-[#C4A048]">{value}</p></div>)}
                 </div>
               </div>
             </Card>

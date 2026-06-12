@@ -104,7 +104,7 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
             { label: "Hawkeye", score: pillarScores.hawkeye, color: "fuchsia", desc: "Placement" },
           ].map((p) => {
             const tone = {
-              cyan: "border-cyan-300/30 bg-cyan-400/8 text-cyan-200",
+              cyan: "border-[#C4A048]/30 bg-[#C4A048]/8 text-[#E8C87A]",
               emerald: "border-emerald-300/30 bg-emerald-400/8 text-emerald-200",
               amber: "border-amber-300/30 bg-amber-300/8 text-amber-200",
               fuchsia: "border-fuchsia-300/30 bg-fuchsia-500/8 text-fuchsia-200",
@@ -144,13 +144,13 @@ export default function BondCommandCenter({ dealId }: { dealId: string }) {
         <TabsContent value="overview" className="space-y-6 mt-4">
           <DucklingAgentFlow />
           <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-cyan-300/25 bg-black/35 shadow-[0_0_32px_rgba(34,211,238,0.06)]">
+            <div className="rounded-2xl border border-[#C4A048]/25 bg-black/35 shadow-[0_0_32px_rgba(196,160,72,0.06)]">
               <EagleEyeScoutDashboard summaryMode />
             </div>
             <div className="rounded-2xl border border-emerald-300/25 bg-black/35 shadow-[0_0_32px_rgba(52,211,153,0.06)]">
               <RootsWorkspace dealId={dealId} summaryMode />
             </div>
-            <div className="rounded-2xl border border-cyan-300/25 bg-black/35 shadow-[0_0_32px_rgba(34,211,238,0.06)]">
+            <div className="rounded-2xl border border-[#C4A048]/25 bg-black/35 shadow-[0_0_32px_rgba(196,160,72,0.06)]">
               <ClimateResilienceDashboard dealId={dealId} summaryMode />
             </div>
           </div>

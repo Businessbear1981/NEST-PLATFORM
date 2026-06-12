@@ -14,8 +14,8 @@ const SEVERITY_COLORS: Record<GapSeverity, string> = {
   critical: 'bg-red-500/20 text-red-700 border-red-500/30',
   high: 'bg-orange-500/20 text-orange-700 border-orange-500/30',
   medium: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30',
-  low: 'bg-blue-500/20 text-blue-700 border-blue-500/30',
-  info: 'bg-cyan-500/20 text-cyan-700 border-cyan-500/30',
+  low: 'bg-[#C4A048]/20 text-[#C4A048] border-[#C4A048]/30',
+  info: 'bg-[#C4A048]/20 text-cyan-700 border-[#C4A048]/30',
 };
 
 const SEVERITY_ICONS: Record<GapSeverity, React.ReactNode> = {

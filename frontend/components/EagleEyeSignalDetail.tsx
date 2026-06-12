@@ -52,7 +52,7 @@ export default function EagleEyeSignalDetail({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 {isMA(signal) ? (
-                  <Briefcase size={14} className="text-cyan-300" />
+                  <Briefcase size={14} className="text-[#C4A048]" />
                 ) : (
                   <Building2 size={14} className="text-emerald-300" />
                 )}
@@ -77,7 +77,7 @@ export default function EagleEyeSignalDetail({
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="flex items-center justify-end gap-1">
-                  <Target size={14} className={isMA(signal) ? "text-cyan-300" : "text-emerald-300"} />
+                  <Target size={14} className={isMA(signal) ? "text-[#C4A048]" : "text-emerald-300"} />
                   <span className="font-mono text-xl font-bold text-white">{signal.score}</span>
                   <span className="font-mono text-[0.62rem] text-slate-500">/100</span>
                 </div>
@@ -125,11 +125,11 @@ export default function EagleEyeSignalDetail({
               </Section>
 
               {/* PE Landscape */}
-              <Section title="PE LANDSCAPE" icon={<Shield size={12} className="text-cyan-300" />}>
+              <Section title="PE LANDSCAPE" icon={<Shield size={12} className="text-[#C4A048]" />}>
                 <div className="space-y-3">
                   {signal.peLandscape.map((pe, i) => (
                     <div key={i} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                      <p className="font-mono text-[0.72rem] font-semibold text-cyan-200">{pe.name}</p>
+                      <p className="font-mono text-[0.72rem] font-semibold text-[#E8C87A]">{pe.name}</p>
                       <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1">
                         <InfoRow label="Fund" value={pe.fundSize} small />
                         <InfoRow label="Mandate" value={pe.mandate} small />
@@ -292,7 +292,7 @@ export default function EagleEyeSignalDetail({
           <div className="flex gap-2 border-t border-white/5 pt-4">
             <Button
               onClick={() => onDeployOutreach(signal.id)}
-              className="rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2 font-mono text-[0.62rem] font-semibold uppercase text-cyan-100 hover:bg-cyan-400/20"
+              className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2 font-mono text-[0.62rem] font-semibold uppercase text-[#EDE8DC] hover:bg-[#C4A048]/20"
             >
               <Send size={12} className="mr-1.5" /> Deploy Outreach
             </Button>

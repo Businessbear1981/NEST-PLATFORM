@@ -64,7 +64,7 @@ export function CovenantsDashboard({ dealId }: { dealId: number }) {
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Threshold</span><p className="font-mono font-semibold text-amber-100">{numberLabel(covenant.threshold)}</p></div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Current</span><p className="font-mono font-semibold text-cyan-100">{numberLabel(covenant.current)}</p></div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><span className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">Current</span><p className="font-mono font-semibold text-[#EDE8DC]">{numberLabel(covenant.current)}</p></div>
                   </div>
                   <p className="mt-3 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-slate-600">Last checked: {covenant.lastChecked ? new Date(covenant.lastChecked).toLocaleDateString() : "Pending"}</p>
                   <button

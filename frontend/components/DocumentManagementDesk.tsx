@@ -49,7 +49,7 @@ export function DocumentManagementDesk({ documents, onApprove, onReject }: Docum
         </CardHeader>
         <CardContent>
           <div className="border-2 border-dashed border-slate-600 rounded p-6 text-center hover:border-cyan-400 cursor-pointer transition">
-            <Upload size={24} className="mx-auto mb-2 text-cyan-400" />
+            <Upload size={24} className="mx-auto mb-2 text-[#C4A048]" />
             <p className="text-sm font-mono text-slate-300">Drop files or click to upload</p>
             <p className="text-xs text-slate-500 mt-1">Prospectus, Indenture, Rating Letter, Insurance Cert, Feasibility, Financials, Covenants</p>
           </div>

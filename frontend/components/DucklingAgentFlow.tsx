@@ -42,10 +42,10 @@ const AGENTS: AgentNode[] = [
 
 const ringColors: Record<string, { border: string; bg: string; glow: string; active: string }> = {
   cyan: {
-    border: "border-cyan-300/30",
-    bg: "bg-cyan-400/8",
-    glow: "shadow-[0_0_14px_rgba(34,211,238,0.20)]",
-    active: "shadow-[0_0_30px_rgba(34,211,238,0.50),0_0_60px_rgba(34,211,238,0.20)]",
+    border: "border-[#C4A048]/30",
+    bg: "bg-[#C4A048]/8",
+    glow: "shadow-[0_0_14px_rgba(196,160,72,0.20)]",
+    active: "shadow-[0_0_30px_rgba(196,160,72,0.50),0_0_60px_rgba(196,160,72,0.20)]",
   },
   amber: {
     border: "border-amber-300/30",
@@ -136,7 +136,7 @@ export default function DucklingAgentFlow({ autoRun }: { autoRun?: boolean }) {
             <motion.div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-300/15"
               animate={{ width: [100, 500], height: [100, 500], opacity: [0.4, 0] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }} />
-            <motion.div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/15"
+            <motion.div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#C4A048]/15"
               animate={{ width: [80, 400], height: [80, 400], opacity: [0.3, 0] }}
               transition={{ repeat: Infinity, duration: 2, delay: 0.5, ease: "easeOut" }} />
           </>

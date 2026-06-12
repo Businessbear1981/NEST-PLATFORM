@@ -99,7 +99,7 @@ export function BondMarketTerminal() {
                   onClick={() => setSelectedBond(bond.id)}
                   className={`w-full text-left p-3 rounded-lg border transition-all ${
                     selectedBond === bond.id
-                      ? 'border-cyan-500/50 bg-cyan-500/10'
+                      ? 'border-[#C4A048]/50 bg-[#C4A048]/10'
                       : 'border-border hover:border-border/80 hover:bg-muted/30'
                   }`}
                 >
@@ -131,7 +131,7 @@ export function BondMarketTerminal() {
           {selectedBondData && selectedMTM && (
             <>
               {/* MTM Ticker */}
-              <Card className="p-6 border-cyan-500/30 bg-cyan-500/5">
+              <Card className="p-6 border-[#C4A048]/30 bg-[#C4A048]/5">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
                     <p className="text-xs text-muted-foreground mb-2">Clean Price</p>
@@ -153,7 +153,7 @@ export function BondMarketTerminal() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-2">Duration</p>
-                    <p className="text-3xl font-bold font-mono text-blue-400">
+                    <p className="text-3xl font-bold font-mono text-[#C4A048]">
                       {selectedMTM.duration.toFixed(1)}y
                     </p>
                   </div>

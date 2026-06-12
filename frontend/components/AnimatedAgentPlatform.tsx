@@ -137,7 +137,7 @@ export function AnimatedAgentPlatform() {
       case 'completed':
         return <CheckCircle className="text-emerald-400" size={20} />;
       case 'working':
-        return <Zap className="text-cyan-400" size={20} />;
+        return <Zap className="text-[#C4A048]" size={20} />;
       case 'idle':
         return <Clock className="text-gray-400" size={20} />;
       default:
@@ -150,7 +150,7 @@ export function AnimatedAgentPlatform() {
       case 'completed':
         return 'border-emerald-400/30 bg-emerald-400/5';
       case 'working':
-        return 'border-cyan-400/30 bg-cyan-400/5';
+        return 'border-[#C4A048]/30 bg-[#C4A048]/5';
       case 'idle':
         return 'border-gray-400/20 bg-gray-400/5';
       default:
@@ -170,10 +170,10 @@ export function AnimatedAgentPlatform() {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-black/40 rounded-lg border border-cyan-400/20">
+    <div className="space-y-6 p-6 bg-black/40 rounded-lg border border-[#C4A048]/20">
       {/* Header */}
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-cyan-300">AGENT PLATFORM</h2>
+        <h2 className="text-2xl font-bold text-[#C4A048]">AGENT PLATFORM</h2>
         <p className="text-sm text-cyan-200/60">Live Task Execution · Real-time Agent Fleet</p>
       </div>
 
@@ -194,10 +194,10 @@ export function AnimatedAgentPlatform() {
                   animate={agent.status === 'working' ? { rotate: 360 } : {}}
                   transition={agent.status === 'working' ? { duration: 2, repeat: Infinity } : {}}
                 >
-                  <Bot className="text-cyan-400" size={20} />
+                  <Bot className="text-[#C4A048]" size={20} />
                 </motion.div>
                 <div>
-                  <p className="font-semibold text-cyan-300">{agent.name}</p>
+                  <p className="font-semibold text-[#C4A048]">{agent.name}</p>
                   <p className="text-xs text-cyan-200/60">{agent.role}</p>
                 </div>
               </div>
@@ -224,15 +224,15 @@ export function AnimatedAgentPlatform() {
             {agent.status !== 'idle' && (
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-xs text-cyan-300 font-mono">PROGRESS</p>
+                  <p className="text-xs text-[#C4A048] font-mono">PROGRESS</p>
                   <motion.p
                     key={`${agent.id}-progress`}
-                    className="text-xs font-mono text-cyan-400"
+                    className="text-xs font-mono text-[#C4A048]"
                   >
                     {Math.round(agent.progress)}%
                   </motion.p>
                 </div>
-                <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-cyan-400/20">
+                <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-[#C4A048]/20">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${agent.progress}%` }}
@@ -246,7 +246,7 @@ export function AnimatedAgentPlatform() {
             {/* Stats */}
             <div className="flex items-center justify-between text-xs">
               <p className="text-gray-400">
-                <span className="font-semibold text-cyan-300">{agent.tasksCompleted}</span> tasks completed
+                <span className="font-semibold text-[#C4A048]">{agent.tasksCompleted}</span> tasks completed
               </p>
               <motion.p
                 animate={{ opacity: [0.5, 1, 0.5] }}
@@ -255,7 +255,7 @@ export function AnimatedAgentPlatform() {
                   agent.status === 'completed'
                     ? 'text-emerald-400'
                     : agent.status === 'working'
-                      ? 'text-cyan-400'
+                      ? 'text-[#C4A048]'
                       : 'text-gray-400'
                 }`}
               >
@@ -268,7 +268,7 @@ export function AnimatedAgentPlatform() {
 
       {/* Active Tasks */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-cyan-300">ACTIVE TASK QUEUE</h3>
+        <h3 className="text-sm font-semibold text-[#C4A048]">ACTIVE TASK QUEUE</h3>
         <div className="space-y-2">
           {tasks.map((task, i) => (
             <motion.div
@@ -276,18 +276,18 @@ export function AnimatedAgentPlatform() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="p-3 bg-black/30 border border-cyan-400/20 rounded-lg"
+              className="p-3 bg-black/30 border border-[#C4A048]/20 rounded-lg"
             >
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-cyan-300">{task.name}</p>
+                <p className="text-sm font-semibold text-[#C4A048]">{task.name}</p>
                 <motion.p
                   key={`${task.id}-progress`}
-                  className="text-xs font-mono text-cyan-400"
+                  className="text-xs font-mono text-[#C4A048]"
                 >
                   {Math.round(task.progress)}%
                 </motion.p>
               </div>
-              <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden border border-cyan-400/20">
+              <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden border border-[#C4A048]/20">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${task.progress}%` }}
@@ -301,16 +301,16 @@ export function AnimatedAgentPlatform() {
       </div>
 
       {/* System Health */}
-      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-cyan-400/10">
+      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#C4A048]/10">
         <motion.div
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="p-3 bg-cyan-400/5 border border-cyan-400/20 rounded text-center"
+          className="p-3 bg-[#C4A048]/5 border border-[#C4A048]/20 rounded text-center"
         >
-          <p className="text-xs text-cyan-300 font-semibold">AGENTS ACTIVE</p>
+          <p className="text-xs text-[#C4A048] font-semibold">AGENTS ACTIVE</p>
           <motion.p
             key={`active-${agents.filter(a => a.status === 'working').length}`}
-            className="text-lg font-bold text-cyan-400"
+            className="text-lg font-bold text-[#C4A048]"
           >
             {agents.filter(a => a.status === 'working').length}/{agents.length}
           </motion.p>

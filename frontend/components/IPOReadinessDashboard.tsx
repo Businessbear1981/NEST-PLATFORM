@@ -23,7 +23,7 @@ interface IPOResult {
 
 const VERDICT_COLORS: Record<string, { bg: string; text: string; label: string }> = {
   IPO_READY: { bg: "bg-emerald-500/20 border-emerald-500/40", text: "text-emerald-400", label: "IPO Ready" },
-  IPO_TRACK: { bg: "bg-cyan-500/20 border-cyan-500/40", text: "text-cyan-400", label: "On Track" },
+  IPO_TRACK: { bg: "bg-[#C4A048]/20 border-[#C4A048]/40", text: "text-[#C4A048]", label: "On Track" },
   IPO_DEVELOPMENT: { bg: "bg-amber-500/20 border-amber-500/40", text: "text-amber-400", label: "Development Phase" },
   NOT_READY: { bg: "bg-rose-500/20 border-rose-500/40", text: "text-rose-400", label: "Not Ready" },
 };

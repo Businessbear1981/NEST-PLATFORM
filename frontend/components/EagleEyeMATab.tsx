@@ -22,7 +22,7 @@ interface MATarget {
 const DEAL_TYPE_LABELS: Record<string, { label: string; color: string }> = {
   acquisition: { label: "Acquisition", color: "text-amber-300 bg-amber-400/10 border-amber-400/25" },
   recap: { label: "Recapitalization", color: "text-violet-300 bg-violet-400/10 border-violet-400/25" },
-  growth_capital: { label: "Growth Capital", color: "text-cyan-300 bg-cyan-400/10 border-cyan-400/25" },
+  growth_capital: { label: "Growth Capital", color: "text-[#C4A048] bg-[#C4A048]/10 border-[#C4A048]/25" },
 };
 
 function fmt(n: number): string {
@@ -207,7 +207,7 @@ export default function EagleEyeMATab() {
             {
               label: "Avg EBITDA",
               value: fmt(data.targets.reduce((s, t) => s + t.est_ebitda_usd, 0) / (data.targets.length || 1)),
-              color: "text-cyan-400",
+              color: "text-[#C4A048]",
             },
             {
               label: "Top Score",

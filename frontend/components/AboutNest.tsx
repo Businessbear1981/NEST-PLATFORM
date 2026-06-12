@@ -51,7 +51,7 @@ export default function AboutNest() {
           performing instruments.
         </p>
         <p>
-          Every module is named for what it does. <span className="text-cyan-200">EagleEye</span> sees
+          Every module is named for what it does. <span className="text-[#E8C87A]">EagleEye</span> sees
           deals forming before anyone else. <span className="text-amber-200">GENIE</span> structures
           bonds in ways that weren't possible without automation. <span className="text-emerald-200">Hawkeye</span> places
           them with surgical precision. <span className="text-slate-300">NightVision</span> watches

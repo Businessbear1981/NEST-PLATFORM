@@ -167,7 +167,7 @@ export function BondFinancingCommandCenter() {
               <p className="text-sm text-slate-400">Deal ID: {workflow.dealId}</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-cyan-400">{workflow.overallReadinessScore}%</div>
+              <div className="text-3xl font-bold text-[#C4A048]">{workflow.overallReadinessScore}%</div>
               <p className="text-sm text-slate-400">Overall Readiness</p>
             </div>
           </div>
@@ -190,7 +190,7 @@ export function BondFinancingCommandCenter() {
                 whileTap={{ scale: 0.95 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
                   isActive
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/50"
+                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-[#C4A048]/50"
                     : isCompleted
                       ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
                       : "bg-slate-700 text-slate-300 hover:bg-slate-600"
@@ -332,7 +332,7 @@ export function BondFinancingCommandCenter() {
               <div className="bg-slate-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-slate-300">Audit Readiness</span>
-                  <FileCheck className="w-4 h-4 text-cyan-400" />
+                  <FileCheck className="w-4 h-4 text-[#C4A048]" />
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">
                   {workflow.aiEvaluationSummary.audit.readinessScore}%
@@ -358,7 +358,7 @@ export function BondFinancingCommandCenter() {
                             ? "bg-red-500/20 text-red-400"
                             : gap.severity === "medium"
                               ? "bg-amber-500/20 text-amber-400"
-                              : "bg-blue-500/20 text-blue-400"
+                              : "bg-[#C4A048]/20 text-[#C4A048]"
                         }`}
                       >
                         {gap.severity.toUpperCase()}

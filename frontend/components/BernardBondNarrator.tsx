@@ -13,8 +13,8 @@ const TONE_CONFIG: Record<
     icon: "\u{1F4CB}",
     label: "EXPLANATION",
     border: "border-l-cyan-400",
-    accent: "text-cyan-300",
-    glow: "shadow-cyan-500/10",
+    accent: "text-[#C4A048]",
+    glow: "shadow-[#C4A048]/10",
   },
   warn: {
     icon: "\u26A0\uFE0F",

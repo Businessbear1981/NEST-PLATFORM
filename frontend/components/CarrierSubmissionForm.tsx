@@ -41,7 +41,7 @@ export function CarrierSubmissionForm({
     <div className="space-y-5" data-testid="carrier-submission-form">
       <Card className="border-slate-700 bg-slate-950/80">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-cyan-300">
+          <CardTitle className="flex items-center gap-2 text-[#C4A048]">
             <Send className="h-5 w-5" />
             Carrier Submission Form
           </CardTitle>
@@ -52,11 +52,11 @@ export function CarrierSubmissionForm({
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {providers.map((provider) => (
-              <Card key={provider.id} className="border-slate-700 bg-slate-900/70 transition-all hover:border-cyan-500/50">
+              <Card key={provider.id} className="border-slate-700 bg-slate-900/70 transition-all hover:border-[#C4A048]/50">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <CardTitle className="text-sm font-semibold text-cyan-300">{provider.name}</CardTitle>
+                      <CardTitle className="text-sm font-semibold text-[#C4A048]">{provider.name}</CardTitle>
                       <p className="mt-1 text-xs text-muted-foreground">Carrier rating: {provider.rating}</p>
                     </div>
                     <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 text-sm font-bold text-emerald-200">
@@ -83,7 +83,7 @@ export function CarrierSubmissionForm({
                     <p className="mb-2 text-xs text-muted-foreground">Specialties</p>
                     <div className="flex flex-wrap gap-1">
                       {provider.specialties.map((specialty) => (
-                        <span key={specialty} className="rounded bg-slate-800 px-2 py-1 text-xs text-cyan-200">
+                        <span key={specialty} className="rounded bg-slate-800 px-2 py-1 text-xs text-[#E8C87A]">
                           {specialty}
                         </span>
                       ))}
@@ -101,7 +101,7 @@ export function CarrierSubmissionForm({
 
       <Card className="border-slate-700 bg-slate-950/80">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-cyan-300">
+          <CardTitle className="flex items-center gap-2 text-[#C4A048]">
             <DollarSign className="h-5 w-5" />
             Premium Quotes
           </CardTitle>
@@ -123,7 +123,7 @@ export function CarrierSubmissionForm({
                     <div className="text-right">
                       <p className="text-2xl font-bold text-emerald-300">${quote.premium.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">Annual premium</p>
-                      <span className="mt-2 inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-cyan-200">
+                      <span className="mt-2 inline-flex rounded-full border border-[#C4A048]/30 bg-[#C4A048]/10 px-2 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#E8C87A]">
                         {quote.status}
                       </span>
                     </div>

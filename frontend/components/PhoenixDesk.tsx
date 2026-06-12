@@ -112,7 +112,7 @@ function money(n: number): string {
 const STAGE_COLORS: Record<string, string> = {
   sourced: "border-slate-400/30 bg-slate-500/10 text-slate-200",
   underwriting: "border-amber-300/30 bg-amber-400/10 text-amber-100",
-  loi: "border-cyan-300/30 bg-cyan-400/10 text-cyan-100",
+  loi: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]",
   due_diligence: "border-fuchsia-300/30 bg-fuchsia-500/10 text-fuchsia-100",
   bond_structuring: "border-emerald-300/30 bg-emerald-400/10 text-emerald-100",
   closed: "border-green-300/30 bg-green-400/10 text-green-100",
@@ -171,7 +171,7 @@ export function PhoenixDesk() {
         {[
           { label: "Active Deals", value: String(deals.filter((d) => d.stage !== "closed").length), icon: Target, tone: "text-red-200 border-red-400/30 bg-red-500/8" },
           { label: "Total Equity Created", value: money(economics?.total_equity_created ?? 0), icon: TrendingUp, tone: "text-amber-200 border-amber-300/35 bg-amber-300/9" },
-          { label: "Radar Opportunities", value: String(radar.length), icon: Globe, tone: "text-cyan-200 border-cyan-300/30 bg-cyan-400/8" },
+          { label: "Radar Opportunities", value: String(radar.length), icon: Globe, tone: "text-[#E8C87A] border-[#C4A048]/30 bg-[#C4A048]/8" },
           { label: "Portfolio NAV", value: money(economics?.portfolio_nav ?? 0), icon: Wallet, tone: "text-emerald-200 border-emerald-300/30 bg-emerald-400/8" },
         ].map((m) => (
           <article key={m.label} className={`relative overflow-hidden rounded-[1.25rem] border p-4 ${m.tone}`}>
@@ -247,7 +247,7 @@ export function PhoenixDesk() {
                         { label: "Equity", value: money(deal.instant_equity), color: "text-amber-200" },
                         { label: "LTV", value: `${deal.ltv_at_acquisition}%`, color: deal.ltv_at_acquisition < 70 ? "text-emerald-300" : "text-amber-300" },
                         { label: "DSCR (stab)", value: deal.stabilized_dscr.toFixed(2), color: deal.stabilized_dscr > 1.25 ? "text-emerald-300" : "text-amber-300" },
-                        { label: "No P&I", value: `${deal.no_pi_months}mo`, color: "text-cyan-300" },
+                        { label: "No P&I", value: `${deal.no_pi_months}mo`, color: "text-[#C4A048]" },
                       ].map((m) => (
                         <div key={m.label} className="rounded-lg border border-white/5 bg-white/[0.02] p-2 text-center">
                           <span className="font-mono text-[0.5rem] uppercase text-slate-500">{m.label}</span>
@@ -272,7 +272,7 @@ export function PhoenixDesk() {
                 key={f}
                 onClick={() => setRadarFilter(f)}
                 className={`rounded-lg px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.12em] transition ${
-                  radarFilter === f ? "bg-cyan-400/15 text-cyan-100" : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
+                  radarFilter === f ? "bg-[#C4A048]/15 text-[#EDE8DC]" : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
                 }`}
               >
                 {f === "all" ? "All" : TRACK_LABEL[f] ?? f}
@@ -280,9 +280,9 @@ export function PhoenixDesk() {
             ))}
           </div>
 
-          <Card className="border-cyan-300/20 bg-[#07101a]/88">
+          <Card className="border-[#C4A048]/20 bg-[#07101a]/88">
             <CardHeader>
-              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-cyan-200">
+              <CardTitle className="font-mono text-sm uppercase tracking-[0.1em] text-[#E8C87A]">
                 <Globe className="mr-2 inline h-4 w-4" />
                 Sourcing Radar ({filteredRadar.length} opportunities)
               </CardTitle>

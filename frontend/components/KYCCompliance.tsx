@@ -239,7 +239,7 @@ export function KYCCompliance() {
       case 'medium':
         return 'bg-yellow-500/20 text-yellow-200';
       default:
-        return 'bg-blue-500/20 text-blue-200';
+        return 'bg-[#C4A048]/20 text-[#C4A048]';
     }
   };
 
@@ -271,8 +271,8 @@ export function KYCCompliance() {
         </Card>
       </div>
 
-      <Card className="border-cyan-500/25 bg-cyan-500/5 p-4" data-testid="kyc-audit-log">
-        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-cyan-100">
+      <Card className="border-[#C4A048]/25 bg-[#C4A048]/5 p-4" data-testid="kyc-audit-log">
+        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#EDE8DC]">
           <FileCheck2 className="h-4 w-4" /> KYC workflow audit log
         </div>
         <div className="grid gap-2">
@@ -300,7 +300,7 @@ export function KYCCompliance() {
                   <button
                     key={profile.id}
                     onClick={() => setSelectedProfileId(profile.id)}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${selectedProfile?.id === profile.id ? 'border-cyan-500/50 bg-cyan-500/10' : 'border-border hover:border-border/80 hover:bg-muted/30'}`}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${selectedProfile?.id === profile.id ? 'border-[#C4A048]/50 bg-[#C4A048]/10' : 'border-border hover:border-border/80 hover:bg-muted/30'}`}
                   >
                     <div className="mb-1 flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
@@ -317,7 +317,7 @@ export function KYCCompliance() {
             </Card>
 
             {selectedProfile && (
-              <Card className="border-cyan-500/30 bg-cyan-500/5 p-6 lg:col-span-2">
+              <Card className="border-[#C4A048]/30 bg-[#C4A048]/5 p-6 lg:col-span-2">
                 <div className="space-y-6">
                   <div>
                     <div className="mb-4 flex items-start justify-between gap-3">
@@ -408,7 +408,7 @@ export function KYCCompliance() {
                         <p className="text-xs text-muted-foreground">{owner.relationship}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-cyan-400">{owner.ownership}%</p>
+                        <p className="text-lg font-bold text-[#C4A048]">{owner.ownership}%</p>
                         <Badge variant="outline" className={owner.verified ? 'bg-emerald-500/20 text-emerald-300' : 'bg-yellow-500/20 text-yellow-200'}>
                           {owner.verified ? 'Verified' : 'Pending'}
                         </Badge>
@@ -458,7 +458,7 @@ export function KYCCompliance() {
                     <h3 className="text-lg font-bold text-foreground">{hit.investor}</h3>
                     <p className="text-sm text-muted-foreground">{hit.listType} • Detected {hit.dateDetected.toLocaleDateString()}</p>
                   </div>
-                  <Badge className={hit.status === 'pending-review' ? 'bg-yellow-500/20 text-yellow-200' : hit.status === 'false-positive' ? 'bg-blue-500/20 text-blue-200' : hit.status === 'escalated' ? 'bg-purple-500/20 text-purple-200' : 'bg-red-500/20 text-red-200'}>
+                  <Badge className={hit.status === 'pending-review' ? 'bg-yellow-500/20 text-yellow-200' : hit.status === 'false-positive' ? 'bg-[#C4A048]/20 text-[#C4A048]' : hit.status === 'escalated' ? 'bg-purple-500/20 text-purple-200' : 'bg-red-500/20 text-red-200'}>
                     {hit.status.toUpperCase().replace('-', ' ')}
                   </Badge>
                 </div>

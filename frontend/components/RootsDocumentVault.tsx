@@ -10,8 +10,8 @@ import { DEMO_DOCUMENTS, type RootsDocument, type DocumentStatus } from '@shared
 
 const STATUS_COLORS: Record<DocumentStatus, string> = {
   pending: 'bg-yellow-500/20 text-yellow-700',
-  uploaded: 'bg-blue-500/20 text-blue-700',
-  processing: 'bg-cyan-500/20 text-cyan-700',
+  uploaded: 'bg-[#C4A048]/20 text-[#C4A048]',
+  processing: 'bg-[#C4A048]/20 text-cyan-700',
   ocr_complete: 'bg-emerald-500/20 text-emerald-700',
   tagged: 'bg-purple-500/20 text-purple-700',
   approved: 'bg-emerald-500/20 text-emerald-700',

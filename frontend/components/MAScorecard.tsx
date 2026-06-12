@@ -97,7 +97,7 @@ export function MAScorecard({ targets }: MAScoreboardProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="border border-slate-700 rounded p-3">
               <p className="text-xs text-slate-500 mb-1">Targets Under Review</p>
-              <p className="text-2xl font-bold text-cyan-400">{targets.length}</p>
+              <p className="text-2xl font-bold text-[#C4A048]">{targets.length}</p>
             </div>
             <div className="border border-slate-700 rounded p-3">
               <p className="text-xs text-slate-500 mb-1">Avg Financial Health</p>

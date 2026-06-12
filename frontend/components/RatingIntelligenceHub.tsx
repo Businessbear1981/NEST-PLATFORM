@@ -33,11 +33,11 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+        <div className="flex items-center gap-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#E8C87A]">
           <TrendingUp size={17} /> Rating Intelligence Hub
         </div>
         <Button onClick={runAll} disabled={ratingMutation.isPending}
-          className="rounded-xl border border-cyan-300/35 bg-cyan-400/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-cyan-100 hover:bg-cyan-400/20">
+          className="rounded-xl border border-[#C4A048]/35 bg-[#C4A048]/12 px-4 py-2 font-mono text-[0.72rem] font-semibold uppercase text-[#EDE8DC] hover:bg-[#C4A048]/20">
           {ratingMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Run Full Analysis"}
         </Button>
       </div>
@@ -54,9 +54,9 @@ export default function RatingIntelligenceHub({ dealId }: { dealId?: string }) {
             <p className="mt-2 font-mono text-4xl font-bold text-emerald-200">{rating.deal_score}/100</p>
             <p className="mt-1 font-mono text-sm text-slate-400">Grade: {rating.deal_score_grade}</p>
           </div>
-          <div className="rounded-2xl border border-cyan-300/25 bg-black/35 p-5 text-center">
+          <div className="rounded-2xl border border-[#C4A048]/25 bg-black/35 p-5 text-center">
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-slate-500">ESG Grade</p>
-            <p className="mt-2 font-mono text-4xl font-bold text-cyan-200">{esg?.esg_grade ?? "—"}</p>
+            <p className="mt-2 font-mono text-4xl font-bold text-[#E8C87A]">{esg?.esg_grade ?? "—"}</p>
             <p className="mt-1 font-mono text-sm text-slate-400">{esg?.composite_score ?? "—"}/100</p>
           </div>
         </div>

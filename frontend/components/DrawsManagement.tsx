@@ -13,7 +13,7 @@ function formatMoney(value: string | number) {
 
 function statusClass(status: string) {
   if (status === "approved") return "border-emerald-300/30 bg-emerald-400/10 text-emerald-100";
-  if (status === "funded") return "border-cyan-300/30 bg-cyan-400/10 text-cyan-100";
+  if (status === "funded") return "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]";
   if (status === "rejected") return "border-red-300/30 bg-red-400/10 text-red-100";
   return "border-amber-300/30 bg-amber-400/10 text-amber-100";
 }

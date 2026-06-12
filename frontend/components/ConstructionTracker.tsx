@@ -67,12 +67,12 @@ export default function ConstructionTracker({
           <CardContent>
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-3xl font-bold text-cyan-400">{totalProgress}%</p>
+                <p className="text-3xl font-bold text-[#C4A048]">{totalProgress}%</p>
                 <p className="text-xs text-slate-500 mt-1">
                   {milestones.filter((m) => m.percentComplete === 100).length} / {milestones.length} complete
                 </p>
               </div>
-              <Zap size={24} className="text-cyan-400 opacity-50" />
+              <Zap size={24} className="text-[#C4A048] opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -153,7 +153,7 @@ export default function ConstructionTracker({
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-mono text-cyan-400">{milestone.percentComplete}%</p>
+                      <p className="text-sm font-mono text-[#C4A048]">{milestone.percentComplete}%</p>
                       <p className={`text-xs font-mono ${scheduleStatus.color}`}>
                         {milestone.daysAhead > 0 ? "+" : ""}{milestone.daysAhead}d {scheduleStatus.label}
                       </p>

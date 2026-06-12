@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 
 function typeClass(type: string) {
   if (type === "draw") return "border-emerald-300/30 bg-emerald-400/10 text-emerald-100";
-  if (type === "bond") return "border-cyan-300/30 bg-cyan-400/10 text-cyan-100";
+  if (type === "bond") return "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#EDE8DC]";
   if (type === "outreach") return "border-fuchsia-300/30 bg-fuchsia-400/10 text-fuchsia-100";
   return "border-slate-300/20 bg-white/[0.04] text-slate-200";
 }

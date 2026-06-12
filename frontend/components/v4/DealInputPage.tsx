@@ -578,7 +578,7 @@ export default function DealInputPage() {
           {sourceSignalId && (
             <Badge
               variant="outline"
-              className="mt-3 border-cyan-400/30 bg-cyan-400/15 text-cyan-200 font-mono text-[0.6rem] uppercase tracking-wider"
+              className="mt-3 border-[#C4A048]/30 bg-[#C4A048]/15 text-[#E8C87A] font-mono text-[0.6rem] uppercase tracking-wider"
             >
               Promoted from EagleEye signal: {sourceSignalId}
             </Badge>

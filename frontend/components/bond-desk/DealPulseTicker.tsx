@@ -55,7 +55,7 @@ function CurveTooltip({ active, payload, label }: any) {
   return (
     <div className="rounded border border-white/[0.12] bg-[#030A06]/95 px-3 py-2 shadow-xl backdrop-blur-sm">
       <p className="font-mono text-[0.6rem] uppercase tracking-widest text-slate-500">{label}</p>
-      <p className="font-mono text-sm font-semibold text-cyan-300">
+      <p className="font-mono text-sm font-semibold text-[#C4A048]">
         {payload[0]?.value?.toFixed(2)}%
       </p>
     </div>
@@ -488,7 +488,7 @@ function TerminalStat({
   accent?: "cyan" | "amber" | "slate";
 }) {
   const accentClass = {
-    cyan: "text-cyan-400",
+    cyan: "text-[#C4A048]",
     amber: "text-[#C4A048]",
     slate: "text-slate-400",
   }[accent];

@@ -187,15 +187,15 @@ export function CompleteSuretyModule() {
 
   return (
     <div className="space-y-6" data-testid="complete-surety-module">
-      <section className="relative overflow-hidden rounded-[1.8rem] border border-cyan-300/25 bg-[#061018] p-5 text-slate-100 shadow-[0_0_85px_rgba(34,211,238,0.11)] sm:p-7" data-testid="surety-command-hero">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(34,211,238,0.17),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(16,185,129,0.15),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
+      <section className="relative overflow-hidden rounded-[1.8rem] border border-[#C4A048]/25 bg-[#061018] p-5 text-slate-100 shadow-[0_0_85px_rgba(196,160,72,0.11)] sm:p-7" data-testid="surety-command-hero">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(196,160,72,0.17),transparent_34%),radial-gradient(circle_at_86%_4%,rgba(16,185,129,0.15),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.76),rgba(2,6,23,0.96))]" />
         <div className="relative grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <div className="flex flex-wrap items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.22em] text-cyan-200">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#E8C87A]">
               <ShieldCheck className="h-4 w-4" /> Restored first-class capital protection module
             </div>
             <h1 className="mt-4 flex items-center gap-2 text-3xl font-black tracking-tight text-white sm:text-5xl">
-              <FileCheck className="h-9 w-9 text-cyan-300" /> Insurance & Surety Command
+              <FileCheck className="h-9 w-9 text-[#C4A048]" /> Insurance & Surety Command
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
               Insurance and surety are core NEST infrastructure, not a side panel. This command room manages underwriting gaps, carrier capacity, coverage evidence, surety wrap economics, quote negotiation, and the approval gates that determine whether a bond can move into sales distribution.
@@ -230,9 +230,9 @@ export function CompleteSuretyModule() {
 
       <div className="grid gap-3 md:grid-cols-4" aria-label="Insurance and surety command rails">
         {suretyCommandRails.map(([stage, description]) => (
-          <Card key={stage} className="border-cyan-300/20 bg-slate-950/80 text-slate-100">
+          <Card key={stage} className="border-[#C4A048]/20 bg-slate-950/80 text-slate-100">
             <CardContent className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">{stage}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C4A048]">{stage}</p>
               <p className="mt-2 text-xs leading-5 text-slate-400">{description}</p>
             </CardContent>
           </Card>
@@ -279,7 +279,7 @@ export function CompleteSuretyModule() {
         ].map(([stage, description]) => (
           <Card key={stage} className="border-slate-700 bg-slate-900/70">
             <CardContent className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">{stage}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C4A048]">{stage}</p>
               <p className="mt-2 text-xs leading-5 text-muted-foreground">{description}</p>
             </CardContent>
           </Card>
@@ -305,11 +305,11 @@ export function CompleteSuretyModule() {
         <TabsContent value="providers" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {providers.map((provider) => (
-              <Card key={provider.id} className="border-slate-700 hover:border-cyan-500/50 transition-all">
+              <Card key={provider.id} className="border-slate-700 hover:border-[#C4A048]/50 transition-all">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-sm font-semibold text-cyan-400">{provider.name}</CardTitle>
+                      <CardTitle className="text-sm font-semibold text-[#C4A048]">{provider.name}</CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">Rating: {provider.rating}</p>
                     </div>
                     <span className="text-lg font-bold text-green-400">{provider.rating}</span>
@@ -336,7 +336,7 @@ export function CompleteSuretyModule() {
                     <p className="text-xs text-muted-foreground mb-2">Specialties</p>
                     <div className="flex flex-wrap gap-1">
                       {provider.specialties.map((spec, i) => (
-                        <span key={i} className="text-xs bg-slate-700 px-2 py-1 rounded text-cyan-400">
+                        <span key={i} className="text-xs bg-slate-700 px-2 py-1 rounded text-[#C4A048]">
                           {spec}
                         </span>
                       ))}
