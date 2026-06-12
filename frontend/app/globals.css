@@ -3,13 +3,141 @@
 @tailwind utilities;
 
 :root {
-  --nest-void:#030A06; --nest-forest:#0D2218; --nest-green:#1E4A2E;
-  --nest-pine:#2D6B3D; --nest-gold:#C4A048;   --nest-gold-hi:#E8C87A;
-  --nest-sage:#7A9A82; --nest-cream:#EDE8DC;
+  --nest-void:    #030A06;
+  --nest-forest:  #0D2218;
+  --nest-green:   #1E4A2E;
+  --nest-pine:    #2D6B3D;
+  --nest-gold:    #C4A048;
+  --nest-gold-hi: #E8C87A;
+  --nest-sage:    #7A9A82;
+  --nest-cream:   #EDE8DC;
+  --nest-navy:    #060E1A;
 }
-*{box-sizing:border-box}
-html,body{background:var(--nest-void);color:var(--nest-cream)}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--nest-void)}
-::-webkit-scrollbar-thumb{background:var(--nest-green);border-radius:2px}
-::-webkit-scrollbar-thumb:hover{background:var(--nest-pine)}
+
+* { box-sizing: border-box; }
+html, body { background: var(--nest-void); color: var(--nest-cream); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--nest-void); }
+::-webkit-scrollbar-thumb { background: var(--nest-green); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--nest-pine); }
+
+/* ─── TEASER DESIGN LANGUAGE ─────────────────────────────── */
+
+/* Section labels — "THE PIPELINE" / "THE PRODUCT" style */
+.nest-label {
+  font-family: var(--font-mono, "IBM Plex Mono"), monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--nest-gold);
+}
+
+/* Page / section header bar — dark forest green strip */
+.nest-header {
+  background: var(--nest-forest);
+  border-bottom: 1px solid rgba(196,160,72,0.2);
+  padding: 1.25rem 1.5rem;
+}
+
+/* Standard card — forest green bg, gold border */
+.nest-card {
+  background: var(--nest-forest);
+  border: 1px solid rgba(196,160,72,0.15);
+  border-radius: 4px;
+}
+
+/* Dark callout box — "VALUATION DEFENSE" / "THE ASK" style */
+.nest-callout {
+  background: #050F09;
+  border: 1px solid rgba(196,160,72,0.3);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Gold callout — highlighted box */
+.nest-callout-gold {
+  background: rgba(196,160,72,0.08);
+  border: 1px solid rgba(196,160,72,0.4);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Large stat / financial figure */
+.nest-stat {
+  font-family: var(--font-mono, "IBM Plex Mono"), monospace;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--nest-gold);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.nest-stat-sm {
+  font-family: var(--font-mono, "IBM Plex Mono"), monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--nest-gold);
+}
+
+/* Financial table — clean with gold header accent */
+.nest-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono, "IBM Plex Mono"), monospace;
+  font-size: 0.72rem;
+}
+.nest-table thead th {
+  background: var(--nest-forest);
+  color: var(--nest-gold);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(196,160,72,0.3);
+  text-align: right;
+}
+.nest-table thead th:first-child { text-align: left; }
+.nest-table tbody td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--nest-cream);
+  text-align: right;
+}
+.nest-table tbody td:first-child { text-align: left; color: var(--nest-sage); }
+.nest-table tbody tr:hover td { background: rgba(196,160,72,0.04); }
+/* Gold highlight row — like EBITDA in teaser */
+.nest-table tbody tr.highlight td {
+  background: rgba(196,160,72,0.1);
+  color: var(--nest-gold);
+  font-weight: 600;
+}
+
+/* Divider — gold rule */
+.nest-rule {
+  border: none;
+  border-top: 1px solid rgba(196,160,72,0.2);
+  margin: 1rem 0;
+}
+
+/* Section title — serif, large, cream */
+.nest-title {
+  font-family: var(--font-display, "Cormorant Garamond"), serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--nest-cream);
+  letter-spacing: 0.04em;
+}
+
+/* Strictly confidential / badge style */
+.nest-badge {
+  font-family: var(--font-mono, "IBM Plex Mono"), monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--nest-gold);
+  border: 1px solid rgba(196,160,72,0.3);
+  border-radius: 2px;
+  padding: 2px 6px;
+}

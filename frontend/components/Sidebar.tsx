@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import clsx from "clsx";
 
 const NAV = [
@@ -110,9 +111,14 @@ export default function Sidebar() {
   const toggle = (s:string) => setOpen(p=>({...p,[s]:!p[s]}));
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-[#030A06] border-r border-[#1E4A2E] flex flex-col z-40 overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#1E4A2E] flex-shrink-0">
-        <div className="font-display text-2xl text-[#C4A048] tracking-widest">NEST</div>
-        <div className="font-body text-[10px] text-[#7A9A82] tracking-wider mt-0.5 uppercase">Advisors · Arden Edge Capital</div>
+      <div className="px-5 py-4 border-b border-[#1E4A2E] flex-shrink-0 bg-[#0D2218]">
+        <div className="flex items-center gap-3">
+          <Image src="/nest-logo.png" alt="NEST" width={36} height={36} style={{ objectFit: "contain" }} priority />
+          <div>
+            <div className="font-display text-xl text-[#C4A048] tracking-widest leading-none">NEST ADVISORS</div>
+            <div className="font-body text-[9px] text-[#7A9A82] tracking-wider mt-1 uppercase">A Digital Commercial Investment Bank</div>
+          </div>
+        </div>
       </div>
       <nav className="flex-1 overflow-y-auto py-2">
         {NAV.map(group=>(
