@@ -111,11 +111,13 @@ export default function Sidebar() {
   const toggle = (s:string) => setOpen(p=>({...p,[s]:!p[s]}));
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-black border-r border-[#1E4A2E] flex flex-col z-40 overflow-hidden">
-      <div className="px-4 py-5 border-b border-[#1E4A2E] flex-shrink-0 bg-black flex flex-col items-center gap-2">
-        <Image src="/nest-logo.png" alt="NEST" width={120} height={120} style={{ objectFit: "contain" }} priority />
-        <div className="text-center">
-          <div className="font-display text-lg text-[#C4A048] tracking-widest leading-none">NEST ADVISORS</div>
-          <div className="font-body text-[9px] text-[#7A9A82] tracking-wider mt-1 uppercase">A Digital Commercial Investment Bank</div>
+      <div className="px-4 py-4 border-b border-[#1E4A2E] flex-shrink-0 bg-black">
+        <div className="flex items-center gap-3">
+          <Image src="/nest-logo.png" alt="NEST" width={104} height={104} style={{ objectFit: "contain", flexShrink: 0 }} priority />
+          <div>
+            <div className="font-display text-xl text-[#C4A048] tracking-widest leading-none">NEST ADVISORS</div>
+            <div className="font-body text-[9px] text-[#7A9A82] tracking-wider mt-1 uppercase">A Digital Commercial Investment Bank</div>
+          </div>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto py-2">

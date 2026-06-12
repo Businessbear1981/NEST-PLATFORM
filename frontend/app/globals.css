@@ -18,7 +18,7 @@
 html, body { background: #000000; color: var(--nest-cream); }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--nest-void); }
+::-webkit-scrollbar-track { background: #000000; }
 ::-webkit-scrollbar-thumb { background: var(--nest-green); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--nest-pine); }
 
