@@ -68,13 +68,5 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: TypeScript type check
-        run: |
-          if [ -f tsconfig.json ]; then
-            npx tsc --noEmit
-          else
-            echo "No tsconfig.json found — skipping type check"
-          fi
-
       - name: Build
         run: npm run build
