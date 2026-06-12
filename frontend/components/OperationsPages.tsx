@@ -35,7 +35,7 @@ const AdminPlatform = lazy(() => import("@/components/AdminPlatform").then((modu
 const CompliancePortal = lazy(() => import("@/components/CompliancePortal").then((module) => ({ default: module.CompliancePortal })));
 const LiveAgentDashboard = lazy(() => import("@/components/LiveAgentDashboard").then((module) => ({ default: module.LiveAgentDashboard })));
 
-const TREE_LOGO = "";
+const TREE_LOGO = "/nest-logo.png";
 const HERO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='600'%3E%3Crect fill='%23060E1A' width='1200' height='600'/%3E%3C/svg%3E";
 
 function LazyWorkspace({ children }: { children: ReactNode }) {
