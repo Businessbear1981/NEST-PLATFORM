@@ -15,7 +15,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { background: var(--nest-void); color: var(--nest-cream); }
+html, body { background: #000000; color: var(--nest-cream); }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--nest-void); }
