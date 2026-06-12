@@ -142,26 +142,22 @@ type DashEagleStats = { total_signals?: number; hot?: number; warm?: number; tot
 type DashDeal = { id?: string; name?: string; state?: string; bond_face?: number; status?: string; risk_grade?: string };
 type DashPipeline = { total_pipeline_usd?: number; deal_count?: number; by_status?: Record<string, number> };
 
+const API = process.env.NEXT_PUBLIC_API_URL || "";
+
 export function DashboardPage() {
   const [metrics, setMetrics] = useState<DashMetrics | null>(null);
   const [warChest, setWarChest] = useState<DashWarChest | null>(null);
   const [eagleStats, setEagleStats] = useState<DashEagleStats | null>(null);
   const [deals, setDeals] = useState<DashDeal[]>([]);
   const [pipeline, setPipeline] = useState<DashPipeline | null>(null);
-  const [token, setToken] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") setToken(localStorage.getItem("nest_token") || "");
+    fetch(`${API}/api/metrics`).then(r => r.json()).then(d => { if (d.success) setMetrics(d.data); }).catch(() => {});
+    fetch(`${API}/api/fund/hft/war-chest`).then(r => r.json()).then(d => { if (d.success) setWarChest(d.data); }).catch(() => {});
+    fetch(`${API}/api/eagleeye/stats`).then(r => r.json()).then(d => { if (d.success) setEagleStats(d.data); }).catch(() => {});
+    fetch(`${API}/api/deals`).then(r => r.json()).then(d => { if (d.success) setDeals((d.data as DashDeal[]) || []); }).catch(() => {});
+    fetch(`${API}/api/deals/pipeline`).then(r => r.json()).then(d => { if (d.success) setPipeline(d.data); }).catch(() => {});
   }, []);
-
-  useEffect(() => {
-    const h = token ? { Authorization: `Bearer ${token}` } : undefined;
-    fetch("/api/metrics", { headers: h }).then(r => r.json()).then(d => { if (d.success) setMetrics(d.data); }).catch(() => {});
-    fetch("/api/fund/hft/war-chest", { headers: h }).then(r => r.json()).then(d => { if (d.success) setWarChest(d.data); }).catch(() => {});
-    fetch("/api/eagleeye/stats").then(r => r.json()).then(d => { if (d.success) setEagleStats(d.data); }).catch(() => {});
-    fetch("/api/deals", { headers: h }).then(r => r.json()).then(d => { if (d.success) setDeals((d.data as DashDeal[]) || []); }).catch(() => {});
-    fetch("/api/deals/pipeline", { headers: h }).then(r => r.json()).then(d => { if (d.success) setPipeline(d.data); }).catch(() => {});
-  }, [token]);
 
   const livePortfolioMetrics = useMemo(() => [
     { label: "Active Deals", value: String(metrics?.active_deals ?? deals.length), detail: `${metrics?.total_deals ?? deals.length} total in pipeline`, icon: Activity },
