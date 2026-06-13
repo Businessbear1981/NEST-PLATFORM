@@ -10,6 +10,8 @@ import SHAPSuite from '@/components/academy/SHAPSuite';
 import CDSEngine from '@/components/academy/CDSEngine';
 import ShadowRating from '@/components/academy/ShadowRating';
 import BrexRebate from '@/components/academy/BrexRebate';
+import TEFRAEngine from '@/components/academy/TEFRAEngine';
+import RefiEngine from '@/components/academy/RefiEngine';
 
 // ── Static data ───────────────────────────────────────────────────────────────
 
@@ -17,6 +19,7 @@ const allTabs = [
   'dashboard', 'modules', 'quiz', 'midterm',
   'DSCR Engine', 'Surety Pricing', 'CDO Builder', 'SHAP Suite',
   'CDS Engine', 'Shadow Rating', 'Brex Rebate',
+  'TEFRA Engine', 'Refi Engine',
 ];
 
 export default function NestAcademy() {
@@ -258,6 +261,8 @@ export default function NestAcademy() {
         {activeTab === 'CDS Engine'     && <CDSEngine />}
         {activeTab === 'Shadow Rating'  && <ShadowRating />}
         {activeTab === 'Brex Rebate'    && <BrexRebate />}
+        {activeTab === 'TEFRA Engine'   && <TEFRAEngine />}
+        {activeTab === 'Refi Engine'    && <RefiEngine />}
 
       </div>
     </div>

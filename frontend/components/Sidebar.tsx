@@ -34,6 +34,7 @@ const NAV = [
     { href:"/bond-workflow",    label:"Bond Workflow",       st:"shell"  },
     { href:"/command-center",   label:"Command Center",      st:"active" },
     { href:"/modeling",         label:"Modeling Studio",     st:"active" },
+    { href:"/hbo2",             label:"HBO2 Case Study",     st:"active" },
   ]},
   { silo:"Hawkeye Placement", items:[
     { href:"/hawkeye",       label:"Investor Placement",     st:"active" },
