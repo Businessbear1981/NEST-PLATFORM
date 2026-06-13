@@ -8,6 +8,25 @@ from services.auth import require_auth
 from services.roots_service import roots_service
 
 
+@roots_bp.route("/api/roots", methods=["GET"])
+def roots_root():
+    """GET /api/roots — summary index of the Roots marketplace module."""
+    from services.core import ok
+    offerings = roots_service.get_offerings({})
+    total = len(offerings) if isinstance(offerings, list) else 0
+    bond_ready = [o for o in (offerings if isinstance(offerings, list) else []) if o.get("bond_ready")]
+    return ok({
+        "summary": "NEST Roots Marketplace — deal origination + investor matching",
+        "total_offerings": total,
+        "bond_ready_count": len(bond_ready),
+        "endpoints": {
+            "offerings": "/api/roots/offerings",
+            "submit_deal": "/api/roots/submit-deal",
+            "register_interest": "/api/roots/interest",
+        },
+    })
+
+
 @roots_bp.route("/api/roots/offerings", methods=["GET"])
 def get_offerings():
     """Public — no auth. Anyone can browse offerings."""

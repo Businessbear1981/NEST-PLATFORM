@@ -141,6 +141,41 @@ def _row_to_surveillance(row: dict) -> dict:
     }
 
 
+@surveillance_bp.get("/")
+def surveillance_root():
+    """GET /api/surveillance — active surveillance summary across all monitored deals."""
+    try:
+        if db and db.configured:
+            rows = db.select("deals", {"order": "created_at.desc"}) or []
+            pipeline = [_row_to_surveillance(r) for r in rows]
+        else:
+            pipeline = _FALLBACK_PIPELINE
+    except Exception:
+        pipeline = _FALLBACK_PIPELINE
+
+    total = len(pipeline)
+    refund_now = [d for d in pipeline if d.get("recommendation") == "REFUND"]
+    monitor = [d for d in pipeline if d.get("recommendation") == "MONITOR"]
+    watch = [d for d in pipeline if d.get("recommendation") == "WATCH"]
+    on_track = [d for d in pipeline if d.get("payment_status") == "on_track"]
+    in_watch = [d for d in pipeline if d.get("payment_status") == "watch"]
+    in_default = [d for d in pipeline if d.get("payment_status") == "default"]
+
+    return _ok({
+        "summary": "NEST Surveillance Desk — active monitoring snapshot",
+        "total_deals": total,
+        "refund_candidates": len(refund_now),
+        "monitor_count": len(monitor),
+        "watch_count": len(watch),
+        "payment_status": {
+            "on_track": len(on_track),
+            "watch": len(in_watch),
+            "default": len(in_default),
+        },
+        "deals": pipeline,
+    })
+
+
 @surveillance_bp.get("/pipeline")
 def get_refunding_pipeline():
     """Return current refunding candidates with payment status and NPV savings analysis."""

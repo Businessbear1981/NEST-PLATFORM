@@ -35,6 +35,50 @@ DEFAULT_SIGNALS = {
 }
 
 
+@market_bp.route("/", methods=["GET"])
+def market_root():
+    """GET /api/market — summary: latest signals + vector score + market rates."""
+    # Reuse latest_signals logic inline to avoid a redirect
+    with _lock:
+        if _signals:
+            latest = _signals[-1]
+        else:
+            latest = None
+
+    signals_to_use = dict(DEFAULT_SIGNALS)
+    fred = _get_fred_plugin()
+    if fred:
+        try:
+            snap = fred.get_bond_desk_snapshot()
+            if snap.get("success"):
+                r = snap["rates"]
+                signals_to_use["treasury_10yr_pct"] = r.get("treasury_10yr", 4.25)
+                signals_to_use["sofr_pct"] = r.get("sofr", 4.30)
+                signals_to_use["credit_spread_ig_bps"] = round(r.get("ig_spread", 1.25) * 100)
+                signals_to_use["credit_spread_hy_bps"] = round(r.get("hy_spread", 3.75) * 100)
+        except Exception:
+            pass
+
+    if latest is None:
+        score = _compute_vector_score(signals_to_use)
+        latest = {
+            "captured_at": _ts(),
+            "signals": signals_to_use,
+            "vector_score": score,
+            "vector_recommendation": _vector_recommendation(score),
+            "apex_short_active": False,
+            "apex_position": None,
+        }
+
+    return _ok({
+        "summary": "NEST Market Signals — current snapshot",
+        "latest": latest,
+        "rates": signals_to_use,
+        "vector_score": latest.get("vector_score"),
+        "vector_recommendation": latest.get("vector_recommendation"),
+    })
+
+
 @market_bp.route("/signals", methods=["POST"])
 def ingest_signals():
     body = request.get_json() or {}

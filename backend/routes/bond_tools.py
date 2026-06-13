@@ -124,6 +124,39 @@ def _err(msg, code=400):
     return jsonify({"success": False, "data": None, "error": msg, "timestamp": _ts()}), code
 
 
+# ── Root handler ──────────────────────────────────────────────
+
+@bond_tools_bp.route("/", methods=["GET"])
+def bond_tools_root():
+    """GET /api/bond-tools — pipeline summary + available tool endpoints."""
+    with _pipeline_lock:
+        pipeline = list(_pipeline)
+
+    active = [d for d in pipeline if d.get("status") == "active"]
+    structuring = [d for d in pipeline if d.get("stage") == "structuring"]
+    placement = [d for d in pipeline if d.get("stage") == "placement"]
+    total_par = sum(d.get("par_amount", 0) for d in pipeline)
+
+    return _ok({
+        "summary": "NEST Bond Desk — structuring, grading & optimization engine",
+        "pipeline": {
+            "total_deals": len(pipeline),
+            "active": len(active),
+            "structuring": len(structuring),
+            "placement": len(placement),
+            "total_par_usd": total_par,
+        },
+        "deals": pipeline,
+        "endpoints": {
+            "pipeline": "/api/bond-tools/pipeline",
+            "grade": "/api/bond-tools/grade",
+            "audit": "/api/bond-tools/audit",
+            "optimize": "/api/bond-tools/optimize",
+            "stress_rates": "/api/bond-tools/stress/rates",
+        },
+    })
+
+
 # ── Bond Grading ────────────────────────────────────────────────
 
 @bond_tools_bp.route("/grade", methods=["POST"])

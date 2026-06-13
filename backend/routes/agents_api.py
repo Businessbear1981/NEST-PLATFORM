@@ -42,6 +42,25 @@ AGENT_REGISTRY = {
 }
 
 
+@agents_bp.route("/", methods=["GET"])
+@require_auth()
+def agents_root():
+    """GET /api/agents — alias for /status; returns full agent fleet summary."""
+    with _lock:
+        agents = []
+        for key, info in AGENT_REGISTRY.items():
+            status = _agent_status.get(key, {})
+            agents.append({
+                "id": key,
+                "name": info["name"],
+                "status": status.get("status", info["status"]),
+                "description": info["description"],
+                "last_run": status.get("last_run"),
+                "deals_monitored": status.get("deals_monitored", []),
+            })
+    return _ok(agents)
+
+
 @agents_bp.route("/status", methods=["GET"])
 @require_auth()
 def all_status():
