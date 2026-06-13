@@ -91,6 +91,7 @@ const NAV = [
     { href:"/admin",           label:"Admin Platform", st:"active" },
     { href:"/agents",          label:"Agent Fleet",    st:"active" },
     { href:"/agents/platform", label:"Agent Platform", st:"active" },
+    { href:"/academy",         label:"NEST Academy",   st:"shell"  },
     { href:"/study",           label:"Study Portal",   st:"active" },
     { href:"/dashboard",       label:"Dashboard",      st:"active" },
   ]},
@@ -114,12 +115,15 @@ export default function Sidebar() {
     <aside className="fixed inset-y-0 left-0 w-64 bg-black border-r border-[#1E4A2E] flex flex-col z-40 overflow-hidden">
       <div className="px-4 py-4 border-b border-[#1E4A2E] flex-shrink-0 bg-black">
         <div className="flex items-center gap-3">
-          <div style={{ flexShrink: 0, filter: "drop-shadow(0 0 10px rgba(196,160,72,0.65)) drop-shadow(0 0 28px rgba(196,160,72,0.25))" }}>
-            <Image src="/nest-logo.png" alt="NEST" width={104} height={104} style={{ objectFit: "contain", display: "block" }} priority />
+          <div className="relative h-12 w-12 flex-shrink-0 rounded-full bg-[radial-gradient(ellipse_at_center,#1E4A2E_0%,#0D2218_50%,#030A06_100%)] ring-1 ring-[#C4A048]/30 shadow-[0_0_20px_rgba(196,160,72,0.15)] overflow-hidden after:absolute after:inset-0 after:bg-[linear-gradient(135deg,rgba(196,160,72,0.08)_0%,transparent_50%)] after:rounded-full after:pointer-events-none">
+            <div style={{ filter: "drop-shadow(0 0 10px rgba(196,160,72,0.65)) drop-shadow(0 0 28px rgba(196,160,72,0.25))", display: "flex", alignItems: "center", justifyContent: "center", height: "100%", width: "100%" }}>
+              <Image src="/nest-logo.png" alt="NEST" width={40} height={40} style={{ objectFit: "contain", display: "block" }} priority />
+            </div>
           </div>
           <div>
-            <div className="font-display text-xl text-[#C4A048] tracking-widest leading-none">NEST ADVISORS</div>
-            <div className="font-body text-[9px] text-[#7A9A82] tracking-wider mt-1 uppercase">A Digital Commercial Investment Bank</div>
+            <div className="font-display text-xl text-[#C4A048] tracking-[0.15em] leading-none">NEST ADVISORS</div>
+            <div className="font-body text-[9px] text-[#7A9A82] tracking-wider mt-0.5 uppercase">A Digital Commercial Investment Bank</div>
+            <div className="font-mono text-[8px] text-[#7A9A82] uppercase tracking-[0.2em] mt-0.5">It&apos;s Time To Fly</div>
           </div>
         </div>
       </div>

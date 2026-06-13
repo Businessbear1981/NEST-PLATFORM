@@ -1,0 +1,17 @@
+[api]
+port = 54321
+schemas = ["public", "graphql_public"]
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+port = 54323
+
+[auth]
+site_url = "http://localhost:8100"
+additional_redirect_urls = ["https://nestadvisors.tech"]
+
+[realtime]
+enabled = true
