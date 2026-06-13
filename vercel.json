@@ -1,7 +1,4 @@
 {
   "regions": ["iad1"],
-  "rootDirectory": "frontend",
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next"
+  "installCommand": "npm install --legacy-peer-deps"
 }
