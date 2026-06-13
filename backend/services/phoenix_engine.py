@@ -1,7 +1,8 @@
 """
 NEST Phoenix Engine — Distressed CRE Acquisition & Rehabilitation.
-Mock data for problem assets, environmental brownfields, underwriting,
-bridge timelines, sourcing radar, and warchest portfolio tracking.
+Primary data source: Supabase deals with distress indicators
+(DSCR < 1.5, LTV > 70, or status == pipeline).
+Fallback: two hardcoded demo distressed deals.
 """
 
 from __future__ import annotations
@@ -10,6 +11,11 @@ import random
 from datetime import datetime, timedelta
 from typing import Any
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 
 def _ts(offset_days: int = 0) -> str:
     return (datetime.utcnow() - timedelta(days=offset_days)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -17,6 +23,102 @@ def _ts(offset_days: int = 0) -> str:
 
 def _id(prefix: str, n: int) -> str:
     return f"{prefix}_{n:04d}"
+
+
+# ── Supabase distress helpers ─────────────────────────────────────────
+
+_DISTRESSED_DEMO = [
+    {
+        "id": "phx-demo-1",
+        "name": "Orlando Office Tower (Demo)",
+        "bond_face": 52_000_000,
+        "market": "Orlando, FL",
+        "distress_score": 72.0,
+        "opportunity_type": "workout",
+        "bond_price": 78.4,
+        "recovery_potential": "high",
+        "dscr": 0.88,
+        "ltv": 68.0,
+        "status": "active",
+    },
+    {
+        "id": "phx-demo-2",
+        "name": "Houston Mixed-Use (Demo)",
+        "bond_face": 38_000_000,
+        "market": "Houston, TX",
+        "distress_score": 55.0,
+        "opportunity_type": "refi",
+        "bond_price": 83.5,
+        "recovery_potential": "medium",
+        "dscr": 1.15,
+        "ltv": 71.0,
+        "status": "pipeline",
+    },
+]
+
+
+def _compute_distress_score(dscr: float, ltv: float) -> float:
+    raw = (1 - dscr / 2.5) * 50 + (ltv / 100) * 50
+    return round(max(0.0, min(100.0, raw)), 1)
+
+
+def _opportunity_type(dscr: float, status: str) -> str:
+    if status == "pipeline":
+        return "acquisition"
+    if dscr < 1.0:
+        return "workout"
+    if 1.0 <= dscr < 1.4:
+        return "refi"
+    return "refi"
+
+
+def _recovery_potential(distress_score: float) -> str:
+    if distress_score > 70:
+        return "high"
+    if distress_score > 40:
+        return "medium"
+    return "low"
+
+
+def _row_to_phoenix(row: dict) -> dict:
+    dscr = float(row.get("dscr") or 0)
+    ltv = float(row.get("ltv") or 0)
+    status = row.get("status", "")
+    bond_face = float(row.get("bond_face") or 0)
+    ds = _compute_distress_score(dscr, ltv)
+    return {
+        "id": str(row["id"]),
+        "deal_id": str(row["id"]),
+        "deal_name": row.get("name", ""),
+        "bond_face": bond_face,
+        "market": row.get("market") or row.get("state") or "",
+        "distress_score": ds,
+        "opportunity_type": _opportunity_type(dscr, status),
+        "bond_price": round(100 - ds * 0.3, 2),
+        "recovery_potential": _recovery_potential(ds),
+        "dscr": dscr,
+        "ltv": ltv,
+        "status": status,
+        "updated_at": row.get("updated_at", ""),
+    }
+
+
+def _load_distressed_from_supabase() -> list[dict]:
+    """Query deals with distress indicators. Returns [] on any failure."""
+    if not (_db and _db.configured):
+        return []
+    try:
+        rows = _db.select("deals", {"order": "updated_at.desc"}) or []
+        results = []
+        for row in rows:
+            dscr = float(row.get("dscr") or 0)
+            ltv = float(row.get("ltv") or 0)
+            status = row.get("status", "")
+            if dscr < 1.5 or ltv > 70 or status == "pipeline":
+                results.append(_row_to_phoenix(row))
+        return results
+    except Exception:
+        return []
 
 
 # ── Deal pipeline ─────────────────────────────────────────────────────
@@ -169,15 +271,32 @@ RADAR_FEED = [
 
 
 class PhoenixEngine:
-    """Mock data engine for Phoenix distressed CRE acquisition module."""
+    """Phoenix distressed CRE acquisition engine.
+    list_deals() and get_deal() pull from Supabase (distress filter).
+    All other methods (underwriting, timeline, bond_handoff) still operate
+    on the in-memory PHOENIX_DEALS fixture via deal_id lookup.
+    """
 
     def __init__(self) -> None:
         self._deals = {d["id"]: dict(d) for d in PHOENIX_DEALS}
 
     def list_deals(self) -> list[dict[str, Any]]:
-        return list(self._deals.values())
+        """Return distressed deals from Supabase; fall back to demo fixtures."""
+        live = _load_distressed_from_supabase()
+        if live:
+            return live
+        return _DISTRESSED_DEMO
 
     def get_deal(self, deal_id: str) -> dict[str, Any] | None:
+        # Try Supabase first
+        if _db and _db.configured:
+            try:
+                rows = _db.select("deals", {"id": f"eq.{deal_id}"}) or []
+                if rows:
+                    return _row_to_phoenix(rows[0])
+            except Exception:
+                pass
+        # Fall back to in-memory PHOENIX_DEALS fixture
         return self._deals.get(deal_id)
 
     def create_deal(self, data: dict[str, Any]) -> dict[str, Any]:

@@ -1,14 +1,74 @@
 """
 Construction Risk Management Desk Routes.
 Draw processing, budget tracking, milestone monitoring, change orders.
-Seeded with Convivial St. Petersburg ($172.5M new construction).
+Primary data source: Supabase deals table (pipeline/active deals with bond_face > 0).
+Fallback: Convivial St. Petersburg ($172.5M new construction) fixture.
 """
 from datetime import datetime
 from flask import Blueprint, jsonify, request
 
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
+
 construction_bp = Blueprint("construction", __name__)
 
-# ── Seed data — Convivial St. Petersburg Senior Living ($172.5M) ─────────────
+
+def _derive_phase(readiness_score: int) -> str:
+    if readiness_score < 30:
+        return "permitting"
+    if readiness_score < 60:
+        return "foundation"
+    if readiness_score < 80:
+        return "structure"
+    return "finish"
+
+
+def _derive_months_remaining(bond_face: float) -> int:
+    if bond_face > 150_000_000:
+        return 24
+    if bond_face > 75_000_000:
+        return 18
+    return 12
+
+
+def _row_to_construction(row: dict) -> dict:
+    """Map a Supabase deals row to a construction monitoring record."""
+    readiness = int(row.get("readiness_score") or 0)
+    bond_face = float(row.get("bond_face") or 0)
+    dscr = float(row.get("dscr") or 0)
+    return {
+        "deal_id": str(row["id"]),
+        "deal_name": row.get("name", ""),
+        "bond_face": bond_face,
+        "state": row.get("state"),
+        "market": row.get("market"),
+        "draw_pct": round(readiness / 100, 2),
+        "phase": _derive_phase(readiness),
+        "months_remaining": _derive_months_remaining(bond_face),
+        "status": "on_track" if dscr > 1.2 else "at_risk",
+    }
+
+
+def _live_construction_deals() -> list[dict]:
+    """Query Supabase for active construction deals. Returns [] on failure."""
+    if not (_db and _db.configured):
+        return []
+    try:
+        rows = _db.select("deals", {"order": "created_at.desc"}) or []
+        results = []
+        for row in rows:
+            bf = float(row.get("bond_face") or 0)
+            status = row.get("status", "")
+            if bf > 0 and status in ("pipeline", "active"):
+                results.append(_row_to_construction(row))
+        return results
+    except Exception:
+        return []
+
+
+# ── Fallback fixture — Convivial St. Petersburg Senior Living ($172.5M) ──────
 
 _DEALS: dict[str, dict] = {
     "convivial-st-pete": {
@@ -92,7 +152,14 @@ def _err(msg, code=400):
 
 @construction_bp.get("/deals")
 def list_construction_deals():
-    """Return all construction deals tracked by the desk."""
+    """Return all construction deals tracked by the desk.
+    Primary: Supabase pipeline/active deals with bond_face > 0.
+    Fallback: Convivial St. Petersburg fixture.
+    """
+    live = _live_construction_deals()
+    if live:
+        return _ok(live)
+    # Fallback — fixture data (no milestones/draws in summary)
     return _ok([
         {k: v for k, v in d.items() if k not in ("milestones", "draws", "change_orders")}
         for d in _DEALS.values()
