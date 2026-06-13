@@ -6,7 +6,8 @@
     "dev": "next dev -p 8100",
     "build": "next build",
     "start": "next start -p 8100",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run typecheck; npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
