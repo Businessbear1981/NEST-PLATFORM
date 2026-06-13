@@ -1,0 +1,25 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "@next/next/no-img-element": "warn",
+    "@next/next/no-html-link-for-pages": "warn",
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "prefer-const": "warn",
+    "no-var": "warn",
+    "react/no-unescaped-entities": "off",
+    "react/display-name": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "off"
+  },
+  "overrides": [
+    {
+      "files": ["app/**/*.tsx", "app/**/*.ts"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "error"
+      }
+    }
+  ]
+}
