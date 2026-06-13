@@ -2,7 +2,7 @@
 // Logs engine runs, SHAP values, and outcomes to Supabase for self-learning feedback
 
 export interface EngineRunLog {
-  engine: "dscr" | "surety" | "cdo" | "shap" | "cds" | "shadow_rating" | "bond_workflow";
+  engine: "dscr" | "surety" | "cdo" | "shap" | "cds" | "shadow_rating" | "bond_workflow" | "tefra" | "refi" | "eagleeye";
   dealId?: string;
   dealName?: string;
   inputs: Record<string, unknown>;

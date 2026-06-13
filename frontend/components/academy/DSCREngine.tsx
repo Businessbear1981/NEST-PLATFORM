@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  ReferenceLine, LineChart, Line, CartesianGrid,
+  ReferenceLine, LineChart, Line, CartesianGrid, Cell,
 } from "recharts";
 import { runWaterfall, stressTest, DEFAULT_SCENARIOS, HBO2_INPUTS, type OperatingInputs } from "@/lib/engines/dscr";
 import { logLocal } from "@/lib/engines/feedback";
@@ -170,7 +170,7 @@ export default function DSCREngine() {
                     <ReferenceLine y={0} stroke="#7A9A82" />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                       {waterfallData.map((entry, i) => (
-                        <rect key={i} fill={entry.value >= 0 ? "#C4A048" : "#EF4444"} />
+                        <Cell key={`cell-${i}`} fill={entry.value >= 0 ? "#C4A048" : "#EF4444"} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -178,28 +178,43 @@ export default function DSCREngine() {
               </div>
 
               {/* Waterfall table */}
-              <div className="bg-[#0D2218] rounded-2xl border border-[#1E4A2E] overflow-hidden">
-                <table className="w-full text-sm font-mono">
-                  <thead>
-                    <tr className="border-b border-[#1E4A2E]">
-                      <th className="text-left px-6 py-3 text-[#7A9A82]">Line Item</th>
-                      <th className="text-right px-6 py-3 text-[#7A9A82]">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(dscrResult as unknown as { waterfall?: { label: string; value: number }[] }).waterfall?.map((row: { label: string; value: number }, i: number) => (
-                      <tr key={i} className="border-b border-[#1E4A2E] hover:bg-[#1E4A2E]/30">
-                        <td className="px-6 py-3 text-[#EDE8DC]">{row.label}</td>
-                        <td className={`px-6 py-3 text-right ${row.label === "DSCR" ? "text-[#C4A048]" : "text-[#EDE8DC]"}`}>
-                          {typeof row.value === "number" && row.value < 10
-                            ? row.value.toFixed(2)
-                            : fmtUSD(row.value)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {(() => {
+                const rows = [
+                  { label: "Gross Potential Revenue",    value: dscrResult.grossPotentialRevenue, isRatio: false },
+                  { label: "Less: Vacancy Loss",         value: -dscrResult.vacancyLoss,           isRatio: false },
+                  { label: "= Effective Gross Income",   value: dscrResult.effectiveGrossIncome,   isRatio: false },
+                  { label: "Less: Operating Expenses",   value: -dscrResult.operatingExpenses,     isRatio: false },
+                  { label: "Less: Replacement Reserves", value: -dscrResult.replacementReserves,   isRatio: false },
+                  { label: "= Net Operating Income",     value: dscrResult.netOperatingIncome,     isRatio: false },
+                  { label: "Less: Annual Debt Service",  value: -dscrResult.debtService,           isRatio: false },
+                  { label: "= Cash After Debt Service",  value: dscrResult.cashAfterDebtService,   isRatio: false },
+                  { label: "DSCR",                       value: dscrResult.dscr,                   isRatio: true  },
+                  { label: "LTV",                        value: dscrResult.ltv,                    isRatio: true  },
+                  { label: "Implied Value",              value: dscrResult.impliedValue,           isRatio: false },
+                ];
+                return (
+                  <div className="bg-[#0D2218] rounded-2xl border border-[#1E4A2E] overflow-hidden">
+                    <table className="w-full text-sm font-mono">
+                      <thead>
+                        <tr className="border-b border-[#1E4A2E]">
+                          <th className="text-left px-6 py-3 text-[#7A9A82]">Line Item</th>
+                          <th className="text-right px-6 py-3 text-[#7A9A82]">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((row, i) => (
+                          <tr key={i} className="border-b border-[#1E4A2E] hover:bg-[#1E4A2E]/30">
+                            <td className="px-6 py-3 text-[#EDE8DC]">{row.label}</td>
+                            <td className={`px-6 py-3 text-right ${row.label.startsWith("=") || row.label === "DSCR" ? "text-[#C4A048] font-semibold" : row.value < 0 ? "text-red-400" : "text-[#EDE8DC]"}`}>
+                              {row.isRatio ? row.value.toFixed(2) + (row.label === "LTV" ? "%" : "×") : fmtUSD(Math.abs(row.value))}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()}
             </>
           )}
 

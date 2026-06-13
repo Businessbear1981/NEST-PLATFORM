@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
-  BarChart, Bar, CartesianGrid,
+  BarChart, Bar, CartesianGrid, Cell,
 } from "recharts";
 import { priceCDS, attributeBasisRisk, HBO2_CDS, type CDSInputs } from "@/lib/engines/cds";
 import { logLocal } from "@/lib/engines/feedback";
@@ -168,13 +168,9 @@ export default function CDSEngine() {
                     <YAxis tick={{ fill: "#7A9A82", fontSize: 11, fontFamily: "IBM Plex Mono" }} tickFormatter={(v) => `$${v}K`} />
                     <Tooltip {...TOOLTIP_STYLE} formatter={(v: number) => [`$${v.toFixed(1)}K`, "P&L"]} />
                     <ReferenceLine y={0} stroke="#7A9A82" />
-                    <Bar
-                      dataKey="pnl"
-                      radius={[4, 4, 0, 0]}
-                      fill="#C4A048"
-                    >
+                    <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
                       {scenarioData.map((entry, i) => (
-                        <rect key={i} fill={entry.pnl >= 0 ? "#C4A048" : "#EF4444"} />
+                        <Cell key={`cell-${i}`} fill={entry.pnl >= 0 ? "#C4A048" : "#EF4444"} />
                       ))}
                     </Bar>
                   </BarChart>

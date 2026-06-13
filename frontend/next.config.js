@@ -8,8 +8,11 @@ const nextConfig = {
     return config;
   },
   async rewrites() {
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL ||
+      process.env.RAILWAY_BACKEND_URL ||
+      "https://web-production-5e8af.up.railway.app";
     return [
-      { source: "/api/:path*", destination: "https://web-production-5e8af.up.railway.app/api/:path*" }
+      { source: "/api/:path*", destination: `${backendUrl}/api/:path*` }
     ];
   },
 };

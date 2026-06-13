@@ -59,7 +59,7 @@ export default function RefiEngine() {
     setResult(r);
     setMcResult(mc);
     logLocal({
-      engine: "dscr",
+      engine: "refi",
       dealName: `Refi Analysis — ${DEALS[selectedDeal].label}`,
       inputs: inputs as unknown as Record<string, unknown>,
       outputs: { ...r, mc } as unknown as Record<string, unknown>,

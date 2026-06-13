@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
-  ScatterChart, Scatter, CartesianGrid,
+  ScatterChart, Scatter, CartesianGrid, Cell,
 } from "recharts";
 import { computeSHAP, HBO2_FEATURES, type CreditFeatures } from "@/lib/engines/shap";
 
@@ -145,16 +145,9 @@ export default function SHAPSuite() {
                   ]}
                 />
                 <ReferenceLine x={0} stroke="#7A9A82" />
-                <Bar
-                  dataKey="shapValue"
-                  radius={[0, 2, 2, 0]}
-                  fill="#C4A048"
-                >
+                <Bar dataKey="shapValue" radius={[0, 2, 2, 0]}>
                   {forcePlotData.map((entry, i) => (
-                    <rect
-                      key={i}
-                      fill={entry.shapValue >= 0 ? "#C4A048" : "#EF4444"}
-                    />
+                    <Cell key={`cell-${i}`} fill={entry.shapValue >= 0 ? "#C4A048" : "#EF4444"} />
                   ))}
                 </Bar>
               </BarChart>

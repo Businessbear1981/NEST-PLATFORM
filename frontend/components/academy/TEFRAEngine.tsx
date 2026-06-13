@@ -17,7 +17,7 @@ export default function TEFRAEngine() {
     const res = checkTEFRACompliance(inputs);
     setResult(res);
     logLocal({
-      engine: "dscr", // closest available engine enum — tefra not yet in union
+      engine: "tefra",
       dealName: "HBO2 TEFRA Check",
       inputs: inputs as unknown as Record<string, unknown>,
       outputs: res as unknown as Record<string, unknown>,
