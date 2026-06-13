@@ -7,9 +7,27 @@ export default function LenderCommandCenter() {
   const [lenders, setLenders] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchResult, setSearchResult] = useState<any>(null);
+  const [pipeline, setPipeline] = useState<Record<string, any[]>>({});
+  const [deals, setDeals] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`${API}/api/surety/providers`).then((r) => r.json()).then((d) => { if (d.data) setLenders(d.data); }).catch(() => {});
+    // Surety/insurance providers (no auth required)
+    fetch(`${API}/api/surety/providers`)
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setLenders(d.data); })
+      .catch(() => {});
+
+    // Lender pipeline stages
+    fetch(`${API}/api/lenders-direct/pipeline`)
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setPipeline(d.data); })
+      .catch(() => {});
+
+    // Active deals count for KPI
+    fetch(`${API}/api/deals`)
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.data)) setDeals(d.data); })
+      .catch(() => {});
   }, []);
 
   async function runSearch() {
@@ -31,7 +49,8 @@ export default function LenderCommandCenter() {
     }
   }
 
-  const stages = ["TARGETED", "OUTREACH SENT", "RESPONDED", "TERM SHEET", "COMMITTED", "CLOSED"];
+  const activePipelines = deals.filter((d) => d.status === "active").length;
+  const stages = ["TARGETED", "OUTREACH_SENT", "RESPONDED", "TERM_SHEET_RECEIVED", "COMMITTED", "CLOSED"];
 
   return (
     <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
@@ -45,10 +64,10 @@ export default function LenderCommandCenter() {
         {/* KPIs */}
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: "Lenders in Database", value: "800+" },
-            { label: "Active Pipelines", value: "3" },
-            { label: "Term Sheets YTD", value: "7" },
-            { label: "Placement Fees YTD", value: "$1.2M" },
+            { label: "Providers in Database", value: lenders.length > 0 ? `${lenders.length}` : "—" },
+            { label: "Active Deals", value: activePipelines > 0 ? `${activePipelines}` : deals.length > 0 ? `${deals.length}` : "—" },
+            { label: "Pipeline Stages", value: Object.keys(pipeline).length > 0 ? `${Object.keys(pipeline).length}` : "7" },
+            { label: "Partners", value: lenders.filter((l) => l.relationship_status === "partner").length > 0 ? `${lenders.filter((l) => l.relationship_status === "partner").length}` : "—" },
           ].map((k) => (
             <article key={k.label} className="rounded-[1.25rem] border border-amber-300/35 bg-amber-300/[0.09] p-4">
               <span className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.17em] text-[#7A9A82]">{k.label}</span>
@@ -103,12 +122,19 @@ export default function LenderCommandCenter() {
         <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-5">
           <h3 className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-[#7A9A82]">Lender Pipeline</h3>
           <div className="flex gap-2 overflow-x-auto">
-            {stages.map((stage) => (
-              <div key={stage} className="min-w-[140px] flex-1 rounded-lg border border-white/5 bg-[#03060b]/60 p-3">
-                <div className="mb-2 text-center font-mono text-[0.45rem] uppercase tracking-[0.12em] text-[#7A9A82]">{stage}</div>
-                <div className="py-3 text-center font-mono text-[0.55rem] text-[#2D6B3D]">{"\u2014"}</div>
-              </div>
-            ))}
+            {stages.map((stage) => {
+              const items: any[] = pipeline[stage] || [];
+              return (
+                <div key={stage} className="min-w-[140px] flex-1 rounded-lg border border-white/5 bg-[#03060b]/60 p-3">
+                  <div className="mb-2 text-center font-mono text-[0.45rem] uppercase tracking-[0.12em] text-[#7A9A82]">{stage.replace(/_/g, " ")}</div>
+                  {items.length === 0 ? (
+                    <div className="py-3 text-center font-mono text-[0.55rem] text-[#2D6B3D]">{"\u2014"}</div>
+                  ) : items.map((item: any, i: number) => (
+                    <div key={i} className="mb-1 rounded bg-amber-300/10 px-2 py-1 font-mono text-[0.5rem] text-amber-300">{item.name || item.lender_name || item.id}</div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
         </div>
 

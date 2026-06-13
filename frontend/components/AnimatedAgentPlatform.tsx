@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bot, CheckCircle, Clock, AlertCircle, Zap } from 'lucide-react';
 
+const API = process.env.NEXT_PUBLIC_API_URL || "";
+
 interface Agent {
   id: string;
   name: string;
@@ -11,6 +13,24 @@ interface Agent {
   progress: number;
   currentTask?: string;
   tasksCompleted: number;
+}
+
+/* ── Toggle button — gold when on, sage when off (Finesse pattern) ── */
+function AgentToggle({ agentId, agentName, enabled, onToggle }: { agentId: string; agentName: string; enabled: boolean; onToggle: () => void }) {
+  return (
+    <div className="flex items-center gap-2 mt-2">
+      <button
+        onClick={onToggle}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${enabled ? 'bg-[#C4A048]' : 'bg-[#2D6B3D]/40'}`}
+        title={`${enabled ? 'Disable' : 'Enable'} ${agentName}`}
+      >
+        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`} />
+      </button>
+      <span className={`font-mono text-[0.6rem] font-semibold uppercase tracking-[0.12em] ${enabled ? 'text-[#C4A048]' : 'text-[#7A9A82]'}`}>
+        {enabled ? 'ENABLED' : 'DISABLED'}
+      </span>
+    </div>
+  );
 }
 
 interface Task {
@@ -22,6 +42,33 @@ interface Task {
 }
 
 export function AnimatedAgentPlatform() {
+  /* ── Per-agent enabled state. Defaults all to true (fleet is live). ── */
+  const [agentEnabled, setAgentEnabled] = useState<Record<string, boolean>>({
+    vector: true, merlin: true, morgan: true, sterling: true, sentinel: true, suretyScout: true,
+  });
+
+  async function handleToggle(agentId: string, agentName: string) {
+    const wasEnabled = agentEnabled[agentId] ?? true;
+    const nowEnabled = !wasEnabled;
+    // Optimistic local update
+    setAgentEnabled(prev => ({ ...prev, [agentId]: nowEnabled }));
+    if (nowEnabled) {
+      // Call the run endpoint to signal activation
+      try {
+        await fetch(`${API}/api/agents/${agentId}/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+      } catch {
+        console.log(`[AgentToggle] No toggle endpoint for ${agentName} — local state only.`);
+      }
+    } else {
+      // No disable endpoint exists — local state only
+      console.log(`[AgentToggle] ${agentName} disabled locally. No backend disable endpoint — state is UI-only.`);
+    }
+  }
+
   const [agents, setAgents] = useState<Agent[]>([
     {
       id: 'vector',
@@ -179,91 +226,102 @@ export function AnimatedAgentPlatform() {
 
       {/* Agent Grid */}
       <div className="grid grid-cols-2 gap-4">
-        {agents.map((agent, i) => (
-          <motion.div
-            key={agent.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className={`p-4 border rounded-lg ${getStatusColor(agent.status)}`}
-          >
-            {/* Agent Header */}
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <motion.div
-                  animate={agent.status === 'working' ? { rotate: 360 } : {}}
-                  transition={agent.status === 'working' ? { duration: 2, repeat: Infinity } : {}}
-                >
-                  <Bot className="text-[#C4A048]" size={20} />
-                </motion.div>
-                <div>
-                  <p className="font-semibold text-[#C4A048]">{agent.name}</p>
-                  <p className="text-xs text-cyan-200/60">{agent.role}</p>
-                </div>
-              </div>
-              <motion.div
-                animate={agent.status === 'working' ? { scale: [1, 1.2, 1] } : {}}
-                transition={agent.status === 'working' ? { duration: 1.5, repeat: Infinity } : {}}
-              >
-                {getStatusIcon(agent.status)}
-              </motion.div>
-            </div>
-
-            {/* Current Task */}
-            {agent.currentTask && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-xs text-cyan-200/70 mb-3 italic"
-              >
-                {agent.currentTask}
-              </motion.p>
-            )}
-
-            {/* Progress Bar */}
-            {agent.status !== 'idle' && (
-              <div className="mb-3">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-xs text-[#C4A048] font-mono">PROGRESS</p>
-                  <motion.p
-                    key={`${agent.id}-progress`}
-                    className="text-xs font-mono text-[#C4A048]"
-                  >
-                    {Math.round(agent.progress)}%
-                  </motion.p>
-                </div>
-                <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-[#C4A048]/20">
+        {agents.map((agent, i) => {
+          const enabled = agentEnabled[agent.id] ?? true;
+          return (
+            <motion.div
+              key={agent.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`p-4 border rounded-lg transition-opacity ${getStatusColor(agent.status)} ${!enabled ? 'opacity-50' : ''}`}
+            >
+              {/* Agent Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
                   <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${agent.progress}%` }}
-                    transition={{ duration: 0.5 }}
-                    className={`h-full ${getProgressColor(agent.status)}`}
-                  />
+                    animate={agent.status === 'working' && enabled ? { rotate: 360 } : {}}
+                    transition={agent.status === 'working' && enabled ? { duration: 2, repeat: Infinity } : {}}
+                  >
+                    <Bot className="text-[#C4A048]" size={20} />
+                  </motion.div>
+                  <div>
+                    <p className="font-semibold text-[#C4A048]">{agent.name}</p>
+                    <p className="text-xs text-cyan-200/60">{agent.role}</p>
+                  </div>
                 </div>
+                <motion.div
+                  animate={agent.status === 'working' && enabled ? { scale: [1, 1.2, 1] } : {}}
+                  transition={agent.status === 'working' && enabled ? { duration: 1.5, repeat: Infinity } : {}}
+                >
+                  {getStatusIcon(agent.status)}
+                </motion.div>
               </div>
-            )}
 
-            {/* Stats */}
-            <div className="flex items-center justify-between text-xs">
-              <p className="text-gray-400">
-                <span className="font-semibold text-[#C4A048]">{agent.tasksCompleted}</span> tasks completed
-              </p>
-              <motion.p
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className={`font-semibold ${
-                  agent.status === 'completed'
-                    ? 'text-emerald-400'
-                    : agent.status === 'working'
-                      ? 'text-[#C4A048]'
-                      : 'text-gray-400'
-                }`}
-              >
-                {agent.status.toUpperCase()}
-              </motion.p>
-            </div>
-          </motion.div>
-        ))}
+              {/* Current Task */}
+              {agent.currentTask && enabled && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-xs text-cyan-200/70 mb-3 italic"
+                >
+                  {agent.currentTask}
+                </motion.p>
+              )}
+
+              {/* Progress Bar */}
+              {agent.status !== 'idle' && enabled && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs text-[#C4A048] font-mono">PROGRESS</p>
+                    <motion.p
+                      key={`${agent.id}-progress`}
+                      className="text-xs font-mono text-[#C4A048]"
+                    >
+                      {Math.round(agent.progress)}%
+                    </motion.p>
+                  </div>
+                  <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-[#C4A048]/20">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${agent.progress}%` }}
+                      transition={{ duration: 0.5 }}
+                      className={`h-full ${getProgressColor(agent.status)}`}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Stats */}
+              <div className="flex items-center justify-between text-xs">
+                <p className="text-gray-400">
+                  <span className="font-semibold text-[#C4A048]">{agent.tasksCompleted}</span> tasks completed
+                </p>
+                <motion.p
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className={`font-semibold ${
+                    agent.status === 'completed'
+                      ? 'text-emerald-400'
+                      : agent.status === 'working'
+                        ? 'text-[#C4A048]'
+                        : 'text-gray-400'
+                  }`}
+                >
+                  {agent.status.toUpperCase()}
+                </motion.p>
+              </div>
+
+              {/* On/Off Toggle */}
+              <AgentToggle
+                agentId={agent.id}
+                agentName={agent.name}
+                enabled={enabled}
+                onToggle={() => handleToggle(agent.id, agent.name)}
+              />
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Active Tasks */}

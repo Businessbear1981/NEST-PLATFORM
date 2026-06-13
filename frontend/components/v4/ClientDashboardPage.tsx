@@ -30,31 +30,61 @@ export default function ClientDashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Mock readiness and rating data (would come from real deal)
-  const readiness = {
-    score: 68,
-    docs_complete: 3,
+  // Default readiness — overwritten when backend responds
+  const defaultReadiness = {
+    score: 0,
+    docs_complete: 0,
     docs_required: 7,
-    questions_answered: 8,
+    questions_answered: 0,
     questions_total: 22,
-    rating_current: "BBB-",
+    rating_current: "—",
     rating_target: "A",
-    blockers: [
-      { id: 1, type: "document", severity: "critical", message: "Audited financial statements needed — 2023 and 2024", action: "Upload via Documents tab" },
-      { id: 2, type: "financial", severity: "warning", message: "DSCR at 1.15x — needs to reach 1.20x for investment grade covenant", action: "Increase NOI or reduce debt service" },
-      { id: 3, type: "question", severity: "info", message: "Sponsor track record details needed for credit memo", action: "Answer in Questionnaire tab" },
-    ],
+    blockers: [] as any[],
     improvements: [
       { lever: "Add bond insurance (BAM or Assured Guaranty)", impact: "Rating lifts to AA — saves ~80bps in coupon", effort: "Application + 15-40bps annual premium" },
       { lever: "Increase equity contribution from 25% to 30%", impact: "Improves LTV and leverage ratios — potential 1 notch upgrade", effort: "Additional $2.5M sponsor equity" },
       { lever: "Fund DSRF at MADS", impact: "Reserve provides bondholder cushion — positive for rating", effort: "~$1.2M set aside at closing from bond proceeds" },
     ],
   };
+  const [readiness, setReadiness] = useState(defaultReadiness);
 
   useEffect(() => {
     fetch(`${API}/api/client/${dealId}/dashboard`)
       .then(r => r.json())
-      .then(d => { if (d.success) setDashboard(d.data); })
+      .then(d => {
+        if (d.success && d.data) {
+          setDashboard(d.data);
+          const ai = d.data.action_items || {};
+          const docs = d.data.documents_for_review || [];
+          const qs = d.data.questionnaires || [];
+          // Build blockers from real action_items
+          const blockers: any[] = [];
+          if (ai.documents_to_review > 0) {
+            blockers.push({ id: 1, type: "document", severity: "critical", message: `${ai.documents_to_review} document(s) pending your review`, action: "Review in Documents tab" });
+          }
+          if (ai.signatures_needed > 0) {
+            blockers.push({ id: 2, type: "signature", severity: "critical", message: `${ai.signatures_needed} signature(s) required`, action: "Sign in Documents tab" });
+          }
+          if (ai.questions_pending > 0) {
+            blockers.push({ id: 3, type: "question", severity: "warning", message: `${ai.questions_pending} questionnaire response(s) pending`, action: "Answer in Questionnaire tab" });
+          }
+          // Compute readiness score from docs + questions
+          const docsComplete = docs.filter((doc: any) => doc.status === "approved").length;
+          const docsTotal = Math.max(docs.length, 7);
+          const qsAnswered = qs.filter((q: any) => q.answered).length;
+          const qsTotal = Math.max(qs.length, 22);
+          const score = Math.round(((docsComplete / docsTotal) * 50) + ((qsAnswered / qsTotal) * 50));
+          setReadiness(prev => ({
+            ...prev,
+            score: score,
+            docs_complete: docsComplete,
+            docs_required: docsTotal,
+            questions_answered: qsAnswered,
+            questions_total: qsTotal,
+            blockers: blockers.length > 0 ? blockers : prev.blockers,
+          }));
+        }
+      })
       .catch(() => {});
   }, [dealId]);
 
@@ -229,7 +259,7 @@ export default function ClientDashboardPage() {
 
         {/* Questionnaire */}
         <TabsContent value="questionnaire" className="mt-6 space-y-3">
-          {[
+          {(questionnaire?.questions || [
             { id: "deal_thesis", section: "Transaction Overview", question: "What is this deal? In one paragraph — what are we financing and why?", answered: false },
             { id: "sponsor_background", section: "Sponsor & Management", question: "Please provide background on your organization — years in operation, similar projects completed, key team members.", answered: false },
             { id: "business_description", section: "Business Analysis", question: "Describe your project in detail — what services you provide, who your customers are, and what makes your operation unique.", answered: false },
@@ -237,7 +267,7 @@ export default function ClientDashboardPage() {
             { id: "proforma_assumptions", section: "Financial Analysis", question: "Walk us through the key assumptions in your financial projections — revenue growth, stabilization timeline, occupancy targets.", answered: false },
             { id: "equity_contribution", section: "Sources & Uses", question: "How much equity is being contributed? Is it cash at closing or deferred? Is there rollover equity?", answered: false },
             { id: "top_risks", section: "Risk Factors", question: "What are the top 3-5 risks you see in this project? What could go wrong, and what mitigants exist?", answered: false },
-          ].map((q) => (
+          ]).map((q: any) => (
             <Card key={q.id} className={`border-[#1E4A2E] bg-[#0D2218] ${q.answered ? "opacity-60" : ""}`}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -268,12 +298,28 @@ export default function ClientDashboardPage() {
 
         {/* Documents for Review */}
         <TabsContent value="documents" className="mt-6 space-y-3">
-          <Card className="border-[#1E4A2E] bg-[#0D2218]">
-            <CardContent className="p-6 text-center">
-              <p className="text-sm text-[#7A9A82]">Documents pending your review will appear here.</p>
-              <p className="text-xs text-[#7A9A82] mt-1">Credit memos, term sheets, engagement letters — review and sign electronically.</p>
-            </CardContent>
-          </Card>
+          {(dashboard?.documents_for_review || []).length > 0 ? (
+            (dashboard.documents_for_review as any[]).map((doc: any, i: number) => (
+              <Card key={doc.id || i} className="border-[#1E4A2E] bg-[#0D2218]">
+                <CardContent className="p-4 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-white">{doc.name || doc.title || `Document ${i + 1}`}</p>
+                    <p className="text-xs text-[#7A9A82] mt-1">{doc.type || "Document"} · {doc.status || "pending review"}</p>
+                  </div>
+                  <Badge variant={doc.status === "approved" ? "default" : "outline"} className={doc.status === "approved" ? "bg-emerald-600 text-white" : "border-[#C4A048]/30 text-[#C4A048]"}>
+                    {doc.status || "pending"}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card className="border-[#1E4A2E] bg-[#0D2218]">
+              <CardContent className="p-6 text-center">
+                <p className="text-sm text-[#7A9A82]">No documents pending review.</p>
+                <p className="text-xs text-[#7A9A82] mt-1">Credit memos, term sheets, engagement letters will appear here when ready.</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Bernard Chat */}

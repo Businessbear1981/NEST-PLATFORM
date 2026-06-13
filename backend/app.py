@@ -104,11 +104,14 @@ from routes.bd import bd_bp
 from routes.signals import signals_bp
 from routes.covenants import covenants_bp
 from routes.surveillance import surveillance_bp
+from routes.construction import construction_bp
 from routes.nisle import nisle_bp
 
 
 def create_app():
     app = Flask(__name__)
+    app.json_provider_class = _SafeJSONProvider
+    app.json = _SafeJSONProvider(app)
     app.config.from_object(Config)
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     init_request_logging(app)
@@ -201,6 +204,7 @@ def create_app():
     app.register_blueprint(signals_bp, url_prefix="/api/signals")
     app.register_blueprint(covenants_bp, url_prefix="/api/covenants")
     app.register_blueprint(surveillance_bp, url_prefix="/api/surveillance")
+    app.register_blueprint(construction_bp, url_prefix="/api/construction")
 
     # NISLE — NEST Intelligence Self-Learning Engine (DAPT-powered)
     from services.nisle_engine import nisle as nisle_engine

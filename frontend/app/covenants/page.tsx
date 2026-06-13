@@ -1,3 +1,3 @@
 "use client";
-import { CovenantMonitoringPage } from "@/components/OperationalModulesPages";
-export default function Page() { return <CovenantMonitoringPage />; }
+import CovenantMonitorPage from "@/components/CovenantMonitorPage";
+export default function Page() { return <CovenantMonitorPage />; }

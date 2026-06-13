@@ -1,92 +1,93 @@
-﻿"use client";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+"use client";
+import { useState, useEffect, useCallback } from "react";
 import {
   Activity, TrendingUp, TrendingDown, Minus, Radio, Zap,
-  BarChart3, MapPin, Building2, FileText, Shield, Clock,
-  RefreshCw, ChevronRight, AlertTriangle,
+  BarChart3, Building2, FileText, Shield, Clock,
+  RefreshCw, ChevronRight, AlertTriangle, CheckCircle,
+  Eye, ThumbsUp, ThumbsDown,
 } from "lucide-react";
-import { trpc } from "@/lib/trpc";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "";
 
 // ── Types ──────────────────────────────────────────────────────
 
-interface SignalEvent {
+interface DealSignal {
   id: string;
-  signal_type: string;
-  category: string;
-  source: string;
-  value: number | null;
-  direction: string | null;
-  confidence: number | null;
-  severity: string;
-  state: string | null;
-  county: string | null;
-  market: string | null;
-  deal_id: string | null;
-  entity_name: string | null;
-  status: string;
-  source_ref: string | null;
-  payload: Record<string, unknown>;
-  captured_at: string;
-  created_at: string;
+  name?: string;
+  entity?: string;
+  desk: "ma" | "cre" | "bond_desk";
+  grade: "HOT" | "WARM" | "COLD";
+  amount_usd?: number;
+  naics?: string;
+  state?: string;
+  source?: string;
+  status?: string;
+  actioned_at?: string;
+  score?: number;
+  rationale?: string[];
+}
+
+interface SignalMeta {
+  total: number;
+  hot: number;
+  warm: number;
+  run_at: string | null;
+  next_refresh: string;
+}
+
+interface SignalStats {
+  last_run: string | null;
+  total_qualified: number;
+  hot: number;
+  warm: number;
+  cold: number;
+  by_desk: { ma: number; cre: number; bond_desk: number };
+  edgar_sources: number;
+  permit_sources: number;
+}
+
+interface NodeStatus {
+  node1: { name: string; status: string; last_scan: string | null; sources: string[] };
+  node2: { name: string; status: string; benchmarks: string[] };
+  node3: { name: string; status: string; desks: string[] };
 }
 
 interface VectorSnapshot {
-  id: string;
-  composite_score: number;
-  recommendation: string;
-  signals_used: Record<string, unknown>;
-  put_risk_level: string | null;
-  reasoning: string[] | null;
-  estimated_savings: number | null;
-  created_at: string;
-}
-
-interface StatsData {
-  total: number;
-  by_category: Record<string, number>;
-  by_type: Record<string, number>;
-  by_source: Record<string, number>;
+  captured_at: string;
+  signals: {
+    treasury_10yr_pct: number;
+    sofr_pct: number;
+    credit_spread_ig_bps: number;
+    credit_spread_hy_bps: number;
+    tlt_price: number;
+    vix: number;
+    refi_market_access: string;
+  };
+  vector_score: number;
+  vector_recommendation: string;
+  apex_short_active: boolean;
 }
 
 // ── Helpers ────────────────────────────────────────────────────
 
-const CATEGORY_LABELS: Record<string, string> = {
-  macro_market: "Macro Market",
-  deal_sourcing: "Deal Sourcing",
-  regulatory: "Regulatory",
-  property: "Property",
-  entity: "Entity",
+const GRADE_STYLES: Record<string, string> = {
+  HOT: "border-red-400/40 bg-red-500/10 text-red-300",
+  WARM: "border-[#C4A048]/40 bg-[#C4A048]/10 text-[#C4A048]",
+  COLD: "border-[#7A9A82]/30 bg-[#7A9A82]/10 text-[#7A9A82]",
 };
 
-const TYPE_ICONS: Record<string, typeof Activity> = {
-  rate_change: TrendingUp,
-  yield_curve: BarChart3,
-  market_snapshot: Radio,
-  permit_filed: Building2,
-  ucc_filing: FileText,
-  land_transfer: MapPin,
-  edgar_filing: FileText,
-  emma_filing: FileText,
-  webhook_event: Zap,
+const DESK_LABELS: Record<string, string> = {
+  ma: "M&A",
+  cre: "CRE",
+  bond_desk: "Bond Desk",
 };
 
-const SEVERITY_STYLES: Record<string, string> = {
-  info: "border-[#2D6B3D]/30 bg-[#2D6B3D]/10 text-[#7A9A82]",
-  low: "border-[#C4A048]/30 bg-[#C4A048]/10 text-[#C4A048]",
-  medium: "border-amber-400/30 bg-amber-500/10 text-amber-300",
-  high: "border-orange-400/30 bg-orange-500/10 text-orange-300",
-  critical: "border-red-400/30 bg-red-500/10 text-red-300",
-};
-
-const DIRECTION_STYLES: Record<string, { icon: typeof Activity; color: string }> = {
-  bullish: { icon: TrendingUp, color: "text-emerald-400" },
-  positive: { icon: TrendingUp, color: "text-emerald-400" },
-  bearish: { icon: TrendingDown, color: "text-red-400" },
-  negative: { icon: TrendingDown, color: "text-red-400" },
-  neutral: { icon: Minus, color: "text-[#7A9A82]" },
+const DESK_COLORS: Record<string, string> = {
+  ma: "border-violet-300/20 bg-violet-400/8 text-violet-200",
+  cre: "border-emerald-300/20 bg-emerald-400/8 text-emerald-200",
+  bond_desk: "border-[#C4A048]/20 bg-[#C4A048]/8 text-[#E8C87A]",
 };
 
 const REC_STYLES: Record<string, string> = {
@@ -97,23 +98,24 @@ const REC_STYLES: Record<string, string> = {
   put_alert: "border-red-400/40 bg-red-500/15 text-red-300",
 };
 
-const PUT_RISK_STYLES: Record<string, string> = {
-  LOW: "text-emerald-400",
-  MEDIUM: "text-amber-400",
-  HIGH: "text-orange-400",
-  CRITICAL: "text-red-400",
+const REC_LABELS: Record<string, string> = {
+  execute_call: "EXECUTE CALL",
+  call_eligible: "CALL ELIGIBLE",
+  monitor: "MONITOR",
+  hold: "HOLD",
+  put_alert: "PUT ALERT",
 };
 
-function formatValue(value: number | null, signalType: string): string {
-  if (value === null) return "—";
-  if (signalType === "permit_filed" || signalType === "land_transfer" || value > 100000) {
-    return `$${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (signalType === "yield_curve") return `${value.toFixed(0)}bps`;
-  return value.toFixed(2);
+function fmtAmount(n?: number): string {
+  if (!n) return "—";
+  if (n >= 1_000_000_000) return `$${(n / 1e9).toFixed(1)}B`;
+  if (n >= 1_000_000) return `$${(n / 1e6).toFixed(0)}M`;
+  if (n >= 1_000) return `$${(n / 1e3).toFixed(0)}K`;
+  return `$${n}`;
 }
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string | null): string {
+  if (!iso) return "—";
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "just now";
@@ -123,89 +125,93 @@ function timeAgo(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-function formatMoney(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
-  return `$${n.toFixed(0)}`;
-}
-
 // ── Signal Card ────────────────────────────────────────────────
 
-function SignalCard({ signal }: { signal: SignalEvent }) {
-  const Icon = TYPE_ICONS[signal.signal_type] || Activity;
-  const dirStyle = signal.direction ? DIRECTION_STYLES[signal.direction] : null;
-  const DirIcon = dirStyle?.icon || Minus;
-  const categoryColor = signal.category === "macro_market"
-    ? "border-[#C4A048]/20 bg-[#C4A048]/8 text-[#E8C87A]"
-    : signal.category === "deal_sourcing"
-    ? "border-emerald-300/20 bg-emerald-400/8 text-emerald-200"
-    : signal.category === "regulatory"
-    ? "border-violet-300/20 bg-violet-400/8 text-violet-200"
-    : "border-[#7A9A82]/20 bg-[#7A9A82]/8 text-[#EDE8DC]";
+function SignalCard({ signal, onAction }: { signal: DealSignal; onAction: (id: string, action: "approve" | "pass" | "watch") => void }) {
+  const gradeStyle = GRADE_STYLES[signal.grade] || GRADE_STYLES.COLD;
+  const deskStyle = DESK_COLORS[signal.desk] || DESK_COLORS.bond_desk;
+  const entityName = signal.entity || signal.name || "Unknown Entity";
 
   return (
     <div className="rounded-xl border border-white/8 bg-black/30 p-3.5 transition hover:border-white/15 hover:bg-black/40">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <Icon size={13} className="text-[#C4A048] shrink-0" />
-            <span className="font-mono text-xs font-semibold text-white truncate">
-              {signal.signal_type.replace(/_/g, " ")}
+            <Activity size={13} className="text-[#C4A048] shrink-0" />
+            <span className="font-mono text-xs font-semibold text-white truncate max-w-[220px]">
+              {entityName}
             </span>
-            <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.5rem] uppercase ${categoryColor}`}>
-              {CATEGORY_LABELS[signal.category] || signal.category}
+            <span className={`rounded-full border px-2 py-0.5 font-mono text-[0.5rem] uppercase ${deskStyle}`}>
+              {DESK_LABELS[signal.desk]}
             </span>
-            <span className={`rounded-full border px-1.5 py-0.5 font-mono text-[0.5rem] uppercase ${SEVERITY_STYLES[signal.severity] || SEVERITY_STYLES.info}`}>
-              {signal.severity}
+            <span className={`rounded-full border px-1.5 py-0.5 font-mono text-[0.5rem] uppercase ${gradeStyle}`}>
+              {signal.grade}
             </span>
           </div>
 
-          <div className="mt-1.5 flex items-center gap-3 font-mono text-[0.62rem] text-[#7A9A82]">
-            <span className="text-[#7A9A82]">{signal.source}</span>
-            {signal.state && (
-              <span><MapPin size={10} className="inline" /> {signal.state}{signal.county ? `, ${signal.county}` : ""}</span>
-            )}
-            {signal.entity_name && (
-              <span className="text-[#EDE8DC] truncate max-w-[180px]">{signal.entity_name}</span>
-            )}
-            {signal.source_ref && (
-              <span className="text-[#7A9A82] truncate max-w-[140px]">{signal.source_ref}</span>
-            )}
+          <div className="mt-1.5 flex items-center gap-3 font-mono text-[0.62rem] text-[#7A9A82] flex-wrap">
+            {signal.naics && <span>NAICS {signal.naics}</span>}
+            {signal.state && <span className="text-[#EDE8DC]">{signal.state}</span>}
+            {signal.source && <span className="text-[#7A9A82]">{signal.source}</span>}
           </div>
 
-          {signal.payload?.description && (
+          {signal.rationale && signal.rationale.length > 0 && (
             <p className="mt-1.5 text-[0.7rem] text-[#7A9A82] line-clamp-1">
-              {String(signal.payload.description)}
+              {signal.rationale[0]}
             </p>
           )}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {signal.value !== null && (
+          {signal.amount_usd != null && (
             <span className="font-mono text-sm font-bold text-white">
-              {formatValue(signal.value, signal.signal_type)}
+              {fmtAmount(signal.amount_usd)}
             </span>
           )}
-          {dirStyle && <DirIcon size={14} className={dirStyle.color} />}
         </div>
       </div>
 
       <div className="mt-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {signal.status === "approved" ? (
+            <span className="font-mono text-[0.5rem] text-emerald-400 flex items-center gap-1">
+              <CheckCircle size={9} /> approved
+            </span>
+          ) : signal.status === "passed" ? (
+            <span className="font-mono text-[0.5rem] text-red-400 flex items-center gap-1">
+              <ThumbsDown size={9} /> passed
+            </span>
+          ) : signal.status === "watching" ? (
+            <span className="font-mono text-[0.5rem] text-amber-300 flex items-center gap-1">
+              <Eye size={9} /> watching
+            </span>
+          ) : (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onAction(signal.id, "approve")}
+                className="rounded px-1.5 py-0.5 font-mono text-[0.5rem] uppercase border border-emerald-400/30 text-emerald-300 hover:bg-emerald-400/10 transition-colors"
+              >approve</button>
+              <button
+                onClick={() => onAction(signal.id, "watch")}
+                className="rounded px-1.5 py-0.5 font-mono text-[0.5rem] uppercase border border-amber-400/30 text-amber-300 hover:bg-amber-400/10 transition-colors"
+              >watch</button>
+              <button
+                onClick={() => onAction(signal.id, "pass")}
+                className="rounded px-1.5 py-0.5 font-mono text-[0.5rem] uppercase border border-white/10 text-[#7A9A82] hover:bg-white/5 transition-colors"
+              >pass</button>
+            </div>
+          )}
+        </div>
         <span className="font-mono text-[0.5rem] text-[#7A9A82]">
           <Clock size={9} className="inline mr-0.5" />
-          {timeAgo(signal.captured_at)}
+          {timeAgo(signal.actioned_at || null)}
         </span>
-        {signal.confidence !== null && (
-          <span className="font-mono text-[0.5rem] text-[#7A9A82]">
-            conf: {(signal.confidence * 100).toFixed(0)}%
-          </span>
-        )}
       </div>
     </div>
   );
 }
 
-// ── Vector Snapshot Panel ──────────────────────────────────────
+// ── Vector Market Panel ────────────────────────────────────────
 
 function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
   if (!snapshot) {
@@ -214,26 +220,25 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
         <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82] mb-3">
           Vector Agent
         </h3>
-        <p className="text-sm text-[#7A9A82]">No scoring data yet. Poll FRED to generate.</p>
+        <p className="text-sm text-[#7A9A82]">No market data. Fetching...</p>
       </div>
     );
   }
 
-  const score = Number(snapshot.composite_score);
-  const rec = snapshot.recommendation?.toLowerCase() || "monitor";
+  const score = snapshot.vector_score;
+  const rec = snapshot.vector_recommendation?.toLowerCase() || "monitor";
   const recStyle = REC_STYLES[rec] || REC_STYLES.monitor;
-  const putStyle = PUT_RISK_STYLES[snapshot.put_risk_level || "LOW"] || PUT_RISK_STYLES.LOW;
-
-  const scoreColor = score >= 82 ? "text-emerald-400" : score >= 65 ? "text-[#C4A048]" : score >= 45 ? "text-amber-400" : score >= 25 ? "text-[#EDE8DC]" : "text-red-400";
+  const scoreColor = score >= 70 ? "text-emerald-400" : score >= 50 ? "text-[#C4A048]" : "text-red-400";
   const arcPct = score / 100;
+  const sig = snapshot.signals;
 
   return (
     <div className="rounded-2xl border border-white/8 bg-black/30 p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82]">
-          Vector Agent — Call/Put Radar
+          Vector — Market Radar
         </h3>
-        <span className="font-mono text-[0.5rem] text-[#7A9A82]">{timeAgo(snapshot.created_at)}</span>
+        <span className="font-mono text-[0.5rem] text-[#7A9A82]">{timeAgo(snapshot.captured_at)}</span>
       </div>
 
       {/* Score gauge */}
@@ -251,32 +256,36 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className={`font-mono text-lg font-bold ${scoreColor}`}>{score.toFixed(0)}</span>
+            <span className={`font-mono text-lg font-bold ${scoreColor}`}>{score}</span>
           </div>
         </div>
 
         <div className="flex-1 space-y-2">
-          <div>
-            <span className={`inline-block rounded-full border px-3 py-1 font-mono text-[0.65rem] font-bold uppercase tracking-wider ${recStyle}`}>
-              {rec.replace(/_/g, " ")}
+          <span className={`inline-block rounded-full border px-3 py-1 font-mono text-[0.65rem] font-bold uppercase tracking-wider ${recStyle}`}>
+            {REC_LABELS[rec] ?? rec.replace(/_/g, " ")}
+          </span>
+          <div className="font-mono text-[0.62rem] text-[#7A9A82]">
+            Apex Short: <span className={snapshot.apex_short_active ? "text-red-400" : "text-[#7A9A82]"}>
+              {snapshot.apex_short_active ? "ACTIVE" : "INACTIVE"}
             </span>
-          </div>
-          <div className="flex items-center gap-4 font-mono text-[0.62rem]">
-            <span className="text-[#7A9A82]">Put Risk: <span className={`font-semibold ${putStyle}`}>{snapshot.put_risk_level || "—"}</span></span>
-            {snapshot.estimated_savings && Number(snapshot.estimated_savings) > 0 && (
-              <span className="text-[#7A9A82]">Savings: <span className="text-emerald-400 font-semibold">{formatMoney(Number(snapshot.estimated_savings))}</span></span>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Reasoning */}
-      {snapshot.reasoning && snapshot.reasoning.length > 0 && (
-        <div className="space-y-1">
-          {snapshot.reasoning.map((reason, i) => (
-            <div key={i} className="flex items-start gap-2 text-[0.68rem] text-[#7A9A82]">
-              <ChevronRight size={11} className="text-[#C4A048]/60 mt-0.5 shrink-0" />
-              <span>{reason}</span>
+      {/* Key rates from live FRED */}
+      {sig && (
+        <div className="space-y-1.5 border-t border-white/5 pt-3">
+          <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82] mb-2">Live Rates</p>
+          {[
+            { label: "10YR Treasury", value: `${sig.treasury_10yr_pct?.toFixed(2)}%` },
+            { label: "SOFR", value: `${sig.sofr_pct?.toFixed(2)}%` },
+            { label: "IG Spread", value: `${sig.credit_spread_ig_bps}bps` },
+            { label: "VIX", value: sig.vix?.toFixed(1) },
+            { label: "TLT", value: `$${sig.tlt_price?.toFixed(2)}` },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex items-center justify-between">
+              <span className="font-mono text-[0.62rem] text-[#7A9A82]">{label}</span>
+              <span className="font-mono text-[0.62rem] font-semibold text-[#C4A048]">{value}</span>
             </div>
           ))}
         </div>
@@ -287,57 +296,71 @@ function VectorPanel({ snapshot }: { snapshot: VectorSnapshot | null }) {
 
 // ── Stats Panel ────────────────────────────────────────────────
 
-function StatsPanel({ stats }: { stats: StatsData | null }) {
+function StatsPanel({ stats, nodes }: { stats: SignalStats | null; nodes: NodeStatus | null }) {
   if (!stats) return null;
 
   return (
-    <div className="rounded-2xl border border-white/8 bg-black/30 p-5">
-      <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82] mb-3">
+    <div className="rounded-2xl border border-white/8 bg-black/30 p-5 space-y-4">
+      <h3 className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7A9A82]">
         Signal Inventory
       </h3>
 
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-3 gap-3">
         <div className="text-center">
-          <p className="font-mono text-2xl font-bold text-white">{stats.total}</p>
+          <p className="font-mono text-2xl font-bold text-white">{stats.total_qualified}</p>
           <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Total</p>
         </div>
         <div className="text-center">
-          <p className="font-mono text-2xl font-bold text-[#C4A048]">{stats.by_category?.macro_market || 0}</p>
-          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Market</p>
+          <p className="font-mono text-2xl font-bold text-red-400">{stats.hot}</p>
+          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Hot</p>
         </div>
         <div className="text-center">
-          <p className="font-mono text-2xl font-bold text-emerald-400">{stats.by_category?.deal_sourcing || 0}</p>
-          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Deal Source</p>
+          <p className="font-mono text-2xl font-bold text-[#C4A048]">{stats.warm}</p>
+          <p className="font-mono text-[0.5rem] uppercase text-[#7A9A82]">Warm</p>
         </div>
       </div>
 
-      {/* By type breakdown */}
       <div className="space-y-1.5">
-        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">By Type</p>
-        {Object.entries(stats.by_type || {}).map(([type, count]) => {
-          const Icon = TYPE_ICONS[type] || Activity;
-          return (
-            <div key={type} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Icon size={11} className="text-[#7A9A82]" />
-                <span className="font-mono text-[0.62rem] text-[#7A9A82]">{type.replace(/_/g, " ")}</span>
-              </div>
-              <span className="font-mono text-[0.62rem] font-semibold text-white">{count}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* By source breakdown */}
-      <div className="mt-3 space-y-1.5">
-        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">By Source</p>
-        {Object.entries(stats.by_source || {}).map(([source, count]) => (
-          <div key={source} className="flex items-center justify-between">
-            <span className="font-mono text-[0.62rem] text-[#7A9A82]">{source}</span>
+        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">By Desk</p>
+        {Object.entries(stats.by_desk || {}).map(([desk, count]) => (
+          <div key={desk} className="flex items-center justify-between">
+            <span className="font-mono text-[0.62rem] text-[#7A9A82]">{DESK_LABELS[desk] || desk}</span>
             <span className="font-mono text-[0.62rem] font-semibold text-white">{count}</span>
           </div>
         ))}
       </div>
+
+      <div className="space-y-1.5 border-t border-white/5 pt-3">
+        <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">Sources</p>
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-[0.62rem] text-[#7A9A82]">EDGAR</span>
+          <span className="font-mono text-[0.62rem] font-semibold text-white">{stats.edgar_sources}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-[0.62rem] text-[#7A9A82]">Permits</span>
+          <span className="font-mono text-[0.62rem] font-semibold text-white">{stats.permit_sources}</span>
+        </div>
+        {stats.last_run && (
+          <p className="font-mono text-[0.5rem] text-[#7A9A82] mt-1">
+            Last run: {timeAgo(stats.last_run)}
+          </p>
+        )}
+      </div>
+
+      {/* Node pipeline status */}
+      {nodes && (
+        <div className="space-y-1.5 border-t border-white/5 pt-3">
+          <p className="font-mono text-[0.5rem] font-bold uppercase tracking-[0.12em] text-[#7A9A82]">Pipeline Nodes</p>
+          {[nodes.node1, nodes.node2, nodes.node3].map((node, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <span className="font-mono text-[0.62rem] text-[#7A9A82]">{node.name}</span>
+              <span className={`font-mono text-[0.5rem] uppercase ${node.status === "active" ? "text-emerald-400" : "text-red-400"}`}>
+                {node.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -345,39 +368,94 @@ function StatsPanel({ stats }: { stats: StatsData | null }) {
 // ── Main Component ─────────────────────────────────────────────
 
 export default function SignalIntelligenceFeed() {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [polling, setPolling] = useState(false);
-  const queryClient = useQueryClient();
+  const [activeDesk, setActiveDesk] = useState("all");
+  const [activeGrade, setActiveGrade] = useState("all");
+  const [signals, setSignals] = useState<DealSignal[]>([]);
+  const [meta, setMeta] = useState<SignalMeta | null>(null);
+  const [stats, setStats] = useState<SignalStats | null>(null);
+  const [nodes, setNodes] = useState<NodeStatus | null>(null);
+  const [vector, setVector] = useState<VectorSnapshot | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [scanning, setScanning] = useState(false);
+  const [lastFetch, setLastFetch] = useState<string>("");
 
-  const signalsQuery = trpc.signals.query.useQuery(undefined, {
-    refetchInterval: 30000,
-  });
-  const statsQuery = trpc.signals.stats.useQuery(undefined, {
-    refetchInterval: 30000,
-  });
-  const vectorQuery = trpc.signals.vectorLatest.useQuery(undefined, {
-    retry: false,
-  });
-  const pollFred = trpc.signals.pollFred.useMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["signals"] });
-      setPolling(false);
-    },
-    onError: () => setPolling(false),
-  });
+  const loadAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [sigRes, statsRes, nodeRes, vectorRes] = await Promise.all([
+        fetch(`${API}/api/signals`),
+        fetch(`${API}/api/signals/stats`),
+        fetch(`${API}/api/signals/node-status`),
+        fetch(`${API}/api/market/signals/latest`),
+      ]);
+      const [sigJson, statsJson, nodeJson, vectorJson] = await Promise.all([
+        sigRes.json(),
+        statsRes.json(),
+        nodeRes.json(),
+        vectorRes.json(),
+      ]);
+      if (sigJson.success) {
+        setSignals(sigJson.data?.signals || []);
+        setMeta(sigJson.data?.meta || null);
+      }
+      if (statsJson.success) setStats(statsJson.data);
+      if (nodeJson.success) setNodes(nodeJson.data);
+      if (vectorJson.success) setVector(vectorJson.data);
+      setLastFetch(new Date().toLocaleTimeString());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const allSignals: SignalEvent[] = (signalsQuery.data as any)?.signals || [];
-  const stats: StatsData | null = (statsQuery.data as any) || null;
-  const vector: VectorSnapshot | null = (vectorQuery.data as any) || null;
+  useEffect(() => {
+    loadAll();
+    const interval = setInterval(loadAll, 30000);
+    return () => clearInterval(interval);
+  }, [loadAll]);
 
-  const filteredSignals = activeCategory === "all"
-    ? allSignals
-    : allSignals.filter((s) => s.category === activeCategory);
-
-  const handlePollFred = () => {
-    setPolling(true);
-    pollFred.mutate(undefined as any);
+  const handleScan = async () => {
+    setScanning(true);
+    try {
+      const res = await fetch(`${API}/api/signals/scan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ max_signals: 50 }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSignals(json.data?.signals || []);
+        setMeta(json.data?.meta || null);
+        setLastFetch(new Date().toLocaleTimeString());
+      }
+    } finally {
+      setScanning(false);
+    }
   };
+
+  const handleAction = async (signalId: string, action: "approve" | "pass" | "watch") => {
+    try {
+      const res = await fetch(`${API}/api/signals/${signalId}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSignals(prev => prev.map(s =>
+          s.id === signalId
+            ? { ...s, status: json.data.status, actioned_at: new Date().toISOString() }
+            : s
+        ));
+      }
+    } catch { /* noop */ }
+  };
+
+  // Client-side filter
+  const filteredSignals = signals.filter(s => {
+    const deskMatch = activeDesk === "all" || s.desk === activeDesk;
+    const gradeMatch = activeGrade === "all" || s.grade === activeGrade;
+    return deskMatch && gradeMatch;
+  });
 
   return (
     <div className="max-w-[1400px] mx-auto">
@@ -393,83 +471,122 @@ export default function SignalIntelligenceFeed() {
                 Signal Intelligence
               </h1>
               <p className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-[#7A9A82]">
-                Live Market & Deal Signal Feed
+                Three-Node Pipeline · EDGAR + Census Permits · JP Morgan Benchmarks
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {signalsQuery.isFetching && (
+          {lastFetch && <span className="font-mono text-[0.5rem] text-[#7A9A82]">Updated {lastFetch}</span>}
+          {loading && !scanning && (
             <span className="font-mono text-[0.5rem] text-[#C4A048]/60 flex items-center gap-1">
               <RefreshCw size={10} className="animate-spin" /> syncing
             </span>
           )}
           <Button
-            onClick={handlePollFred}
-            disabled={polling}
+            onClick={loadAll}
+            disabled={loading}
             className="h-8 gap-1.5 rounded-lg border border-[#C4A048]/30 bg-[#C4A048]/10 px-3 font-mono text-[0.65rem] uppercase tracking-wider text-[#E8C87A] hover:bg-[#C4A048]/20 disabled:opacity-50"
             variant="ghost"
           >
-            {polling ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
-            {polling ? "Polling..." : "Poll FRED"}
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            Refresh
+          </Button>
+          <Button
+            onClick={handleScan}
+            disabled={scanning}
+            className="h-8 gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 font-mono text-[0.65rem] uppercase tracking-wider text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50"
+            variant="ghost"
+          >
+            {scanning ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
+            {scanning ? "Scanning..." : "Force Scan"}
           </Button>
         </div>
       </div>
+
+      {/* Meta bar */}
+      {meta && (
+        <div className="flex items-center gap-4 mb-4 font-mono text-[0.62rem]">
+          <span className="text-[#7A9A82]">
+            {meta.total} signals · <span className="text-red-400">{meta.hot} hot</span> · <span className="text-[#C4A048]">{meta.warm} warm</span>
+          </span>
+          {meta.run_at && <span className="text-[#7A9A82]">Pipeline ran {timeAgo(meta.run_at)}</span>}
+        </div>
+      )}
 
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left: Signal feed (2 cols) */}
         <div className="lg:col-span-2">
-          <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-            <div className="flex items-center justify-between mb-3">
-              <TabsList className="h-8 bg-white/5 border border-white/8 rounded-lg p-0.5">
-                <TabsTrigger value="all" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-white/10 data-[state=active]:text-white text-[#7A9A82]">
-                  All ({allSignals.length})
-                </TabsTrigger>
-                <TabsTrigger value="macro_market" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-[#C4A048]/15 data-[state=active]:text-[#E8C87A] text-[#7A9A82]">
-                  Market
-                </TabsTrigger>
-                <TabsTrigger value="deal_sourcing" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-200 text-[#7A9A82]">
-                  Deal Source
-                </TabsTrigger>
-                <TabsTrigger value="regulatory" className="h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider data-[state=active]:bg-violet-500/15 data-[state=active]:text-violet-200 text-[#7A9A82]">
-                  Regulatory
-                </TabsTrigger>
-              </TabsList>
-              <span className="font-mono text-[0.5rem] text-[#7A9A82]">
-                auto-refresh 30s
-              </span>
+          {/* Filters */}
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span className="font-mono text-[0.5rem] uppercase tracking-wider text-[#7A9A82] mr-1">Desk</span>
+              {["all", "ma", "cre", "bond_desk"].map(d => (
+                <button
+                  key={d}
+                  onClick={() => setActiveDesk(d)}
+                  className={`h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider transition-colors ${
+                    activeDesk === d
+                      ? "bg-white/10 text-white"
+                      : "text-[#7A9A82] hover:text-white"
+                  }`}
+                >
+                  {d === "all" ? "All" : DESK_LABELS[d]}
+                </button>
+              ))}
             </div>
+            <div className="flex items-center gap-1">
+              <span className="font-mono text-[0.5rem] uppercase tracking-wider text-[#7A9A82] mr-1">Grade</span>
+              {["all", "HOT", "WARM", "COLD"].map(g => (
+                <button
+                  key={g}
+                  onClick={() => setActiveGrade(g)}
+                  className={`h-7 rounded-md px-3 font-mono text-[0.58rem] uppercase tracking-wider transition-colors ${
+                    activeGrade === g
+                      ? g === "HOT" ? "bg-red-500/20 text-red-300"
+                        : g === "WARM" ? "bg-[#C4A048]/20 text-[#E8C87A]"
+                        : g === "COLD" ? "bg-[#7A9A82]/20 text-[#EDE8DC]"
+                        : "bg-white/10 text-white"
+                      : "text-[#7A9A82] hover:text-white"
+                  }`}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+            <span className="font-mono text-[0.5rem] text-[#7A9A82] ml-auto">
+              {filteredSignals.length} shown · auto-refresh 30s
+            </span>
+          </div>
 
-            <TabsContent value={activeCategory} forceMount className="mt-0">
-              {signalsQuery.isLoading ? (
-                <div className="flex items-center justify-center py-16">
-                  <RefreshCw size={20} className="animate-spin text-[#C4A048]/40" />
-                </div>
-              ) : filteredSignals.length === 0 ? (
-                <div className="rounded-2xl border border-white/8 bg-black/20 p-12 text-center">
-                  <AlertTriangle size={24} className="mx-auto text-[#7A9A82] mb-2" />
-                  <p className="font-mono text-sm text-[#7A9A82]">No signals in this category</p>
-                  <p className="font-mono text-[0.6rem] text-[#7A9A82] mt-1">
-                    Hit "Poll FRED" to ingest live market data
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
-                  {filteredSignals.map((signal) => (
-                    <SignalCard key={signal.id} signal={signal} />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+          {/* Feed */}
+          {loading && signals.length === 0 ? (
+            <div className="flex items-center justify-center py-16">
+              <RefreshCw size={20} className="animate-spin text-[#C4A048]/40" />
+            </div>
+          ) : filteredSignals.length === 0 ? (
+            <div className="rounded-2xl border border-white/8 bg-black/20 p-12 text-center">
+              <AlertTriangle size={24} className="mx-auto text-[#7A9A82] mb-2" />
+              <p className="font-mono text-sm text-[#7A9A82]">No signals in pipeline</p>
+              <p className="font-mono text-[0.6rem] text-[#7A9A82] mt-1">
+                Hit "Force Scan" to run the EDGAR + Permits pipeline
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[calc(100vh-260px)] overflow-y-auto pr-1">
+              {filteredSignals.map((signal) => (
+                <SignalCard key={signal.id} signal={signal} onAction={handleAction} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Vector + Stats */}
         <div className="space-y-5">
           <VectorPanel snapshot={vector} />
-          <StatsPanel stats={stats} />
+          <StatsPanel stats={stats} nodes={nodes} />
         </div>
       </div>
     </div>

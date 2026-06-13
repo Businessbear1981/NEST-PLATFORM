@@ -3,6 +3,19 @@ import { useEffect, useMemo, useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
+/* ── AI Tool Types ── */
+type AIToolResult = { url?: string; id?: string; status?: string; error?: string; message?: string };
+
+/* ── AI Tool Tab IDs ── */
+type AITab = "higgsfield" | "meshy" | "suno" | "101labs";
+
+const AI_TABS: { id: AITab; label: string; tagline: string; inputLabel: string; btnLabel: string; endpoint: string; tool: string }[] = [
+  { id: "higgsfield", label: "Higgsfield", tagline: "AI video generation", inputLabel: "Video prompt — describe the scene, motion, and tone", btnLabel: "Generate Video", endpoint: "/api/marketing/generate-video", tool: "higgsfield" },
+  { id: "meshy", label: "Meshy", tagline: "3D model / image generation", inputLabel: "Describe the 3D asset — object, style, materials", btnLabel: "Generate 3D", endpoint: "/api/marketing/generate-3d", tool: "meshy" },
+  { id: "suno", label: "Suno", tagline: "AI music generation", inputLabel: "Music style, mood, tempo, instruments", btnLabel: "Generate Track", endpoint: "/api/marketing/generate-audio", tool: "suno" },
+  { id: "101labs", label: "101 Labs", tagline: "AI content writing", inputLabel: "Topic, tone, target audience, key points to hit", btnLabel: "Generate Content", endpoint: "/api/marketing/generate-content", tool: "101labs" },
+];
+
 /* ── Types ── */
 type ContentType = { value: string; label: string };
 
@@ -66,6 +79,13 @@ export default function MarketingStudio() {
   const [batchDeal, setBatchDeal] = useState("JT-2025-42");
   const [batchLoading, setBatchLoading] = useState(false);
 
+  /* ── AI Tool Panel State ── */
+  const [activeAITab, setActiveAITab] = useState<AITab>("higgsfield");
+  const [aiEnabled, setAiEnabled] = useState<Record<AITab, boolean>>({ higgsfield: false, meshy: false, suno: false, "101labs": false });
+  const [aiPrompts, setAiPrompts] = useState<Record<AITab, string>>({ higgsfield: "", meshy: "", suno: "", "101labs": "" });
+  const [aiLoading, setAiLoading] = useState<Record<AITab, boolean>>({ higgsfield: false, meshy: false, suno: false, "101labs": false });
+  const [aiResults, setAiResults] = useState<Record<AITab, AIToolResult | null>>({ higgsfield: null, meshy: null, suno: null, "101labs": null });
+
   useEffect(() => {
     listContentTypes().then(setTypes).catch(() => {});
     listHistory().then(setHistory).catch(() => {});
@@ -123,6 +143,27 @@ export default function MarketingStudio() {
 
   async function copyToClipboard() {
     await navigator.clipboard.writeText(displayContent);
+  }
+
+  async function runAITool(tab: AITab) {
+    const cfg = AI_TABS.find(t => t.id === tab)!;
+    const prompt = aiPrompts[tab].trim();
+    if (!prompt) return;
+    setAiLoading(prev => ({ ...prev, [tab]: true }));
+    setAiResults(prev => ({ ...prev, [tab]: null }));
+    try {
+      const r = await fetch(`${API}${cfg.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, tool: cfg.tool }),
+      });
+      const data: AIToolResult = await r.json();
+      setAiResults(prev => ({ ...prev, [tab]: data }));
+    } catch (e) {
+      setAiResults(prev => ({ ...prev, [tab]: { error: "Request failed — backend may not have this endpoint yet." } }));
+    } finally {
+      setAiLoading(prev => ({ ...prev, [tab]: false }));
+    }
   }
 
   const inputCls = "mt-1 w-full rounded-lg border border-white/10 bg-[#03060b] px-3 py-2 font-mono text-xs text-white outline-none focus:border-amber-300/40";
@@ -256,6 +297,122 @@ export default function MarketingStudio() {
           >
             {batchLoading ? "Building package..." : "Build Package"}
           </button>
+        </div>
+
+        {/* AI Media Tools */}
+        <div className="rounded-[1.5rem] border border-[#C4A048]/25 bg-[#07101a]/80 p-6">
+          {/* Panel header */}
+          <div className="mb-5 flex items-baseline gap-3">
+            <h2 className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-white">AI Media Tools</h2>
+            <span className="rounded bg-[#C4A048]/15 px-2 py-0.5 font-mono text-[0.55rem] font-semibold text-[#C4A048]">Higgsfield · Meshy · Suno · 101 Labs</span>
+          </div>
+
+          {/* Tab row */}
+          <div className="mb-5 flex flex-wrap gap-2">
+            {AI_TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveAITab(tab.id)}
+                className={`rounded-[0.75rem] border px-4 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.1em] transition ${
+                  activeAITab === tab.id
+                    ? "border-[#C4A048]/60 bg-[#C4A048]/15 text-[#C4A048]"
+                    : "border-white/10 text-[#7A9A82] hover:border-white/20 hover:text-white"
+                }`}
+              >
+                {tab.label}
+                {aiEnabled[tab.id] && (
+                  <span className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-[#C4A048]" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Active tool panel */}
+          {AI_TABS.map(tab => {
+            if (tab.id !== activeAITab) return null;
+            const enabled = aiEnabled[tab.id];
+            const result = aiResults[tab.id];
+            const isLoading = aiLoading[tab.id];
+            return (
+              <div key={tab.id} className="grid gap-4 lg:grid-cols-[1fr_320px]">
+                {/* Left: controls */}
+                <div className="space-y-4">
+                  {/* Toggle row */}
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setAiEnabled(prev => ({ ...prev, [tab.id]: !prev[tab.id] }))}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${enabled ? "bg-[#C4A048]" : "bg-[#2D6B3D]/40"}`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enabled ? "translate-x-6" : "translate-x-1"}`} />
+                    </button>
+                    <span className={`font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] ${enabled ? "text-[#C4A048]" : "text-[#7A9A82]"}`}>
+                      {enabled ? "ENABLED" : "DISABLED"}
+                    </span>
+                    <span className="font-mono text-[0.6rem] text-[#7A9A82]">— {tab.tagline}</span>
+                  </div>
+
+                  {/* Prompt area — only when enabled */}
+                  {enabled && (
+                    <div className="space-y-3">
+                      <label className="block">
+                        <span className="font-mono text-[0.6rem] uppercase tracking-[0.1em] text-[#7A9A82]">{tab.inputLabel}</span>
+                        <textarea
+                          className="mt-1 w-full resize-y rounded-lg border border-white/10 bg-[#03060b] px-3 py-2 font-mono text-xs text-white outline-none focus:border-amber-300/40"
+                          rows={4}
+                          placeholder={`Describe what you want ${tab.label} to generate…`}
+                          value={aiPrompts[tab.id]}
+                          onChange={e => setAiPrompts(prev => ({ ...prev, [tab.id]: e.target.value }))}
+                        />
+                      </label>
+                      <button
+                        onClick={() => runAITool(tab.id)}
+                        disabled={isLoading || !aiPrompts[tab.id].trim()}
+                        className="rounded-[1rem] border border-[#C4A048]/40 bg-[#C4A048]/10 px-6 py-2.5 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#C4A048] transition hover:bg-[#C4A048]/20 disabled:opacity-50"
+                      >
+                        {isLoading ? "Generating…" : tab.btnLabel}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right: result / info panel */}
+                <div className="rounded-[1rem] border border-white/10 bg-[#03060b]/60 p-4">
+                  {!enabled && (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                      <div className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#7A9A82]">Tool disabled</div>
+                      <p className="text-xs text-[#7A9A82]/60">Toggle on to activate {tab.label}</p>
+                    </div>
+                  )}
+                  {enabled && !result && !isLoading && (
+                    <p className="text-xs text-[#7A9A82]">Enter a prompt and hit {tab.btnLabel} to see the output here.</p>
+                  )}
+                  {enabled && isLoading && (
+                    <div className="space-y-2">
+                      <div className="h-2 w-3/4 animate-pulse rounded bg-[#C4A048]/20" />
+                      <div className="h-2 w-1/2 animate-pulse rounded bg-[#C4A048]/10" />
+                      <p className="mt-3 font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Generating…</p>
+                    </div>
+                  )}
+                  {enabled && result && !isLoading && (
+                    <div className="space-y-2">
+                      {result.error && (
+                        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 font-mono text-xs text-red-300">{result.error}</div>
+                      )}
+                      {result.url && (
+                        <div className="space-y-2">
+                          <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">Output URL</p>
+                          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block truncate font-mono text-xs text-[#C4A048] underline">{result.url}</a>
+                        </div>
+                      )}
+                      {result.id && <p className="font-mono text-[0.6rem] text-[#7A9A82]">Job ID: <span className="text-white">{result.id}</span></p>}
+                      {result.status && <p className="font-mono text-[0.6rem] text-[#7A9A82]">Status: <span className="text-[#C4A048]">{result.status}</span></p>}
+                      {result.message && <p className="text-xs text-[#EDE8DC]">{result.message}</p>}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </main>

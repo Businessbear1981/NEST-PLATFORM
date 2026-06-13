@@ -163,7 +163,7 @@ export default function EMMAPage() {
       if (min) params.set("min_par", String(Number(min) * 1e6));
       if (max) params.set("max_par", String(Number(max) * 1e6));
       params.set("limit", "20");
-      const r = await fetch(`/api/emma/comps?${params}`);
+      const r = await fetch(`${_API}/api/emma/comps?${params}`);
       const d = await r.json();
       if (d.success) setComps((d.data?.comps as Bond[]) || []);
     } finally {
@@ -178,7 +178,7 @@ export default function EMMAPage() {
       if (searchIssuer) params.set("issuer", searchIssuer);
       if (searchState) params.set("state", searchState);
       params.set("limit", "20");
-      const r = await fetch(`/api/emma/search?${params}`);
+      const r = await fetch(`${_API}/api/emma/search?${params}`);
       const d = await r.json();
       if (d.success) setSearchResults((d.data?.results as Bond[]) || []);
     } finally {
@@ -187,7 +187,7 @@ export default function EMMAPage() {
   }
 
   async function loadTemplate() {
-    const r = await fetch(`/api/emma/templates?sector=${templateSector}`);
+    const r = await fetch(`${_API}/api/emma/templates?sector=${templateSector}`);
     const d = await r.json();
     if (d.success) setTemplate(d.data);
   }

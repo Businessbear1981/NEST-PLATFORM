@@ -1,11 +1,13 @@
 ﻿"use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Activity, AlertTriangle, CheckCircle, Clock, Settings, ShieldCheck, Users, Wrench } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "";
 
 interface User {
   id: string;
@@ -35,35 +37,66 @@ interface ApprovalItem {
   submittedAt: Date;
 }
 
-const initialUsers: User[] = [
-  { id: "user-1", name: "Sean Gilmore", email: "sean@nest.com", role: "admin", status: "active", lastLogin: new Date(Date.now() - 1000) },
-  { id: "user-2", name: "Sarah Chen", email: "sarah@nest.com", role: "operator", status: "active", lastLogin: new Date(Date.now() - 5 * 60 * 1000) },
-  { id: "user-3", name: "Michael Rodriguez", email: "michael@nest.com", role: "operator", status: "active", lastLogin: new Date(Date.now() - 30 * 60 * 1000) },
-  { id: "user-4", name: "Jennifer Park", email: "jennifer@nest.com", role: "viewer", status: "inactive", lastLogin: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+const FALLBACK_USERS: User[] = [
+  { id: "user-1", name: "Sean Gilmore", email: "sean@ardanedgecapital.com", role: "admin", status: "active", lastLogin: new Date(Date.now() - 1000) },
 ];
 
-const initialModules: Module[] = [
-  { id: "mod-1", name: "Bond Market Terminal", status: "operational", uptime: 99.98, requests: 15234, errors: 3, lastUpdate: new Date() },
-  { id: "mod-2", name: "Agent Orchestration", status: "operational", uptime: 99.95, requests: 8934, errors: 4, lastUpdate: new Date() },
-  { id: "mod-3", name: "Roots Platform", status: "operational", uptime: 99.99, requests: 5234, errors: 1, lastUpdate: new Date() },
-  { id: "mod-4", name: "Insurance & Surety", status: "degraded", uptime: 98.5, requests: 3421, errors: 12, lastUpdate: new Date() },
-  { id: "mod-5", name: "Rating Intelligence", status: "operational", uptime: 99.92, requests: 6123, errors: 5, lastUpdate: new Date() },
-];
-
-const initialApprovals: ApprovalItem[] = [
-  { id: "appr-1", type: "Bond Issuance", description: "NEST Mixed-Use Series B - $25M", requester: "Sarah Chen", status: "pending", submittedAt: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-  { id: "appr-2", type: "Surety Submission", description: "Apex Surety - Premium Quote Approval", requester: "Michael Rodriguez", status: "pending", submittedAt: new Date(Date.now() - 1 * 60 * 60 * 1000) },
-  { id: "appr-3", type: "Investor Communication", description: "Q2 2026 Portfolio Update", requester: "Jennifer Park", status: "pending", submittedAt: new Date(Date.now() - 30 * 60 * 1000) },
-];
+const FALLBACK_APPROVALS: ApprovalItem[] = [];
 
 export function AdminPlatform() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [users, setUsers] = useState(initialUsers);
-  const [modules, setModules] = useState(initialModules);
-  const [approvals, setApprovals] = useState(initialApprovals);
+  const [users, setUsers] = useState<User[]>(FALLBACK_USERS);
+  const [modules, setModules] = useState<Module[]>([]);
+  const [approvals, setApprovals] = useState<ApprovalItem[]>(FALLBACK_APPROVALS);
   const [adminLog, setAdminLog] = useState("No admin action has been routed yet.");
+  const [deals, setDeals] = useState<any[]>([]);
+  const [agentsLoaded, setAgentsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Load real agent status from backend
+    fetch(`${API}/api/agents/status`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && Array.isArray(d.data)) {
+          const liveModules: Module[] = d.data.map((agent: any, i: number) => ({
+            id: agent.id,
+            name: agent.name,
+            status: agent.status === "active" ? "operational" : agent.status === "standby" ? "degraded" : "offline",
+            uptime: agent.status === "active" ? 99.95 : 97.5,
+            requests: 0,
+            errors: agent.status === "standby" ? 1 : 0,
+            lastUpdate: agent.last_run ? new Date(agent.last_run) : new Date(),
+          }));
+          setModules(liveModules);
+          setAgentsLoaded(true);
+        }
+      })
+      .catch(() => {});
+
+    // Load real deals for approval queue
+    fetch(`${API}/api/deals`)
+      .then(r => r.json())
+      .then(d => {
+        if (Array.isArray(d.data)) {
+          setDeals(d.data);
+          // Build approval items from pipeline deals
+          const pipelineDeals = d.data.filter((deal: any) => deal.status === "pipeline" && deal.bond_face > 0);
+          const dealApprovals: ApprovalItem[] = pipelineDeals.slice(0, 5).map((deal: any, i: number) => ({
+            id: `deal-${deal.id}`,
+            type: "Deal Pipeline",
+            description: `${deal.name}${deal.bond_face > 0 ? ` — $${(deal.bond_face / 1_000_000).toFixed(0)}M` : ""}`,
+            requester: deal.sponsor?.principal || deal.sponsor?.name || "Sponsor",
+            status: "pending" as const,
+            submittedAt: new Date(deal.created_at || Date.now()),
+          }));
+          if (dealApprovals.length > 0) setApprovals(dealApprovals);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const healthScore = useMemo(() => {
+    if (modules.length === 0) return 0;
     const average = modules.reduce((sum, module) => sum + module.uptime, 0) / modules.length;
     return Math.round(average * 10) / 10;
   }, [modules]);
@@ -144,10 +177,10 @@ export function AdminPlatform() {
 
         <TabsContent value="overview" className="mt-6 space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Active Users</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-[#C4A048]">{users.filter((u) => u.status === "active").length}</p><p className="mt-1 text-xs text-muted-foreground">of {users.length} total</p></CardContent></Card>
-            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">System Uptime</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{healthScore}%</p><p className="mt-1 text-xs text-muted-foreground">Module weighted average</p></CardContent></Card>
-            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Pending Approvals</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-yellow-400">{approvals.filter((a) => a.status === "pending").length}</p><p className="mt-1 text-xs text-muted-foreground">Awaiting action</p></CardContent></Card>
-            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Module Status</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{modules.filter((m) => m.status === "operational").length}/{modules.length}</p><p className="mt-1 text-xs text-muted-foreground">Operational</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Active Agents</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-[#C4A048]">{modules.filter((m) => m.status === "operational").length}</p><p className="mt-1 text-xs text-muted-foreground">of {modules.length} registered</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Live Deals</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{deals.filter((d) => d.bond_face > 0).length}</p><p className="mt-1 text-xs text-muted-foreground">of {deals.length} total deals</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Pipeline Items</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-yellow-400">{approvals.filter((a) => a.status === "pending").length}</p><p className="mt-1 text-xs text-muted-foreground">Awaiting action</p></CardContent></Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-sm text-muted-foreground">Agent Fleet</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold text-green-400">{agentsLoaded ? `${modules.filter((m) => m.status === "operational").length}/${modules.length}` : "—"}</p><p className="mt-1 text-xs text-muted-foreground">Operational</p></CardContent></Card>
           </div>
 
           <Card>
