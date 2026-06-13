@@ -982,10 +982,21 @@ export function HFTFundPage() {
       fetch(`${base}/yield`).then(r => r.json()),
       fetch(`${base}/distributions`).then(r => r.json()),
     ]).then(([p, y, d]) => {
-      if (p.data?.client_id || p.client_id) setPosition(p.data ?? p);
-      if (p.data) setYieldData(y.data ?? y);
-      const dist = d.data?.distributions || d.distributions || d.data || [];
-      if (Array.isArray(dist)) setDistributions(dist);
+      // position: raw object, no {data} wrapper
+      if (p.client_id || p.invested_amount) setPosition(p);
+      // yield: also raw, field names differ from type definition
+      if (y.gross_return !== undefined) {
+        setYieldData({
+          gross_return: y.gross_return,
+          b_coupon: y.b_coupon_paid ?? y.b_coupon ?? 0,
+          mgmt_fee: y.management_fee ?? y.mgmt_fee ?? 0,
+          net_return: y.net_to_client ?? y.net_return ?? 0,
+          annualized_return_pct: (y.annualized_yield_pct ?? y.annualized_return_pct ?? 0) / 100,
+        });
+      }
+      // distributions: returned as raw array, not wrapped
+      const dist = Array.isArray(d) ? d : d.data?.distributions || d.distributions || [];
+      setDistributions(dist);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -1056,8 +1067,8 @@ export function HFTFundPage() {
 }
 
 // ─── Preflight Interview ──────────────────────────────────────────────────────
-type PFQuestion = { id: string; question: string; section: string; why_it_matters?: string };
-type PFSection = { section: string; questions: PFQuestion[] };
+type PFQuestion = { id: string; question: string; credit_memo_section?: string; why?: string; why_it_matters?: string; brainstorm?: string };
+type PFSection = { section?: string; id?: string; credit_memo_section?: string; questions: PFQuestion[] };
 type PFStatus = { total: number; answered: number; completion_pct: number; ready_for_memo: boolean };
 
 export function PreflightPage() {
@@ -1128,8 +1139,8 @@ export function PreflightPage() {
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
         <div className="grid gap-3">
           {sections.map(sec => (
-            <div key={sec.section} className="rounded-[1.35rem] border border-white/[0.06] bg-[#0D2218]/60 p-4">
-              <h3 className="font-[Cormorant_Garamond] text-lg text-[#EDE8DC] mb-2">{sec.section}</h3>
+            <div key={sec.id ?? sec.section ?? sec.credit_memo_section} className="rounded-[1.35rem] border border-white/[0.06] bg-[#0D2218]/60 p-4">
+              <h3 className="font-[Cormorant_Garamond] text-lg text-[#EDE8DC] mb-2">{sec.credit_memo_section ?? sec.section}</h3>
               {sec.questions.map(q => (
                 <button key={q.id} type="button" onClick={() => { setActiveQ(q); setAnswerText(answers[q.id] || ""); }}
                   className={`w-full text-left rounded-xl border p-2 mb-1.5 transition-colors ${activeQ?.id === q.id ? "border-[#C4A048]/50 bg-[#C4A048]/10" : answers[q.id] ? "border-emerald-400/20 bg-emerald-400/5" : "border-white/[0.06] hover:border-[#C4A048]/25"}`}>
@@ -1152,7 +1163,7 @@ export function PreflightPage() {
           <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start sticky top-4">
             <p className="kicker text-[#C4A048] mb-2"><Bot size={14} /> Bernard asks</p>
             <p className="text-sm text-[#EDE8DC] leading-6 mb-3">{activeQ.question}</p>
-            {activeQ.why_it_matters && <p className="font-mono text-[0.65rem] text-[#7A9A82] mb-3 italic">{activeQ.why_it_matters}</p>}
+            {(activeQ.why ?? activeQ.why_it_matters ?? activeQ.brainstorm) && <p className="font-mono text-[0.65rem] text-[#7A9A82] mb-3 italic">{activeQ.why ?? activeQ.why_it_matters ?? activeQ.brainstorm}</p>}
             <textarea
               value={answerText} onChange={e => setAnswerText(e.target.value)}
               rows={4} placeholder="Enter your answer…"
