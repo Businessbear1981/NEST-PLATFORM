@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="Due Diligence" silo="Phoenix Distressed CRE" api="/api/dd" status="shell" />;
-}
+"use client";
+import { DueDiligencePage } from "@/components/WorkbenchPages";
+export default function Page() { return <DueDiligencePage />; }

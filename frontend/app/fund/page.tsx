@@ -1,4 +1,3 @@
-import ModuleShell from "@/components/ModuleShell";
-export default function Page() {
-  return <ModuleShell title="HFT Fund / Quantum" silo="Treasury" api="/api/fund" status="shell" />;
-}
+"use client";
+import { HFTFundPage } from "@/components/WorkbenchPages";
+export default function Page() { return <HFTFundPage />; }

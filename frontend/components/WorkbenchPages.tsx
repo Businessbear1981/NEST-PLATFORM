@@ -870,3 +870,304 @@ export function BondGradeAuditPage() {
     </WorkbenchShell>
   );
 }
+
+// ─── Due Diligence ────────────────────────────────────────────────────────────
+type DDItem = { id: string; title: string; status: string; category: string; notes?: string };
+type DDPhase = { phase: string; items: DDItem[]; completion_pct: number };
+type DDChecklist = { deal_id: string; phases?: DDPhase[]; overall_completion?: number; shovel_ready?: boolean };
+
+export function DueDiligencePage() {
+  const [deals, setDeals] = useState<Array<{ id: string; name: string }>>([]);
+  const [dealId, setDealId] = useState("demo");
+  const [checklist, setChecklist] = useState<DDChecklist | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API}/api/deals`)
+      .then(r => r.json())
+      .then(d => {
+        const list = d.data?.deals || d.data || [];
+        if (Array.isArray(list) && list.length) { setDeals(list); setDealId(list[0].id); }
+      }).catch(() => {});
+  }, []);
+
+  const initChecklist = () => {
+    fetch(`${API}/api/dd/${dealId}/init`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
+      .then(() => loadChecklist(dealId)).catch(() => {});
+  };
+
+  const loadChecklist = (id: string) => {
+    setLoading(true);
+    fetch(`${API}/api/dd/${id}/checklist`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setChecklist(d.data); else setChecklist({ deal_id: id }); })
+      .catch(() => setChecklist({ deal_id: id }))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { if (dealId) loadChecklist(dealId); }, [dealId]);
+
+  const statusColor = (s: string) => s === "complete" ? "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" : s === "in_progress" ? "text-amber-200 border-amber-400/30 bg-amber-400/10" : "text-[#7A9A82] border-white/10 bg-white/[0.03]";
+
+  return (
+    <WorkbenchShell icon={FileCheck2} eyebrow="Phoenix Distressed CRE · Due Diligence"
+      title="8-phase DD checklist. Shovel-ready assessment across legal, environmental, financial, and structural criteria."
+      lede="Initialize DD for any deal. Track phase completion, item status, and overall readiness gate.">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        {deals.length > 0 && (
+          <select value={dealId} onChange={e => setDealId(e.target.value)}
+            className="rounded-xl border border-white/10 bg-[#030A06] px-3 py-2 font-mono text-xs text-[#EDE8DC]">
+            {deals.map(d => <option key={d.id} value={d.id}>{d.name || d.id}</option>)}
+          </select>
+        )}
+        <button type="button" onClick={initChecklist}
+          className="rounded-xl border border-[#C4A048]/40 bg-[#C4A048]/15 px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#C4A048]">
+          Initialize DD →
+        </button>
+        {checklist?.overall_completion !== undefined && (
+          <span className="font-mono text-xs text-[#7A9A82]">Overall: <strong className="text-[#C4A048]">{checklist.overall_completion}%</strong></span>
+        )}
+        {checklist?.shovel_ready !== undefined && (
+          <span className={`rounded-xl border px-2 py-1 font-mono text-[0.65rem] uppercase tracking-wider ${checklist.shovel_ready ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200" : "border-red-400/30 bg-red-400/10 text-red-300"}`}>
+            {checklist.shovel_ready ? "Shovel Ready" : "Not Shovel Ready"}
+          </span>
+        )}
+      </div>
+      {loading && <p className="mt-4 font-mono text-sm text-[#7A9A82]">Loading checklist…</p>}
+      {checklist?.phases && (
+        <div className="mt-4 grid gap-3">
+          {checklist.phases.map(phase => (
+            <div key={phase.phase} className="rounded-[1.35rem] border border-white/[0.06] bg-[#0D2218]/60 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-[Cormorant_Garamond] text-lg text-[#EDE8DC]">{phase.phase}</h3>
+                <span className="font-mono text-xs text-[#C4A048]">{phase.completion_pct ?? 0}%</span>
+              </div>
+              <div className="grid gap-1.5">
+                {(phase.items || []).map(item => (
+                  <div key={item.id} className="flex items-start gap-2 rounded-xl border border-white/[0.06] bg-[#030A06]/50 px-3 py-2">
+                    <span className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-wider ${statusColor(item.status)}`}>{item.status}</span>
+                    <span className="text-sm text-[#EDE8DC] leading-snug">{item.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {!loading && !checklist?.phases && (
+        <div className="mt-6 rounded-[1.35rem] border border-[#C4A048]/20 bg-[#0D2218]/60 p-6 text-center">
+          <p className="font-mono text-sm text-[#7A9A82]">No DD checklist found for this deal.</p>
+          <p className="mt-1 font-mono text-xs text-[#7A9A82]/60">Click "Initialize DD →" to generate the 8-phase checklist.</p>
+        </div>
+      )}
+    </WorkbenchShell>
+  );
+}
+
+// ─── HFT Fund / Quantum ───────────────────────────────────────────────────────
+type FundPosition = { client_id: string; invested_amount: number; current_value: number; days_active: number; b_tranche_units: number };
+type FundYield = { gross_return: number; b_coupon: number; mgmt_fee: number; net_return: number; annualized_return_pct: number };
+type FundDist = { date: string; amount: number; type: string; description: string };
+
+export function HFTFundPage() {
+  const [position, setPosition] = useState<FundPosition | null>(null);
+  const [yieldData, setYieldData] = useState<FundYield | null>(null);
+  const [distributions, setDistributions] = useState<FundDist[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const base = `${API}/api/fund`;
+    Promise.all([
+      fetch(`${base}/position`).then(r => r.json()),
+      fetch(`${base}/yield`).then(r => r.json()),
+      fetch(`${base}/distributions`).then(r => r.json()),
+    ]).then(([p, y, d]) => {
+      if (p.data?.client_id || p.client_id) setPosition(p.data ?? p);
+      if (p.data) setYieldData(y.data ?? y);
+      const dist = d.data?.distributions || d.distributions || d.data || [];
+      if (Array.isArray(dist)) setDistributions(dist);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(n ?? 0);
+  const pct = (n: number) => `${((n ?? 0) * 100).toFixed(2)}%`;
+
+  return (
+    <WorkbenchShell icon={TrendingUp} eyebrow="Treasury · HFT Fund / Quantum Agent"
+      title="$32.4M AUM. B-tranche proceeds deployed via Quantum agent into high-frequency Treasury strategy."
+      lede="21.3% YTD target return. Distributions quarterly. Working capital credit line available at 80% NAV.">
+      {loading && <p className="mt-4 font-mono text-sm text-[#7A9A82]">Loading Quantum position…</p>}
+      {position && (
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            { label: "Invested", value: fmt(position.invested_amount) },
+            { label: "Current NAV", value: fmt(position.current_value) },
+            { label: "Days Active", value: String(position.days_active) },
+            { label: "B-Tranche Units", value: (position.b_tranche_units ?? 0).toLocaleString() },
+          ].map(({ label, value }) => (
+            <div key={label} className="rounded-[1.35rem] border border-[#C4A048]/20 bg-[#0D2218]/70 p-4">
+              <p className="font-mono text-[0.6rem] uppercase tracking-wider text-[#7A9A82]">{label}</p>
+              <strong className="mt-1 block font-mono text-2xl text-[#C4A048]">{value}</strong>
+            </div>
+          ))}
+        </div>
+      )}
+      {yieldData && (
+        <div className="mt-4 grid gap-4 xl:grid-cols-2">
+          <div className="rounded-[1.35rem] border border-[#C4A048]/25 bg-[#06101a]/90 p-5">
+            <p className="kicker text-[#C4A048] mb-3"><TrendingUp size={14} /> Yield breakdown</p>
+            <div className="grid gap-2 font-mono text-xs">
+              {([
+                ["Gross Return", fmt(yieldData.gross_return)],
+                ["B-Tranche Coupon", fmt(yieldData.b_coupon)],
+                ["Mgmt Fee", `(${fmt(yieldData.mgmt_fee)})`],
+                ["Net Return", fmt(yieldData.net_return)],
+                ["Annualized Return", `${pct(yieldData.annualized_return_pct)}`],
+              ] as const).map(([label, val]) => (
+                <div key={label} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                  <span className="text-[#7A9A82]">{label}</span>
+                  <span className={label === "Annualized Return" ? "text-[#C4A048] font-bold" : "text-[#EDE8DC]"}>{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {distributions.length > 0 && (
+            <div className="rounded-[1.35rem] border border-[#C4A048]/25 bg-[#06101a]/90 p-5">
+              <p className="kicker text-[#C4A048] mb-3"><CircleDollarSign size={14} /> Distributions</p>
+              <div className="grid gap-2">
+                {distributions.map((d, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                    <div><p className="font-mono text-xs text-[#EDE8DC]">{d.description || d.type}</p><p className="font-mono text-[0.6rem] text-[#7A9A82]">{d.date}</p></div>
+                    <strong className="font-mono text-sm text-emerald-300">{fmt(d.amount)}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      {!loading && !position && (
+        <div className="mt-6 rounded-[1.35rem] border border-[#C4A048]/20 bg-[#0D2218]/60 p-6 text-center">
+          <p className="font-mono text-sm text-[#7A9A82]">Quantum position unavailable — backend initializing.</p>
+        </div>
+      )}
+    </WorkbenchShell>
+  );
+}
+
+// ─── Preflight Interview ──────────────────────────────────────────────────────
+type PFQuestion = { id: string; question: string; section: string; why_it_matters?: string };
+type PFSection = { section: string; questions: PFQuestion[] };
+type PFStatus = { total: number; answered: number; completion_pct: number; ready_for_memo: boolean };
+
+export function PreflightPage() {
+  const [deals, setDeals] = useState<Array<{ id: string; name: string }>>([]);
+  const [dealId, setDealId] = useState("demo");
+  const [sections, setSections] = useState<PFSection[]>([]);
+  const [status, setStatus] = useState<PFStatus | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [activeQ, setActiveQ] = useState<PFQuestion | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [answerText, setAnswerText] = useState("");
+
+  useEffect(() => {
+    fetch(`${API}/api/deals`)
+      .then(r => r.json())
+      .then(d => {
+        const list = d.data?.deals || d.data || [];
+        if (Array.isArray(list) && list.length) { setDeals(list); setDealId(list[0].id); }
+      }).catch(() => {});
+  }, []);
+
+  const loadQuestions = (id: string) => {
+    setLoading(true);
+    fetch(`${API}/api/preflight/${id}/questions`)
+      .then(r => r.json())
+      .then(d => { if (d.success) { setSections(d.data.sections || []); setStatus(d.data.status || null); } })
+      .catch(() => {}).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { if (dealId) loadQuestions(dealId); }, [dealId]);
+
+  const submitAnswer = async () => {
+    if (!activeQ || !answerText.trim()) return;
+    setSaving(true);
+    try {
+      await fetch(`${API}/api/preflight/${dealId}/answer`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question_id: activeQ.id, answer: answerText }),
+      });
+      setAnswers(prev => ({ ...prev, [activeQ.id]: answerText }));
+      setAnswerText(""); setActiveQ(null);
+      loadQuestions(dealId);
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <WorkbenchShell icon={Bot} eyebrow="Deal Pipeline · Preflight Interview"
+      title="Bernard-driven Q&A for credit memo completion. Answer structured questions to auto-populate the deal record."
+      lede="Each answer feeds the credit memo engine. Complete all sections to unlock memo generation.">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        {deals.length > 0 && (
+          <select value={dealId} onChange={e => setDealId(e.target.value)}
+            className="rounded-xl border border-white/10 bg-[#030A06] px-3 py-2 font-mono text-xs text-[#EDE8DC]">
+            {deals.map(d => <option key={d.id} value={d.id}>{d.name || d.id}</option>)}
+          </select>
+        )}
+        {status && (
+          <>
+            <span className="font-mono text-xs text-[#7A9A82]">{status.answered}/{status.total} answered</span>
+            <span className={`rounded-xl border px-2 py-1 font-mono text-[0.65rem] uppercase tracking-wider ${status.ready_for_memo ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200" : "border-amber-400/30 bg-amber-400/10 text-amber-200"}`}>
+              {status.ready_for_memo ? "Ready for Memo" : `${status.completion_pct ?? 0}% complete`}
+            </span>
+          </>
+        )}
+      </div>
+      {loading && <p className="mt-4 font-mono text-sm text-[#7A9A82]">Loading questions…</p>}
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="grid gap-3">
+          {sections.map(sec => (
+            <div key={sec.section} className="rounded-[1.35rem] border border-white/[0.06] bg-[#0D2218]/60 p-4">
+              <h3 className="font-[Cormorant_Garamond] text-lg text-[#EDE8DC] mb-2">{sec.section}</h3>
+              {sec.questions.map(q => (
+                <button key={q.id} type="button" onClick={() => { setActiveQ(q); setAnswerText(answers[q.id] || ""); }}
+                  className={`w-full text-left rounded-xl border p-2 mb-1.5 transition-colors ${activeQ?.id === q.id ? "border-[#C4A048]/50 bg-[#C4A048]/10" : answers[q.id] ? "border-emerald-400/20 bg-emerald-400/5" : "border-white/[0.06] hover:border-[#C4A048]/25"}`}>
+                  <div className="flex items-start gap-2">
+                    <span className={`shrink-0 mt-0.5 w-2 h-2 rounded-full ${answers[q.id] ? "bg-emerald-400" : "bg-white/20"}`} />
+                    <span className="text-sm text-[#EDE8DC] leading-snug">{q.question}</span>
+                  </div>
+                  {answers[q.id] && <p className="mt-1 pl-4 font-mono text-[0.65rem] text-[#7A9A82] truncate">{answers[q.id]}</p>}
+                </button>
+              ))}
+            </div>
+          ))}
+          {!loading && sections.length === 0 && (
+            <div className="rounded-[1.35rem] border border-[#C4A048]/20 bg-[#0D2218]/60 p-6 text-center">
+              <p className="font-mono text-sm text-[#7A9A82]">No questions loaded for this deal.</p>
+            </div>
+          )}
+        </div>
+        {activeQ && (
+          <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start sticky top-4">
+            <p className="kicker text-[#C4A048] mb-2"><Bot size={14} /> Bernard asks</p>
+            <p className="text-sm text-[#EDE8DC] leading-6 mb-3">{activeQ.question}</p>
+            {activeQ.why_it_matters && <p className="font-mono text-[0.65rem] text-[#7A9A82] mb-3 italic">{activeQ.why_it_matters}</p>}
+            <textarea
+              value={answerText} onChange={e => setAnswerText(e.target.value)}
+              rows={4} placeholder="Enter your answer…"
+              className="w-full rounded-xl border border-white/10 bg-[#030A06] px-3 py-2 font-mono text-xs text-[#EDE8DC] placeholder-white/20 resize-none focus:outline-none focus:border-[#C4A048]/40" />
+            <div className="mt-3 flex gap-2">
+              <button type="button" onClick={submitAnswer} disabled={saving || !answerText.trim()}
+                className="flex-1 rounded-xl border border-[#C4A048]/40 bg-[#C4A048]/15 px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#C4A048] disabled:opacity-50">
+                {saving ? "Saving…" : "Submit Answer →"}
+              </button>
+              <button type="button" onClick={() => setActiveQ(null)}
+                className="rounded-xl border border-white/10 px-3 py-2 font-mono text-xs text-[#7A9A82]">✕</button>
+            </div>
+          </aside>
+        )}
+      </div>
+    </WorkbenchShell>
+  );
+}
