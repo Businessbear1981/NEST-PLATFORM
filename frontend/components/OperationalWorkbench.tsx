@@ -38,7 +38,7 @@ interface StageResult {
 }
 
 // ── Helpers ──────────────────────────────────────────────────
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://backend-iota-sand-94.vercel.app";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://web-production-5e8af.up.railway.app";
 
 async function rawFetch<T = unknown>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
