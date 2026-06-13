@@ -1,4 +1,4 @@
-import ModuleShell from "@/components/ModuleShell";
+import BDPage from "@/components/BDPage";
 export default function Page() {
-  return <ModuleShell title="Business Development" silo="Business Development" api="/api/bd" status="shell" />;
+  return <BDPage />;
 }

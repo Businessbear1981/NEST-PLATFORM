@@ -34,9 +34,9 @@ export default function TreasuryPage() {
   // Load treasury data when deal changes
   useEffect(() => {
     if (!selectedDealId) return;
-    fetch(`/api/treasury/${selectedDealId}/overview`).then(r => r.json()).then(d => d.success && setOverview(d.data)).catch(() => {});
-    fetch(`/api/treasury/${selectedDealId}/budget`).then(r => r.json()).then(d => d.success && setBudget(d.data)).catch(() => {});
-    fetch(`/api/treasury/${selectedDealId}/rebate`).then(r => r.json()).then(d => d.success && setRebate(d.data)).catch(() => {});
+    fetch(`${_API}/api/treasury/${selectedDealId}/overview`).then(r => r.json()).then(d => d.success && setOverview(d.data)).catch(() => {});
+    fetch(`${_API}/api/treasury/${selectedDealId}/budget`).then(r => r.json()).then(d => d.success && setBudget(Array.isArray(d.data) ? d.data : [])).catch(() => {});
+    fetch(`${_API}/api/treasury/${selectedDealId}/rebate`).then(r => r.json()).then(d => d.success && setRebate(d.data)).catch(() => {});
   }, [selectedDealId]);
 
   const selectedDeal = deals.find(d => d.id === selectedDealId);

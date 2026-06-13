@@ -215,6 +215,9 @@ export function PhoenixDesk() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
+                {deals.length === 0 && (
+                  <p className="py-8 text-center font-mono text-sm text-[#7A9A82]">No deals in pipeline.</p>
+                )}
                 {deals.map((deal) => (
                   <div key={deal.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -338,6 +341,11 @@ export function PhoenixDesk() {
       )}
 
       {/* ── Warchest ─────────────────────────────────────────────── */}
+      {tab === "warchest" && (!warchest || !economics) && (
+        <div className="flex items-center justify-center py-20">
+          <span className="font-mono text-sm text-[#7A9A82]">No warchest data available.</span>
+        </div>
+      )}
       {tab === "warchest" && warchest && economics && (
         <div className="space-y-5">
           {/* Economics Summary */}

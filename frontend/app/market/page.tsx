@@ -1,4 +1,4 @@
-import ModuleShell from "@/components/ModuleShell";
+import MarketRatesPage from "@/components/MarketRatesPage";
 export default function Page() {
-  return <ModuleShell title="Market Rates" silo="Market Intelligence" api="/api/market" status="shell" />;
+  return <MarketRatesPage />;
 }

@@ -1,4 +1,4 @@
-import ModuleShell from "@/components/ModuleShell";
+import PermDebtPage from "@/components/PermDebtPage";
 export default function Page() {
-  return <ModuleShell title="Perm Debt Monitor" silo="Surveillance" api="/api/perm" status="shell" />;
+  return <PermDebtPage />;
 }

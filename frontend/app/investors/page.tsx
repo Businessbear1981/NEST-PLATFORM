@@ -1,4 +1,4 @@
-import ModuleShell from "@/components/ModuleShell";
+import InvestorsPage from "@/components/InvestorsPage";
 export default function Page() {
-  return <ModuleShell title="Investor Management" silo="Hawkeye Placement" api="/api/investors" status="shell" />;
+  return <InvestorsPage />;
 }
