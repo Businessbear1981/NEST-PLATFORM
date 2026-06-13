@@ -1,4 +1,5 @@
-﻿import { motion } from "framer-motion";
+﻿'use client'
+import { motion } from "framer-motion";
 import { DealStateProvider } from "@/contexts/DealStateContext";
 import { BernardProvider } from "@/contexts/BernardContext";
 import LiveMarketTape from "./LiveMarketTape";

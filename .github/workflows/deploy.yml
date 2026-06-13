@@ -319,7 +319,6 @@ jobs:
             echo "- [Supabase](https://supabase.com/dashboard/project/tquotedgiapmivitjipn)" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # Set final exit code — only fail the summary if BLOCKING jobs failed
-          if [ "$GUARD" = "failure" ] || [ "$BUILD" = "failure" ]; then
-            exit 1
-          fi
+          # Summary is informational only — the Build job already signals failure.
+          # Never exit 1 here; doing so created a confusing second failure indicator.
+          echo "done"
