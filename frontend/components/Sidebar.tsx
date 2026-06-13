@@ -10,6 +10,7 @@ const NAV = [
   { silo:"Deal Pipeline", items:[
     { href:"/workbench",        label:"Operational Workbench", st:"active" },
     { href:"/deals",            label:"Active Deals",           st:"active" },
+    { href:"/portfolio",        label:"Portfolio",              st:"active" },
     { href:"/deal-input",       label:"Deal Intake",            st:"active" },
     { href:"/preflight",        label:"Preflight Interview",    st:"shell"  },
     { href:"/workflow",         label:"Pipeline Workflow",      st:"shell"  },
