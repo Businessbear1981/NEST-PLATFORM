@@ -32,7 +32,7 @@ jobs:
       - name: Check for hardcoded Railway URLs
         run: |
           if grep -rn "web-production-" --include="*.ts" --include="*.tsx" --include="*.js" . \
-              | grep -v "node_modules" | grep -v ".next" | grep -v "health/route.ts"; then
+              | grep -v "node_modules" | grep -v ".next"; then
             echo "ERROR: Hardcoded Railway URL found. Use NEXT_PUBLIC_API_URL env var."
             exit 1
           fi

@@ -50,7 +50,7 @@ export async function GET() {
   }
 
   // 3. Backend Railway reachability
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://web-production-5e8af.up.railway.app'
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.RAILWAY_BACKEND_URL || ""
   const t = Date.now()
   try {
     const res = await fetch(`${apiUrl}/api/health`, {

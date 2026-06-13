@@ -8,9 +8,7 @@ const nextConfig = {
     return config;
   },
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL ||
-      process.env.RAILWAY_BACKEND_URL ||
-      "https://web-production-5e8af.up.railway.app";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.RAILWAY_BACKEND_URL || "";
     return [
       { source: "/api/:path*", destination: `${backendUrl}/api/:path*` }
     ];
