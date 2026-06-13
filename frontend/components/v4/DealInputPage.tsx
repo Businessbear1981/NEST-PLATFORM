@@ -261,7 +261,7 @@ export default function DealInputPage() {
     setLoadingBrainstorm(true);
     setBrainstormError(null);
     try {
-      const r = await fetch(`/api/intake-brainstorm/${id}/run`, {
+      const r = await fetch(`${_API}/api/intake-brainstorm/${id}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: "{}",
@@ -284,12 +284,12 @@ export default function DealInputPage() {
     setGreenlighting(true);
     try {
       // Save responses, then advance to Roots Stage 1.
-      await fetch(`/api/intake-brainstorm/${dealId}/responses`, {
+      await fetch(`${_API}/api/intake-brainstorm/${dealId}/responses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ responses }),
       });
-      const r = await fetch(`/api/intake-brainstorm/${dealId}/greenlight`, {
+      const r = await fetch(`${_API}/api/intake-brainstorm/${dealId}/greenlight`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: "{}",
@@ -305,12 +305,12 @@ export default function DealInputPage() {
     if (!dealId) return;
     setParking(true);
     try {
-      await fetch(`/api/intake-brainstorm/${dealId}/responses`, {
+      await fetch(`${_API}/api/intake-brainstorm/${dealId}/responses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ responses }),
       });
-      const r = await fetch(`/api/intake-brainstorm/${dealId}/park`, {
+      const r = await fetch(`${_API}/api/intake-brainstorm/${dealId}/park`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: "{}",

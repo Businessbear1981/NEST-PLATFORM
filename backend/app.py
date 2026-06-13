@@ -66,6 +66,7 @@ from routes.phoenix import phoenix_bp
 from routes.napkin import napkin_bp
 from routes.convergence import convergence_bp
 from routes.scanner import scanner_bp
+from routes.study import study_bp
 from services.logging_service import init_request_logging
 from services.fund_engine import FundEngine
 from services.deals import DealsRegistry
@@ -106,6 +107,7 @@ from routes.covenants import covenants_bp
 from routes.surveillance import surveillance_bp
 from routes.construction import construction_bp
 from routes.nisle import nisle_bp
+from routes.intake_brainstorm import intake_brainstorm_bp
 
 
 def create_app():
@@ -205,11 +207,13 @@ def create_app():
     app.register_blueprint(covenants_bp, url_prefix="/api/covenants")
     app.register_blueprint(surveillance_bp, url_prefix="/api/surveillance")
     app.register_blueprint(construction_bp, url_prefix="/api/construction")
+    app.register_blueprint(study_bp, url_prefix="")
 
     # NISLE — NEST Intelligence Self-Learning Engine (DAPT-powered)
     from services.nisle_engine import nisle as nisle_engine
     app.config["NISLE"] = nisle_engine
     app.register_blueprint(nisle_bp, url_prefix="/api/nisle")
+    app.register_blueprint(intake_brainstorm_bp)
     # Prime NISLE with default signals on startup
     try:
         nisle_engine.run()

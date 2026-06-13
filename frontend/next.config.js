@@ -9,7 +9,7 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      { source: "/api/:path*", destination: "https://backend-iota-sand-94.vercel.app/api/:path*" }
+      { source: "/api/:path*", destination: "https://web-production-5e8af.up.railway.app/api/:path*" }
     ];
   },
 };
