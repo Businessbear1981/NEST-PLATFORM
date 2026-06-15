@@ -1,4 +1,5 @@
 // NEST Financial Math Engine — re-export everything for consumer imports
+export * from "./finance-math";
 export * from "./dscr";
 export * from "./surety";
 export * from "./cdo";
@@ -9,3 +10,4 @@ export * from "./feedback";
 export * from "./tefra";
 export * from "./refi";
 export * from "./eagleeye";
+export * from "./bond-workflow";
