@@ -13,6 +13,8 @@ import BrexRebate from '@/components/academy/BrexRebate';
 import TEFRAEngine from '@/components/academy/TEFRAEngine';
 import RefiEngine from '@/components/academy/RefiEngine';
 import EagleEyeEngine from '@/components/academy/EagleEyeEngine';
+import AIProfPanel from '@/components/academy/AIProfPanel';
+import WeeklyPlan from '@/components/academy/WeeklyPlan';
 
 // ─── Exam track definitions ──────────────────────────────────────────────────
 
@@ -321,6 +323,9 @@ export default function NestAcademy() {
   const [isCorrect, setIsCorrect]      = useState<boolean | null>(null);
   const [showExp, setShowExp]          = useState(false);
   const [activeLab, setActiveLab]      = useState<LabTab>('DSCR Engine');
+  const [aiProfOpen, setAiProfOpen]    = useState(false);
+  const [aiProfTopic, setAiProfTopic]  = useState('');
+  const [aiProfExam, setAiProfExam]    = useState('');
 
   const examData  = EXAMS[activeExam];
   const quizPool  = QUESTIONS.filter((q) => q.exam === quizExam);
@@ -436,6 +441,17 @@ export default function NestAcademy() {
               })}
             </div>
 
+            {/* 4-Week Study Plan */}
+            <WeeklyPlan
+              userXP={xpTotal}
+              currentStreak={streak}
+              onStartLesson={(week, day, topic) => {
+                setAiProfTopic(topic);
+                setAiProfExam(EXAMS[activeExam].code);
+                setAiProfOpen(true);
+              }}
+            />
+
             {/* Modules for selected exam */}
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -492,7 +508,7 @@ export default function NestAcademy() {
                             </button>
                             <button
                               className="flex items-center gap-2 text-sm font-mono px-4 py-2 rounded-lg border border-[#2D6B3D] text-[#7A9A82] hover:text-[#EDE8DC] transition-colors"
-                              onClick={() => window.alert(`AI Professor prompt:\n\nAct as MIT/Harvard finance professor. Explain "${mod.title}" in depth with NEST/CCRC/muni bond examples. Include exam-level questions.`)}
+                              onClick={() => { setAiProfTopic(mod.title); setAiProfExam(examData.code); setAiProfOpen(true); }}
                             >
                               <Bot className="w-4 h-4" /> Ask AI Professor
                             </button>
@@ -660,6 +676,14 @@ export default function NestAcademy() {
         )}
 
       </div>
+
+      {aiProfOpen && (
+        <AIProfPanel
+          topic={aiProfTopic}
+          examCode={aiProfExam}
+          onClose={() => setAiProfOpen(false)}
+        />
+      )}
     </div>
   );
 }
