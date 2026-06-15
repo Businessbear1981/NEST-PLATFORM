@@ -21,10 +21,67 @@ deals_bp = Blueprint("deals", __name__)
 
 # In-memory fallback (only used when Supabase is not configured)
 _lock = threading.RLock()
-_deals = {}
 _bonds = {}
 _refis = {}
 _covenants = {}
+
+# Seed the three live NEST deals so the workbench always has data
+_deals = {
+    "jacaranda-2025": {
+        "id": "jacaranda-2025",
+        "name": "Jacaranda Trace CCRC",
+        "status": "structuring",
+        "state": "FL",
+        "market": "Palm Beach Gardens",
+        "deal_type": "senior_living_bond",
+        "bond_face": 205000000,
+        "amount": 205000000,
+        "readiness_score": 82,
+        "risk_grade": "BBB+",
+        "series_a_amount": 153750000,
+        "series_b_amount": 14350000,
+        "issuer": "Jacaranda Trace Community Foundation",
+        "created_at": "2025-01-15T09:00:00",
+        "createdAt": "2025-01-15T09:00:00",
+        "notes": "LGFC Series 2025. 504-unit CCRC. Hylant surety. JP Morgan comp.",
+    },
+    "st-pete-construction-2025": {
+        "id": "st-pete-construction-2025",
+        "name": "St. Petersburg Mixed-Use Construction",
+        "status": "credit_underwriting",
+        "state": "FL",
+        "market": "St. Petersburg",
+        "deal_type": "construction_bond",
+        "bond_face": 172500000,
+        "amount": 172500000,
+        "readiness_score": 64,
+        "risk_grade": "BBB-",
+        "series_a_amount": 129375000,
+        "series_b_amount": 12075000,
+        "issuer": "St. Pete Development LLC",
+        "created_at": "2025-02-01T09:00:00",
+        "createdAt": "2025-02-01T09:00:00",
+        "notes": "Ground-up mixed-use. IO period 24mo. Pre-sold 40% units.",
+    },
+    "hbo2-equity-2025": {
+        "id": "hbo2-equity-2025",
+        "name": "HBO2 Equity Placement",
+        "status": "placement",
+        "state": "CA",
+        "market": "Los Angeles",
+        "deal_type": "equity_placement",
+        "bond_face": 155000000,
+        "amount": 155000000,
+        "readiness_score": 91,
+        "risk_grade": "A-",
+        "series_a_amount": 116250000,
+        "series_b_amount": 10850000,
+        "issuer": "HBO2 Capital Partners",
+        "created_at": "2025-03-10T09:00:00",
+        "createdAt": "2025-03-10T09:00:00",
+        "notes": "Media equity round. NEST as placement agent. BD-sponsorship track.",
+    },
+}
 
 
 def _ts():
@@ -192,7 +249,10 @@ def list_deals():
         if status:
             params["status"] = f"eq.{status}"
         rows = db.select("deals", params)
-        return _ok([_row_to_deal(r) for r in (rows or [])])
+        deals_from_db = [_row_to_deal(r) for r in (rows or [])]
+        if deals_from_db:
+            return _ok(deals_from_db)
+        # Supabase empty — fall through to seed data so workbench always has deals
 
     with _lock:
         result = [_normalize_deal(d) for d in _deals.values()]
