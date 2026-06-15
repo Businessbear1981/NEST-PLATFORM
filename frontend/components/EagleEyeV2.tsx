@@ -1,5 +1,5 @@
 "use client";
-const _API = process.env.NEXT_PUBLIC_API_URL || "";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";

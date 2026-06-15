@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import {
   AlertTriangle,
@@ -91,7 +91,7 @@ interface WarchestEconomics {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "") + "/api/phoenix";
+const API = (process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app") + "/api/phoenix";
 
 async function fetchData<T>(path: string): Promise<T | null> {
   try {

@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const _API = process.env.NEXT_PUBLIC_API_URL || "";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
 const GOLD    = "#C4A048";

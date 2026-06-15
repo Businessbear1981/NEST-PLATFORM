@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import {
   Banknote,
@@ -116,7 +116,7 @@ interface Overview {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "") + "/api/treasury";
+const API = (process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app") + "/api/treasury";
 
 async function fetchData<T>(path: string): Promise<T | null> {
   try {

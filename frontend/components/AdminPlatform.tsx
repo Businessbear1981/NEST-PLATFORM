@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Activity, AlertTriangle, CheckCircle, Clock, Settings, ShieldCheck, Users, Wrench } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 interface User {
   id: string;

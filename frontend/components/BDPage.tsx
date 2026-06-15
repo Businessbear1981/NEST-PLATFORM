@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Send, Users, Calendar, RefreshCw, Target, Zap } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 interface TimelineStep { day: number; action: string; }
 interface CampaignData {

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 
 /* ── Types ── */
@@ -66,7 +66,7 @@ const AGENT_NAMES = [
   "Merlin", "LenderScout", "Prometheus", "Sentinel", "Blaze",
 ];
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 export default function InstitutionalDashboard() {
   const [deals, setDeals] = useState<Deal[]>([]);

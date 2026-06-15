@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 /**
  * Client Dashboard — the borrower/sponsor's view of their deal.
  *
@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 export default function ClientDashboardPage() {
   const [dealId] = useState("jacaranda-2026");

@@ -1,5 +1,5 @@
 "use client";
-const _API = process.env.NEXT_PUBLIC_API_URL || "";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 /**
  * Construction Risk Management Desk — 12 agents
  * Draw processing, budget tracking, schedule monitoring, change orders.

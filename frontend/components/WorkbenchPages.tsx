@@ -142,7 +142,7 @@ type DashEagleStats = { total_signals?: number; hot?: number; warm?: number; tot
 type DashDeal = { id?: string; name?: string; state?: string; bond_face?: number; status?: string; risk_grade?: string };
 type DashPipeline = { total_pipeline_usd?: number; deal_count?: number; by_status?: Record<string, number> };
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 export function DashboardPage() {
   const [metrics, setMetrics] = useState<DashMetrics | null>(null);

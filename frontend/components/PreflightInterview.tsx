@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 /**
  * Preflight Interview — Bernard-driven Q&A run at Deal Input (Stage 0).
  * Answers persist server-side per deal_id and become the foundation of the
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 type Question = {
   id: string;

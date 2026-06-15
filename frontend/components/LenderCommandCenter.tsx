@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 export default function LenderCommandCenter() {
   const [lenders, setLenders] = useState<any[]>([]);

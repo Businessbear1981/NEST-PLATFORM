@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDealState } from "@/contexts/DealStateContext";
 
-const _API = process.env.NEXT_PUBLIC_API_URL || "";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
 const PHASES = ["sourcing", "readiness", "structuring", "placement", "placed", "closed"] as const;
 
