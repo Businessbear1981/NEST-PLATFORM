@@ -108,6 +108,7 @@ from routes.surveillance import surveillance_bp
 from routes.construction import construction_bp
 from routes.nisle import nisle_bp
 from routes.intake_brainstorm import intake_brainstorm_bp
+from routes.deal_outcomes import deal_outcomes_bp
 
 
 def create_app():
@@ -214,6 +215,7 @@ def create_app():
     app.config["NISLE"] = nisle_engine
     app.register_blueprint(nisle_bp, url_prefix="/api/nisle")
     app.register_blueprint(intake_brainstorm_bp)
+    app.register_blueprint(deal_outcomes_bp, url_prefix="/api/deal-outcomes")
     # Prime NISLE with default signals on startup
     try:
         nisle_engine.run()
@@ -225,6 +227,17 @@ def create_app():
     from services.emma_seed_data import seed_emma_database
     seed_count = seed_emma_database()
     app.logger.info(f"EMMA seeded with {seed_count} bond structures")
+
+    # Auto-run DB migrations (idempotent — safe on every restart)
+    try:
+        from services.migrations import run_migrations
+        ran = run_migrations()
+        if ran:
+            app.logger.info(f"Migrations: {ran} new migration(s) applied")
+        else:
+            app.logger.info("Migrations: schema up to date")
+    except Exception as _mig_exc:
+        app.logger.warning(f"Migrations: non-fatal error — {_mig_exc}")
 
     @app.get("/api/metrics")
     def metrics():
