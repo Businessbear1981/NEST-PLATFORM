@@ -15,6 +15,7 @@ import InvestorPortalTile from "./InvestorPortalTile";
 import TrusteeManagementPanel from "./TrusteeManagementPanel";
 import WorkflowReadinessPanel from "./WorkflowReadinessPanel"
 import IntakeAgentPanel from "./IntakeAgentPanel";
+import FullAutomationPanel from "./FullAutomationPanel";
 
 const fade = (delay = 0) => ({
   initial: { opacity: 0, y: 18 },
@@ -148,8 +149,12 @@ export default function BondDeskPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-8"
                 >
                   <WorkflowReadinessPanel />
+                  <div className="h-px bg-white/[0.05]" />
+                  <SectionLabel label="Full End-to-End Automation" tag="S&P OPBA · ALL BOND TYPES · ALL PAR VALUES · EMA SELF-LEARNING" />
+                  <FullAutomationPanel />
                 </motion.div>
               )}
 

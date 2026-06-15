@@ -156,7 +156,27 @@ def close_deal(deal_id: str):
     except Exception as exc:
         log.warning("Workflow phase update: %s", exc)
 
-    return _ok({"outcome": created or payload, "learning_signals": signals, "days_to_close": days}, 201)
+    # Self-learning EMA: update OPBA weights based on predicted vs actual outcome
+    ema_update = {}
+    try:
+        from services.self_learning_engine import update_weights_ema, get_weights
+        from services.bond_type_engine import sp_opba_score
+        w           = get_weights()
+        leverage    = max((ltv / 100) * 5, 0.01)
+        opba_result = sp_opba_score(dscr, leverage, 0.80, weights=w)
+        predicted   = opba_result["readiness_pct"]
+        # Infer actual outcome from spread: 50bps → 100%, 300bps → 0%
+        actual      = max(0.0, min(100.0, round(100.0 - (spread / 3.0), 1)))
+        ema_update  = update_weights_ema(predicted, actual, {"dscr": dscr, "ltv": ltv})
+    except Exception as _ema_exc:
+        log.warning("EMA weight update non-fatal: %s", _ema_exc)
+
+    return _ok({
+        "outcome": created or payload,
+        "learning_signals": signals,
+        "days_to_close": days,
+        "weights_updated": ema_update,
+    }, 201)
 
 
 @deal_outcomes_bp.route("/stats", methods=["GET"])

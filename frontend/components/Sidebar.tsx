@@ -110,7 +110,7 @@ const DOT: Record<string,string> = {
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState<Record<string,boolean>>(
-    Object.fromEntries(NAV.map((n,i)=>[n.silo, i < 2]))
+    Object.fromEntries(NAV.map((n) => [n.silo, true]))
   );
   const toggle = (s:string) => setOpen(p=>({...p,[s]:!p[s]}));
   return (

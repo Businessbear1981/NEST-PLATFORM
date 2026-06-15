@@ -535,6 +535,128 @@ def green_bond_check(deal_id):
     })
 
 
+@bond_workflow_bp.route("/deal/<deal_id>/full-automation", methods=["POST"])
+def full_automation(deal_id):
+    """
+    POST /api/bond-workflow/deal/<deal_id>/full-automation
+    Runs the complete NEST intelligence stack on a deal:
+      1. Pulls deal metrics from DB
+      2. Runs S&P OPBA scoring with live self-learning weights
+      3. Generates all bond type × par × amortization options
+      4. Calls Claude for a 3-sentence Jimmy Lee structure recommendation
+      5. Saves results + advances phase to 'structure'
+    No auth required — callable from the Bond Desk Command Center.
+    """
+    from services.bond_type_engine import generate_all_bond_options, sp_opba_score
+    from services.self_learning_engine import get_weights
+
+    # Pull deal
+    d    = _db()
+    deal = None
+    if d:
+        try:
+            rows = d.select("deals", {"id": f"eq.{deal_id}"})
+            if rows:
+                deal = rows[0]
+        except Exception:
+            pass
+
+    # Build deal_data dict — fall back to request body
+    body = request.get_json(silent=True) or {}
+    deal_data = {
+        "noi":            float((deal or {}).get("noi") or body.get("noi") or 0),
+        "dscr":           float((deal or {}).get("dscr") or body.get("dscr") or 1.35),
+        "ltv":            float((deal or {}).get("ltv") or body.get("ltv") or 70),
+        "bond_face":      float((deal or {}).get("bond_face") or body.get("bond_face") or 0),
+        "green_bond":     bool((deal or {}).get("green_bond") or body.get("green_bond", False)),
+        "liquidity_ratio": float(body.get("liquidity_ratio") or 0.80),
+        "naics_code":     str((deal or {}).get("naics_code") or body.get("naics_code") or ""),
+        "borrower_type":  str((deal or {}).get("borrower_type") or body.get("borrower_type") or ""),
+    }
+
+    weights = get_weights()
+    result  = generate_all_bond_options(deal_data, weights=weights)
+
+    # Claude 3-sentence recommendation (Jimmy Lee tone)
+    ai_rec = ""
+    try:
+        from services.ai_router import plugin_hub
+        top = result["recommendations"][0] if result["recommendations"] else {}
+        prompt = (
+            f"You are Morgan, NEST bond structuring advisor. Jimmy Lee tone — direct, decisive.\n"
+            f"Deal: DSCR {deal_data['dscr']}x, LTV {deal_data['ltv']}%, NOI ${deal_data['noi']:,.0f}.\n"
+            f"OPBA score: {result['opba']['opba_score']}/12 → {result['opba']['indicative_rating']} indicative.\n"
+            f"Top recommendation: {top.get('bond_type','—')} at {top.get('par_label','—')}, "
+            f"{top.get('coupon_pct','—')}% coupon, {top.get('amortization','—')}.\n"
+            f"Three sentences max. Lead with the rating target. No hedging."
+        )
+        r = plugin_hub.route("credit_memo", prompt)
+        if r and r.get("success"):
+            ai_rec = r.get("content", "")
+    except Exception:
+        pass
+
+    # Advance phase → structure
+    wf = _get_or_create_workflow(deal_id)
+    with _lock:
+        wf["phase"]     = "structure"
+        wf["updatedAt"] = datetime.utcnow().isoformat()
+        wf["events"].append({
+            "type":      "full_automation",
+            "opba":      result["opba"]["opba_score"],
+            "options":   result["total_options"],
+            "timestamp": datetime.utcnow().isoformat(),
+        })
+    _persist(deal_id, wf)
+
+    return _ok({
+        **result,
+        "ai_recommendation": ai_rec,
+        "weights_version":   weights.get("version", 1),
+        "phase_advanced_to": "structure",
+    })
+
+
+@bond_workflow_bp.route("/deal/<deal_id>/bond-options", methods=["GET"])
+def bond_options(deal_id):
+    """GET /api/bond-workflow/deal/<deal_id>/bond-options — cached bond option matrix."""
+    from services.bond_type_engine import generate_all_bond_options
+    from services.self_learning_engine import get_weights
+
+    d    = _db()
+    deal = {}
+    if d:
+        try:
+            rows = d.select("deals", {"id": f"eq.{deal_id}"})
+            if rows:
+                deal = rows[0]
+        except Exception:
+            pass
+
+    result = generate_all_bond_options(deal, weights=get_weights())
+    return _ok(result)
+
+
+@bond_workflow_bp.route("/opba", methods=["POST"])
+def opba_score():
+    """
+    POST /api/bond-workflow/opba
+    Run S&P OPBA score on arbitrary deal metrics. No auth, no deal required.
+    Body: {dscr, leverage, liquidity, qualitative}
+    """
+    from services.bond_type_engine import sp_opba_score
+    from services.self_learning_engine import get_weights
+    b = request.get_json(silent=True) or {}
+    result = sp_opba_score(
+        dscr=float(b.get("dscr", 1.35)),
+        leverage=float(b.get("leverage", 3.5)),
+        liquidity=float(b.get("liquidity", 0.80)),
+        qualitative=float(b.get("qualitative", 0.0)),
+        weights=get_weights(),
+    )
+    return _ok(result)
+
+
 @bond_workflow_bp.route("/deal/<deal_id>/phase", methods=["PATCH"])
 @require_auth()
 def update_phase(deal_id):
