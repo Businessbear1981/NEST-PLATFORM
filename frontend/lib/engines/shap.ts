@@ -496,3 +496,30 @@ export const HBO2_FEATURES: CreditFeatures = {
   yearsInOperation: 12,
   occupancyRate: 0.79,
 };
+
+// Legacy shape expected by HBO2CaseStudy, PortfolioDashboard, BondWorkflowPage, SHAPSuite
+export interface LegacySHAPResult extends SHAPResult {
+  prediction: number;
+  forcePlot: Array<{ feature: string; shapValue: number; positive: boolean }>;
+}
+
+export function computeSHAP(features: CreditFeatures): LegacySHAPResult {
+  const result = computeNESTRatingSHAP({
+    dscr: features.dscr,
+    ltv: features.ltv,
+    leverage: features.cfLeverage,
+    liquidity: features.occupancyRate,
+    green: 0,
+    sponsor_years: features.yearsInOperation,
+  });
+  const forcePlot = result.shapValues.map((sv) => ({
+    feature: sv.feature,
+    shapValue: sv.shapValue,
+    positive: sv.shapValue >= 0,
+  }));
+  return {
+    ...result,
+    prediction: result.predictedValue,
+    forcePlot,
+  };
+}
