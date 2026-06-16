@@ -83,6 +83,66 @@ function BernardIntelPanel({ question, context, label }: { question: string; con
   );
 }
 
+// ─── Agent Output Card ────────────────────────────────────────────────────────
+// Renders the actual output from a dispatched agent in a compact format.
+// Each agent returns different keys — this normalises them for display.
+function AgentOutputCard({ module, output }: { module: string; output: any }) {
+  const rows: [string, string][] = [];
+
+  if (module === "maxwell") {
+    if (output.grade)          rows.push(["Grade", output.grade]);
+    if (output.obligor_grade)  rows.push(["Grade", output.obligor_grade]);
+    if (output.dscr)           rows.push(["DSCR", String(output.dscr)]);
+    if (output.ltv)            rows.push(["LTV", `${(output.ltv * 100).toFixed(1)}%`]);
+    if (output.strategy)       rows.push(["Strategy", output.strategy]);
+    if (output.summary)        rows.push(["Summary", output.summary]);
+  } else if (module === "vector") {
+    if (output.action)         rows.push(["Action", output.action]);
+    if (output.recommendation) rows.push(["Action", output.recommendation]);
+    if (output.score !== undefined) rows.push(["Score", String(output.score)]);
+    if (output.annual_savings_usd) rows.push(["Annual Savings", `$${(output.annual_savings_usd / 1e6).toFixed(2)}M`]);
+    if (output.rationale)      rows.push(["Rationale", output.rationale]);
+  } else if (module === "prometheus") {
+    if (output.dscr)           rows.push(["DSCR", String(output.dscr)]);
+    if (output.noi_year1_usd)  rows.push(["Year 1 NOI", `$${(output.noi_year1_usd / 1e6).toFixed(1)}M`]);
+    if (output.break_even_occupancy_pct) rows.push(["Breakeven Occ.", `${output.break_even_occupancy_pct}%`]);
+    if (output.summary)        rows.push(["Summary", output.summary]);
+    if (output.recommendation) rows.push(["Rec.", output.recommendation]);
+  } else if (module === "sentinel") {
+    if (output.risk_level)     rows.push(["Risk Level", output.risk_level]);
+    if (output.composite_score !== undefined) rows.push(["Score", String(output.composite_score)]);
+    if (output.lgd_estimate_pct !== undefined) rows.push(["LGD Est.", `${output.lgd_estimate_pct}%`]);
+    if (output.primary_concern) rows.push(["Primary Concern", output.primary_concern]);
+  } else if (module === "morgan") {
+    if (output.content)        rows.push(["Memo", output.content.slice(0, 120) + "…"]);
+    if (output.content_type)   rows.push(["Type", output.content_type]);
+  } else if (module === "cns_chain") {
+    if (output.bond_type)      rows.push(["Bond Type", output.bond_type.replace(/_/g, " ")]);
+    if (output.amort_label)    rows.push(["Amortization", output.amort_label]);
+    if (output.annual_ds_usd)  rows.push(["Annual DS", `$${(output.annual_ds_usd / 1e6).toFixed(2)}M`]);
+    if (output.vector_action)  rows.push(["Vector", output.vector_action]);
+    if (output.rationale)      rows.push(["Rationale", output.rationale]);
+  } else {
+    // Generic fallback — first 4 scalar fields
+    Object.entries(output).slice(0, 4).forEach(([k, v]) => {
+      if (typeof v !== "object") rows.push([k.replace(/_/g, " "), String(v)]);
+    });
+  }
+
+  if (rows.length === 0) return null;
+
+  return (
+    <div className="grid gap-x-4 gap-y-0.5" style={{ gridTemplateColumns: "auto 1fr" }}>
+      {rows.map(([k, v]) => (
+        <>
+          <span key={`k-${k}`} className="font-mono text-[0.5rem] uppercase tracking-[0.08em] text-[#7A9A82] whitespace-nowrap">{k}</span>
+          <span key={`v-${k}`} className="font-mono text-[0.55rem] text-[#EDE8DC] break-words">{v}</span>
+        </>
+      ))}
+    </div>
+  );
+}
+
 // ─── CNS Signal Monitor ───────────────────────────────────────────────────────
 // The "police force" — emits any signal into the rule engine, shows every
 // downstream consequence across all modules.
@@ -204,25 +264,38 @@ function CNSSignalMonitor({ defaultSignal = "dscr_change", showDscrFast = false 
             </div>
           )}
 
-          {/* Consequences */}
+          {/* Consequences + live agent outputs */}
           <div className="space-y-1.5">
             <div className="font-mono text-[0.55rem] uppercase tracking-[0.15em] text-[#7A9A82]">
               {result.consequence_count || result.consequences?.length} Modules Triggered · {result.critical_count || 0} Critical
+              {result.agents_dispatched > 0 && <span className="ml-2 text-[#2D6B3D]">· {result.agents_dispatched} Agents Ran</span>}
             </div>
-            {(result.next_actions || []).map((a: any, i: number) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 rounded-[0.6rem] border border-white/5 bg-[#0D2218]/40 px-3 py-2"
-              >
-                <div
-                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                  style={{ background: priorityColor(a.priority) }}
-                />
-                <span className="font-mono text-[0.6rem] uppercase tracking-[0.08em]" style={{ color: priorityColor(a.priority) }}>{a.priority}</span>
-                <span className="font-mono text-[0.62rem] text-[#7A9A82]">{a.module}</span>
-                <span className="font-mono text-[0.62rem] text-[#EDE8DC]/70">→ {a.action.replace(/_/g, " ")}</span>
-              </div>
-            ))}
+            {(result.next_actions || []).map((a: any, i: number) => {
+              // Find this module's agent output from the dispatched outputs array
+              const agentOut = result.agent_outputs?.find((o: any) => o.module === a.module && o.action === a.action);
+              return (
+                <div key={i} className="rounded-[0.6rem] border border-white/5 bg-[#0D2218]/40">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: priorityColor(a.priority) }} />
+                    <span className="font-mono text-[0.6rem] uppercase tracking-[0.08em]" style={{ color: priorityColor(a.priority) }}>{a.priority}</span>
+                    <span className="font-mono text-[0.62rem] text-[#7A9A82]">{a.module}</span>
+                    <span className="font-mono text-[0.62rem] text-[#EDE8DC]/70">→ {a.action.replace(/_/g, " ")}</span>
+                    {a.agent_ran && <span className="ml-auto font-mono text-[0.5rem] text-[#2D6B3D] uppercase tracking-wider">● ran</span>}
+                  </div>
+                  {/* Render agent output inline */}
+                  {agentOut?.output && !agentOut.output.error && (
+                    <div className="border-t border-white/5 px-3 pb-2.5 pt-2">
+                      <AgentOutputCard module={a.module} output={agentOut.output} />
+                    </div>
+                  )}
+                  {agentOut?.output?.error && (
+                    <div className="border-t border-white/5 px-3 pb-2 pt-1.5 font-mono text-[0.55rem] text-red-400/70">
+                      {agentOut.output.error}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {result.cascades?.length > 0 && (
