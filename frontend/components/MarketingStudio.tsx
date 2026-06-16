@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 
 /* ── AI Tool Types ── */
 type AIToolResult = { url?: string; id?: string; status?: string; error?: string; message?: string };

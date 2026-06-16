@@ -6,7 +6,7 @@ const path = require("path");
 const RAILWAY_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.RAILWAY_BACKEND_URL ||
-  "https://web-production-5e8af.up.railway.app";
+  "https://api.ardanedgecapital.com";
 
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||

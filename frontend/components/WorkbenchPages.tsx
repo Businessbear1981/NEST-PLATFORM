@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 /*
 Design philosophy for this file: Bloomberg Terminal x Spider-Verse institutional command cockpit.
@@ -418,7 +418,7 @@ type DashEagleStats = { total_signals?: number; hot?: number; warm?: number; tot
 type DashDeal = { id?: string; name?: string; state?: string; bond_face?: number; status?: string; risk_grade?: string };
 type DashPipeline = { total_pipeline_usd?: number; deal_count?: number; by_status?: Record<string, number> };
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 
 export function DashboardPage() {
   const [metrics, setMetrics] = useState<DashMetrics | null>(null);

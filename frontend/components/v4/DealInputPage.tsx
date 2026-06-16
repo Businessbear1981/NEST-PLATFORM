@@ -1,5 +1,5 @@
 "use client";
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 import { useRouter } from "next/navigation";
 /**
  * Deal Input — Simple intake to create the deal vehicle.

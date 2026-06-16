@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown, Activity, RefreshCw, BarChart2, Shield } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 
 interface MarketSignals {
   treasury_10yr_pct: number;

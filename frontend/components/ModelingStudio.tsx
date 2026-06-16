@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 
 const fmt$ = (n: number) =>
   n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${n.toLocaleString()}`;

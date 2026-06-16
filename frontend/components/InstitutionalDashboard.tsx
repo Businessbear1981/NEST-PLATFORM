@@ -66,7 +66,7 @@ const AGENT_NAMES = [
   "Merlin", "LenderScout", "Prometheus", "Sentinel", "Blaze",
 ];
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 
 export default function InstitutionalDashboard() {
   const [deals, setDeals] = useState<Deal[]>([]);

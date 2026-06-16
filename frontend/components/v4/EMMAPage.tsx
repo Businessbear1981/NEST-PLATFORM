@@ -1,5 +1,5 @@
 "use client";
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 /**
  * EMMA — MSRB Electronic Municipal Market Access.
  * Muni bond corpus, comparable transactions, sector templates, parsing.

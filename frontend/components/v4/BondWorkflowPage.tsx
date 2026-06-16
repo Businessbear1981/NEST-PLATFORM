@@ -1,5 +1,5 @@
 "use client";
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
 
 /**
  * HBO2 Bond Automation Pipeline — full end-to-end workflow
