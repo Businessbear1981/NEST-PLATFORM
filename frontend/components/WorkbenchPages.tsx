@@ -83,6 +83,159 @@ function BernardIntelPanel({ question, context, label }: { question: string; con
   );
 }
 
+// ─── CNS Signal Monitor ───────────────────────────────────────────────────────
+// The "police force" — emits any signal into the rule engine, shows every
+// downstream consequence across all modules.
+function CNSSignalMonitor({ defaultSignal = "dscr_change", showDscrFast = false }: {
+  defaultSignal?: string;
+  showDscrFast?: boolean;
+}) {
+  const [signalType, setSignalType] = useState(defaultSignal);
+  const [dscr, setDscr] = useState("1.65");
+  const [ltv, setLtv] = useState("0.60");
+  const [result, setResult] = useState<any>(null);
+  const [running, setRunning] = useState(false);
+
+  const QUICK_SIGNALS = [
+    { key: "dscr_change", label: "DSCR Change" },
+    { key: "rate_move", label: "Rate Move" },
+    { key: "doc_uploaded", label: "Doc Upload" },
+    { key: "grade_assigned", label: "Grade Assigned" },
+    { key: "credit_breach", label: "Credit Breach" },
+    { key: "surety_bound", label: "Surety Bound" },
+  ];
+
+  async function fire() {
+    setRunning(true);
+    setResult(null);
+    const endpoint = (signalType === "dscr_change" || showDscrFast)
+      ? `${API}/api/cns/dscr-impact`
+      : `${API}/api/cns/signal`;
+    const body = signalType === "dscr_change"
+      ? { dscr: parseFloat(dscr), ltv: parseFloat(ltv) }
+      : { signal_type: signalType, value: parseFloat(dscr), context: { dscr: parseFloat(dscr), ltv: parseFloat(ltv) } };
+    try {
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const d = await r.json();
+      if (d.success) setResult(d.data);
+    } catch { /* swallow */ }
+    setRunning(false);
+  }
+
+  const priorityColor = (p: string) => p === "CRITICAL" ? "#ef4444" : p === "HIGH" ? "#f97316" : p === "MEDIUM" ? "#C4A048" : "#7A9A82";
+
+  return (
+    <div className="mt-5 rounded-[1.35rem] border border-[#1E4A2E]/60 bg-[#030A06]/90 p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <RadioTower size={14} className="text-[#2D6B3D]" />
+        <span className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[#2D6B3D]">CNS Signal Bus — Platform Rule Engine</span>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {QUICK_SIGNALS.map(s => (
+          <button
+            key={s.key}
+            onClick={() => setSignalType(s.key)}
+            className={`rounded-[0.6rem] border px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.1em] transition ${
+              signalType === s.key
+                ? "border-[#2D6B3D] bg-[#2D6B3D]/20 text-[#7A9A82]"
+                : "border-white/10 text-[#7A9A82]/60 hover:border-white/20"
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-3 items-end mb-4">
+        <div>
+          <label className="mb-1 block font-mono text-[0.5rem] uppercase tracking-[0.1em] text-[#7A9A82]">
+            {signalType === "rate_move" ? "Rate Delta (bps)" : "DSCR Value"}
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            value={dscr}
+            onChange={e => setDscr(e.target.value)}
+            className="w-28 rounded-[0.6rem] border border-white/10 bg-[#0D2218] px-3 py-1.5 font-mono text-xs text-[#EDE8DC] focus:border-[#2D6B3D] focus:outline-none"
+          />
+        </div>
+        {signalType === "dscr_change" && (
+          <div>
+            <label className="mb-1 block font-mono text-[0.5rem] uppercase tracking-[0.1em] text-[#7A9A82]">LTV</label>
+            <input
+              type="number"
+              step="0.01"
+              value={ltv}
+              onChange={e => setLtv(e.target.value)}
+              className="w-24 rounded-[0.6rem] border border-white/10 bg-[#0D2218] px-3 py-1.5 font-mono text-xs text-[#EDE8DC] focus:border-[#2D6B3D] focus:outline-none"
+            />
+          </div>
+        )}
+        <button
+          onClick={fire}
+          disabled={running}
+          className="rounded-[0.75rem] border border-[#2D6B3D]/60 bg-[#2D6B3D]/15 px-4 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.15em] text-[#7A9A82] transition hover:bg-[#2D6B3D]/25 disabled:opacity-50"
+        >
+          {running ? "Evaluating…" : "Fire Signal →"}
+        </button>
+      </div>
+
+      {result && (
+        <div className="space-y-3">
+          {/* Impact summary for DSCR */}
+          {result.impact && (
+            <div className="grid gap-2 grid-cols-2 sm:grid-cols-4">
+              {[
+                { label: "Credit Grade", value: result.impact.computed_grade, critical: result.impact.computed_grade === "Sub-IG" },
+                { label: "Bond Type", value: result.impact.eligible_bond_type?.replace(/_/g, " "), critical: false },
+                { label: "EMMA Gate", value: result.impact.emma_gate_status?.replace(/_/g, " "), critical: result.impact.emma_gate_status?.includes("BREACH") },
+                { label: "Surety Tier", value: result.impact.surety_tier, critical: result.impact.surety_tier?.includes("LC") },
+              ].map(({ label, value, critical }) => (
+                <div key={label} className="rounded-[0.75rem] border border-white/8 bg-[#0D2218]/60 p-2.5">
+                  <div className="font-mono text-[0.5rem] uppercase tracking-[0.1em] text-[#7A9A82]">{label}</div>
+                  <div className={`mt-1 font-mono text-xs font-semibold ${critical ? "text-red-400" : "text-[#C4A048]"}`}>{value}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Consequences */}
+          <div className="space-y-1.5">
+            <div className="font-mono text-[0.55rem] uppercase tracking-[0.15em] text-[#7A9A82]">
+              {result.consequence_count || result.consequences?.length} Modules Triggered · {result.critical_count || 0} Critical
+            </div>
+            {(result.next_actions || []).map((a: any, i: number) => (
+              <div
+                key={i}
+                className="flex items-center gap-3 rounded-[0.6rem] border border-white/5 bg-[#0D2218]/40 px-3 py-2"
+              >
+                <div
+                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                  style={{ background: priorityColor(a.priority) }}
+                />
+                <span className="font-mono text-[0.6rem] uppercase tracking-[0.08em]" style={{ color: priorityColor(a.priority) }}>{a.priority}</span>
+                <span className="font-mono text-[0.62rem] text-[#7A9A82]">{a.module}</span>
+                <span className="font-mono text-[0.62rem] text-[#EDE8DC]/70">→ {a.action.replace(/_/g, " ")}</span>
+              </div>
+            ))}
+          </div>
+
+          {result.cascades?.length > 0 && (
+            <div className="font-mono text-[0.55rem] text-[#7A9A82]/60">
+              Cascades → {result.cascades.join(" → ")}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const cnsLayerRows = [
   ["Universal Connector Power Strip", "MSRB/EMMA, FRED, Treasury, SEC EDGAR, rating references, surety carriers, CRM, document vault, licensed feeds", "Source timestamp, entitlement, provenance, connector health"],
   ["NEST Agent / Tool Power Strip", "Vector, Apex, Bond Optimizer, Merlin, Morgan, Aria, Sterling, SuretyScout, Auditor, Prometheus, Sentinel, LenderScout, Bridge", "Owner, input evidence, output type, approval status"],
@@ -805,6 +958,7 @@ export function BondStructuringPage() {
           <button type="button" onClick={runStructure} disabled={structLoading} className="mt-4 rounded-xl border border-[#C4A048]/40 bg-[#C4A048]/15 px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#C4A048] disabled:opacity-50">
             {structLoading ? "Structuring…" : "Run Structure Analysis →"}
           </button>
+          <CNSSignalMonitor defaultSignal="dscr_change" showDscrFast />
         </div>
         <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start">
           <p className="kicker text-[#C4A048] mb-3"><ShieldCheck size={14} /> JP Morgan benchmarks</p>
@@ -885,6 +1039,7 @@ export function BondGradeAuditPage() {
           <button type="button" onClick={runRating} disabled={ratingLoading} className="mt-4 rounded-xl border border-[#C4A048]/40 bg-[#C4A048]/15 px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#C4A048] disabled:opacity-50">
             {ratingLoading ? "Running Mirror Agent…" : "Run Rating Prediction →"}
           </button>
+          <CNSSignalMonitor defaultSignal="dscr_change" showDscrFast />
         </div>
         <aside className="rounded-[1.35rem] border border-amber-300/25 bg-[#06101a]/90 p-5 self-start">
           {ratingResult && !ratingResult.error ? (
