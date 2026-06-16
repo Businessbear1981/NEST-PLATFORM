@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
 
 export default function RiskCommandCenter() {
   const [deals, setDeals] = useState<any[]>([]);

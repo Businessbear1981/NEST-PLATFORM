@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
 
 export default function ClientDashboardPage() {
   const [dealId] = useState("jacaranda-2026");

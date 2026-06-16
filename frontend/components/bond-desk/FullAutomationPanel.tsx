@@ -3,7 +3,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useDealState } from "@/contexts/DealStateContext"
 
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com"
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech"
 
 interface OPBAResult {
   opba_score: number

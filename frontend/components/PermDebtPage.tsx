@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle, RefreshCw, Clock, Building2, ArrowRight } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
 
 interface Deal {
   id: string;

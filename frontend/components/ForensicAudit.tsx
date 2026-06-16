@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
 
 export default function ForensicAudit() {
   const [standards, setStandards] = useState<any>(null);

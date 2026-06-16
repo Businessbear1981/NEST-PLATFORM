@@ -1,5 +1,5 @@
 "use client";
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
 import Link from "next/link";
 /**
  * Active Deals — master view of all deals with pipeline status.

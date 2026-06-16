@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.ardanedgecapital.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
 
 function fmt(n: number) { return n?.toLocaleString("en-US", { maximumFractionDigits: 0 }) ?? "\u2014"; }
 function fmtM(n: number) { return `$${(n / 1_000_000).toFixed(1)}M`; }
