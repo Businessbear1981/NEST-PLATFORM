@@ -3,6 +3,269 @@ import { useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://web-production-5e8af.up.railway.app";
 
+const fmt$ = (n: number) =>
+  n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${n.toLocaleString()}`;
+
+const BOND_TYPES = [
+  { key: "revenue_bond", label: "Revenue Bond", sub: "Muni 30yr level DS" },
+  { key: "construction_bond", label: "Construction Bond", sub: "IO 36mo → amortizing" },
+  { key: "cmbs", label: "CMBS", sub: "10yr IO balloon" },
+  { key: "b_tranche", label: "B-Tranche", sub: "IO floating subordinate" },
+  { key: "mini_bond", label: "Mini-Bond", sub: "5yr sinking fund" },
+  { key: "go_bond", label: "GO Bond", sub: "20yr level principal" },
+];
+
+function ChainStep({ step, label, children }: { step: number; label: string; children: React.ReactNode }) {
+  return (
+    <div className="relative pl-8">
+      <div className="absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-[#C4A048]/50 bg-[#0D2218] font-mono text-[0.6rem] text-[#C4A048]">{step}</div>
+      {step < 5 && <div className="absolute left-[11px] top-7 h-full w-px bg-[#C4A048]/15" />}
+      <div className="mb-6 rounded-[1.1rem] border border-white/10 bg-[#07101a]/90 p-4">
+        <p className="mb-3 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#C4A048]">{label}</p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function BondChainEngine() {
+  const [bondType, setBondType] = useState("revenue_bond");
+  const [faceM, setFaceM] = useState("205");
+  const [coupon, setCoupon] = useState("6.5");
+  const [marketRate, setMarketRate] = useState("4.25");
+  const [chain, setChain] = useState<any>(null);
+  const [running, setRunning] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function runChain() {
+    setRunning(true);
+    setErr("");
+    setChain(null);
+    try {
+      const r = await fetch(`${API}/api/cns/bond-chain`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bond_type: bondType,
+          face_amount_usd: parseFloat(faceM) * 1_000_000,
+          coupon_pct: parseFloat(coupon),
+          market_rate_pct: parseFloat(marketRate),
+          issue_price: 100.0,
+        }),
+      });
+      const d = await r.json();
+      if (d.success) setChain(d.data);
+      else setErr(d.error || "Chain computation failed");
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const actionColor = (action: string) => {
+    if (action === "EXECUTE_CALL" || action === "CRITICAL") return "#ef4444";
+    if (action === "MONITOR_CLOSELY" || action === "HIGH") return "#f97316";
+    if (action === "HOLD" || action === "MEDIUM") return "#C4A048";
+    return "#7A9A82";
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Inputs */}
+      <div className="rounded-[1.35rem] border border-[#C4A048]/25 bg-[#07101a]/90 p-5">
+        <p className="mb-4 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#C4A048]">CNS Chain Inputs — each selection drives every downstream value</p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <label className="mb-1 block font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Bond Type</label>
+            <select
+              value={bondType}
+              onChange={e => setBondType(e.target.value)}
+              className="w-full rounded-[0.75rem] border border-white/15 bg-[#0D2218] px-3 py-2 font-mono text-xs text-[#EDE8DC] focus:border-[#C4A048] focus:outline-none"
+            >
+              {BOND_TYPES.map(bt => (
+                <option key={bt.key} value={bt.key}>{bt.label} — {bt.sub}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Face Amount ($M)</label>
+            <input
+              type="number"
+              value={faceM}
+              onChange={e => setFaceM(e.target.value)}
+              className="w-full rounded-[0.75rem] border border-white/15 bg-[#0D2218] px-3 py-2 font-mono text-xs text-[#EDE8DC] focus:border-[#C4A048] focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Coupon Rate (%)</label>
+            <input
+              type="number"
+              step="0.125"
+              value={coupon}
+              onChange={e => setCoupon(e.target.value)}
+              className="w-full rounded-[0.75rem] border border-white/15 bg-[#0D2218] px-3 py-2 font-mono text-xs text-[#EDE8DC] focus:border-[#C4A048] focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block font-mono text-[0.55rem] uppercase tracking-[0.12em] text-[#7A9A82]">Market Rate (%)</label>
+            <input
+              type="number"
+              step="0.125"
+              value={marketRate}
+              onChange={e => setMarketRate(e.target.value)}
+              className="w-full rounded-[0.75rem] border border-white/15 bg-[#0D2218] px-3 py-2 font-mono text-xs text-[#EDE8DC] focus:border-[#C4A048] focus:outline-none"
+            />
+          </div>
+        </div>
+        <button
+          onClick={runChain}
+          disabled={running}
+          className="mt-4 rounded-[1rem] border border-[#C4A048]/50 bg-[#C4A048]/15 px-6 py-2.5 font-mono text-xs font-semibold uppercase tracking-[0.15em] text-[#C4A048] transition hover:bg-[#C4A048]/25 disabled:opacity-50"
+        >
+          {running ? "Running CNS Chain…" : "Run Full Computation Chain →"}
+        </button>
+        {err && <p className="mt-2 font-mono text-xs text-red-400">{err}</p>}
+      </div>
+
+      {/* Summary banner */}
+      {chain && (
+        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { label: "Bond Type", value: chain.chain.step1_bond_type.profile.label.split(" ")[0] + " " + (chain.chain.step1_bond_type.profile.label.split(" ")[1] || "") },
+            { label: "Annual DS", value: fmt$(chain.summary.annual_ds_usd) },
+            { label: "Avg Life", value: `${chain.summary.avg_life_years}yr` },
+            { label: "Pricing", value: chain.summary.pricing_status.replace("_", " ").toUpperCase() },
+            { label: "YTM", value: `${chain.summary.ytm_pct}%` },
+            { label: "Vector Action", value: chain.summary.optimization_action, color: actionColor(chain.summary.optimization_action) },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="rounded-[1rem] border border-[#C4A048]/20 bg-[#0D2218]/80 p-3 text-center">
+              <div className="font-mono text-[0.5rem] uppercase tracking-[0.12em] text-[#7A9A82]">{label}</div>
+              <div className="mt-1 font-mono text-sm font-semibold" style={{ color: color || "#C4A048" }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Chain steps */}
+      {chain && (
+        <div className="mt-2">
+          <ChainStep step={1} label="Step 1 — Bond Type Profile (drives all downstream parameters)">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["Amortization", chain.chain.step1_bond_type.profile.amort_type.replace(/_/g, " ")],
+                ["Term", `${chain.chain.step1_bond_type.profile.typical_term_years}yr`],
+                ["IO Period", `${chain.chain.step1_bond_type.profile.io_period_months}mo`],
+                ["Coupon Type", chain.chain.step1_bond_type.profile.coupon_type],
+                ["Tax Status", chain.chain.step1_bond_type.profile.tax_status.replace("_", "-")],
+                ["Enhancement", chain.chain.step1_bond_type.profile.enhancement_required.replace(/_/g, " ")],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-b border-white/5 py-1 text-xs">
+                  <span className="text-[#7A9A82]">{k}</span>
+                  <span className="font-mono text-[#EDE8DC]">{v}</span>
+                </div>
+              ))}
+            </div>
+          </ChainStep>
+
+          <ChainStep step={2} label="Step 2 — Amortization (computed from bond type, drives par value)">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["Schedule", chain.chain.step2_amortization.label],
+                ["Annual DS", fmt$(chain.chain.step2_amortization.annual_ds_usd || chain.chain.step2_amortization.annual_ds_io_phase_usd || 0)],
+                ["Annual Interest", fmt$(chain.chain.step2_amortization.annual_interest_usd)],
+                ["Balloon", chain.chain.step2_amortization.balloon_usd > 0 ? fmt$(chain.chain.step2_amortization.balloon_usd) : "None"],
+                ["Avg Life", `${chain.chain.step2_amortization.avg_life_years}yr`],
+                ["IO Period", `${chain.chain.step2_amortization.io_period_years}yr`],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-b border-white/5 py-1 text-xs">
+                  <span className="text-[#7A9A82]">{k}</span>
+                  <span className="font-mono text-[#EDE8DC]">{v}</span>
+                </div>
+              ))}
+            </div>
+          </ChainStep>
+
+          <ChainStep step={3} label="Step 3 — Par Value (derived from amortization + market rates)">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["Face Amount", fmt$(chain.chain.step3_par_value.face_amount_usd)],
+                ["Proceeds", fmt$(chain.chain.step3_par_value.proceeds_usd)],
+                ["Theoretical Price", `${chain.chain.step3_par_value.theoretical_price}`],
+                ["Pricing Status", chain.chain.step3_par_value.pricing_status.replace("_", " ").toUpperCase()],
+                ["YTM", `${chain.chain.step3_par_value.yield_to_maturity_pct}%`],
+                ["Coupon vs Market", `${chain.chain.step3_par_value.coupon_vs_market_spread_bps}bps`],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-b border-white/5 py-1 text-xs">
+                  <span className="text-[#7A9A82]">{k}</span>
+                  <span className="font-mono text-[#EDE8DC]">{v}</span>
+                </div>
+              ))}
+            </div>
+            {chain.chain.step3_par_value.oid_flag && (
+              <p className="mt-2 rounded-[0.5rem] bg-amber-300/10 px-3 py-1.5 font-mono text-[0.6rem] text-amber-300">
+                OID FLAG: Issue price below 97.75 — OID tax amortization rules apply. {fmt$(chain.chain.step3_par_value.oid_discount_usd)} discount.
+              </p>
+            )}
+          </ChainStep>
+
+          <ChainStep step={4} label="Step 4 — Call/Put Layering (driven by amortization schedule + pricing)">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["Call Type", chain.chain.step4_call_put.call_type.replace(/_/g, " ")],
+                ["Call Protection", `${chain.chain.step4_call_put.call_protection_years}yr`],
+                ["First Call Year", `Year ${chain.chain.step4_call_put.first_optional_call_year}`],
+                ["Rate Differential", `${chain.chain.step4_call_put.rate_trigger.rate_differential_bps}bps`],
+                ["Call Triggered", chain.chain.step4_call_put.rate_trigger.call_triggered ? "YES" : "NO"],
+                ["Put Feature", chain.chain.step4_call_put.put_feature.has_put ? `Yes — ${chain.chain.step4_call_put.put_feature.put_period_days}d` : "None"],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-b border-white/5 py-1 text-xs">
+                  <span className="text-[#7A9A82]">{k}</span>
+                  <span className={`font-mono ${k === "Call Triggered" && v === "YES" ? "text-[#C4A048]" : "text-[#EDE8DC]"}`}>{v}</span>
+                </div>
+              ))}
+            </div>
+            {chain.chain.step4_call_put.rate_trigger.annual_savings_usd > 0 && (
+              <p className="mt-2 rounded-[0.5rem] bg-[#C4A048]/10 px-3 py-1.5 font-mono text-[0.6rem] text-[#C4A048]">
+                Call trigger active — annual savings if called: {fmt$(chain.chain.step4_call_put.rate_trigger.annual_savings_usd)}
+              </p>
+            )}
+          </ChainStep>
+
+          <ChainStep step={5} label="Step 5 — Vector Agent Optimization (action recommendation)">
+            <div
+              className="mb-3 rounded-[0.75rem] border px-4 py-3"
+              style={{ borderColor: actionColor(chain.chain.step5_optimization.vector_action) + "44", background: actionColor(chain.chain.step5_optimization.vector_action) + "11" }}
+            >
+              <div className="font-mono text-xs font-bold" style={{ color: actionColor(chain.chain.step5_optimization.vector_action) }}>
+                {chain.chain.step5_optimization.priority} — {chain.chain.step5_optimization.vector_action}
+              </div>
+              <p className="mt-1 text-xs text-[#EDE8DC]">{chain.chain.step5_optimization.rationale}</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["Annual Savings", fmt$(chain.chain.step5_optimization.annual_savings_usd)],
+                ["NPV Savings", fmt$(chain.chain.step5_optimization.npv_savings_usd)],
+                ["Refi Cost", fmt$(chain.chain.step5_optimization.refi_cost_usd)],
+                ["Breakeven", chain.chain.step5_optimization.breakeven_months ? `${chain.chain.step5_optimization.breakeven_months}mo` : "N/A"],
+                ["Optimal New Coupon", `${chain.chain.step5_optimization.optimal_new_coupon_pct}%`],
+                ["Add'l Capacity", chain.chain.step5_optimization.additional_capacity_usd > 0 ? fmt$(chain.chain.step5_optimization.additional_capacity_usd) : "None"],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-b border-white/5 py-1 text-xs">
+                  <span className="text-[#7A9A82]">{k}</span>
+                  <span className="font-mono text-[#EDE8DC]">{v}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 font-mono text-[0.55rem] text-[#7A9A82]">{chain.chain.step5_optimization.atlas_model_note}</p>
+            <p className="font-mono text-[0.55rem] text-[#7A9A82]">{chain.chain.step5_optimization.prometheus_flag}</p>
+          </ChainStep>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ModelingStudio() {
   const [tab, setTab] = useState(0);
   const [running, setRunning] = useState(false);
@@ -51,7 +314,7 @@ export default function ModelingStudio() {
     }
   }
 
-  const tabs = ["Bond Grading", "Stress Testing", "Bond Optimization"];
+  const tabs = ["Bond Chain Engine", "Bond Grading", "Stress Testing", "Bond Optimization"];
   const stressScenarios = [
     { name: "Base Case", color: "emerald", dscr: "1.80x", outcome: "Performing - all covenants met" },
     { name: "Downside", color: "amber", dscr: "1.38x", outcome: "Tight but serviceable" },
@@ -87,11 +350,15 @@ export default function ModelingStudio() {
           ))}
         </div>
 
+        {/* BOND CHAIN ENGINE */}
+        {tab === 0 && <BondChainEngine />}
+
         {/* BOND GRADING */}
-        {tab === 0 && (
+        {tab === 1 && (
           <div className="space-y-4">
             <button
               onClick={runGrade}
+
               disabled={running}
               className="rounded-[1rem] border border-amber-300/40 bg-amber-300/10 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber-200 transition hover:bg-amber-300/20 disabled:opacity-50"
             >
@@ -159,7 +426,7 @@ export default function ModelingStudio() {
         )}
 
         {/* STRESS TESTING */}
-        {tab === 1 && (
+        {tab === 2 && (
           <div className="grid gap-3 sm:grid-cols-2">
             {stressScenarios.map((s) => (
               <div
@@ -177,7 +444,7 @@ export default function ModelingStudio() {
         )}
 
         {/* BOND OPTIMIZATION */}
-        {tab === 2 && (
+        {tab === 3 && (
           <div className="space-y-4">
             <button
               onClick={runOptimize}

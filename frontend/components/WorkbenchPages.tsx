@@ -33,6 +33,56 @@ import { trpc } from "@/lib/trpc";
 
 const TREE_LOGO = "/nest-logo.png";
 
+// ─── Bernard Intelligence Panel ───────────────────────────────────────────────
+// Routes through the CNS orchestrator. Every hollow page calls this.
+function BernardIntelPanel({ question, context, label }: { question: string; context?: Record<string, unknown>; label?: string }) {
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(false);
+    fetch(`${API}/api/desks/bernard/ask`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, context }),
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (!cancelled) {
+          if (d.success && d.data?.response) setResponse(d.data.response);
+          else setError(true);
+          setLoading(false);
+        }
+      })
+      .catch(() => { if (!cancelled) { setError(true); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [question]);
+
+  return (
+    <div className="mt-6 rounded-[1.35rem] border border-[#C4A048]/30 bg-[#06101a]/95 p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <BrainCircuit size={15} className="text-[#C4A048]" />
+        <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[#C4A048]">Bernard Intelligence{label ? ` · ${label}` : ""}</span>
+        {loading && <span className="ml-2 font-mono text-[0.6rem] text-[#7A9A82] animate-pulse">Routing through CNS…</span>}
+      </div>
+      {loading && (
+        <div className="space-y-2">
+          {[80, 65, 90].map(w => (
+            <div key={w} className={`h-3 rounded bg-[#1E4A2E]/60 animate-pulse`} style={{ width: `${w}%` }} />
+          ))}
+        </div>
+      )}
+      {error && <p className="font-mono text-xs text-red-400">ANTHROPIC_API_KEY not set in Railway environment. Add it to unlock real intelligence.</p>}
+      {!loading && !error && response && (
+        <p className="text-sm text-[#EDE8DC] leading-6 whitespace-pre-wrap">{response}</p>
+      )}
+    </div>
+  );
+}
+
 const cnsLayerRows = [
   ["Universal Connector Power Strip", "MSRB/EMMA, FRED, Treasury, SEC EDGAR, rating references, surety carriers, CRM, document vault, licensed feeds", "Source timestamp, entitlement, provenance, connector health"],
   ["NEST Agent / Tool Power Strip", "Vector, Apex, Bond Optimizer, Merlin, Morgan, Aria, Sterling, SuretyScout, Auditor, Prometheus, Sentinel, LenderScout, Bridge", "Owner, input evidence, output type, approval status"],

@@ -109,6 +109,7 @@ from routes.construction import construction_bp
 from routes.nisle import nisle_bp
 from routes.intake_brainstorm import intake_brainstorm_bp
 from routes.deal_outcomes import deal_outcomes_bp
+from routes.cns import cns_bp
 
 
 def create_app():
@@ -216,6 +217,7 @@ def create_app():
     app.register_blueprint(nisle_bp, url_prefix="/api/nisle")
     app.register_blueprint(intake_brainstorm_bp)
     app.register_blueprint(deal_outcomes_bp, url_prefix="/api/deal-outcomes")
+    app.register_blueprint(cns_bp, url_prefix="/api/cns")
     # Prime NISLE with default signals on startup
     try:
         nisle_engine.run()
