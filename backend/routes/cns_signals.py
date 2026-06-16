@@ -402,6 +402,201 @@ def _credit_grade_from_dscr(dscr: float, ltv: float = 0.60) -> str:
         return "Sub-IG"
 
 
+# ── Agent dispatch layer ─────────────────────────────────────────────────────
+# Maps (module, action) → callable that accepts (agent, value, context, deal_id)
+# and returns the agent's real output dict. Every callable is wrapped in try/except
+# so one failing agent never kills the whole signal evaluation.
+
+def _build_maxwell_metrics(value, context):
+    dscr = float(value) if value is not None else float(context.get("dscr", 1.65))
+    return {
+        "dscr": dscr,
+        "ltv": float(context.get("ltv", 0.60)),
+        "icr": float(context.get("icr", 2.5)),
+        "debt_to_ebitda": float(context.get("debt_to_ebitda", 5.0)),
+        "lgd_bare": float(context.get("lgd_bare", 60)),
+        "cf_leverage": round(1 / dscr, 3) if dscr > 0 else 99,
+        "bs_leverage": float(context.get("bs_leverage", 2.0)),
+    }
+
+
+def _build_vector_signals(value, context):
+    rate_delta = float(value) if value is not None else float(context.get("rate_delta_bps", 0))
+    return {
+        "treasury_change_bps": rate_delta,
+        "dscr": float(context.get("dscr", 1.65)),
+        "credit_spread_change_bps": float(context.get("credit_spread_change_bps", 0)),
+        "refi_market_access_score": float(context.get("refi_market_access_score", 3)),
+        "occupancy_pct": float(context.get("occupancy_pct", 85)),
+        "months_since_origination": float(context.get("months_since_origination", 18)),
+        "hft_ytd_return_pct": float(context.get("hft_ytd_return_pct", 15)),
+    }
+
+
+def _build_vector_deal(context, deal_id):
+    return {
+        "id": deal_id,
+        "coupon_rate_pct": float(context.get("coupon_pct", 6.5)),
+        "face_amount_usd": float(context.get("face_amount_usd", 205_000_000)),
+        "months_outstanding": float(context.get("months_outstanding", 18)),
+        "remaining_term_months": float(context.get("remaining_term_months", 342)),
+        "market_rate_pct": float(context.get("market_rate_pct", 4.25)),
+    }
+
+
+def _build_prometheus_inputs(value, context, deal_id):
+    return {
+        "deal_id": deal_id,
+        "project_type": context.get("project_type", "senior_living"),
+        "total_project_cost_usd": float(context.get("total_project_cost_usd", 231_000_000)),
+        "stabilized_noi_usd": float(context.get("stabilized_noi_usd", 18_500_000)),
+        "total_units": int(context.get("total_units", 364)),
+        "occupancy_target_pct": float(context.get("occupancy_target_pct", 93)),
+        "construction_months": int(context.get("construction_months", 30)),
+        "bond_coupon_pct": float(context.get("coupon_pct", 6.5)),
+    }
+
+
+def _build_sentinel_deal(value, context, deal_id):
+    return {
+        "id": deal_id,
+        "dscr": float(value) if value is not None else float(context.get("dscr", 1.65)),
+        "ltv": float(context.get("ltv", 0.60)),
+        "project_type": context.get("project_type", "senior_living"),
+        "state": context.get("state", "FL"),
+        "construction_months": int(context.get("construction_months", 30)),
+        "sponsor_track_record_projects": int(context.get("sponsor_track_record_projects", 8)),
+        "sponsor_audited_financials": context.get("sponsor_audited_financials", True),
+        "surety_provider": context.get("surety_provider", "Hylant"),
+        "bond_coupon_pct": float(context.get("coupon_pct", 6.5)),
+        "face_amount_usd": float(context.get("face_amount_usd", 205_000_000)),
+    }
+
+
+_DISPATCH: dict = {
+    # Maxwell
+    ("maxwell", "regrade_credit"): lambda agent, v, ctx, did: agent.grade_obligor(_build_maxwell_metrics(v, ctx)),
+    ("maxwell", "recalculate_dscr"): lambda agent, v, ctx, did: agent.analyze(_build_sentinel_deal(v, ctx, did)),
+    ("maxwell", "compute_ratios"): lambda agent, v, ctx, did: agent.grade_obligor(_build_maxwell_metrics(v, ctx)),
+    ("maxwell", "apply_surety_enhancement"): lambda agent, v, ctx, did: agent.grade_obligor({**_build_maxwell_metrics(v, ctx), "surety_wrap": True}),
+    ("maxwell", "emit_dscr_change"): lambda agent, v, ctx, did: agent.grade_obligor(_build_maxwell_metrics(v, ctx)),
+
+    # Vector
+    ("vector", "evaluate_call_trigger"): lambda agent, v, ctx, did: agent.recommend(_build_vector_signals(v, ctx), _build_vector_deal(ctx, did)),
+    ("vector", "alert"): lambda agent, v, ctx, did: agent.recommend(_build_vector_signals(v, ctx), _build_vector_deal(ctx, did)),
+
+    # Prometheus
+    ("prometheus", "rebuild_proforma"): lambda agent, v, ctx, did: agent.run(did or "demo", _build_prometheus_inputs(v, ctx, did)),
+    ("prometheus", "run_rate_sensitivity"): lambda agent, v, ctx, did: agent.run_stress_tests(
+        {"total_project_cost_usd": float(ctx.get("total_project_cost_usd", 231_000_000)),
+         "stabilized_noi_usd": float(ctx.get("stabilized_noi_usd", 18_500_000)),
+         "total_units": int(ctx.get("total_units", 364))},
+        {"face_amount_usd": float(ctx.get("face_amount_usd", 205_000_000)),
+         "coupon_pct": float(ctx.get("coupon_pct", 6.5))}
+    ),
+    ("prometheus", "run_spread"): lambda agent, v, ctx, did: agent.run(did or "demo", _build_prometheus_inputs(v, ctx, did)),
+
+    # Sentinel
+    ("sentinel", "raise_alert"): lambda agent, v, ctx, did: agent.run(did or "demo", _build_sentinel_deal(v, ctx, did)),
+    ("sentinel", "score_credit_risk"): lambda agent, v, ctx, did: agent.score_credit_risk(_build_sentinel_deal(v, ctx, did)),
+
+    # Morgan — generates a deal memo (calls Claude)
+    ("morgan", "generate_memo"): lambda agent, v, ctx, did: agent.generate("deal_memo", {
+        "deal_id": did,
+        "dscr": float(ctx.get("dscr", 1.65)),
+        "ltv": float(ctx.get("ltv", 0.60)),
+        "project_type": ctx.get("project_type", "senior_living"),
+        "coupon_pct": float(ctx.get("coupon_pct", 6.5)),
+        "face_amount_usd": float(ctx.get("face_amount_usd", 205_000_000)),
+    }),
+
+    # CNS chain — rerun the full bond computation chain inline
+    ("cns_chain", "rerun_full_chain"): lambda agent, v, ctx, did: _run_bond_chain_inline(v, ctx),
+    ("cns_chain", "run_bond_chain"): lambda agent, v, ctx, did: _run_bond_chain_inline(v, ctx),
+    ("cns_chain", "rerun_call_put_optimization"): lambda agent, v, ctx, did: _run_bond_chain_inline(v, ctx),
+}
+
+# Agent config key lookup — maps module name → app.config key
+_AGENT_CONFIG_KEY = {
+    "maxwell": "MAXWELL",
+    "vector": "VECTOR",
+    "prometheus": "PROMETHEUS",
+    "sentinel": "SENTINEL",
+    "morgan": "MORGAN",
+    "cns_chain": None,   # inline, no agent object needed
+}
+
+
+def _run_bond_chain_inline(value, context) -> dict:
+    """Run the bond computation chain inline without HTTP round-trip."""
+    from routes.cns import (BOND_TYPE_PROFILES, _compute_amortization,
+                             _compute_par_value, _compute_call_put,
+                             _compute_optimization)
+    dscr = float(context.get("dscr", 1.65)) if value is None else float(value)
+    # Determine eligible bond type from DSCR
+    if dscr >= 1.75:
+        bond_type = "revenue_bond"
+    elif dscr >= 1.5:
+        bond_type = "construction_bond"
+    else:
+        bond_type = "b_tranche"
+
+    profile = BOND_TYPE_PROFILES[bond_type]
+    face_usd = float(context.get("face_amount_usd", 205_000_000))
+    coupon_pct = float(context.get("coupon_pct", 6.5))
+    market_rate_pct = float(context.get("market_rate_pct", 4.25))
+
+    amort = _compute_amortization(profile, face_usd, coupon_pct)
+    par = _compute_par_value(amort, face_usd, coupon_pct, market_rate_pct)
+    call_put = _compute_call_put(profile, par, amort, face_usd, coupon_pct, market_rate_pct)
+    opt = _compute_optimization(call_put, par, amort, face_usd, coupon_pct, market_rate_pct, profile)
+    return {
+        "bond_type": bond_type,
+        "amort_label": amort.get("label"),
+        "annual_ds_usd": amort.get("annual_ds_usd", amort.get("annual_ds_io_phase_usd", 0)),
+        "pricing_status": par.get("pricing_status"),
+        "ytm_pct": par.get("yield_to_maturity_pct"),
+        "call_action": call_put.get("vector_agent_signal"),
+        "vector_action": opt.get("vector_action"),
+        "priority": opt.get("priority"),
+        "annual_savings_usd": opt.get("annual_savings_usd"),
+        "rationale": opt.get("rationale"),
+    }
+
+
+def _dispatch_agents(consequences: list, value, context: dict, deal_id: str) -> list:
+    """Actually call each triggered agent. Attaches real output to each consequence."""
+    from flask import current_app
+    dispatched = []
+    for c in consequences:
+        module = c.get("module", "")
+        action = c.get("action", "")
+        key = (module, action)
+        handler = _DISPATCH.get(key)
+        if not handler:
+            continue  # no dispatch registered for this rule — skip silently
+
+        config_key = _AGENT_CONFIG_KEY.get(module)
+        agent_obj = current_app.config.get(config_key) if config_key else None
+
+        # cns_chain dispatch doesn't need an agent object
+        if module == "cns_chain":
+            agent_obj = object()
+
+        if agent_obj is None and module != "cns_chain":
+            c["agent_output"] = {"error": f"{config_key} not initialised in app.config"}
+            continue
+
+        try:
+            output = handler(agent_obj, value, context, deal_id)
+            c["agent_output"] = output
+            dispatched.append({"module": module, "action": action, "output": output})
+        except Exception as exc:
+            c["agent_output"] = {"error": str(exc), "module": module, "action": action}
+
+    return dispatched
+
+
 # ── Signal endpoint ──────────────────────────────────────────────────────────
 
 @cns_signals_bp.route("/signal", methods=["POST"])
@@ -426,6 +621,10 @@ def emit_signal():
 
     # Evaluate rule engine
     consequences = _evaluate_signal(signal_type, value, context)
+
+    # Actually dispatch agents — attach real output to each consequence
+    dispatch_agents = body.get("dispatch_agents", True)
+    dispatched = _dispatch_agents(consequences, value, context, deal_id) if dispatch_agents else []
 
     # Compute derived values when relevant
     derived = {}
@@ -488,8 +687,11 @@ def emit_signal():
         "derived": derived,
         "modules_affected": list({c["module"] for c in consequences}),
         "cascades": [c["cascades_to"] for c in consequences if c.get("cascades_to")],
+        "agents_dispatched": len(dispatched),
+        "agent_outputs": dispatched,
         "next_actions": [
-            {"module": c["module"], "action": c["action"], "priority": c["priority"]}
+            {"module": c["module"], "action": c["action"], "priority": c["priority"],
+             "agent_ran": "agent_output" in c}
             for c in sorted(consequences, key=lambda x: {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}.get(x.get("priority", "LOW"), 4))
         ],
     }
@@ -532,7 +734,12 @@ def dscr_impact():
     grade = _credit_grade_from_dscr(dscr, ltv)
     bond_type = _determine_bond_type(dscr)
 
-    consequences = _evaluate_signal("dscr_change", dscr, {"ltv": ltv, "deal_id": deal_id})
+    context = {"ltv": ltv, "deal_id": deal_id, **body}
+    consequences = _evaluate_signal("dscr_change", dscr, context)
+
+    # Dispatch agents with actual DSCR context
+    dispatched = _dispatch_agents(consequences, dscr, context, deal_id)
+
     derived = {
         "computed_grade": grade,
         "eligible_bond_type": bond_type,
@@ -552,8 +759,11 @@ def dscr_impact():
         "impact": derived,
         "consequences": consequences,
         "modules_affected": list({c["module"] for c in consequences}),
+        "agents_dispatched": len(dispatched),
+        "agent_outputs": dispatched,
         "next_actions": [
-            {"module": c["module"], "action": c["action"], "priority": c["priority"]}
+            {"module": c["module"], "action": c["action"], "priority": c["priority"],
+             "agent_ran": "agent_output" in c}
             for c in sorted(consequences, key=lambda x: {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}.get(x.get("priority", "LOW"), 4))
         ],
     })
