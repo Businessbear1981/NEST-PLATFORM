@@ -1,5 +1,7 @@
 ﻿"use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 import {
   Loader2, Users, Target, FileText, BookOpen, Send, DollarSign,
   CheckCircle2, Calendar, MessageSquare, TrendingUp, Building2,
@@ -28,54 +30,19 @@ function bps(val: number | null) {
   return `T+${val}bp`;
 }
 
-/* ─── Demo Data ─── */
-const DEMO_OFFERINGS = [
-  {
-    id: "jacaranda",
-    name: "Jacaranda Trace PLOM — Series 2025",
-    totalRaise: 231_000_000,
-    rating: "BBB+",
-    coupon: 7.0,
-    spread: 85,
-    subscribed: 143_220_000,
-    targetClose: "2025-08-15",
-    status: "marketing",
-    tranches: [
-      { series: "A", size: 173_250_000, subscribed: 124_740_000, rating: "A" },
-      { series: "B", size: 57_750_000, subscribed: 18_480_000, rating: "BBB" },
-    ],
-  },
-  {
-    id: "harbor",
-    name: "Harbor Point Industrial — Series A",
-    totalRaise: 89_000_000,
-    rating: "A",
-    coupon: 6.5,
-    spread: 72,
-    subscribed: 78_320_000,
-    targetClose: "2025-07-30",
-    status: "closing",
-    tranches: [
-      { series: "A", size: 66_750_000, subscribed: 66_750_000, rating: "A" },
-      { series: "B", size: 22_250_000, subscribed: 11_570_000, rating: "BBB-" },
-    ],
-  },
-  {
-    id: "oakwood",
-    name: "Oakwood Multifamily — Development Bond",
-    totalRaise: 67_000_000,
-    rating: "BBB",
-    coupon: 7.5,
-    spread: 110,
-    subscribed: 16_750_000,
-    targetClose: "2025-09-30",
-    status: "pre-marketing",
-    tranches: [
-      { series: "A", size: 50_250_000, subscribed: 12_060_000, rating: "BBB+" },
-      { series: "B", size: 16_750_000, subscribed: 4_690_000, rating: "BB+" },
-    ],
-  },
-];
+/* ─── Offering Type ─── */
+type OfferingType = {
+  id: string;
+  name: string;
+  totalRaise: number;
+  rating: string;
+  coupon: number;
+  spread: number | null;
+  subscribed: number;
+  targetClose: string;
+  status: string;
+  tranches: { series: string; size: number; subscribed: number; rating: string }[];
+};
 
 type InvestorType = {
   id: string;
@@ -90,62 +57,10 @@ type InvestorType = {
   yieldFloor: number;
 };
 
-const DEMO_INVESTORS: Record<string, InvestorType[]> = {
-  insurance: [
-    { id: "met", name: "Metropolitan Life Insurance", type: "insurance", aum: 650_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Industrial"], lastDeal: "Took $25M Series A in Q1 CMBS pool", yieldFloor: 5.5 },
-    { id: "pru", name: "Prudential Financial", type: "insurance", aum: 1_500_000_000_000, minTicket: 25_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Industrial", "Multifamily"], lastDeal: "Passed on last healthcare deal — spread too tight", yieldFloor: 5.8 },
-    { id: "aig", name: "AIG Global Real Assets", type: "insurance", aum: 380_000_000_000, minTicket: 15_000_000, maxTicket: 75_000_000, appetite: "hot", sectors: ["Healthcare", "Office", "Mixed Use"], lastDeal: "Active buyer — 3 deals in last 6 months", yieldFloor: 5.2 },
-  ],
-  banks: [
-    { id: "usb", name: "US Bancorp — Fixed Income", type: "bank", aum: 85_000_000_000, minTicket: 5_000_000, maxTicket: 25_000_000, appetite: "warm", sectors: ["Multifamily", "Industrial", "Healthcare"], lastDeal: "Regulatory capital constraints — smaller tickets only", yieldFloor: 6.0 },
-    { id: "bmo", name: "BMO Capital Markets", type: "bank", aum: 120_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["Healthcare", "Construction"], lastDeal: "Looking to deploy $200M in structured credit this quarter", yieldFloor: 5.5 },
-    { id: "rbc", name: "RBC Global Asset Mgmt", type: "bank", aum: 420_000_000_000, minTicket: 20_000_000, maxTicket: 75_000_000, appetite: "cold", sectors: ["Office", "Retail"], lastDeal: "On hold — internal credit committee review", yieldFloor: 6.5 },
-  ],
-  family_offices: [
-    { id: "bh", name: "Brookfield Heritage Partners", type: "family_office", aum: 2_800_000_000, minTicket: 5_000_000, maxTicket: 20_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Industrial"], lastDeal: "Co-invested in Soparrow's last deal", yieldFloor: 6.5 },
-    { id: "ev", name: "Evergreen Wealth Advisors", type: "family_office", aum: 1_200_000_000, minTicket: 2_000_000, maxTicket: 10_000_000, appetite: "warm", sectors: ["Multifamily", "Healthcare"], lastDeal: "First-time buyer — needs education on structure", yieldFloor: 7.0 },
-  ],
-  credit_funds: [
-    { id: "oa", name: "Oaktree Capital — Credit Strategies", type: "credit_fund", aum: 190_000_000_000, minTicket: 25_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Distressed", "Industrial", "Healthcare"], lastDeal: "Interested in B tranches and mezzanine only", yieldFloor: 8.0 },
-    { id: "ag", name: "Angelo Gordon & Co", type: "credit_fund", aum: 55_000_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["CRE", "Healthcare", "Mixed Use"], lastDeal: "Active in sub-IG — will take BB+ at right spread", yieldFloor: 9.0 },
-    { id: "pg", name: "PGIM Fixed Income", type: "credit_fund", aum: 830_000_000_000, minTicket: 50_000_000, maxTicket: 200_000_000, appetite: "hot", sectors: ["Investment Grade", "CMBS"], lastDeal: "Anchor buyer — can take full A tranche", yieldFloor: 5.0 },
-  ],
-  pension_funds: [
-    { id: "calpers", name: "CalPERS — Real Assets", type: "pension", aum: 502_000_000_000, minTicket: 50_000_000, maxTicket: 200_000_000, appetite: "hot", sectors: ["Infrastructure", "Healthcare", "Industrial", "CMBS"], lastDeal: "Increased real assets allocation by $8B — actively deploying", yieldFloor: 4.8 },
-    { id: "calstrs", name: "CalSTRS — Fixed Income", type: "pension", aum: 340_000_000_000, minTicket: 25_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Investment Grade", "Multifamily", "Healthcare"], lastDeal: "Conservative mandate — A-rated only, long duration preferred", yieldFloor: 5.0 },
-    { id: "nycers", name: "NYC Employees' Retirement System", type: "pension", aum: 85_000_000_000, minTicket: 15_000_000, maxTicket: 75_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Affordable Housing"], lastDeal: "ESG mandate — prioritizes healthcare and community impact", yieldFloor: 5.2 },
-    { id: "wsib", name: "Washington State Investment Board", type: "pension", aum: 190_000_000_000, minTicket: 20_000_000, maxTicket: 100_000_000, appetite: "warm", sectors: ["Industrial", "Infrastructure", "CMBS"], lastDeal: "Took $40M in Pacific NW infrastructure bond last quarter", yieldFloor: 5.0 },
-    { id: "trs", name: "Teacher Retirement System of Texas", type: "pension", aum: 210_000_000_000, minTicket: 25_000_000, maxTicket: 150_000_000, appetite: "hot", sectors: ["Healthcare", "CRE", "Mixed Use"], lastDeal: "New structured credit allocation — $2B to deploy in FY26", yieldFloor: 5.5 },
-  ],
-  ria_wealth: [
-    { id: "lpl", name: "LPL Financial — Fixed Income Desk", type: "ria", aum: 1_100_000_000_000, minTicket: 2_000_000, maxTicket: 15_000_000, appetite: "warm", sectors: ["Healthcare", "Multifamily"], lastDeal: "Distributes to 20K+ advisor network — slower execution", yieldFloor: 6.0 },
-    { id: "rj", name: "Raymond James — Structured Products", type: "ria", aum: 210_000_000_000, minTicket: 5_000_000, maxTicket: 25_000_000, appetite: "hot", sectors: ["CMBS", "Healthcare", "Industrial"], lastDeal: "Strong appetite — syndicate desk wants co-manager role", yieldFloor: 5.8 },
-  ],
-  strategic: [
-    { id: "hyl", name: "Hylant Insurance — Surety Division", type: "strategic", aum: 4_500_000_000, minTicket: 5_000_000, maxTicket: 30_000_000, appetite: "hot", sectors: ["Healthcare", "Construction", "Municipal"], lastDeal: "Existing NEST partner — surety + direct investment", yieldFloor: 6.0 },
-    { id: "sop", name: "Soparrow Capital Partners", type: "strategic", aum: 800_000_000, minTicket: 10_000_000, maxTicket: 50_000_000, appetite: "hot", sectors: ["Healthcare", "Mixed Use", "Industrial"], lastDeal: "Co-GP on Jacaranda — anchor investor commitment", yieldFloor: 5.5 },
-  ],
-};
+// DEMO_INVESTORS removed — loaded from /api/hawkeye/buyers, grouped by type in component state
 
-const DEMO_ORDERS = [
-  { id: 1, investor: "PGIM Fixed Income", amount: 50_000_000, status: "firm" as const, spreadBid: 82, tranche: "A", notes: "Firm order — compliance approved" },
-  { id: 2, investor: "Metropolitan Life", amount: 25_000_000, status: "firm" as const, spreadBid: 85, tranche: "A", notes: "Standard allocation from insurance book" },
-  { id: 3, investor: "AIG Global Real Assets", amount: 20_000_000, status: "soft" as const, spreadBid: 88, tranche: "A", notes: "Soft — pending IC approval Thursday" },
-  { id: 4, investor: "BMO Capital Markets", amount: 15_000_000, status: "firm" as const, spreadBid: 85, tranche: "A", notes: "Will increase to $25M if spread widens to T+90" },
-  { id: 5, investor: "Brookfield Heritage", amount: 10_000_000, status: "indicated" as const, spreadBid: null, tranche: "A", notes: "Verbal indication — awaiting written confirm" },
-  { id: 6, investor: "Angelo Gordon", amount: 15_000_000, status: "firm" as const, spreadBid: 145, tranche: "B", notes: "B tranche only — wants 145bp minimum" },
-  { id: 7, investor: "Oaktree Capital", amount: 8_250_000, status: "soft" as const, spreadBid: 155, tranche: "B", notes: "Will commit if we add cash sweep covenant" },
-  { id: 8, investor: "Evergreen Wealth", amount: 5_000_000, status: "indicated" as const, spreadBid: null, tranche: "A", notes: "First-time — needs call with Bernard" },
-];
-
-const DEMO_ROADSHOW = [
-  { id: 1, investor: "PGIM Fixed Income", date: "2025-06-12", time: "10:00 AM", status: "completed" as const, feedback: "Very positive — ready to anchor. Wants par call protection through Y3." },
-  { id: 2, investor: "Metropolitan Life", date: "2025-06-12", time: "2:00 PM", status: "completed" as const, feedback: "Standard process. Will allocate from insurance general account." },
-  { id: 3, investor: "Oaktree Capital", date: "2025-06-13", time: "9:30 AM", status: "completed" as const, feedback: "Only interested in B tranche. Wants higher spread or cash sweep." },
-  { id: 4, investor: "US Bancorp", date: "2025-06-15", time: "11:00 AM", status: "scheduled" as const, feedback: null },
-  { id: 5, investor: "Prudential Financial", date: "2025-06-16", time: "3:00 PM", status: "scheduled" as const, feedback: null },
-  { id: 6, investor: "RBC Global Asset Mgmt", date: "2025-06-18", time: "10:00 AM", status: "cancelled" as const, feedback: "IC pushed back — revisit in 30 days" },
-];
+// DEMO_ORDERS removed — loaded from /api/hawkeye/order-book/<deal_id> in component state
+// DEMO_ROADSHOW removed — TODO: add GET /api/hawkeye/roadshow endpoint
 
 const INVESTOR_TABS = [
   { key: "insurance", label: "Insurance" },
@@ -188,7 +103,7 @@ function OfferingCard({
   selected,
   onSelect,
 }: {
-  offering: (typeof DEMO_OFFERINGS)[0];
+  offering: OfferingType;
   selected: boolean;
   onSelect: () => void;
 }) {
@@ -348,11 +263,103 @@ export default function HawkeyePlacementScout({
   dealId?: string;
   summaryMode?: boolean;
 }) {
-  const [selectedOffering, setSelectedOffering] = useState(DEMO_OFFERINGS[0].id);
+  const [offerings, setOfferings] = useState<OfferingType[]>([]);
+  const [selectedOffering, setSelectedOffering] = useState<string>("");
+  const [investors, setInvestors] = useState<Record<string, InvestorType[]>>({});
+  const [orders, setOrders] = useState<{ id: string | number; investor: string; amount: number; status: "firm" | "soft" | "indicated"; spreadBid: number | null; tranche: string; notes: string }[]>([]);
+  const [roadshow, setRoadshow] = useState<{ id: string | number; investor: string; date: string; time: string; status: "completed" | "scheduled" | "cancelled"; feedback: string | null }[]>([]);
   const [investorTab, setInvestorTab] = useState<string>("insurance");
   const [bookInvestors, setBookInvestors] = useState<string[]>([]);
   const [teaserContent, setTeaserContent] = useState<string | null>(null);
   const [teaserGenerating, setTeaserGenerating] = useState(false);
+
+  /* ─── Fetch offerings from /api/hawkeye/deals ─── */
+  useEffect(() => {
+    fetch(`${API}/api/hawkeye/deals`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (!json.success) return;
+        const mapped: OfferingType[] = (json.data?.deals ?? []).map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          totalRaise: d.bond_face ?? 0,
+          rating: d.preferred_rating ?? "BBB+",
+          coupon: 7.0,
+          spread: null,
+          subscribed: d.potential_demand_usd ?? 0,
+          targetClose: "",
+          status: d.status === "active" ? "marketing" : d.status === "pipeline" ? "pre-marketing" : d.status,
+          tranches: [
+            { series: "A", size: Math.round((d.bond_face ?? 0) * 0.75), subscribed: 0, rating: "A" },
+            { series: "B", size: Math.round((d.bond_face ?? 0) * 0.25), subscribed: 0, rating: "BBB" },
+          ],
+        }));
+        if (mapped.length > 0) {
+          setOfferings(mapped);
+          setSelectedOffering(mapped[0].id);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  /* ─── Fetch investors from /api/hawkeye/buyers ─── */
+  useEffect(() => {
+    fetch(`${API}/api/hawkeye/buyers`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (!json.success) return;
+        const flat: any[] = json.data?.buyers ?? [];
+        const grouped: Record<string, InvestorType[]> = {};
+        for (const b of flat) {
+          const key = b.type === "family_office" ? "family_offices"
+            : b.type === "credit_fund" ? "credit_funds"
+            : b.type === "pension" ? "pension_funds"
+            : b.type === "ria" ? "ria_wealth"
+            : b.type === "insurance" ? "insurance"
+            : b.type === "bank" ? "banks"
+            : "strategic";
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push({
+            id: b.id,
+            name: b.name,
+            type: b.type,
+            aum: b.aum_usd ?? 0,
+            minTicket: b.min_ticket_usd ?? 0,
+            maxTicket: b.max_ticket_usd ?? 0,
+            appetite: b.relationship === "existing" ? "hot" : "warm",
+            sectors: b.preferred_sectors ?? [],
+            lastDeal: b.relationship === "existing" ? "Existing relationship" : "New prospect",
+            yieldFloor: b.yield_floor_pct ?? 6.0,
+          });
+        }
+        setInvestors(grouped);
+      })
+      .catch(() => {});
+  }, []);
+
+  /* ─── Fetch order book from /api/hawkeye/order-book/<deal_id> ─── */
+  useEffect(() => {
+    const id = dealId || selectedOffering;
+    if (!id) return;
+    fetch(`${API}/api/hawkeye/order-book/${id}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (!json.success) return;
+        const mapped = (json.data?.orders ?? []).map((o: any) => ({
+          id: o.id,
+          investor: o.investorName ?? o.investorId ?? "Unknown",
+          amount: o.amount_usd ?? 0,
+          status: (o.status === "allocated" ? "firm" : o.status === "indicated" ? "indicated" : "soft") as "firm" | "soft" | "indicated",
+          spreadBid: o.yield_target_pct ? Math.round((o.yield_target_pct - 5) * 100) : null,
+          tranche: o.tranche ?? "A",
+          notes: o.notes ?? "",
+        }));
+        setOrders(mapped);
+      })
+      .catch(() => {});
+  }, [dealId, selectedOffering]);
+
+  // TODO: add GET /api/hawkeye/roadshow endpoint — roadshow stays empty until wired
 
   /* trpc hooks — kept from original */
   const buyersQuery = trpc.hawkeye.buyers.useQuery();
@@ -366,18 +373,21 @@ export default function HawkeyePlacementScout({
   });
   const allocateMutation = trpc.hawkeye.allocate.useMutation();
 
-  const offering = DEMO_OFFERINGS.find((o) => o.id === selectedOffering) ?? DEMO_OFFERINGS[0];
+  const offering: OfferingType = offerings.find((o) => o.id === selectedOffering) ?? {
+    id: "", name: "—", totalRaise: 0, rating: "—", coupon: 0, spread: null,
+    subscribed: 0, targetClose: "—", status: "pre-marketing", tranches: [],
+  };
 
   /* Book building stats */
   const bookStats = useMemo(() => {
-    const firmTotal = DEMO_ORDERS.filter((o) => o.status === "firm").reduce((s, o) => s + o.amount, 0);
-    const softTotal = DEMO_ORDERS.filter((o) => o.status === "soft").reduce((s, o) => s + o.amount, 0);
-    const indicatedTotal = DEMO_ORDERS.filter((o) => o.status === "indicated").reduce((s, o) => s + o.amount, 0);
+    const firmTotal = orders.filter((o) => o.status === "firm").reduce((s, o) => s + o.amount, 0);
+    const softTotal = orders.filter((o) => o.status === "soft").reduce((s, o) => s + o.amount, 0);
+    const indicatedTotal = orders.filter((o) => o.status === "indicated").reduce((s, o) => s + o.amount, 0);
     const total = firmTotal + softTotal + indicatedTotal;
-    const trancheA = DEMO_ORDERS.filter((o) => o.tranche === "A").reduce((s, o) => s + o.amount, 0);
-    const trancheB = DEMO_ORDERS.filter((o) => o.tranche === "B").reduce((s, o) => s + o.amount, 0);
+    const trancheA = orders.filter((o) => o.tranche === "A").reduce((s, o) => s + o.amount, 0);
+    const trancheB = orders.filter((o) => o.tranche === "B").reduce((s, o) => s + o.amount, 0);
     return { firmTotal, softTotal, indicatedTotal, total, trancheA, trancheB };
-  }, []);
+  }, [orders]);
 
   const oversubscribed = bookStats.total > offering.totalRaise;
 
@@ -391,7 +401,7 @@ export default function HawkeyePlacementScout({
         <div className="mt-3 grid grid-cols-3 gap-3">
           <div>
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Active Deals</p>
-            <p className="font-mono text-xl font-semibold text-white">{DEMO_OFFERINGS.length}</p>
+            <p className="font-mono text-xl font-semibold text-white">{offerings.length}</p>
           </div>
           <div>
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Book Size</p>
@@ -399,11 +409,11 @@ export default function HawkeyePlacementScout({
           </div>
           <div>
             <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-[#7A9A82]">Investors</p>
-            <p className="font-mono text-xl font-semibold text-amber-100">{DEMO_ORDERS.length}</p>
+            <p className="font-mono text-xl font-semibold text-amber-100">{orders.length}</p>
           </div>
         </div>
         <div className="mt-2 flex gap-2">
-          {DEMO_OFFERINGS.map((o) => (
+          {offerings.map((o) => (
             <div key={o.id} className="flex-1 rounded-lg border border-white/5 bg-white/[0.02] p-2">
               <p className="truncate font-mono text-[0.48rem] text-[#7A9A82]">{o.name.split(" — ")[0]}</p>
               <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
@@ -438,9 +448,9 @@ export default function HawkeyePlacementScout({
             <span className="h-2 w-2 rounded-full bg-emerald-400" /> Live
           </span>
           <span>|</span>
-          <span>{DEMO_OFFERINGS.length} offerings</span>
+          <span>{offerings.length} offerings</span>
           <span>|</span>
-          <span>{DEMO_ORDERS.length} orders</span>
+          <span>{orders.length} orders</span>
         </div>
       </div>
 
@@ -450,7 +460,7 @@ export default function HawkeyePlacementScout({
           Active Offerings
         </h2>
         <div className="flex gap-4 overflow-x-auto pb-2">
-          {DEMO_OFFERINGS.map((o) => (
+          {offerings.map((o) => (
             <OfferingCard
               key={o.id}
               offering={o}
@@ -483,7 +493,7 @@ export default function HawkeyePlacementScout({
               >
                 {tab.label}
                 <span className="ml-1 text-[0.44rem] text-[#7A9A82]">
-                  {(DEMO_INVESTORS[tab.key] ?? []).length}
+                  {(investors[tab.key] ?? []).length}
                 </span>
               </button>
             ))}
@@ -491,7 +501,7 @@ export default function HawkeyePlacementScout({
 
           {/* Investor cards */}
           <div className="mt-3 max-h-[520px] space-y-2 overflow-y-auto pr-1">
-            {(DEMO_INVESTORS[investorTab] ?? []).map((inv) => (
+            {(investors[investorTab] ?? []).map((inv) => (
               <InvestorCard
                 key={inv.id}
                 investor={inv}
@@ -588,10 +598,10 @@ export default function HawkeyePlacementScout({
           {/* Orders list */}
           <div className="mt-4">
             <p className="font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[#7A9A82]">
-              Individual Orders ({DEMO_ORDERS.length})
+              Individual Orders ({orders.length})
             </p>
             <div className="mt-2 max-h-[300px] space-y-1.5 overflow-y-auto pr-1">
-              {DEMO_ORDERS.map((order) => (
+              {orders.map((order) => (
                 <div
                   key={order.id}
                   className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5"
@@ -654,7 +664,7 @@ export default function HawkeyePlacementScout({
 
           {/* Meetings list */}
           <div className="mt-3 max-h-[320px] space-y-2 overflow-y-auto pr-1">
-            {DEMO_ROADSHOW.map((mtg) => (
+            {roadshow.map((mtg) => (
               <div
                 key={mtg.id}
                 className={`rounded-xl border p-2.5 ${meetingStatusStyle[mtg.status]}`}

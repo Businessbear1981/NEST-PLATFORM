@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
 } from "recharts";
-import { priceSurety, type SuretyInputs } from "@/lib/engines/surety";
+import { type SuretyInputs } from "@/lib/engines/surety";
 import { logLocal } from "@/lib/engines/feedback";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
 const fmt = (n: number, dec = 0) =>
   n.toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec });
@@ -28,16 +30,109 @@ export default function SuretyPricing() {
     liquidityRatio: 0.22,
     yearsInBusiness: 12,
   });
-  const [suretyResult, setSuretyResult] = useState<ReturnType<typeof priceSurety> | null>(null);
+  const [suretyResult, setSuretyResult] = useState<{
+    annualPremiumRate: number;
+    annualPremiumUSD: number;
+    totalPremium3yr: number;
+    collateralRequirement: number;
+    collateralUSD: number;
+    lcRequired: boolean;
+    lcSizingUSD: number;
+    tier: string;
+    riskScore: number;
+    notes: string[];
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const handlePriceBond = () => {
-    const r = priceSurety(suretyInputs);
-    setSuretyResult(r);
-    logLocal({
-      engine: "surety",
-      inputs: suretyInputs as unknown as Record<string, unknown>,
-      outputs: r as unknown as Record<string, unknown>,
-    });
+  const handlePriceBond = async () => {
+    setLoading(true);
+    setApiError(null);
+    try {
+      // Map frontend inputs → backend field names
+      const body = {
+        bond_face_usd: suretyInputs.bondFace,
+        dscr: suretyInputs.dscr,
+        ltv_pct: suretyInputs.ltv * 100,          // backend expects integer pct (e.g. 68)
+        sponsor_net_worth_usd: suretyInputs.sponsorNetWorth,
+        asset_type: suretyInputs.projectType,      // closest mapping available
+        aum_tier: suretyInputs.aumTier,
+        liquidity_ratio: suretyInputs.liquidityRatio,
+        years_in_business: suretyInputs.yearsInBusiness,
+        rating_target: "BBB",
+        state: "FL",
+        duration_years: 3,
+      };
+
+      const res = await fetch(`${API}/api/surety/premium`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+      const json = await res.json();
+
+      if (!json.success) throw new Error(json.error || "Backend error");
+
+      const data = json.data;
+      const rec = data.recommended_premium;
+
+      // Derive collateral / LC / tier from AUM tier (same logic as local engine)
+      const aumMap: Record<string, { collateralPct: number; lcRequired: boolean }> = {
+        "0-15M": { collateralPct: 0.25, lcRequired: false },
+        "15-40M": { collateralPct: 0.15, lcRequired: true },
+        "40-80M": { collateralPct: 0.08, lcRequired: true },
+        "80M+": { collateralPct: 0, lcRequired: false },
+      };
+      const { collateralPct, lcRequired } = aumMap[suretyInputs.aumTier] ?? { collateralPct: 0.15, lcRequired: true };
+      const collateralUSD = suretyInputs.bondFace * collateralPct;
+      const lcSizingUSD = lcRequired ? suretyInputs.bondFace * 0.15 : 0;
+      const tier =
+        collateralPct === 0
+          ? "self-collateralized"
+          : lcRequired && collateralPct > 0.1
+          ? "hybrid"
+          : lcRequired
+          ? "LC-dominant"
+          : "surety-only";
+
+      const riskScore = Math.min(
+        100,
+        Math.max(0, 50 + (2.0 - suretyInputs.dscr) * 20 + (suretyInputs.ltv * 100 - 60) * 0.5)
+      );
+
+      // Build adjustment notes from backend response
+      const adj = rec?.adjustments ?? {};
+      const notes: string[] = Object.entries(adj).map(
+        ([k, v]) => `${k.replace(/_/g, " ")}: ${v}`
+      );
+
+      const r = {
+        annualPremiumRate: rec?.adjusted_rate_bps ?? rec?.base_rate_bps ?? 0,
+        annualPremiumUSD: rec?.annual_premium_usd ?? 0,
+        totalPremium3yr: rec?.total_premium_usd ?? 0,
+        collateralRequirement: collateralPct,
+        collateralUSD,
+        lcRequired,
+        lcSizingUSD,
+        tier,
+        riskScore,
+        notes,
+      };
+
+      setSuretyResult(r);
+      logLocal({
+        engine: "surety",
+        inputs: suretyInputs as unknown as Record<string, unknown>,
+        outputs: r as unknown as Record<string, unknown>,
+      });
+    } catch (err) {
+      setApiError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Build radar data: normalize each dimension to 0-100
@@ -109,10 +204,14 @@ export default function SuretyPricing() {
 
           <button
             onClick={handlePriceBond}
-            className="w-full mt-4 bg-[#C4A048] hover:bg-[#E8C87A] text-[#030A06] font-mono font-semibold py-3 rounded-xl"
+            disabled={loading}
+            className="w-full mt-4 bg-[#C4A048] hover:bg-[#E8C87A] disabled:opacity-50 disabled:cursor-not-allowed text-[#030A06] font-mono font-semibold py-3 rounded-xl"
           >
-            Price Bond
+            {loading ? "Pricing…" : "Price Bond"}
           </button>
+          {apiError && (
+            <p className="mt-2 font-mono text-xs text-red-400">{apiError}</p>
+          )}
         </div>
 
         {/* Result */}
