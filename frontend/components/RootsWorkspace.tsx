@@ -1,10 +1,25 @@
 ﻿"use client";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Loader2, FolderOpen, FileCheck2, CheckCircle2, Circle, AlertTriangle, BarChart3, Shield, Leaf, ShieldCheck, ClipboardCheck, FileText, Calculator, BookOpen, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
+
+// Maps backend document kind → frontend doc IDs that it satisfies
+const KIND_TO_DOC_IDS: Record<string, string[]> = {
+  rent_roll:           [],            // no direct match in the 30 categories (CRE-only doc)
+  operating_statement: ["d1"],        // 3-Year Audited Financials / operating statement
+  appraisal:           ["d21"],       // Appraisal (USPAP)
+  title:               ["d10"],       // Title Report / Commitment
+  insurance:           ["d27"],       // General Liability COI
+  purchase_sale:       [],            // no direct match
+  sponsor_bio:         ["d5"],        // Sponsor Personal Financial Statement
+  environmental:       ["d11"],       // Environmental Phase I
+  other:               [],
+};
 
 // ══════════════════════════════════════════════════════════════════
 // DOCUMENT VAULT — every doc needed for bond issuance
@@ -97,20 +112,108 @@ function money(val: number) {
 
 export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: string; summaryMode?: boolean }) {
   const [subTab, setSubTab] = useState("vault");
+
+  // All doc statuses start as "missing"; backend fetch updates them from real uploads
   const [docStatus, setDocStatus] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     DOC_CATEGORIES.forEach((c) => c.items.forEach((i) => { init[i.id] = "missing"; }));
-    // Seed some as uploaded for demo
-    ["d1", "d2", "d4", "d7", "d8", "d11", "d14", "d15", "d18", "d20", "d21", "d25", "d27"].forEach((id) => { init[id] = "uploaded"; });
-    ["d5", "d9", "d17", "d23"].forEach((id) => { init[id] = "review"; });
     return init;
   });
+
+  // All readiness checks start as false; backend fetch updates them from real data
   const [readinessStatus, setReadinessStatus] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     READINESS_CHECKLIST.forEach((i) => { init[i.id] = false; });
-    ["r1", "r2", "r4", "r7", "r8", "r9"].forEach((id) => { init[id] = true; });
     return init;
   });
+
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ── Apply backend document list to local docStatus ─────────────────
+  const applyBackendDocs = useCallback((docs: Array<{ kind: string }>) => {
+    setDocStatus((prev) => {
+      const next = { ...prev };
+      docs.forEach((doc) => {
+        const ids = KIND_TO_DOC_IDS[doc.kind] ?? [];
+        ids.forEach((id) => { next[id] = "uploaded"; });
+      });
+      return next;
+    });
+  }, []);
+
+  // ── Apply backend readiness to local readinessStatus ───────────────
+  const applyBackendReadiness = useCallback((data: {
+    present?: Array<{ kind: string }>;
+    missing?: Array<{ kind: string }>;
+    score?: number;
+  }) => {
+    // Map backend "present" kinds to readiness items where possible
+    const presentKinds = new Set((data.present ?? []).map((p) => p.kind));
+    setReadinessStatus((prev) => {
+      const next = { ...prev };
+      // Environmental clearance → r13
+      if (presentKinds.has("environmental")) next["r13"] = true;
+      // Appraisal implies market validated → r7 (proforma validated by 3rd party)
+      if (presentKinds.has("appraisal")) next["r7"] = true;
+      // Insurance → no direct readiness item, skip
+      return next;
+    });
+  }, []);
+
+  // ── Fetch on mount ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!dealId) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem("nest_token") : null;
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    // Fetch document list
+    fetch(`${API}/api/docs?deal_id=${encodeURIComponent(dealId)}`, { headers })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.statusText)))
+      .then((docs: Array<{ kind: string }>) => applyBackendDocs(docs))
+      .catch(() => setLoadError("Could not load documents from server."));
+
+    // Fetch readiness
+    fetch(`${API}/api/docs/readiness?deal_id=${encodeURIComponent(dealId)}`, { headers })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.statusText)))
+      .then((data) => applyBackendReadiness(data))
+      .catch(() => { /* readiness fetch failure is non-blocking */ });
+  }, [dealId, applyBackendDocs, applyBackendReadiness]);
+
+  // ── File upload handler ────────────────────────────────────────────
+  const handleFileUpload = useCallback(async (files: FileList | null, docId?: string) => {
+    if (!files || !files.length || !dealId) return;
+    setUploading(true);
+    setUploadError(null);
+    const token = typeof window !== "undefined" ? localStorage.getItem("nest_token") : null;
+    try {
+      for (const file of Array.from(files)) {
+        const form = new FormData();
+        form.append("deal_id", dealId);
+        form.append("file", file);
+        const headers: Record<string, string> = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const res = await fetch(`${API}/api/docs/upload`, { method: "POST", headers, body: form });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: res.statusText }));
+          throw new Error(err.error || res.statusText);
+        }
+        const doc: { kind: string } = await res.json();
+        // Mark the specific doc clicked as uploaded, and any kind-matched docs
+        if (docId) {
+          setDocStatus((prev) => ({ ...prev, [docId]: "uploaded" }));
+        }
+        applyBackendDocs([doc]);
+      }
+    } catch (e: any) {
+      setUploadError(e?.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }, [dealId, applyBackendDocs]);
 
   const rmaMutation = trpc.ratingEsg.rmaBenchmark.useMutation();
   const esgMutation = trpc.ratingEsg.esgScore.useMutation();
@@ -130,13 +233,6 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
 
   // Overall
   const overallReadiness = Math.round((docReadiness + checkReadiness) / 2);
-
-  const toggleDoc = (id: string) => {
-    setDocStatus((prev) => ({
-      ...prev,
-      [id]: prev[id] === "uploaded" ? "missing" : prev[id] === "missing" ? "uploaded" : "uploaded",
-    }));
-  };
 
   const toggleCheck = (id: string) => {
     setReadinessStatus((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -164,6 +260,31 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
 
   return (
     <div className="space-y-6">
+      {/* Hidden file input for uploads */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        onChange={(e) => {
+          const docId = fileInputRef.current?.dataset.docId;
+          handleFileUpload(e.target.files, docId);
+          // Reset so the same file can be re-selected if needed
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }}
+      />
+
+      {/* Load / upload error banners */}
+      {loadError && (
+        <div className="rounded-xl border border-amber-300/30 bg-amber-300/8 px-4 py-2 font-mono text-[0.62rem] text-amber-200">
+          {loadError}
+        </div>
+      )}
+      {uploadError && (
+        <div className="rounded-xl border border-red-400/30 bg-red-500/8 px-4 py-2 font-mono text-[0.62rem] text-red-200">
+          Upload error: {uploadError}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -217,13 +338,23 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
                     const st = docStatus[item.id];
                     const isOn = st === "uploaded";
                     const isReview = st === "review";
+                    const canUpload = dealId && !isOn;
                     return (
-                      <button key={item.id} onClick={() => toggleDoc(item.id)}
+                      <button
+                        key={item.id}
+                        disabled={uploading}
+                        onClick={() => {
+                          if (canUpload && fileInputRef.current) {
+                            // Store which doc was clicked so upload handler can mark it
+                            fileInputRef.current.dataset.docId = item.id;
+                            fileInputRef.current.click();
+                          }
+                        }}
                         className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
                           isOn ? "border-emerald-300/30 bg-emerald-400/8 shadow-[0_0_20px_rgba(52,211,153,0.10)]"
                           : isReview ? "border-amber-300/25 bg-amber-300/6 shadow-[0_0_16px_rgba(251,191,36,0.08)]"
                           : "border-white/5 bg-white/[0.015]"
-                        } hover:border-white/20`}>
+                        } hover:border-white/20 disabled:opacity-60`}>
                         <div className="flex items-center gap-3">
                           {isOn ? <CheckCircle2 size={16} className="text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
                            : isReview ? <AlertTriangle size={16} className="text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" />
@@ -237,7 +368,7 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
                           isOn ? "border-emerald-300/30 bg-emerald-400/10 text-emerald-200"
                           : isReview ? "border-amber-300/30 bg-amber-300/10 text-amber-200"
                           : "border-[#1E4A2E] text-[#7A9A82]"
-                        }`}>{isOn ? "Uploaded" : isReview ? "Review" : "Missing"}</span>
+                        }`}>{isOn ? "Uploaded" : isReview ? "Review" : canUpload ? "Upload" : "Missing"}</span>
                       </button>
                     );
                   })}

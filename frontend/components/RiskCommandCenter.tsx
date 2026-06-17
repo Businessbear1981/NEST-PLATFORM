@@ -1,9 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useDealState } from "@/contexts/DealStateContext";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
 export default function RiskCommandCenter() {
+  const { state } = useDealState();
+  const { activeDeal, metrics } = state;
+
   const [deals, setDeals] = useState<any[]>([]);
   const [scoring, setScoring] = useState(false);
   const [auditResult, setAuditResult] = useState<any>(null);
@@ -15,12 +19,31 @@ export default function RiskCommandCenter() {
   async function runAudit(deal: any) {
     setScoring(true);
     try {
+      // Derive credit_metrics from the active deal context (metrics + deal fields).
+      // metrics (StackMetrics) is computed by Maxwell/Atlas and lives in DealStateContext.
+      // Falls back to deal.project fields if the context metrics haven't been computed yet.
+      const creditMetrics = metrics
+        ? {
+            dscr: metrics.dscr,
+            ltv: metrics.cltv_pct,
+            debt_to_ebitda: activeDeal
+              ? (metrics.total_debt_usd ?? 0) / Math.max((activeDeal.stabilized_noi_usd ?? 1), 1)
+              : 0,
+            interest_coverage: metrics.icr,
+          }
+        : {
+            dscr: deal?.project?.dscr ?? null,
+            ltv: deal?.project?.ltv ?? null,
+            debt_to_ebitda: deal?.project?.debt_to_ebitda ?? null,
+            interest_coverage: deal?.project?.interest_coverage ?? null,
+          };
+
       const r = await fetch(`${API}/api/bond-tools/audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           deal,
-          credit_metrics: { dscr: 1.65, ltv: 67, debt_to_ebitda: 5.5, interest_coverage: 2.6 },
+          credit_metrics: creditMetrics,
         }),
       });
       const d = await r.json();
@@ -33,6 +56,22 @@ export default function RiskCommandCenter() {
   }
 
   const dimensions = ["Market Risk", "Construction Risk", "Credit Risk", "Operational Risk", "Regulatory Risk", "Sponsor Risk", "Environmental Risk"];
+
+  if (!activeDeal) {
+    return (
+      <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
+        <div className="mx-auto max-w-6xl space-y-5">
+          <div className="rounded-[1.5rem] border border-amber-300/20 bg-[#07101a]/80 p-6">
+            <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-amber-200">Risk Assessment - Sentinel Agent</p>
+            <h1 className="mt-2 font-mono text-xl font-bold uppercase tracking-[0.06em] text-white">Risk Command Center</h1>
+          </div>
+          <div className="rounded-[1.25rem] border border-white/10 bg-[#07101a]/80 p-8 text-center">
+            <p className="font-mono text-sm text-[#7A9A82]">Load a deal from the Bond Desk to run risk analysis</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#03060b] px-6 py-8 text-[#EDE8DC]">
