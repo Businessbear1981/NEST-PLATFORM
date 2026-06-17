@@ -4,6 +4,8 @@ V2 Frontend Compatibility Routes — aliases for prefix mismatches.
 V2 frontend calls some routes under different prefixes than V3/V4 backend.
 This blueprint creates aliases so V2 works without frontend changes.
 """
+import json
+import os
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
@@ -284,3 +286,150 @@ def nervous_system_ingest():
         })
     except Exception as e:
         return _ok({"plugin": "claude", "success": False, "error": str(e)})
+
+
+# ── /api/bernard/find-similar ─────────────────────────────────
+# EagleEye "Find Similar" panel — accepts raw document text,
+# extracts deal params with Claude, then fires EDGAR + FRED for comps.
+
+@v2_compat_bp.post("/bernard/find-similar")
+def bernard_find_similar():
+    """
+    Document-first comparable search. Paste a deal document;
+    Claude extracts parameters, then EDGAR + FRED fire automatically.
+
+    Body: {
+        "document_text": str,   # raw pasted text (teaser, OM, feasibility study)
+        "sector":        str,   # optional hint
+        "state":         str,   # optional hint
+        "size_min":      int,   # optional
+        "size_max":      int    # optional
+    }
+    Returns: {
+        "extracted_from_document": {...},
+        "emma_comps": [...],
+        "eagleeye_signals": [...]
+    }
+    """
+    body = request.get_json(silent=True) or {}
+    document_text = (body.get("document_text") or "").strip()
+    sector_hint = body.get("sector", "")
+    state_hint = body.get("state", "")
+    size_min = body.get("size_min")
+    size_max = body.get("size_max")
+
+    if not document_text:
+        return jsonify({"success": False, "error": "document_text required"}), 400
+
+    # ── Step 1: Claude extracts deal parameters from the document ──
+    extract_system = (
+        "You are a capital markets analyst at NEST Advisors. "
+        "Extract structured deal parameters from the document provided. "
+        "Return ONLY valid JSON — no markdown fences, no commentary."
+    )
+    extract_prompt = (
+        f"Extract the following from this deal document:\n\n"
+        f"{document_text[:6000]}\n\n"
+        "Return JSON with these keys:\n"
+        '  "deal_name": str,\n'
+        '  "borrower": str,\n'
+        '  "deal_type": str (e.g. senior_living, multifamily, healthcare, industrial, data_centers, office, retail),\n'
+        '  "state": str (two-letter code, or empty string if unknown),\n'
+        '  "naics_code": str (6-digit NAICS, best estimate),\n'
+        '  "estimated_size_usd": int (dollar amount, 0 if unknown),\n'
+        '  "key_metrics": {object with any financial figures found}\n'
+        "If a field cannot be determined, use an empty string or 0."
+    )
+
+    extracted = {}
+    try:
+        from agents._claude import complete
+        raw = complete(extract_system, extract_prompt, max_tokens=512)
+        extracted = json.loads(raw)
+    except Exception as e:
+        extracted = {"error": f"extraction failed: {e}"}
+
+    # Resolve sector / state / size from extracted + hints
+    sector = extracted.get("deal_type") or sector_hint or "senior_living"
+    state = extracted.get("state") or state_hint or "US"
+    par_amount = extracted.get("estimated_size_usd") or 0
+    min_amount = size_min or (int(par_amount * 0.5) if par_amount else 25_000_000)
+    max_amount = size_max or (int(par_amount * 1.5) if par_amount else 500_000_000)
+    borrower = extracted.get("borrower") or extracted.get("deal_name") or "Unknown"
+
+    # ── Step 2: EDGAR comparables ─────────────────────────────────
+    edgar_results = []
+    try:
+        from services.eagleeye_scanner import EagleEyeScanner
+        scanner = EagleEyeScanner()
+        edgar_results = scanner.search_edgar_comparables(
+            sector=sector,
+            state=state if state != "US" else "FL",
+            min_amount=min_amount,
+            max_amount=max_amount,
+        )
+    except Exception:
+        pass
+
+    # ── Step 3: FRED market context ───────────────────────────────
+    market_ctx = {}
+    try:
+        from services.eagleeye_scanner import EagleEyeScanner
+        scanner = EagleEyeScanner()
+        market_ctx = scanner.get_fred_market_context(state=state, sector=sector)
+    except Exception:
+        pass
+
+    # ── Step 4: Claude ranks + produces 5 comps ───────────────────
+    rank_system = (
+        "You are a capital markets analyst at NEST Advisors. "
+        "Return ONLY valid JSON — no markdown fences, no commentary."
+    )
+    rank_prompt = (
+        f"Deal extracted from document:\n"
+        f"  Borrower: {borrower}\n"
+        f"  Sector:   {sector}\n"
+        f"  State:    {state}\n"
+        f"  Size:     ${par_amount:,.0f}\n\n"
+        f"Market context: {json.dumps(market_ctx)}\n\n"
+        f"EDGAR filings found:\n{json.dumps(edgar_results, indent=2)}\n\n"
+        "Produce exactly 5 comparable bond transactions. "
+        "Each item must have: "
+        '"name" (str), "sector" (str), "state" (str), "amount" (int), '
+        '"similarity_score" (float 0-1), "rationale" (str one sentence), '
+        '"source" ("edgar" or "market_intelligence"). '
+        "Supplement with market knowledge if fewer than 5 EDGAR results. "
+        "Return a JSON array sorted by similarity_score descending."
+    )
+
+    emma_comps = []
+    try:
+        from agents._claude import complete
+        raw = complete(rank_system, rank_prompt, max_tokens=1024)
+        emma_comps = json.loads(raw)
+        if not isinstance(emma_comps, list):
+            emma_comps = []
+    except Exception:
+        emma_comps = []
+
+    # ── Step 5: Convert EDGAR results to EagleEye signal format ───
+    eagleeye_signals = []
+    for i, item in enumerate(edgar_results[:8]):
+        eagleeye_signals.append({
+            "id": f"ee-{i}",
+            "type": "edgar_comp",
+            "entity": item.get("entity", "Unknown"),
+            "sector": sector,
+            "state": state,
+            "source": "SEC EDGAR",
+            "detail": item.get("snippet", ""),
+            "filing_date": item.get("filing_date", ""),
+            "score": max(40, 90 - i * 6),
+        })
+
+    return _ok({
+        "extracted_from_document": extracted,
+        "emma_comps": emma_comps,
+        "eagleeye_signals": eagleeye_signals,
+        "market_context": market_ctx,
+    })

@@ -691,3 +691,115 @@ def stats():
         "converted": converted,
         "scout_runs": len(_scout_runs),
     })
+
+
+# ── OPERATORS: LEARNING LOOP ─────────────────────────────────────────────────
+# EagleEye mounts this on load to prime the intelligence cycle.
+# Fires EDGAR + FRED → Claude synthesizes → returns actionable items.
+
+@eagleeye_bp.route("/operators/learning-loop", methods=["POST"])
+def operators_learning_loop():
+    """
+    Auto-fired on EagleEye mount. Pulls live EDGAR + FRED signals,
+    runs Claude analysis, and returns a prioritized action list.
+
+    Body: { sector?: str, state?: str }   (both optional — scans broadly if omitted)
+    Returns: { actions: [...], signals_pulled: int, market_snapshot: {...} }
+    """
+    body = request.get_json(silent=True) or {}
+    sector = body.get("sector", "senior_living")
+    state = body.get("state", "FL")
+
+    # 1 — Pull live EDGAR signals
+    edgar_signals = []
+    try:
+        edgar_signals = _scanner.search_edgar_comparables(
+            sector=sector,
+            state=state,
+            min_amount=25_000_000,
+            max_amount=500_000_000,
+        )
+    except Exception:
+        pass
+
+    # 2 — Pull FRED market context
+    market_ctx = {}
+    try:
+        market_ctx = _scanner.get_fred_market_context(state=state, sector=sector)
+    except Exception:
+        pass
+
+    # 3 — Claude synthesizes into action items
+    system_prompt = (
+        "You are Bernard, the AI CEO of NEST Advisors — a private bond structuring and "
+        "capital markets intelligence platform. You are reviewing live market signals. "
+        "Return ONLY valid JSON — no markdown fences, no commentary."
+    )
+    user_prompt = (
+        f"Live market intelligence pull for sector={sector}, state={state}:\n\n"
+        f"EDGAR filings found: {len(edgar_signals)}\n"
+        f"{json.dumps([{'entity': s.get('entity'), 'form': s.get('form_type'), 'date': s.get('filing_date')} for s in edgar_signals[:8]], indent=2)}\n\n"
+        f"Market context: {json.dumps(market_ctx)}\n\n"
+        "Synthesize into a JSON object with key 'actions': an array of 3-5 prioritized action items. "
+        "Each action must have: "
+        '"title" (str), "description" (str one sentence), "priority" ("critical"|"high"|"medium"), '
+        '"agent" (str — which NEST agent to deploy: Merlin/Maxwell/Sentinel/LenderScout/Sterling), '
+        '"signal_source" (str). '
+        "Focus on deal opportunities, rate movements, and risks. Be direct."
+    )
+
+    actions = []
+    try:
+        raw = complete(system_prompt, user_prompt, max_tokens=1024)
+        parsed = json.loads(raw)
+        actions = parsed.get("actions", parsed) if isinstance(parsed, dict) else parsed
+        if not isinstance(actions, list):
+            actions = []
+    except Exception:
+        # Fallback — structured summary without Claude
+        actions = [
+            {
+                "title": f"EDGAR scan complete — {len(edgar_signals)} filings found",
+                "description": f"Review {sector.replace('_', ' ')} filings in {state} for deal opportunities.",
+                "priority": "high" if edgar_signals else "medium",
+                "agent": "Merlin",
+                "signal_source": "SEC EDGAR",
+            }
+        ]
+        if market_ctx.get("ten_yr_treasury"):
+            actions.append({
+                "title": f"10yr Treasury at {market_ctx['ten_yr_treasury']}%",
+                "description": "Rate environment affects bond pricing — update coupon assumptions.",
+                "priority": "medium",
+                "agent": "Maxwell",
+                "signal_source": "FRED",
+            })
+
+    # Also seed local _signals from this EDGAR pull (so Signal Feed has live data)
+    with _lock:
+        if not _signals and edgar_signals:
+            seeded = []
+            for i, item in enumerate(edgar_signals[:10], start=1):
+                seeded.append({
+                    "id": f"ll_{i}",
+                    "type": "edgar_filing",
+                    "source": "SEC EDGAR",
+                    "entity": item.get("entity", "Unknown"),
+                    "amount_usd": 0,
+                    "naics": "6232",
+                    "state": state,
+                    "county": "",
+                    "detail": item.get("snippet", "")[:200],
+                    "score": max(10, 80 - i * 5),
+                    "status": "warm",
+                    "discoveredAt": item.get("filing_date", datetime.utcnow().isoformat()),
+                })
+            _signals.extend(seeded)
+
+    return _ok({
+        "actions": actions,
+        "signals_pulled": len(edgar_signals),
+        "market_snapshot": market_ctx,
+        "sector": sector,
+        "state": state,
+    })
