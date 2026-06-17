@@ -1,8 +1,10 @@
 ﻿"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDealState, type Deal } from "@/contexts/DealStateContext";
 import { useBernard } from "@/contexts/BernardContext";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
 interface PipelineDeal {
   id: string;
@@ -27,43 +29,32 @@ const PHASES: { key: Deal["phase"]; label: string; color: string; glow: string }
   { key: "closing", label: "Closing", color: "border-emerald-500/30 bg-emerald-500/[0.06]", glow: "bg-emerald-400" },
 ];
 
-const DEMO_PIPELINE: PipelineDeal[] = [
-  {
-    id: "jacaranda-001", name: "Jacaranda Trace PLOM", sponsor: "Soparrow Capital",
-    total_project_cost_usd: 231_000_000, stabilized_noi_usd: 18_500_000,
-    appraised_value_usd: 277_200_000, use_of_proceeds: "Ground-up mixed use",
-    sector: "mixed_use", phase: "structuring", grade: "BBB+", dscr: 1.82,
-    assignedPartners: ["Moody's", "Hylant"], lastActivity: "Tranche B added — 2hr ago",
-  },
-  {
-    id: "meridian-002", name: "Meridian Health Campus", sponsor: "Arden Edge Capital",
-    total_project_cost_usd: 145_000_000, stabilized_noi_usd: 12_800_000,
-    appraised_value_usd: 174_000_000, use_of_proceeds: "Healthcare facility",
-    sector: "healthcare", phase: "sourcing", grade: undefined, dscr: undefined,
-    assignedPartners: [], lastActivity: "EagleEye flagged — 6hr ago",
-  },
-  {
-    id: "harbor-003", name: "Harbor Point Industrial", sponsor: "Soparrow Capital",
-    total_project_cost_usd: 89_000_000, stabilized_noi_usd: 9_200_000,
-    appraised_value_usd: 106_800_000, use_of_proceeds: "Industrial warehouse",
-    sector: "industrial", phase: "placement", grade: "A", dscr: 2.15,
-    assignedPartners: ["Moody's", "Hylant", "Hawkeye"], lastActivity: "Book 62% subscribed — 1hr ago",
-  },
-  {
-    id: "oakwood-004", name: "Oakwood Multifamily", sponsor: "Arden Edge Capital",
-    total_project_cost_usd: 67_000_000, stabilized_noi_usd: 5_800_000,
-    appraised_value_usd: 80_400_000, use_of_proceeds: "Multifamily development",
-    sector: "multifamily", phase: "structuring", grade: "BBB", dscr: 1.65,
-    assignedPartners: ["Hylant"], lastActivity: "Call option added — 4hr ago",
-  },
-  {
-    id: "summit-005", name: "Summit Office Tower", sponsor: "Soparrow Capital",
-    total_project_cost_usd: 178_000_000, stabilized_noi_usd: 14_200_000,
-    appraised_value_usd: 213_600_000, use_of_proceeds: "Class A office",
-    sector: "office", phase: "closing", grade: "BBB+", dscr: 1.78,
-    assignedPartners: ["Moody's", "Hylant", "Hawkeye"], lastActivity: "Final docs — 30min ago",
-  },
-];
+// Maps /api/deals status → Bond Desk pipeline phase
+function statusToPhase(status: string): Deal["phase"] {
+  if (status === "closing" || status === "closed") return "closing";
+  if (status === "placement" || status === "book_building") return "placement";
+  if (status === "structuring" || status === "credit_underwriting" || status === "rated") return "structuring";
+  return "sourcing";
+}
+
+function mapApiDeal(d: Record<string, unknown>): PipelineDeal {
+  const amount = (d.amount as number) || (d.bond_face as number) || 0;
+  return {
+    id: (d.id as string) || String(Math.random()),
+    name: (d.name as string) || "Unnamed Deal",
+    sponsor: (d.issuer as string) || (d.sponsor as string) || "Unknown Sponsor",
+    total_project_cost_usd: amount,
+    stabilized_noi_usd: (d.stabilized_noi as number) || Math.round(amount * 0.09),
+    appraised_value_usd: (d.appraised_value as number) || Math.round(amount * 1.2),
+    use_of_proceeds: (d.notes as string) || (d.deal_type as string) || "",
+    sector: ((d.deal_type as string) || "other").replace(/_bond$/, "").replace(/_/g, " "),
+    phase: statusToPhase((d.status as string) || "sourcing"),
+    grade: (d.risk_grade as string) || undefined,
+    dscr: (d.dscr as number) || undefined,
+    assignedPartners: [],
+    lastActivity: d.created_at ? `Created ${new Date(d.created_at as string).toLocaleDateString()}` : undefined,
+  };
+}
 
 const GRADE_COLORS: Record<string, string> = {
   A: "text-emerald-400", "BBB+": "text-emerald-300", BBB: "text-[#C4A048]",
@@ -74,7 +65,23 @@ export default function DealPipelineDashboard() {
   const { setDeal, log } = useDealState();
   const bernard = useBernard();
   const [collapsed, setCollapsed] = useState(false);
-  const [pipeline] = useState<PipelineDeal[]>(DEMO_PIPELINE);
+  const [pipeline, setPipeline] = useState<PipelineDeal[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/api/deals`)
+      .then((r) => r.json())
+      .then((json) => {
+        const raw: Record<string, unknown>[] = Array.isArray(json.data)
+          ? json.data
+          : Array.isArray(json)
+          ? json
+          : [];
+        setPipeline(raw.map(mapApiDeal));
+      })
+      .catch(() => setPipeline([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleLoadDeal = (deal: PipelineDeal) => {
     setDeal({
@@ -100,6 +107,14 @@ export default function DealPipelineDashboard() {
   };
 
   const totalPipeline = pipeline.reduce((s, d) => s + d.total_project_cost_usd, 0);
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] px-5 py-4 font-mono text-[0.6rem] text-[#7A9A82]">
+        Loading deals from pipeline…
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden">
