@@ -7,7 +7,6 @@ These routed workbench pages must preserve every NEST module as a docked institu
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
-  ArrowLeft,
   Bot,
   BrainCircuit,
   Cable,
@@ -18,7 +17,6 @@ import {
   Landmark,
   Layers3,
   LineChart,
-  LockKeyhole,
   PlugZap,
   RadioTower,
   ShieldCheck,
@@ -30,8 +28,6 @@ import {
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-
-const TREE_LOGO = "/nest-logo.png";
 
 // ─── Bernard Intelligence Panel ───────────────────────────────────────────────
 // Routes through the CNS orchestrator. Every hollow page calls this.
@@ -379,36 +375,16 @@ function WorkbenchShell({
   children: ReactNode;
 }) {
   return (
-    <main className="workbench-page">
-      <aside className="workbench-side">
-        <div className="tree-lockup compact-logo">
-          <img src={TREE_LOGO} alt="NEST tree logo" />
-          <div>
-            <strong>NEST</strong>
-            <span>Workbench</span>
-          </div>
-        </div>
-        <Link href="/" className="back-link"><ArrowLeft size={16} /> Back to cockpit</Link>
-        <nav className="workbench-nav">
-          <Link href="/dashboard"><Activity size={15} /> Dashboard</Link>
-          <Link href="/architecture"><BrainCircuit size={15} /> AI CNS</Link>
-          <Link href="/portals"><Users size={15} /> Portals</Link>
-          <Link href="/agents"><Bot size={15} /> Agents</Link>
-        </nav>
-        <div className="rail-alert compact-alert">
-          <LockKeyhole size={16} />
-          <p>Preserve every module. Govern every action. Retain every external record.</p>
-        </div>
-      </aside>
-      <section className="workbench-main">
-        <header className="workbench-hero">
-          <p className="kicker"><Icon size={15} /> {eyebrow}</p>
-          <h1>{title}</h1>
-          <p>{lede}</p>
-        </header>
-        {children}
-      </section>
-    </main>
+    <div className="min-h-screen bg-[#030A06] px-6 py-8">
+      <header className="mb-8 pb-6 border-b border-[#1E4A2E]">
+        <p className="flex items-center gap-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[#C4A048] mb-2">
+          <Icon size={14} /> {eyebrow}
+        </p>
+        <h1 className="font-[Cormorant_Garamond,serif] text-4xl font-semibold text-[#EDE8DC] leading-tight mb-2">{title}</h1>
+        <p className="text-sm text-[#7A9A82] max-w-3xl leading-6">{lede}</p>
+      </header>
+      {children}
+    </div>
   );
 }
 
