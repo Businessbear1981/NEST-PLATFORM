@@ -1,4 +1,9 @@
 "use client";
-export const dynamic = "force-dynamic";
-import RiskCommandCenter from "@/components/RiskCommandCenter";
+import dynamic from "next/dynamic";
+
+const RiskCommandCenter = dynamic(
+  () => import("@/components/RiskCommandCenter"),
+  { ssr: false }
+);
+
 export default function Page() { return <RiskCommandCenter />; }
