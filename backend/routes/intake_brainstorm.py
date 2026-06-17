@@ -284,16 +284,8 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 def run_brainstorm(deal_id: str):
     body = request.get_json(silent=True) or {}
 
-    demo_mode = os.environ.get("NEST_DEMO_MODE", "1") == "1"
-
-    if demo_mode:
-        return ok({
-            "deal_id": deal_id,
-            "first_look_memo": _DEMO_BRAINSTORM,
-            "gap_questions": _DEMO_GAP_QUESTIONS,
-            "generated_at": datetime.utcnow().isoformat(),
-        })
-
+    # NEST_DEMO_MODE only bypasses auth — it never bypasses the AI call.
+    # Always attempt real Claude first; fall back to seed data if key missing or call fails.
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         # Fall back to demo if no API key configured
