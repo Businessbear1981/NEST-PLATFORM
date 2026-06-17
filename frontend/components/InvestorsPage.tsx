@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ShieldCheck, Users, Building2, RefreshCw } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
 interface Investor {
   id: string;

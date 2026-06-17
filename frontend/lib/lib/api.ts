@@ -3,7 +3,7 @@
  * Every call expects { success, data, error, timestamp, version }.
  */
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "https://api.nestadvisors.tech") || "";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "https://nest-platform-production.up.railway.app") || "";
 
 interface NestResponse<T = unknown> {
   success: boolean;

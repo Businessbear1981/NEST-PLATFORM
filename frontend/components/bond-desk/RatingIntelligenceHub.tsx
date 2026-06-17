@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

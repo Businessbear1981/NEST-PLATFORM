@@ -66,7 +66,7 @@ const AGENT_NAMES = [
   "Merlin", "LenderScout", "Prometheus", "Sentinel", "Blaze",
 ];
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
 export default function InstitutionalDashboard() {
   const [deals, setDeals] = useState<Deal[]>([]);

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useDealState } from "@/contexts/DealStateContext"
 
-const _API = process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech"
+const _API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app"
 
 type Phase = {
   id: string; phase_num: number; label: string; pillar: string; agent: string

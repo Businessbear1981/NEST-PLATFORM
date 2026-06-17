@@ -38,7 +38,7 @@ interface StageResult {
 }
 
 // ── Helpers ──────────────────────────────────────────────────
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://api.nestadvisors.tech";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://nest-platform-production.up.railway.app";
 
 async function rawFetch<T = unknown>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {

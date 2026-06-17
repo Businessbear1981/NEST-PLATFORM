@@ -116,7 +116,7 @@ interface Overview {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.nestadvisors.tech") + "/api/treasury";
+const API = (process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app") + "/api/treasury";
 
 async function fetchData<T>(path: string): Promise<T | null> {
   try {
