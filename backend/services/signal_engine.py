@@ -421,12 +421,15 @@ class SignalEngine:
 
             if stype == "ma_target":
                 score = self._score_ma(signal)
-                grade = "HOT" if score >= 0.7 else "WARM" if score >= 0.5 else "COLD"
+                # Threshold lowered: EDGAR filings are real events.
+                # Any filing that scores >= 0.3 (recent + source credit) qualifies.
+                grade = "HOT" if score >= 0.7 else "WARM" if score >= 0.3 else "COLD"
                 desk = "ma"
 
             elif stype == "cre_bond_issuance":
                 score = self._score_cre(signal)
-                grade = "HOT" if score >= 0.6 else "WARM" if score >= 0.4 else "COLD"
+                # Threshold lowered: CRE bond filings are inherently noteworthy.
+                grade = "HOT" if score >= 0.6 else "WARM" if score >= 0.3 else "COLD"
                 desk = "cre"
 
             elif stype == "permit_surge":

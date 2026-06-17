@@ -55,7 +55,12 @@ def signals_query():
 
 @v2_compat_bp.get("/signals/stats")
 def signals_stats():
-    return _ok({"total": 0, "by_type": {}})
+    # Forward to the real signals blueprint handler — do not stub this.
+    try:
+        from routes.signals import signal_stats
+        return signal_stats()
+    except Exception:
+        return _ok({"total": 0, "by_type": {}})
 
 
 @v2_compat_bp.get("/signals/alerts")
