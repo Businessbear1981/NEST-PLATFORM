@@ -78,6 +78,8 @@ export default function MarketingStudio() {
   const [history, setHistory] = useState<Generation[]>([]);
   const [batchDeal, setBatchDeal] = useState("JT-2025-42");
   const [batchLoading, setBatchLoading] = useState(false);
+  const [distributeLoading, setDistributeLoading] = useState(false);
+  const [distributeResult, setDistributeResult] = useState<{delivered_count:number;qualified_count:number;dry_run:boolean;deal_name:string;delivery_results:{recipient:string;ok:boolean;dry_run:boolean}[]} | null>(null);
 
   /* ── AI Tool Panel State ── */
   const [activeAITab, setActiveAITab] = useState<AITab>("higgsfield");
@@ -127,6 +129,28 @@ export default function MarketingStudio() {
       setHistory(fresh);
     } finally {
       setBatchLoading(false);
+    }
+  }
+
+  async function onDistribute() {
+    if (!batchDeal) return;
+    setDistributeLoading(true);
+    setDistributeResult(null);
+    try {
+      const r = await fetch(`${API}/api/marketing/distribute`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deal_id: batchDeal,
+          deal: { name: clientName },
+          context: { deal_name: clientName, angles: angles.split("\n").filter(Boolean) },
+          send_email: true,
+        }),
+      });
+      const json = await r.json();
+      if (json.success) setDistributeResult(json);
+    } finally {
+      setDistributeLoading(false);
     }
   }
 
@@ -297,7 +321,42 @@ export default function MarketingStudio() {
           >
             {batchLoading ? "Building package..." : "Build Package"}
           </button>
+          <button
+            onClick={onDistribute}
+            disabled={distributeLoading || !batchDeal}
+            className="rounded-[1rem] border border-[#C4A048]/50 bg-[#C4A048]/15 px-5 py-2 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#C4A048] transition hover:bg-[#C4A048]/25 disabled:opacity-50"
+          >
+            {distributeLoading ? "Sending..." : "Send to Partners"}
+          </button>
         </div>
+
+        {/* Distribution result */}
+        {distributeResult && (
+          <div className="rounded-[1.25rem] border border-[#C4A048]/30 bg-[#030A06] p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.15em] text-[#C4A048]">Distribution Report</span>
+              {distributeResult.dry_run && (
+                <span className="rounded bg-amber-400/20 px-2 py-0.5 font-mono text-[0.5rem] font-semibold text-amber-300">DRY RUN — add SENDGRID_API_KEY to send live</span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-6 font-mono text-xs">
+              <span className="text-[#7A9A82]">Deal: <span className="text-white">{distributeResult.deal_name}</span></span>
+              <span className="text-[#7A9A82]">Matched: <span className="text-[#C4A048] font-bold">{distributeResult.qualified_count}</span> investors</span>
+              <span className="text-[#7A9A82]">Delivered: <span className="text-emerald-400 font-bold">{distributeResult.delivered_count}</span></span>
+            </div>
+            {distributeResult.delivery_results.length > 0 && (
+              <div className="space-y-1">
+                {distributeResult.delivery_results.map((r, i) => (
+                  <div key={i} className="flex items-center gap-2 font-mono text-[0.6rem]">
+                    <span className={r.ok ? "text-emerald-400" : "text-red-400"}>{r.ok ? "✓" : "✗"}</span>
+                    <span className="text-[#EDE8DC]">{r.recipient}</span>
+                    {r.dry_run && <span className="text-[#7A9A82]">(dry run)</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* AI Media Tools */}
         <div className="rounded-[1.5rem] border border-[#C4A048]/25 bg-[#07101a]/80 p-6">

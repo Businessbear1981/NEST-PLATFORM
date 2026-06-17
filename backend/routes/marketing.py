@@ -173,3 +173,78 @@ def book_build():
     return jsonify(_sterling().manage_book_building(
         body.get("deal_id"), body.get("target_raise")
     ))
+
+
+# ---------- AI Distribution: Morgan → Sterling → SendGrid ----------
+
+@marketing_bp.post("/distribute")
+@require_auth("admin")
+def distribute():
+    """
+    Full automation: generate deal package via Morgan, match investors via
+    Sterling, deliver teaser to each qualified partner via SendGrid.
+
+    Body: { deal_id, context?, deal?, send_email? }
+      context  — forwarded to Morgan batch generator
+      deal     — deal dict for Sterling matching (size_usd, asset_class, projected_yield_pct)
+      send_email — default True; set False for dry-run preview
+    """
+    from services.sendgrid_service import send_bulk_deal_package
+
+    body = request.get_json(silent=True) or {}
+    deal_id = body.get("deal_id")
+    if not deal_id:
+        return jsonify({"success": False, "error": "deal_id required"}), 400
+
+    context      = body.get("context") or {}
+    deal_meta    = body.get("deal") or {}
+    send_email   = body.get("send_email", True)
+
+    # 1 — Generate the 4-piece marketing package
+    try:
+        package = _morgan().generate_batch(deal_id, context)
+    except Exception as exc:
+        return jsonify({"success": False, "error": f"Morgan batch failed: {exc}"}), 500
+
+    # 2 — Pull teaser content (investor_teaser piece preferred, else executive_summary)
+    pieces    = package.get("pieces", {})
+    teaser    = pieces.get("investor_teaser") or pieces.get("executive_summary") or ""
+    deal_name = context.get("deal_name") or deal_meta.get("name") or deal_id
+
+    # 3 — Match investors via Sterling
+    match_payload = {
+        "size_usd":             deal_meta.get("size_usd", 0),
+        "asset_class":          deal_meta.get("asset_class", ""),
+        "projected_yield_pct":  deal_meta.get("projected_yield_pct", 0),
+        **deal_meta,
+    }
+    matched = _sterling().match_investors(match_payload)
+    qualified = [m for m in matched if m.get("score", 0) >= 30]
+
+    # 4 — Deliver to qualified partners
+    delivery_results: list[dict] = []
+    if send_email and qualified:
+        delivery_results = send_bulk_deal_package(
+            recipients=qualified,
+            deal_name=deal_name,
+            teaser_text=teaser,
+            subject=f"NEST Deal Desk — {deal_name}: Investor Opportunity",
+        )
+    elif not qualified:
+        delivery_results = []
+
+    delivered_count = sum(1 for r in delivery_results if r.get("ok"))
+    dry_run_mode    = any(r.get("dry_run") for r in delivery_results) or not send_email
+
+    return jsonify({
+        "success":         True,
+        "deal_id":         deal_id,
+        "deal_name":       deal_name,
+        "package_pieces":  list(pieces.keys()),
+        "investors_matched": len(matched),
+        "qualified_count": len(qualified),
+        "delivered_count": delivered_count,
+        "dry_run":         dry_run_mode,
+        "delivery_results": delivery_results,
+        "teaser_preview":  teaser[:500] if teaser else "",
+    })
