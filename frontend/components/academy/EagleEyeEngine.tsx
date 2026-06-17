@@ -2,10 +2,6 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  ScatterChart, Scatter, CartesianGrid, Cell, ReferenceLine,
-} from "recharts";
-import {
   scoreProperty, HBO2_SCAN,
   type PropertyScan, type EagleEyeScore,
 } from "@/lib/engines/eagleeye";
