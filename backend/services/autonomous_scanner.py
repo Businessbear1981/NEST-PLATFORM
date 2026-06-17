@@ -21,7 +21,7 @@ import httpx
 
 
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 FRED_KEY = os.environ.get("FRED_API_KEY", "")
 SCAN_INTERVAL = int(os.environ.get("SCAN_INTERVAL_SECONDS", "3600"))  # default 1 hour
 

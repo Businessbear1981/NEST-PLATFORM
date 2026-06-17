@@ -79,7 +79,7 @@ def complete(
     elif _backend == "openrouter":
         # OpenRouter uses OpenAI-compatible API
         resp = client.chat.completions.create(
-            model="anthropic/claude-sonnet-4-20250514" if model and "sonnet" in model else "anthropic/claude-sonnet-4",
+            model="anthropic/claude-sonnet-4-6",
             max_tokens=max_tokens or Config.ANTHROPIC_MAX_TOKENS,
             messages=[
                 {"role": "system", "content": system_prompt},

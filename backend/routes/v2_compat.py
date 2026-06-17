@@ -276,7 +276,7 @@ def nervous_system_ingest():
         )
         return _ok({
             "plugin": "claude",
-            "model": "claude-sonnet-4-20250514",
+            "model": os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
             "content": result,
             "success": True,
             "latency_ms": 0,

@@ -301,7 +301,7 @@ def run_brainstorm(deal_id: str):
         client = anthropic.Anthropic(api_key=api_key)
         prompt = _build_prompt(deal_id, body)
         message = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
             max_tokens=2000,
             messages=[{"role": "user", "content": prompt}],
         )
