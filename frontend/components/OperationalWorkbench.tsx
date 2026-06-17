@@ -465,7 +465,7 @@ export default function OperationalWorkbench() {
           break;
         }
         case "surety": {
-          const d = await rawFetch<Record<string, unknown>>("/api/insurance/analyze", {
+          const d = await rawFetch<Record<string, unknown>>("/api/surety/analyze", {
             method: "POST",
             body: JSON.stringify({ deal_id: deal.id }),
           });

@@ -220,19 +220,47 @@ def create_deal():
     if not name:
         return _err("name is required")
 
+    # Accept flat payload from the intake form OR the nested project/sponsor format.
+    # Intake form sends: deal_type, sector, naics, borrower, sponsor (string),
+    # sponsor_type, project_size, state, description, status at top level.
+    project = body.get("project")
+    if not project:
+        project = {
+            "asset_type": body.get("deal_type", "bond"),
+            "state": body.get("state"),
+            "city": body.get("market"),
+            "total_project_cost_usd": float(body.get("project_size") or 0),
+            "description": body.get("description", ""),
+            "sector": body.get("sector"),
+            "naics": body.get("naics"),
+        }
+    sponsor_raw = body.get("sponsor")
+    sponsor = sponsor_raw if isinstance(sponsor_raw, dict) else {
+        "entity_name": sponsor_raw or "",
+        "type": body.get("sponsor_type", ""),
+        "borrower": body.get("borrower", ""),
+    }
+
     if _use_db():
-        row = _deal_to_row(new_deal(name, body.get("project"), body.get("sponsor")))
+        row = _deal_to_row(new_deal(name, project, sponsor))
+        # Supabase row needs state + deal_type at top level for RLS/query
+        row["state"] = project.get("state")
+        row["deal_type"] = project.get("asset_type", "bond")
+        row["bond_face"] = project.get("total_project_cost_usd", 0)
+        row["notes"] = json.dumps({
+            "project": project,
+            "sponsor": sponsor,
+            "slug": name.lower().replace(" ", "-"),
+        })
         result = db.insert("deals", row)
         if not result:
             return _err("Failed to create deal", 500)
         return _ok(_row_to_deal(result[0] if isinstance(result, list) else result), 201)
 
-    d = new_deal(name, body.get("project"), body.get("sponsor"))
-    # Attach flat fields the form provides directly
-    if "amount" in body:
-        d["amount"] = body["amount"]
-    if "issuer" in body:
-        d["issuer"] = body["issuer"]
+    d = new_deal(name, project, sponsor)
+    d["amount"] = project.get("total_project_cost_usd", 0)
+    d["state"] = project.get("state")
+    d["deal_type"] = project.get("asset_type", "bond")
     _normalize_deal(d)
     with _lock:
         _deals[d["id"]] = d

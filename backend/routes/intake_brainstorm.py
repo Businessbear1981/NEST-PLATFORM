@@ -284,7 +284,7 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 def run_brainstorm(deal_id: str):
     body = request.get_json(silent=True) or {}
 
-    demo_mode = os.environ.get("NEST_DEMO_MODE", "0") == "1"
+    demo_mode = os.environ.get("NEST_DEMO_MODE", "1") == "1"
 
     if demo_mode:
         return ok({
@@ -349,12 +349,12 @@ def save_responses(deal_id: str):
 def greenlight(deal_id: str):
     return ok({
         "status": "greenlighted",
-        "next": "/upload",
-        "next_route": "/upload",
+        "next": f"/preflight?deal_id={deal_id}",
+        "next_route": f"/preflight?deal_id={deal_id}",
         "deal_id": deal_id,
         "message": (
-            "Deal advanced to Roots Stage 1. "
-            "Upload financials to begin underwriting."
+            "Deal greenlighted. Advancing to Preflight Interview — "
+            "Bernard will gather the credit memo inputs."
         ),
     })
 

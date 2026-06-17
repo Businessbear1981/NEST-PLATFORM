@@ -829,10 +829,11 @@ export function ConvergenceEnginePage() {
 // ─── Pipeline Workflow ────────────────────────────────────────────────────────
 type WorkflowStage = { id: string; name: string; description: string; desk: string; gate_conditions: string[]; outputs: string[]; next: string | null };
 
-export function WorkflowPage() {
+export function WorkflowPage({ dealId }: { dealId?: string } = {}) {
   const [stages, setStages] = useState<WorkflowStage[]>([]);
   const [active, setActive] = useState<string | null>(null);
   const [pipeline, setPipeline] = useState<DashPipeline | null>(null);
+  const [dealWorkflow, setDealWorkflow] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -841,11 +842,22 @@ export function WorkflowPage() {
       .then(d => { if (d.success) { setStages(d.data); if (d.data.length) setActive(d.data[0].id); } })
       .catch(() => {})
       .finally(() => setLoading(false));
-    fetch(`${API}/api/deals/pipeline`)
+    fetch(`${API}/api/deals`)
       .then(r => r.json())
-      .then(d => { if (d.success) setPipeline(d.data); })
+      .then(d => {
+        if (d.success && Array.isArray(d.data)) {
+          const total = d.data.reduce((s: number, deal: any) => s + (deal.bond_face || deal.amount || 0), 0);
+          setPipeline({ total_pipeline_usd: total, deal_count: d.data.length, by_status: {} });
+        }
+      })
       .catch(() => {});
-  }, []);
+    if (dealId) {
+      fetch(`${API}/api/workflow/${dealId}`)
+        .then(r => r.json())
+        .then(d => { if (d.success) setDealWorkflow(d.data); })
+        .catch(() => {});
+    }
+  }, [dealId]);
 
   const activeStage = stages.find(s => s.id === active);
   const deskLabel = (d: string) => d.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
