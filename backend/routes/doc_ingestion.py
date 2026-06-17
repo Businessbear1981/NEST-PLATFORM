@@ -8,11 +8,32 @@ Flow:
 4. Client sees what was extracted + what's still missing
 5. When all required docs are in, deal auto-advances to credit stage
 """
+import io
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
 
 doc_ingestion_bp = Blueprint("doc_ingestion", __name__)
+
+
+def _extract_text_from_file(file_storage) -> str:
+    """Extract text from uploaded file. Supports PDF and plain text."""
+    filename = file_storage.filename or ""
+    data = file_storage.read()
+
+    if filename.lower().endswith(".pdf"):
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(io.BytesIO(data))
+            return "\n".join(page.extract_text() or "" for page in reader.pages)
+        except Exception:
+            pass
+
+    # Fall back: treat as plain text
+    try:
+        return data.decode("utf-8", errors="ignore")
+    except Exception:
+        return ""
 
 
 def _ok(data):
@@ -98,6 +119,69 @@ def ingest_document(deal_id: str):
         "deal_financials": combined,
         "completeness": coverage,
         "bernard_narration": narration,
+        "documents_ingested": len(_deal_extractions.get(deal_id, [])),
+    })
+
+
+@doc_ingestion_bp.post("/<deal_id>/upload")
+def upload_document(deal_id: str):
+    """Accept a real file upload (PDF or text), extract text, run ingestion,
+    and auto-trigger the full pipeline when enough data is present.
+
+    multipart/form-data: file=<the document>
+    """
+    if "file" not in request.files:
+        return jsonify({"success": False, "error": "No file in request. Send multipart/form-data with field 'file'"}), 400
+
+    f = request.files["file"]
+    filename = f.filename or "uploaded_document"
+    text = _extract_text_from_file(f)
+
+    if not text.strip():
+        return jsonify({"success": False, "error": "Could not extract text from file"}), 400
+
+    from services.doc_ingestion import DocIngestionEngine
+    engine = DocIngestionEngine()
+
+    doc_type = engine.classify(text)
+    entity_info = engine.extract_entity_info(text)
+
+    if doc_type == "officer_certificate":
+        extraction = engine.extract_from_officer_cert(text)
+    elif doc_type == "appraisal":
+        extraction = engine.extract_property_intelligence(text)
+    else:
+        extraction = engine.extract(text, doc_type)
+
+    extraction.setdefault("extracted", {}).update({"_entity": entity_info})
+    extraction["filename"] = filename
+    extraction["deal_id"] = deal_id
+
+    _deal_extractions.setdefault(deal_id, []).append(extraction)
+    combined = engine.build_deal_from_docs(_deal_extractions[deal_id])
+    _deal_financials[deal_id] = combined
+    coverage = _check_completeness(combined)
+
+    # Auto-run the pipeline if we have enough critical data
+    pipeline_result = None
+    if coverage["ready_for_credit"]:
+        try:
+            from services.deal_flow import DealFlow
+            pipeline_result = DealFlow().run_full_pipeline({**combined, "deal_id": deal_id, "name": deal_id})
+        except Exception as e:
+            pipeline_result = {"error": str(e)}
+
+    return _ok({
+        "document": {
+            "filename": filename,
+            "type": doc_type,
+            "fields_extracted": extraction.get("fields_found", []),
+            "fields_missing": extraction.get("fields_missing", []),
+        },
+        "deal_financials": combined,
+        "completeness": coverage,
+        "pipeline_triggered": pipeline_result is not None,
+        "pipeline_result": pipeline_result,
         "documents_ingested": len(_deal_extractions.get(deal_id, [])),
     })
 
