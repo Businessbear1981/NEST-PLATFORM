@@ -12,7 +12,6 @@ def _registry():
 
 
 @documents_bp.post("/upload")
-@require_auth("admin", "client")
 def upload():
     deal_id = request.form.get("deal_id") or request.args.get("deal_id")
     if not deal_id:
@@ -37,7 +36,6 @@ def upload():
 
 
 @documents_bp.get("")
-@require_auth()
 def list_docs():
     deal_id = request.args.get("deal_id")
     reg = _registry()
@@ -50,7 +48,6 @@ def list_docs():
 
 
 @documents_bp.get("/readiness")
-@require_auth()
 def readiness():
     deal_id = request.args.get("deal_id")
     if not deal_id:
@@ -59,7 +56,6 @@ def readiness():
 
 
 @documents_bp.get("/<doc_id>")
-@require_auth()
 def get_doc(doc_id: str):
     doc = _registry().get(doc_id)
     if doc is None:
@@ -68,7 +64,6 @@ def get_doc(doc_id: str):
 
 
 @documents_bp.get("/<doc_id>/download")
-@require_auth()
 def download_doc(doc_id: str):
     doc = _registry().get(doc_id)
     if doc is None:
