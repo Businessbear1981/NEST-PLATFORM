@@ -338,8 +338,62 @@ def generate_teaser():
     return _ok(teaser)
 
 
+@hawkeye_bp.route("/roadshow", methods=["GET"])
+def get_roadshow():
+    """
+    Return roadshow schedule. Queries correspondence table where
+    corr_type='roadshow'. Never 404s — returns empty list on any failure.
+    """
+    if _use_db():
+        try:
+            rows = db.select("correspondence", {
+                "corr_type": "eq.roadshow",
+                "order": "created_at.desc",
+                "limit": "50",
+            }) or []
+            return _ok({"roadshow": rows, "total": len(rows), "source": "supabase"})
+        except Exception:
+            pass
+    return _ok({"roadshow": [], "total": 0, "source": "seed"})
+
+
 @hawkeye_bp.route("/order-book/<deal_id>", methods=["GET"])
 def get_order_book(deal_id):
+    """Read order book from Supabase placement_allocations; fallback to in-memory."""
+    if _use_db():
+        try:
+            rows = db.select("placement_allocations", {
+                "deal_id": f"eq.{deal_id}",
+                "order": "created_at.asc",
+                "limit": "200",
+            }) or []
+            if rows is not None:
+                # Normalize to common schema
+                book = [
+                    {
+                        "id": r.get("id", ""),
+                        "investorId": r.get("investor_id", ""),
+                        "investorName": r.get("investor_name", "Unknown"),
+                        "amount_usd": float(r.get("amount_usd") or 0),
+                        "tranche": r.get("tranche", "A"),
+                        "yield_target_pct": r.get("yield_target_pct"),
+                        "status": r.get("status", "indicated"),
+                        "indicatedAt": r.get("created_at", ""),
+                    }
+                    for r in rows
+                ]
+                total = sum(o["amount_usd"] for o in book)
+                return _ok({
+                    "dealId": deal_id,
+                    "orders": book,
+                    "total_indications_usd": total,
+                    "order_count": len(book),
+                    "source": "supabase",
+                })
+        except Exception:
+            pass
+
+    # In-memory fallback
     with _lock:
         book = _order_book.get(deal_id, [])
     total = sum(o["amount_usd"] for o in book)
@@ -348,12 +402,13 @@ def get_order_book(deal_id):
         "orders": book,
         "total_indications_usd": total,
         "order_count": len(book),
+        "source": "memory",
     })
 
 
 @hawkeye_bp.route("/order-book/<deal_id>/indicate", methods=["POST"])
 def add_indication(deal_id):
-    """Add investor indication to the order book."""
+    """Add investor indication. Persists to Supabase placement_allocations; also caches in memory."""
     b = request.get_json() or {}
     indication = {
         "id": f"ord_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
@@ -365,6 +420,23 @@ def add_indication(deal_id):
         "status": "indicated",
         "indicatedAt": datetime.utcnow().isoformat(),
     }
+
+    # Persist to Supabase
+    if _use_db():
+        try:
+            db.insert("placement_allocations", {
+                "deal_id": deal_id,
+                "investor_id": indication["investorId"],
+                "investor_name": indication["investorName"],
+                "amount_usd": indication["amount_usd"],
+                "tranche": indication["tranche"],
+                "yield_target_pct": indication["yield_target_pct"],
+                "status": "indicated",
+            })
+        except Exception:
+            pass  # fall through to in-memory
+
+    # Always write in-memory so reads are consistent within the same process restart
     with _lock:
         _order_book.setdefault(deal_id, []).append(indication)
     return _ok(indication)

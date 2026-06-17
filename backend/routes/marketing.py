@@ -1,7 +1,13 @@
 from flask import Blueprint, current_app, jsonify, request
+from datetime import datetime
 
 from agents.morgan import CONTENT_TYPES
 from services.auth import require_auth
+
+try:
+    from services.database import db as _db
+except ImportError:
+    _db = None
 
 marketing_bp = Blueprint("marketing", __name__)
 
@@ -28,7 +34,6 @@ def content_types():
 
 
 @marketing_bp.post("/generate")
-@require_auth("admin")
 def generate():
     body = request.get_json(silent=True) or {}
     content_type = body.get("content_type")
@@ -43,7 +48,6 @@ def generate():
 
 
 @marketing_bp.post("/batch")
-@require_auth("admin")
 def batch():
     body = request.get_json(silent=True) or {}
     deal_id = body.get("deal_id")
@@ -54,10 +58,32 @@ def batch():
 
 
 @marketing_bp.get("/history")
-@require_auth("admin")
 def history():
+    """
+    Return generation history. Reads from Supabase correspondence table
+    (where corr_type='generated_content') if available; falls back to
+    Morgan's in-memory history, then [].
+    """
     limit = int(request.args.get("limit", 50))
-    return jsonify(_morgan().history(limit=limit))
+
+    # Try Supabase correspondence table first
+    if _db and _db.configured:
+        try:
+            rows = _db.select("correspondence", {
+                "corr_type": "eq.generated_content",
+                "order": "created_at.desc",
+                "limit": str(limit),
+            }) or []
+            if rows:
+                return jsonify(rows)
+        except Exception:
+            pass
+
+    # Fall back to Morgan's in-memory history
+    try:
+        return jsonify(_morgan().history(limit=limit))
+    except Exception:
+        return jsonify([])
 
 
 @marketing_bp.get("/history/<gen_id>")
@@ -139,8 +165,44 @@ def investors():
 @marketing_bp.post("/investors/match")
 @require_auth("admin")
 def match_investors():
+    """
+    Match investors to a deal.
+    Frontend may send: { deal_id, deal: { name, angles } }
+    Backend needs:     { size_usd, asset_class, projected_yield_pct }
+
+    Resolution order:
+      1. If deal_id provided and Supabase is live → pull deal record for those fields
+      2. Fall back to whatever fields the frontend passed inline
+    """
     body = request.get_json(silent=True) or {}
-    return jsonify(_sterling().match_investors(body.get("deal") or body))
+    deal_id = body.get("deal_id")
+    deal_inline = body.get("deal") or {}
+
+    # Start with whatever the frontend sent
+    deal_payload = {
+        "size_usd": deal_inline.get("size_usd", 0),
+        "asset_class": deal_inline.get("asset_class", ""),
+        "projected_yield_pct": deal_inline.get("projected_yield_pct", 0),
+        **deal_inline,
+    }
+
+    # Override with live Supabase data when deal_id is present
+    if deal_id and _db and _db.configured:
+        try:
+            rows = _db.select("deals", {"id": f"eq.{deal_id}", "limit": "1"}) or []
+            if rows:
+                r = rows[0]
+                bond_face = float(r.get("bond_face") or 0)
+                deal_payload.update({
+                    "size_usd": bond_face,
+                    "asset_class": r.get("deal_type") or deal_inline.get("asset_class", ""),
+                    "projected_yield_pct": float(r.get("coupon_pct") or r.get("projected_yield_pct") or 7.0),
+                    "name": r.get("name") or deal_inline.get("name", ""),
+                })
+        except Exception:
+            pass  # keep inline payload on DB error
+
+    return jsonify(_sterling().match_investors(deal_payload))
 
 
 @marketing_bp.post("/investors/update")

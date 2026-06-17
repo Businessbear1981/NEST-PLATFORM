@@ -31,6 +31,7 @@ Signal Types:
 Each signal gets scored, qualified, and routed to the right capital solution.
 """
 from __future__ import annotations
+import logging
 import os
 import time
 from datetime import datetime, timezone
@@ -40,12 +41,21 @@ import httpx
 
 from agents._claude import complete
 
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Module-level FRED cache: {"data": dict, "expires_at": float}
 # ---------------------------------------------------------------------------
 _fred_cache: dict = {}
 _FRED_TTL_SECONDS = 15 * 60  # 15 minutes
+
+# ---------------------------------------------------------------------------
+# EDGAR EFTS endpoint — correct full-text search URL
+# SEC EFTS: https://efts.sec.gov/LATEST/search-index?q=...
+# Response shape: { "hits": { "total": {...}, "hits": [ { "_source": {...} } ] } }
+# ---------------------------------------------------------------------------
+EDGAR_EFTS_URL = "https://efts.sec.gov/LATEST/search-index"
+EDGAR_USER_AGENT = "NEST Advisors sean.gilmore@ardanedgecapital.com"
 
 
 def _fetch_fred_series(series_id: str, api_key: str) -> float:
@@ -243,13 +253,19 @@ class EagleEyeScanner:
             return {}
 
     # ------------------------------------------------------------------
-    # EDGAR — comparable filings search
+    # EDGAR — full-text search via EFTS
+    # Correct endpoint: https://efts.sec.gov/LATEST/search-index
+    # Params: q, forms, dateRange, startdt, enddt
+    # Response: { "hits": { "hits": [ { "_source": { entity_name, form_type,
+    #             file_date, period_of_report, biz_location, ... } } ] } }
     # ------------------------------------------------------------------
     def search_edgar_comparables(
         self, sector: str, state: str, min_amount: int, max_amount: int
     ) -> list[dict]:
         """
-        Search EDGAR full-text for comparable filings by sector.
+        Search EDGAR full-text search index for comparable filings by sector.
+
+        Uses the correct EFTS endpoint and parses hits[hits][_source] structure.
 
         Returns up to 10 items:
             [{"entity": str, "filing_date": str, "form_type": str,
@@ -257,58 +273,77 @@ class EagleEyeScanner:
         or [] on any error.
         """
         SECTOR_TERMS = {
-            "senior_living": '"senior living" OR "continuing care retirement"',
-            "healthcare": '"healthcare" OR "hospital" OR "medical"',
-            "multifamily": '"multifamily" OR "apartment" OR "residential"',
-            "data_centers": '"data center" OR "colocation"',
-            "industrial": '"industrial" OR "warehouse" OR "logistics"',
+            "senior_living": '"senior living" OR "continuing care retirement" OR "CCRC"',
+            "healthcare": '"healthcare" OR "hospital" OR "medical center"',
+            "multifamily": '"multifamily" OR "apartment complex" OR "residential rental"',
+            "data_centers": '"data center" OR "colocation facility"',
+            "industrial": '"industrial park" OR "warehouse" OR "logistics center"',
         }
-        search_term = SECTOR_TERMS.get(sector, sector)
+        search_term = SECTOR_TERMS.get(sector, f'"{sector}"')
 
         try:
             resp = httpx.get(
-                "https://efts.sec.gov/LATEST/search-index",
+                EDGAR_EFTS_URL,
                 params={
                     "q": search_term,
-                    "forms": "S-11,424B3,1-A",
+                    "forms": "8-K,S-11,424B5",
                     "dateRange": "custom",
-                    "startdt": "2022-01-01",
-                    "enddt": "2026-06-01",
-                    "hits.hits._source.period_of_report": "true",
+                    "startdt": "2023-01-01",
+                    "enddt": "2026-06-17",
                 },
-                headers={"User-Agent": "NEST Advisors sean.gilmore@ardanedgecapital.com"},
+                headers={"User-Agent": EDGAR_USER_AGENT},
                 timeout=15,
             )
             resp.raise_for_status()
             body = resp.json()
-        except Exception:
+        except Exception as exc:
+            logger.warning("EDGAR EFTS request failed: %s", exc)
             return []
 
-        hits = body.get("hits", {}).get("hits", [])
+        # Correct path into nested response
+        raw_hits = body.get("hits", {}).get("hits", [])
+        if not isinstance(raw_hits, list):
+            logger.warning("EDGAR EFTS unexpected response shape: %r", list(body.keys()))
+            return []
+
         results = []
-        for hit in hits[:10]:
+        for hit in raw_hits[:10]:
             src = hit.get("_source", {})
+
+            # entity_name is the primary field; display_names is a list fallback
+            display_names = src.get("display_names") or []
             entity = (
                 src.get("entity_name")
-                or src.get("display_names", [""])[0]
+                or (display_names[0] if display_names else None)
                 or src.get("file_num", "Unknown Entity")
             )
-            filing_date = src.get("period_of_report") or src.get("file_date", "")
+
+            filing_date = src.get("file_date") or src.get("period_of_report", "")
             form_type = src.get("form_type", "")
-            snippet = src.get("file_date", "") + " " + src.get("biz_location", "")
-            # richer snippet from description/excerpt if available
-            snippet = hit.get("highlight", {}).get("file_description_string", [snippet])
-            if isinstance(snippet, list):
-                snippet = " … ".join(snippet[:2])
+
+            # Prefer highlighted excerpt; fall back to biz_location + file_date
+            highlight = hit.get("highlight", {})
+            highlighted_pieces = (
+                highlight.get("file_description_string")
+                or highlight.get("period_of_report")
+                or []
+            )
+            if highlighted_pieces:
+                snippet = " … ".join(str(p) for p in highlighted_pieces[:2])
+            else:
+                biz = src.get("biz_location", "")
+                snippet = f"{filing_date} {biz}".strip()
+
             results.append(
                 {
                     "entity": str(entity),
                     "filing_date": str(filing_date),
                     "form_type": str(form_type),
-                    "snippet": str(snippet)[:300],
+                    "snippet": snippet[:300],
                     "source": "edgar",
                 }
             )
+
         return results
 
     def full_scan(self, sectors: list[str] = None, markets: list[str] = None) -> dict:
@@ -387,8 +422,6 @@ class EagleEyeScanner:
         This is the $162B opportunity — properties with loans maturing
         that need solutions.
         """
-        # This would connect to CMBS data, bank call reports, and public records
-        # For now, using the intelligence we've gathered
         wall = {
             "total_maturities_2026": 162_100_000_000,
             "total_maturities_2027": 167_700_000_000,

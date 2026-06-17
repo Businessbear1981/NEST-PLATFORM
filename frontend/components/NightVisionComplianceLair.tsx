@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Eye, Shield, AlertTriangle, CheckCircle2, Lock, Scan, FileWarning, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -7,6 +8,11 @@ import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
+
+function getItem(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(key);
+}
 
 // Icon map — keyed by category id from backend
 const DOMAIN_ICONS: Record<string, React.ElementType> = {
@@ -115,17 +121,35 @@ function buildDomainsFromScan(result: ScanResult): DomainItem[] {
   }));
 }
 
-export default function NightVisionComplianceLair({ dealId }: { dealId?: string }) {
-  const [domains, setDomains] = useState<DomainItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [scanError, setScanError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("overview");
-  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+export default function NightVisionComplianceLair({ dealId: dealIdProp }: { dealId?: string }) {
+  // ── Resolve dealId: prop → URL ?deal_id= → localStorage ───────────
+  const searchParams = useSearchParams();
+  const dealId: string | undefined =
+    dealIdProp ||
+    searchParams.get("deal_id") ||
+    (typeof window !== "undefined" ? localStorage.getItem("nest_active_deal_id") ?? undefined : undefined) ||
+    undefined;
+
+  const domainsState = useState<DomainItem[]>([]);
+  const domains = domainsState[0]; const setDomains = domainsState[1];
+
+  const loadingState = useState(true);
+  const loading = loadingState[0]; const setLoading = loadingState[1];
+
+  const scanErrorState = useState<string | null>(null);
+  const scanError = scanErrorState[0]; const setScanError = scanErrorState[1];
+
+  const activeTabState = useState("overview");
+  const activeTab = activeTabState[0]; const setActiveTab = activeTabState[1];
+
+  const scanResultState = useState<ScanResult | null>(null);
+  const scanResult = scanResultState[0]; const setScanResult = scanResultState[1];
 
   const complianceScanMutation = trpc.powerstrip.route.useMutation();
 
   // On mount: load check definitions so we have rule names with "pending" status.
-  // If a dealId is provided, immediately run a live scan to get real statuses.
+  // If dealId is resolved, immediately run a live scan to get real statuses.
+  // If no dealId after all fallbacks, auto-fire the generic compliance scan.
   useEffect(() => {
     let cancelled = false;
 
@@ -140,24 +164,35 @@ export default function NightVisionComplianceLair({ dealId }: { dealId?: string 
           setDomains(buildDomainsFromDefs(defsJson.data as Record<string, CategoryDef>));
         }
 
-        // Step 2: if we have a dealId, run the scan to get real statuses
-        if (dealId) {
-          const token = typeof window !== "undefined"
-            ? localStorage.getItem("nest_token") ?? ""
-            : "";
-          const scanRes = await fetch(`${API}/api/nightvision/scan/${dealId}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({}),
-          });
-          const scanJson = await scanRes.json();
-          if (!cancelled && scanJson.success && scanJson.data) {
-            setScanResult(scanJson.data as ScanResult);
-            setDomains(buildDomainsFromScan(scanJson.data as ScanResult));
-          }
+        // Step 2: run scan — deal-specific if we have a dealId, generic otherwise
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("nest_token") ?? ""
+          : "";
+        const url = dealId
+          ? `${API}/api/nightvision/scan/${dealId}`
+          : `${API}/api/nightvision/scan`;
+        const body = dealId ? {} : {
+          deal_type: "REVENUE_BOND",
+          offering_type: "506C",
+          amount_usd: 231000000,
+          issuer_state: "FL",
+          target_states: ["FL", "TX", "AZ"],
+          project_type: "senior_living",
+          tax_exempt: true,
+          accredited_investors_only: true,
+        };
+        const scanRes = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(body),
+        });
+        const scanJson = await scanRes.json();
+        if (!cancelled && scanJson.success && scanJson.data) {
+          setScanResult(scanJson.data as ScanResult);
+          setDomains(buildDomainsFromScan(scanJson.data as ScanResult));
         }
       } catch (e: unknown) {
         if (!cancelled) {

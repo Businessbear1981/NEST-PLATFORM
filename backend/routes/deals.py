@@ -190,6 +190,187 @@ def _map_status(status):
     return mapping.get(status, status)
 
 
+# ── Supabase startup seed ────────────────────────────────────────
+
+_SEED_DEALS = [
+    {
+        "name": "Jacaranda Trace CCRC",
+        "status": "active",
+        "state": "FL",
+        "market": "Palm Beach Gardens",
+        "deal_type": "senior_living_bond",
+        "bond_face": 205000000,
+        "readiness_score": 82,
+        "dscr": 1.82,
+        "ltv": 58.0,
+        "cf_leverage": 1.65,
+        "bs_leverage": 2.15,
+        "d_ebitda": 5.2,
+        "icr": 2.85,
+        "ae_economics": 5125000,
+        "checklist": json.dumps({
+            "appraisal": True, "env_phase1": True, "title_search": True,
+            "sponsor_financials": True, "market_study": True,
+            "surety_commitment": True, "legal_counsel": True, "insurance": False,
+        }),
+        "notes": json.dumps({
+            "slug": "jacaranda-trace-ccrc",
+            "project": {
+                "name": "Jacaranda Trace CCRC",
+                "asset_type": "senior_living_bond",
+                "state": "FL",
+                "city": "Palm Beach Gardens",
+                "total_project_cost_usd": 205000000,
+                "description": "504-unit Continuing Care Retirement Community. LGFC Series 2025. "
+                               "Hylant surety. JP Morgan comp. Series A $153.75M @ 7.0%, "
+                               "Series B $14.35M @ 11.5%. 24-month IO pre-funded from proceeds.",
+                "sector": "Senior Housing",
+                "naics": "623110",
+                "units": 504,
+                "construction_months": 28,
+            },
+            "sponsor": {
+                "entity_name": "Jacaranda Trace Community Foundation",
+                "type": "nonprofit_operator",
+                "borrower": "Jacaranda Trace Community Foundation",
+                "track_record_years": 22,
+                "existing_ccrc_units": 312,
+            },
+            "team": {
+                "placement_agent": "NEST Advisors",
+                "surety": "Hylant Insurance",
+                "bond_counsel": "Squire Patton Boggs",
+                "trustee": "U.S. Bank",
+            },
+        }),
+    },
+    {
+        "name": "St. Petersburg Mixed-Use Construction",
+        "status": "active",
+        "state": "FL",
+        "market": "St. Petersburg",
+        "deal_type": "construction_bond",
+        "bond_face": 172500000,
+        "readiness_score": 64,
+        "dscr": 1.54,
+        "ltv": 67.0,
+        "cf_leverage": 1.92,
+        "bs_leverage": 2.38,
+        "d_ebitda": 6.1,
+        "icr": 2.31,
+        "ae_economics": 4312500,
+        "checklist": json.dumps({
+            "appraisal": True, "env_phase1": True, "title_search": True,
+            "sponsor_financials": True, "market_study": False,
+            "surety_commitment": False, "legal_counsel": True, "insurance": False,
+        }),
+        "notes": json.dumps({
+            "slug": "st-pete-construction",
+            "project": {
+                "name": "St. Petersburg Mixed-Use Construction",
+                "asset_type": "construction_bond",
+                "state": "FL",
+                "city": "St. Petersburg",
+                "total_project_cost_usd": 172500000,
+                "description": "Ground-up mixed-use: 380 multifamily units + 42,000 SF retail. "
+                               "24-month IO period. Pre-sold 40% of units. Series A $129.375M @ 7.25%, "
+                               "Series B $12.075M @ 12.0%. Downtown Pinellas County opportunity zone.",
+                "sector": "Mixed-Use / Multifamily",
+                "naics": "236220",
+                "units": 380,
+                "retail_sf": 42000,
+                "construction_months": 24,
+                "presold_pct": 40,
+            },
+            "sponsor": {
+                "entity_name": "St. Pete Development LLC",
+                "type": "private_developer",
+                "borrower": "St. Pete Development LLC",
+                "track_record_years": 14,
+                "completed_projects": 8,
+            },
+            "team": {
+                "placement_agent": "NEST Advisors",
+                "surety": "Hylant Insurance",
+                "bond_counsel": "GrayRobinson PA",
+                "general_contractor": "Skanska USA",
+            },
+        }),
+    },
+    {
+        "name": "HBO2 Equity Placement",
+        "status": "active",
+        "state": "CA",
+        "market": "Los Angeles",
+        "deal_type": "equity_placement",
+        "bond_face": 155000000,
+        "readiness_score": 91,
+        "dscr": 2.14,
+        "ltv": 51.0,
+        "cf_leverage": 1.38,
+        "bs_leverage": 1.87,
+        "d_ebitda": 4.1,
+        "icr": 3.62,
+        "ae_economics": 3875000,
+        "checklist": json.dumps({
+            "appraisal": True, "env_phase1": True, "title_search": True,
+            "sponsor_financials": True, "market_study": True,
+            "surety_commitment": True, "legal_counsel": True, "insurance": True,
+        }),
+        "notes": json.dumps({
+            "slug": "hbo2-equity-placement",
+            "project": {
+                "name": "HBO2 Equity Placement",
+                "asset_type": "equity_placement",
+                "state": "CA",
+                "city": "Los Angeles",
+                "total_project_cost_usd": 155000000,
+                "description": "Media equity round. NEST as placement agent under BD-sponsorship track. "
+                               "Britehorn BD sponsorship. $116.25M Series A preferred + $10.85M Series B. "
+                               "Streaming + licensing IP collateral. A-grade credit metrics.",
+                "sector": "Media / Entertainment",
+                "naics": "512110",
+            },
+            "sponsor": {
+                "entity_name": "HBO2 Capital Partners",
+                "type": "media_operator",
+                "borrower": "HBO2 Capital Partners",
+                "track_record_years": 18,
+            },
+            "team": {
+                "placement_agent": "NEST Advisors",
+                "bd_sponsor": "Britehorn Partners",
+                "legal_counsel": "Latham & Watkins LLP",
+                "auditor": "Deloitte",
+            },
+        }),
+    },
+]
+
+
+def _seed_supabase_deals():
+    """On startup: if the Supabase deals table is empty, insert the 3 live NEST deals."""
+    if not _use_db():
+        return
+    try:
+        existing = db.select("deals", {"limit": "1"})
+        if existing and len(existing) > 0:
+            return  # Table already has data — do not re-seed
+        for seed in _SEED_DEALS:
+            result = db.insert("deals", seed)
+            if result:
+                row = result[0] if isinstance(result, list) else result
+                # Also populate in-memory cache so same process can serve immediately
+                deal = _row_to_deal(row)
+                with _lock:
+                    _deals[deal["id"]] = deal
+    except Exception:
+        pass  # Seed failure is non-fatal — in-memory fallback covers it
+
+
+# Seed on module load (Railway startup)
+_seed_supabase_deals()
+
 # In-memory store starts empty — real deals come from Supabase or user input.
 # EMMA comparable bonds live in services/emma_seed_data.py (real CUSIP data — do not remove).
 
@@ -254,7 +435,11 @@ def create_deal():
         })
         result = db.insert("deals", row)
         if result:
-            return _ok(_row_to_deal(result[0] if isinstance(result, list) else result), 201)
+            deal = _row_to_deal(result[0] if isinstance(result, list) else result)
+            # Mirror into in-memory dict for zero-latency subsequent reads
+            with _lock:
+                _deals[deal["id"]] = deal
+            return _ok(deal, 201)
         # Supabase insert failed (table may not exist yet) — fall through to in-memory
 
     d = new_deal(name, project, sponsor)
@@ -295,9 +480,14 @@ def list_deals():
 def get_deal(deal_id):
     if _use_db():
         rows = db.select("deals", {"id": f"eq.{deal_id}"})
-        if not rows:
-            return _err("Deal not found", 404)
-        return _ok(_row_to_deal(rows[0]))
+        if rows:
+            return _ok(_row_to_deal(rows[0]))
+        # Supabase miss — check in-memory dict (covers pre-Supabase seed IDs like "jacaranda-2025")
+        with _lock:
+            d = _deals.get(deal_id)
+        if d:
+            return _ok(_normalize_deal(d))
+        return _err("Deal not found", 404)
 
     with _lock:
         d = _deals.get(deal_id)

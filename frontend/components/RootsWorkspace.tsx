@@ -1,10 +1,22 @@
 ﻿"use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Loader2, FolderOpen, FileCheck2, CheckCircle2, Circle, AlertTriangle, BarChart3, Shield, Leaf, ShieldCheck, ClipboardCheck, FileText, Calculator, BookOpen, Upload } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Loader2, FolderOpen, CheckCircle2, Circle, AlertTriangle, BarChart3, Shield, Leaf, ShieldCheck, ClipboardCheck, FileText, Calculator, BookOpen, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
+
+function getItem(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(key);
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://nest-platform-production.up.railway.app";
 
@@ -110,26 +122,43 @@ function money(val: number) {
   return `$${val.toLocaleString()}`;
 }
 
-export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: string; summaryMode?: boolean }) {
-  const [subTab, setSubTab] = useState("vault");
+export default function RootsWorkspace({ dealId: dealIdProp, summaryMode }: { dealId?: string; summaryMode?: boolean }) {
+  // ── Resolve dealId: prop → URL ?deal_id= → localStorage ───────────
+  const searchParams = useSearchParams();
+  const dealId: string | undefined =
+    dealIdProp ||
+    searchParams.get("deal_id") ||
+    (typeof window !== "undefined" ? localStorage.getItem("nest_active_deal_id") ?? undefined : undefined) ||
+    undefined;
+
+  const subTabState = useState("vault");
+  const subTab = subTabState[0]; const setSubTab = subTabState[1];
 
   // All doc statuses start as "missing"; backend fetch updates them from real uploads
-  const [docStatus, setDocStatus] = useState<Record<string, string>>(() => {
+  const docStatusState = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     DOC_CATEGORIES.forEach((c) => c.items.forEach((i) => { init[i.id] = "missing"; }));
     return init;
   });
+  const docStatus = docStatusState[0]; const setDocStatus = docStatusState[1];
 
   // All readiness checks start as false; backend fetch updates them from real data
-  const [readinessStatus, setReadinessStatus] = useState<Record<string, boolean>>(() => {
+  const readinessStatusState = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     READINESS_CHECKLIST.forEach((i) => { init[i.id] = false; });
     return init;
   });
+  const readinessStatus = readinessStatusState[0]; const setReadinessStatus = readinessStatusState[1];
 
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const uploadingState = useState(false);
+  const uploading = uploadingState[0]; const setUploading = uploadingState[1];
+
+  const uploadErrorState = useState<string | null>(null);
+  const uploadError = uploadErrorState[0]; const setUploadError = uploadErrorState[1];
+
+  const loadErrorState = useState<string | null>(null);
+  const loadError = loadErrorState[0]; const setLoadError = loadErrorState[1];
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Apply backend document list to local docStatus ─────────────────
@@ -150,37 +179,48 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
     missing?: Array<{ kind: string }>;
     score?: number;
   }) => {
-    // Map backend "present" kinds to readiness items where possible
     const presentKinds = new Set((data.present ?? []).map((p) => p.kind));
     setReadinessStatus((prev) => {
       const next = { ...prev };
-      // Environmental clearance → r13
       if (presentKinds.has("environmental")) next["r13"] = true;
-      // Appraisal implies market validated → r7 (proforma validated by 3rd party)
       if (presentKinds.has("appraisal")) next["r7"] = true;
-      // Insurance → no direct readiness item, skip
       return next;
     });
   }, []);
 
-  // ── Fetch on mount ─────────────────────────────────────────────────
+  // ── Fetch on mount: Supabase first, backend readiness second ───────
   useEffect(() => {
     if (!dealId) return;
+
+    // Read documents for this deal from Supabase documents table
+    supabase
+      .from("documents")
+      .select("doc_type, filename, status, storage_path")
+      .eq("deal_id", dealId)
+      .then(({ data, error }) => {
+        if (error || !data) {
+          // Fall back to backend API if Supabase read fails
+          const token = typeof window !== "undefined" ? localStorage.getItem("nest_token") : null;
+          const headers: Record<string, string> = { "Content-Type": "application/json" };
+          if (token) headers["Authorization"] = `Bearer ${token}`;
+          fetch(`${API}/api/docs?deal_id=${encodeURIComponent(dealId)}`, { headers })
+            .then((r) => (r.ok ? r.json() : Promise.reject(r.statusText)))
+            .then((docs: Array<{ kind: string }>) => applyBackendDocs(docs))
+            .catch(() => setLoadError("Could not load documents from server."));
+          return;
+        }
+        // Map Supabase rows (doc_type = kind) into the same shape applyBackendDocs expects
+        applyBackendDocs(data.map((row) => ({ kind: row.doc_type ?? "other" })));
+      });
+
+    // Fetch readiness from backend (non-blocking)
     const token = typeof window !== "undefined" ? localStorage.getItem("nest_token") : null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
-
-    // Fetch document list
-    fetch(`${API}/api/docs?deal_id=${encodeURIComponent(dealId)}`, { headers })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.statusText)))
-      .then((docs: Array<{ kind: string }>) => applyBackendDocs(docs))
-      .catch(() => setLoadError("Could not load documents from server."));
-
-    // Fetch readiness
     fetch(`${API}/api/docs/readiness?deal_id=${encodeURIComponent(dealId)}`, { headers })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.statusText)))
       .then((data) => applyBackendReadiness(data))
-      .catch(() => { /* readiness fetch failure is non-blocking */ });
+      .catch(() => { /* non-blocking */ });
   }, [dealId, applyBackendDocs, applyBackendReadiness]);
 
   // ── File upload handler ────────────────────────────────────────────
@@ -201,7 +241,17 @@ export default function RootsWorkspace({ dealId, summaryMode }: { dealId?: strin
           const err = await res.json().catch(() => ({ error: res.statusText }));
           throw new Error(err.error || res.statusText);
         }
-        const doc: { kind: string } = await res.json();
+        const doc: { kind: string; filename?: string; storage_path?: string } = await res.json();
+
+        // Write a row to Supabase documents table so the vault persists across sessions
+        await supabase.from("documents").insert({
+          deal_id: dealId,
+          doc_type: doc.kind,
+          filename: doc.filename ?? file.name,
+          storage_path: doc.storage_path ?? "",
+          status: "uploaded",
+        });
+
         // Mark the specific doc clicked as uploaded, and any kind-matched docs
         if (docId) {
           setDocStatus((prev) => ({ ...prev, [docId]: "uploaded" }));
@@ -505,7 +555,8 @@ function SuretyReadinessPanel({ ratingMutation }: { ratingMutation: any }) {
 // ══════════════════════════════════════════════════════════════════
 
 function RMAPanel({ rmaMutation }: { rmaMutation: any }) {
-  const [naics, setNaics] = useState("6232");
+  const naicsState = useState("6232");
+  const naics = naicsState[0]; const setNaics = naicsState[1];
   const comparison = (rmaMutation.data as any)?.comparison;
 
   return (

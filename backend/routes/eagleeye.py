@@ -3,34 +3,116 @@ NEST EagleEye Routes — Business Development & Deal Sourcing.
 Pillar 1: Scans UCC filings, title reports, permits, EDGAR, market signals.
 """
 from flask import Blueprint, jsonify, request
-from services.auth import require_auth
 from datetime import datetime
+import io
 import json
+import logging
 import threading
 import uuid
 
 from agents._claude import complete
+from services.database import db
 from services.eagleeye_scanner import EagleEyeScanner
+
+logger = logging.getLogger(__name__)
 
 eagleeye_bp = Blueprint("eagleeye", __name__)
 
-_signals: list[dict] = []
-_scout_runs = []
+# In-memory fallback (only used when Supabase is unavailable)
+_signals_fallback: list[dict] = []
+_scout_runs: list[dict] = []
 _lock = threading.Lock()
 _scanner = EagleEyeScanner()
 
 
-def _seed_signals_from_edgar() -> None:
-    """Lazily populate _signals from EDGAR on first GET /signals request."""
-    global _signals
+# ---------------------------------------------------------------------------
+# Supabase signal persistence helpers
+# ---------------------------------------------------------------------------
+
+def _supabase_list_signals(status_filter: str = None, naics_filter: str = None) -> list[dict] | None:
+    """
+    Read signals from Supabase `signals` table.
+    Returns list on success, None if Supabase is not configured or errors.
+
+    Supabase columns: id, signal_type, source, entity_name, entity_type,
+    location_state, location_city, sector, naics_code, data jsonb,
+    score, status, created_at
+    """
+    if not db.configured:
+        return None
+    params: dict = {"order": "score.desc"}
+    if status_filter:
+        params["status"] = f"eq.{status_filter}"
+    if naics_filter:
+        params["naics_code"] = f"eq.{naics_filter}"
+    rows = db.select("signals", params)
+    if rows is None:
+        return None
+    return rows if isinstance(rows, list) else []
+
+
+def _supabase_upsert_signal(sig: dict) -> bool:
+    """
+    Write a single signal dict to Supabase signals table.
+    Maps our internal signal shape to the table schema.
+    Returns True on success.
+    """
+    if not db.configured:
+        return False
+    row = {
+        "id": sig.get("id", str(uuid.uuid4())),
+        "signal_type": sig.get("type", "edgar_filing"),
+        "source": sig.get("source", "SEC EDGAR"),
+        "entity_name": sig.get("entity", ""),
+        "entity_type": sig.get("entity_type", ""),
+        "location_state": sig.get("state", "US"),
+        "location_city": sig.get("county", ""),
+        "sector": sig.get("naics", ""),
+        "naics_code": sig.get("naics", ""),
+        "data": {
+            "detail": sig.get("detail", ""),
+            "amount_usd": sig.get("amount_usd", 0),
+            "discoveredAt": sig.get("discoveredAt", datetime.utcnow().isoformat()),
+        },
+        "score": sig.get("score", 50),
+        "status": sig.get("status", "warm"),
+    }
+    result = db.upsert("signals", row)
+    return result is not None
+
+
+def _row_to_signal(row: dict) -> dict:
+    """Map a Supabase signals row back to the internal signal shape."""
+    data = row.get("data") or {}
+    return {
+        "id": row.get("id", ""),
+        "type": row.get("signal_type", "edgar_filing"),
+        "source": row.get("source", "SEC EDGAR"),
+        "entity": row.get("entity_name", ""),
+        "amount_usd": data.get("amount_usd", 0),
+        "naics": row.get("naics_code", ""),
+        "state": row.get("location_state", ""),
+        "county": row.get("location_city", ""),
+        "detail": data.get("detail", ""),
+        "score": row.get("score", 50),
+        "status": row.get("status", "warm"),
+        "discoveredAt": data.get("discoveredAt", row.get("created_at", "")),
+    }
+
+
+def _seed_signals_from_edgar() -> list[dict]:
+    """
+    Fetch EDGAR comparables for senior living, convert to signal shape,
+    write each to Supabase, and return the list.
+    """
+    seeded: list[dict] = []
     try:
         raw = _scanner.search_edgar_comparables(
             sector="senior_living", state="FL",
             min_amount=25_000_000, max_amount=500_000_000
         )
-        seeded = []
         for i, item in enumerate(raw[:10], start=1):
-            seeded.append({
+            sig = {
                 "id": f"sig_{i}",
                 "type": "edgar_filing",
                 "source": "SEC EDGAR",
@@ -43,12 +125,18 @@ def _seed_signals_from_edgar() -> None:
                 "score": max(10, 80 - i * 5),
                 "status": "warm",
                 "discoveredAt": item.get("filing_date", datetime.utcnow().isoformat()),
-            })
-        if seeded:
-            _signals = seeded
-    except Exception:
-        pass  # Leave _signals empty — caller handles gracefully
+            }
+            seeded.append(sig)
+            # Persist each signal to Supabase
+            _supabase_upsert_signal(sig)
+    except Exception as exc:
+        logger.warning("EDGAR seed failed: %s", exc)
+    return seeded
 
+
+# ---------------------------------------------------------------------------
+# Response helpers
+# ---------------------------------------------------------------------------
 
 def _ok(data, code=200):
     return jsonify({"success": True, "data": data, "error": None,
@@ -60,37 +148,69 @@ def _err(msg, code=400):
                     "timestamp": datetime.utcnow().isoformat()}), code
 
 
+# ---------------------------------------------------------------------------
+# Signal endpoints — GET endpoints have NO @require_auth
+# ---------------------------------------------------------------------------
+
 @eagleeye_bp.route("/signals", methods=["GET"])
-
 def list_signals():
-    """All discovered deal signals, sorted by score."""
-    # Lazy seed from EDGAR on first call
-    with _lock:
-        if not _signals:
-            _seed_signals_from_edgar()
+    """
+    All discovered deal signals, sorted by score.
 
+    Priority: Supabase → seed from EDGAR if empty → in-memory fallback.
+    """
     status_filter = request.args.get("status")
     naics_filter = request.args.get("naics")
-    with _lock:
-        filtered = _signals[:]
-    if status_filter:
-        filtered = [s for s in filtered if s["status"] == status_filter]
-    if naics_filter:
-        filtered = [s for s in filtered if s["naics"] == naics_filter]
-    filtered.sort(key=lambda s: s["score"], reverse=True)
+
+    # 1. Try Supabase
+    rows = _supabase_list_signals(status_filter=status_filter, naics_filter=naics_filter)
+
+    if rows is not None:
+        # Supabase is configured
+        if not rows:
+            # Empty table — seed from EDGAR and re-read
+            seeded = _seed_signals_from_edgar()
+            if seeded:
+                # Re-query after seed so we get DB-canonicalized rows
+                rows = _supabase_list_signals(
+                    status_filter=status_filter, naics_filter=naics_filter
+                ) or seeded
+            else:
+                rows = []
+        signals = [_row_to_signal(r) for r in rows]
+    else:
+        # 2. Supabase not available — use in-memory fallback
+        with _lock:
+            if not _signals_fallback:
+                seeded = _seed_signals_from_edgar()
+                _signals_fallback.extend(seeded)
+            filtered = _signals_fallback[:]
+
+        if status_filter:
+            filtered = [s for s in filtered if s.get("status") == status_filter]
+        if naics_filter:
+            filtered = [s for s in filtered if s.get("naics") == naics_filter]
+        signals = filtered
+
+    signals.sort(key=lambda s: s.get("score", 0), reverse=True)
     return _ok({
-        "signals": filtered,
-        "total": len(filtered),
-        "hot": sum(1 for s in filtered if s["status"] == "hot"),
-        "warm": sum(1 for s in filtered if s["status"] == "warm"),
+        "signals": signals,
+        "total": len(signals),
+        "hot": sum(1 for s in signals if s.get("status") == "hot"),
+        "warm": sum(1 for s in signals if s.get("status") == "warm"),
     })
 
 
 @eagleeye_bp.route("/signals/<signal_id>", methods=["GET"])
-
 def get_signal(signal_id):
+    # Try Supabase first
+    rows = db.select("signals", {"id": f"eq.{signal_id}"}) if db.configured else None
+    if rows and isinstance(rows, list) and rows:
+        return _ok(_row_to_signal(rows[0]))
+
+    # Fallback to in-memory
     with _lock:
-        sig = next((s for s in _signals if s["id"] == signal_id), None)
+        sig = next((s for s in _signals_fallback if s["id"] == signal_id), None)
     if not sig:
         return _err("Signal not found", 404)
     return _ok(sig)
@@ -103,8 +223,18 @@ def update_signal_status(signal_id):
     valid = ["hot", "warm", "review", "passed", "converted"]
     if new_status not in valid:
         return _err(f"Status must be one of: {valid}")
+
+    # Try Supabase update
+    if db.configured:
+        result = db.update("signals", {"id": f"eq.{signal_id}"}, {"status": new_status})
+        if result is not None:
+            rows = db.select("signals", {"id": f"eq.{signal_id}"})
+            if rows and isinstance(rows, list) and rows:
+                return _ok(_row_to_signal(rows[0]))
+
+    # Fallback to in-memory
     with _lock:
-        sig = next((s for s in _signals if s["id"] == signal_id), None)
+        sig = next((s for s in _signals_fallback if s["id"] == signal_id), None)
         if not sig:
             return _err("Signal not found", 404)
         sig["status"] = new_status
@@ -151,7 +281,6 @@ def run_scout():
 
 
 @eagleeye_bp.route("/scout/history", methods=["GET"])
-
 def scout_history():
     with _lock:
         return _ok(_scout_runs[::-1])
@@ -160,12 +289,19 @@ def scout_history():
 @eagleeye_bp.route("/convert/<signal_id>", methods=["POST"])
 def convert_to_deal(signal_id):
     """Convert a signal into a NEST deal — pushes to Roots."""
-    with _lock:
-        sig = next((s for s in _signals if s["id"] == signal_id), None)
+    # Try Supabase lookup
+    sig = None
+    if db.configured:
+        rows = db.select("signals", {"id": f"eq.{signal_id}"})
+        if rows and isinstance(rows, list) and rows:
+            sig = _row_to_signal(rows[0])
+
+    if not sig:
+        with _lock:
+            sig = next((s for s in _signals_fallback if s["id"] == signal_id), None)
     if not sig:
         return _err("Signal not found", 404)
 
-    # Create deal stub from signal
     deal_stub = {
         "name": sig["entity"],
         "source": "eagleeye",
@@ -179,8 +315,13 @@ def convert_to_deal(signal_id):
         "convertedAt": datetime.utcnow().isoformat(),
     }
 
+    # Mark converted in Supabase
+    if db.configured:
+        db.update("signals", {"id": f"eq.{signal_id}"}, {"status": "converted"})
     with _lock:
-        sig["status"] = "converted"
+        for s in _signals_fallback:
+            if s["id"] == signal_id:
+                s["status"] = "converted"
 
     return _ok(deal_stub)
 
@@ -188,15 +329,21 @@ def convert_to_deal(signal_id):
 @eagleeye_bp.route("/promote/<signal_id>", methods=["POST"])
 def promote_to_prospect(signal_id):
     """Promote a signal to a deal prospect in the NEST pipeline."""
-    with _lock:
-        sig = next((s for s in _signals if s["id"] == signal_id), None)
+    sig = None
+    if db.configured:
+        rows = db.select("signals", {"id": f"eq.{signal_id}"})
+        if rows and isinstance(rows, list) and rows:
+            sig = _row_to_signal(rows[0])
+
+    if not sig:
+        with _lock:
+            sig = next((s for s in _signals_fallback if s["id"] == signal_id), None)
     if not sig:
         return _err("Signal not found", 404)
 
     if sig.get("status") == "promoted":
         return _err("Signal already promoted", 409)
 
-    # Build a deal stub from the signal fields
     deal = {
         "id": str(uuid.uuid4()),
         "name": sig.get("entity", sig.get("name", "Unknown")),
@@ -214,18 +361,22 @@ def promote_to_prospect(signal_id):
         "eagleeye_score": sig.get("score", 0),
     }
 
-    # Push into deals in-memory store
     try:
         from routes.deals import _deals, _lock as deals_lock
         with deals_lock:
             _deals[deal["id"]] = deal
     except Exception:
-        pass  # Deals store unavailable — deal stub still returned
+        pass
 
     # Mark signal as promoted
+    if db.configured:
+        db.update("signals", {"id": f"eq.{signal_id}"},
+                  {"status": "promoted", "data": {"promoted_deal_id": deal["id"]}})
     with _lock:
-        sig["status"] = "promoted"
-        sig["promoted_deal_id"] = deal["id"]
+        for s in _signals_fallback:
+            if s["id"] == signal_id:
+                s["status"] = "promoted"
+                s["promoted_deal_id"] = deal["id"]
 
     return _ok({"deal": deal, "signal_id": signal_id})
 
@@ -234,14 +385,6 @@ def promote_to_prospect(signal_id):
 def find_similar():
     """
     Find comparable transactions for a deal using EDGAR + FRED + Claude.
-
-    Body: {
-        "borrower":   str,
-        "sector":     str,   # senior_living | healthcare | multifamily | etc.
-        "state":      str,   # two-letter code
-        "par_amount": int,   # dollars
-        "naics_code": str    # optional
-    }
     """
     body = request.get_json() or {}
     borrower = body.get("borrower", "").strip()
@@ -250,7 +393,6 @@ def find_similar():
     par_amount = body.get("par_amount")
     naics_code = body.get("naics_code", "")
 
-    # Validate required fields
     missing = [f for f, v in [("borrower", borrower), ("sector", sector),
                                ("state", state), ("par_amount", par_amount)] if not v]
     if missing:
@@ -261,7 +403,6 @@ def find_similar():
     except (TypeError, ValueError):
         return _err("par_amount must be an integer", 400)
 
-    # 1 — EDGAR comparables
     edgar_results = []
     try:
         edgar_results = _scanner.search_edgar_comparables(
@@ -273,7 +414,6 @@ def find_similar():
     except Exception:
         pass
 
-    # 2 — FRED market context
     market_ctx = {}
     try:
         market_ctx = _scanner.get_fred_market_context(state=state, sector=sector)
@@ -284,7 +424,6 @@ def find_similar():
     mortgage_30 = market_ctx.get("mortgage_30yr", "N/A")
     cre_delinq = market_ctx.get("cre_delinquency", "N/A")
 
-    # 3 — Ask Claude to rank + supplement to 5 comps
     edgar_json = json.dumps(edgar_results, indent=2)
     system_prompt = (
         "You are a capital markets analyst at NEST Advisors. "
@@ -313,7 +452,6 @@ def find_similar():
         if not isinstance(comparables, list):
             raise ValueError("Response is not a list")
     except Exception:
-        # Best-effort: convert EDGAR results directly
         comparables = [
             {
                 "name": r.get("entity", "Unknown"),
@@ -386,7 +524,6 @@ def ma_scan():
             if (datetime.utcnow() - cached["ts"]).seconds < 1800:
                 return _ok(cached["data"])
 
-    # Build EDGAR scan results per NAICS group
     all_edgar = []
     for naics in target_naics[:3]:
         try:
@@ -409,7 +546,6 @@ def ma_scan():
         except Exception:
             pass
 
-    # Ask Claude to synthesize 6 qualified M&A targets
     system_prompt = (
         "You are an M&A deal origination specialist at NEST Advisors. "
         "NEST arranges financing for acquisitions of lower-middle-market companies "
@@ -440,7 +576,6 @@ def ma_scan():
         parsed = json.loads(raw)
         targets = parsed if isinstance(parsed, list) else parsed.get("targets", [])
     except Exception:
-        # Fallback static targets if Claude or EDGAR unavailable
         targets = [
             {
                 "name": "Apex Industrial Holdings LLC",
@@ -545,12 +680,82 @@ CRE_STATES = [
 _cre_cache: dict = {}
 _cre_lock = threading.Lock()
 
+# Static fallback data — used when Claude call fails or times out
+_CRE_FALLBACK_STATES = [
+    {"state": "FL", "heat_score": 94, "signal_count": 18, "pipeline_usd": 412_000_000,
+     "top_signal": "CMBS bridge maturities concentrated in Orlando + Tampa senior living corridor",
+     "deal_types": ["senior_living", "multifamily", "hospitality"]},
+    {"state": "TX", "heat_score": 88, "signal_count": 14, "pipeline_usd": 310_000_000,
+     "top_signal": "Houston industrial bridge wave — $200M+ maturing Q3-Q4 2026",
+     "deal_types": ["industrial", "multifamily", "mixed_use"]},
+    {"state": "AZ", "heat_score": 81, "signal_count": 11, "pipeline_usd": 225_000_000,
+     "top_signal": "Phoenix multifamily stabilized — 87% occupancy, ready for perm bond takeout",
+     "deal_types": ["multifamily", "senior_living", "retail"]},
+    {"state": "GA", "heat_score": 76, "signal_count": 9, "pipeline_usd": 188_000_000,
+     "top_signal": "Atlanta suburban office conversion wave — 3 CMBS loans in special servicing",
+     "deal_types": ["office", "multifamily", "industrial"]},
+    {"state": "NC", "heat_score": 71, "signal_count": 7, "pipeline_usd": 142_000_000,
+     "top_signal": "Charlotte metro senior living expansion — 4 operators seeking construction bonds",
+     "deal_types": ["senior_living", "multifamily"]},
+    {"state": "WA", "heat_score": 68, "signal_count": 6, "pipeline_usd": 98_000_000,
+     "top_signal": "Seattle industrial last-mile stabilized refi opportunity — low cap rates",
+     "deal_types": ["industrial", "multifamily"]},
+    {"state": "CO", "heat_score": 64, "signal_count": 5, "pipeline_usd": 87_000_000,
+     "top_signal": "Denver hospitality portfolio — bridge maturity wall in 9 months",
+     "deal_types": ["hospitality", "multifamily"]},
+    {"state": "CA", "heat_score": 61, "signal_count": 8, "pipeline_usd": 215_000_000,
+     "top_signal": "LA multifamily distressed — rising vacancies + CMBS watch list",
+     "deal_types": ["multifamily", "retail"]},
+    {"state": "NV", "heat_score": 57, "signal_count": 4, "pipeline_usd": 63_000_000,
+     "top_signal": "Vegas hospitality CMBS special servicing — 2 loans in workout",
+     "deal_types": ["hospitality"]},
+    {"state": "TN", "heat_score": 53, "signal_count": 4, "pipeline_usd": 71_000_000,
+     "top_signal": "Nashville senior living construction exit — below stabilization, needs bridge",
+     "deal_types": ["senior_living", "multifamily"]},
+]
+
+_CRE_FALLBACK_PROPERTIES = [
+    {"name": "Jacaranda Trace Senior Living",
+     "asset_type": "senior_living", "state": "FL", "city": "Venice",
+     "signal_type": "stabilized_refi", "loan_amount_usd": 231_000_000,
+     "maturity_months": None, "estimated_noi_usd": 18_500_000,
+     "opportunity_score": 96,
+     "thesis": "Series 2025 PAB positioned for $231M permanent bond — Baa1/BBB+ rated, surety-enhanced."},
+    {"name": "Convivial St. Petersburg",
+     "asset_type": "senior_living", "state": "FL", "city": "St. Petersburg",
+     "signal_type": "bridge_maturing", "loan_amount_usd": 172_500_000,
+     "maturity_months": 8, "estimated_noi_usd": 14_200_000,
+     "opportunity_score": 91,
+     "thesis": "Construction loan matures Q1 2027 — $172.5M construction bond under structuring."},
+    {"name": "Pacific Ridge Senior Living",
+     "asset_type": "senior_living", "state": "WA", "city": "Bellevue",
+     "signal_type": "bridge_maturing", "loan_amount_usd": 67_000_000,
+     "maturity_months": 6, "estimated_noi_usd": 5_800_000,
+     "opportunity_score": 83,
+     "thesis": "Bridge approaching maturity at 78% occupancy — NEST bridge-to-bond structure fits."},
+    {"name": "Desert Springs CCRC",
+     "asset_type": "senior_living", "state": "AZ", "city": "Scottsdale",
+     "signal_type": "cmbs_watch", "loan_amount_usd": 85_000_000,
+     "maturity_months": 12, "estimated_noi_usd": 7_100_000,
+     "opportunity_score": 78,
+     "thesis": "CMBS loan on watch list — A3 rated CCRC seeking perm bond refinance."},
+    {"name": "Dominion Edge Data Centers",
+     "asset_type": "industrial", "state": "VA", "city": "Ashburn",
+     "signal_type": "stabilized_refi", "loan_amount_usd": 120_000_000,
+     "maturity_months": None, "estimated_noi_usd": 9_600_000,
+     "opportunity_score": 74,
+     "thesis": "Stabilized data center at 96% occupancy — revenue bond refi saves 85bps vs current rate."},
+]
+
 
 @eagleeye_bp.route("/cre-heatmap", methods=["GET"])
 def cre_heatmap():
     """
     CRE distressed-property heat map — bridge maturities, dark zones, refi signals.
     Returns state-level summaries and top property targets.
+
+    When Claude call fails, returns static fallback data with source="fallback"
+    so the frontend can display a data-source notice.
     """
     refresh = request.args.get("refresh", "false").lower() == "true"
 
@@ -560,14 +765,13 @@ def cre_heatmap():
             if (datetime.utcnow() - cached["ts"]).seconds < 900:
                 return _ok(cached["data"])
 
-    # Aggregate signals by state from existing signal store
+    # Pull current signals for context
     with _lock:
         cre_signals = [
-            s for s in _signals
+            s for s in _signals_fallback
             if s.get("naics", "").startswith("62") or s.get("status") in ("hot", "warm")
         ]
 
-    # Build state heat map via Claude
     system_prompt = (
         "You are a CRE distressed asset analyst at NEST Advisors. "
         "Return ONLY valid JSON, no markdown fences."
@@ -595,83 +799,28 @@ def cre_heatmap():
 
     states_data = []
     top_properties = []
+    data_source = "claude"
+
     try:
         raw = complete(system_prompt, user_prompt, max_tokens=2000)
         parsed = json.loads(raw)
         states_data = parsed.get("states", [])
         top_properties = parsed.get("top_properties", [])
-    except Exception:
-        # Fallback static heat map
-        states_data = [
-            {"state": "FL", "heat_score": 94, "signal_count": 18, "pipeline_usd": 412_000_000,
-             "top_signal": "CMBS bridge maturities concentrated in Orlando + Tampa senior living corridor",
-             "deal_types": ["senior_living", "multifamily", "hospitality"]},
-            {"state": "TX", "heat_score": 88, "signal_count": 14, "pipeline_usd": 310_000_000,
-             "top_signal": "Houston industrial bridge wave — $200M+ maturing Q3-Q4 2026",
-             "deal_types": ["industrial", "multifamily", "mixed_use"]},
-            {"state": "AZ", "heat_score": 81, "signal_count": 11, "pipeline_usd": 225_000_000,
-             "top_signal": "Phoenix multifamily stabilized — 87% occupancy, ready for perm bond takeout",
-             "deal_types": ["multifamily", "senior_living", "retail"]},
-            {"state": "GA", "heat_score": 76, "signal_count": 9, "pipeline_usd": 188_000_000,
-             "top_signal": "Atlanta suburban office conversion wave — 3 CMBS loans in special servicing",
-             "deal_types": ["office", "multifamily", "industrial"]},
-            {"state": "NC", "heat_score": 71, "signal_count": 7, "pipeline_usd": 142_000_000,
-             "top_signal": "Charlotte metro senior living expansion — 4 operators seeking construction bonds",
-             "deal_types": ["senior_living", "multifamily"]},
-            {"state": "WA", "heat_score": 68, "signal_count": 6, "pipeline_usd": 98_000_000,
-             "top_signal": "Seattle industrial last-mile stabilized refi opportunity — low cap rates",
-             "deal_types": ["industrial", "multifamily"]},
-            {"state": "CO", "heat_score": 64, "signal_count": 5, "pipeline_usd": 87_000_000,
-             "top_signal": "Denver hospitality portfolio — bridge maturity wall in 9 months",
-             "deal_types": ["hospitality", "multifamily"]},
-            {"state": "CA", "heat_score": 61, "signal_count": 8, "pipeline_usd": 215_000_000,
-             "top_signal": "LA multifamily distressed — rising vacancies + CMBS watch list",
-             "deal_types": ["multifamily", "retail"]},
-            {"state": "NV", "heat_score": 57, "signal_count": 4, "pipeline_usd": 63_000_000,
-             "top_signal": "Vegas hospitality CMBS special servicing — 2 loans in workout",
-             "deal_types": ["hospitality"]},
-            {"state": "TN", "heat_score": 53, "signal_count": 4, "pipeline_usd": 71_000_000,
-             "top_signal": "Nashville senior living construction exit — below stabilization, needs bridge",
-             "deal_types": ["senior_living", "multifamily"]},
-        ]
-        top_properties = [
-            {"name": "Jacaranda Trace Senior Living",
-             "asset_type": "senior_living", "state": "FL", "city": "Venice",
-             "signal_type": "stabilized_refi", "loan_amount_usd": 231_000_000,
-             "maturity_months": None, "estimated_noi_usd": 18_500_000,
-             "opportunity_score": 96,
-             "thesis": "Series 2025 PAB positioned for $231M permanent bond — Baa1/BBB+ rated, surety-enhanced."},
-            {"name": "Convivial St. Petersburg",
-             "asset_type": "senior_living", "state": "FL", "city": "St. Petersburg",
-             "signal_type": "bridge_maturing", "loan_amount_usd": 172_500_000,
-             "maturity_months": 8, "estimated_noi_usd": 14_200_000,
-             "opportunity_score": 91,
-             "thesis": "Construction loan matures Q1 2027 — $172.5M construction bond under structuring."},
-            {"name": "Pacific Ridge Senior Living",
-             "asset_type": "senior_living", "state": "WA", "city": "Bellevue",
-             "signal_type": "bridge_maturing", "loan_amount_usd": 67_000_000,
-             "maturity_months": 6, "estimated_noi_usd": 5_800_000,
-             "opportunity_score": 83,
-             "thesis": "Bridge approaching maturity at 78% occupancy — NEST bridge-to-bond structure fits."},
-            {"name": "Desert Springs CCRC",
-             "asset_type": "senior_living", "state": "AZ", "city": "Scottsdale",
-             "signal_type": "cmbs_watch", "loan_amount_usd": 85_000_000,
-             "maturity_months": 12, "estimated_noi_usd": 7_100_000,
-             "opportunity_score": 78,
-             "thesis": "CMBS loan on watch list — A3 rated CCRC seeking perm bond refinance."},
-            {"name": "Dominion Edge Data Centers",
-             "asset_type": "industrial", "state": "VA", "city": "Ashburn",
-             "signal_type": "stabilized_refi", "loan_amount_usd": 120_000_000,
-             "maturity_months": None, "estimated_noi_usd": 9_600_000,
-             "opportunity_score": 74,
-             "thesis": "Stabilized data center at 96% occupancy — revenue bond refi saves 85bps vs current rate."},
-        ]
+        if not states_data:
+            raise ValueError("Claude returned empty states array")
+    except Exception as exc:
+        # Log the real error — don't silently swallow it
+        logger.warning("CRE heatmap Claude call failed (%s) — serving static fallback", exc)
+        states_data = _CRE_FALLBACK_STATES
+        top_properties = _CRE_FALLBACK_PROPERTIES
+        data_source = "fallback"
 
     payload = {
         "states": states_data,
         "top_properties": top_properties,
         "total_pipeline_usd": sum(s.get("pipeline_usd", 0) for s in states_data),
         "total_signals": sum(s.get("signal_count", 0) for s in states_data),
+        "source": data_source,          # "claude" or "fallback"
         "timestamp": datetime.utcnow().isoformat(),
     }
     with _cre_lock:
@@ -681,10 +830,28 @@ def cre_heatmap():
 
 @eagleeye_bp.route("/stats", methods=["GET"])
 def stats():
+    # Try Supabase for live counts
+    if db.configured:
+        all_rows = db.select("signals") or []
+        if isinstance(all_rows, list):
+            total = len(all_rows)
+            pipeline_usd = sum(
+                (r.get("data") or {}).get("amount_usd", 0)
+                for r in all_rows
+                if r.get("status") in ("hot", "warm")
+            )
+            converted = sum(1 for r in all_rows if r.get("status") == "converted")
+            return _ok({
+                "total_signals": total,
+                "pipeline_usd": pipeline_usd,
+                "converted": converted,
+                "scout_runs": len(_scout_runs),
+            })
+
     with _lock:
-        total = len(_signals)
-        pipeline_usd = sum(s["amount_usd"] for s in _signals if s["status"] in ("hot", "warm"))
-        converted = sum(1 for s in _signals if s["status"] == "converted")
+        total = len(_signals_fallback)
+        pipeline_usd = sum(s["amount_usd"] for s in _signals_fallback if s["status"] in ("hot", "warm"))
+        converted = sum(1 for s in _signals_fallback if s["status"] == "converted")
     return _ok({
         "total_signals": total,
         "pipeline_usd": pipeline_usd,
@@ -693,9 +860,144 @@ def stats():
     })
 
 
+# ── DOCUMENT UPLOAD — replaces simulateParse in EagleEyeEngine.tsx ──────────
+
+@eagleeye_bp.route("/upload", methods=["POST"])
+def upload_document():
+    """
+    Accept a multipart file upload, extract text, classify doc type,
+    and score it as a deal signal.
+
+    Returns: { doc_type, extracted_text, signal_score, detail }
+
+    Supported: PDF (via pdfminer), plain text, and any file readable as UTF-8.
+    Replaces the simulateParse stub in the frontend — wire to this endpoint.
+    """
+    if "file" not in request.files:
+        return _err("No file uploaded — send multipart/form-data with field 'file'", 400)
+
+    uploaded = request.files["file"]
+    filename = uploaded.filename or "upload"
+    raw_bytes = uploaded.read()
+
+    if not raw_bytes:
+        return _err("Uploaded file is empty", 400)
+
+    # ── Text extraction ────────────────────────────────────────────────────
+    extracted_text = ""
+    extraction_method = "raw"
+
+    if filename.lower().endswith(".pdf"):
+        try:
+            from pdfminer.high_level import extract_text as pdf_extract_text
+            pdf_file = io.BytesIO(raw_bytes)
+            extracted_text = pdf_extract_text(pdf_file)
+            extraction_method = "pdfminer"
+        except ImportError:
+            # pdfminer not installed — fall back to raw byte decode
+            extracted_text = raw_bytes.decode("utf-8", errors="replace")
+            extraction_method = "raw_fallback"
+        except Exception as exc:
+            logger.warning("PDF extraction failed for %s: %s", filename, exc)
+            extracted_text = raw_bytes.decode("utf-8", errors="replace")
+            extraction_method = "raw_fallback"
+    else:
+        try:
+            extracted_text = raw_bytes.decode("utf-8", errors="replace")
+            extraction_method = "utf8"
+        except Exception:
+            extracted_text = ""
+
+    extracted_text = extracted_text.strip()
+    if not extracted_text:
+        return _err("Could not extract text from file", 422)
+
+    # ── Document classification ─────────────────────────────────────────
+    # Keyword-based classification before hitting Claude, so we have a fallback
+    text_lower = extracted_text.lower()
+
+    DOC_KEYWORDS = {
+        "audited_financials": ["independent auditors", "balance sheet", "statement of operations",
+                               "statement of cash flows", "notes to financial statements"],
+        "appraisal": ["appraisal report", "market value", "appraised value",
+                       "highest and best use", "comparable sales"],
+        "rent_roll": ["rent roll", "unit number", "monthly rent", "move-in date", "lease expiration"],
+        "proforma": ["proforma", "pro forma", "projected revenue", "forecast", "stabilized noi"],
+        "term_sheet": ["term sheet", "loan terms", "interest rate", "loan to value",
+                        "maturity date", "origination fee"],
+        "sources_uses": ["sources and uses", "sources & uses", "construction budget",
+                          "development cost", "total project cost"],
+        "officer_certificate": ["officer", "certificate", "covenant compliance", "dscr",
+                                  "days cash on hand"],
+        "environmental": ["phase i", "phase ii", "environmental site assessment",
+                            "recognized environmental"],
+        "market_study": ["market study", "market analysis", "absorption rate",
+                          "competitive set", "demographic"],
+        "form_d": ["form d", "private placement", "regulation d", "506(b)", "506(c)"],
+    }
+
+    detected_type = "unknown"
+    best_match_count = 0
+    for doc_type, keywords in DOC_KEYWORDS.items():
+        matches = sum(1 for kw in keywords if kw in text_lower)
+        if matches > best_match_count:
+            best_match_count = matches
+            detected_type = doc_type
+
+    # ── Claude classification + scoring (with fallback) ─────────────────
+    snippet = extracted_text[:3000]  # Keep prompt size reasonable
+
+    system_prompt = (
+        "You are a bond underwriting document analyst at NEST Advisors. "
+        "Return ONLY valid JSON, no markdown."
+    )
+    user_prompt = (
+        f"Analyze this document (filename: {filename}):\n\n{snippet}\n\n"
+        "Return JSON with these keys:\n"
+        '"doc_type" (str: audited_financials|appraisal|rent_roll|proforma|term_sheet|'
+        'sources_uses|officer_certificate|environmental|market_study|form_d|other),\n'
+        '"signal_score" (int 0-100: how useful is this for bond underwriting? '
+        '100=complete financials, 0=irrelevant),\n'
+        '"key_metrics" (object: up to 5 key financial figures found, e.g. '
+        '{"noi": 2400000, "dscr": 1.42, "occupancy": 0.91}),\n'
+        '"missing_items" (array of str: what critical items are absent),\n'
+        '"summary" (str: one sentence describing the document and its underwriting relevance).'
+    )
+
+    key_metrics = {}
+    missing_items: list[str] = []
+    summary = f"Document classified as {detected_type} via keyword matching."
+    signal_score = min(20 + best_match_count * 10, 80)  # keyword-based baseline
+
+    try:
+        raw_response = complete(system_prompt, user_prompt, max_tokens=512)
+        parsed = json.loads(raw_response)
+        detected_type = parsed.get("doc_type", detected_type)
+        signal_score = int(parsed.get("signal_score", signal_score))
+        key_metrics = parsed.get("key_metrics", {})
+        missing_items = parsed.get("missing_items", [])
+        summary = parsed.get("summary", summary)
+    except Exception as exc:
+        logger.warning("Claude doc classification failed for %s: %s", filename, exc)
+        # Keep keyword-based values — do not surface error to caller
+
+    # Clamp score
+    signal_score = max(0, min(100, signal_score))
+
+    return _ok({
+        "doc_type": detected_type,
+        "extracted_text": extracted_text[:5000],   # truncate for wire transport
+        "signal_score": signal_score,
+        "key_metrics": key_metrics,
+        "missing_items": missing_items,
+        "summary": summary,
+        "filename": filename,
+        "char_count": len(extracted_text),
+        "extraction_method": extraction_method,
+    })
+
+
 # ── OPERATORS: LEARNING LOOP ─────────────────────────────────────────────────
-# EagleEye mounts this on load to prime the intelligence cycle.
-# Fires EDGAR + FRED → Claude synthesizes → returns actionable items.
 
 @eagleeye_bp.route("/operators/learning-loop", methods=["POST"])
 def operators_learning_loop():
@@ -703,14 +1005,13 @@ def operators_learning_loop():
     Auto-fired on EagleEye mount. Pulls live EDGAR + FRED signals,
     runs Claude analysis, and returns a prioritized action list.
 
-    Body: { sector?: str, state?: str }   (both optional — scans broadly if omitted)
+    Body: { sector?: str, state?: str }
     Returns: { actions: [...], signals_pulled: int, market_snapshot: {...} }
     """
     body = request.get_json(silent=True) or {}
     sector = body.get("sector", "senior_living")
     state = body.get("state", "FL")
 
-    # 1 — Pull live EDGAR signals
     edgar_signals = []
     try:
         edgar_signals = _scanner.search_edgar_comparables(
@@ -722,14 +1023,12 @@ def operators_learning_loop():
     except Exception:
         pass
 
-    # 2 — Pull FRED market context
     market_ctx = {}
     try:
         market_ctx = _scanner.get_fred_market_context(state=state, sector=sector)
     except Exception:
         pass
 
-    # 3 — Claude synthesizes into action items
     system_prompt = (
         "You are Bernard, the AI CEO of NEST Advisors — a private bond structuring and "
         "capital markets intelligence platform. You are reviewing live market signals. "
@@ -756,7 +1055,6 @@ def operators_learning_loop():
         if not isinstance(actions, list):
             actions = []
     except Exception:
-        # Fallback — structured summary without Claude
         actions = [
             {
                 "title": f"EDGAR scan complete — {len(edgar_signals)} filings found",
@@ -775,12 +1073,17 @@ def operators_learning_loop():
                 "signal_source": "FRED",
             })
 
-    # Also seed local _signals from this EDGAR pull (so Signal Feed has live data)
-    with _lock:
-        if not _signals and edgar_signals:
-            seeded = []
+    # Seed Supabase + in-memory from this EDGAR pull
+    if edgar_signals:
+        rows = _supabase_list_signals() if db.configured else None
+        already_seeded = bool(rows)
+
+        with _lock:
+            mem_empty = not _signals_fallback
+
+        if not already_seeded or mem_empty:
             for i, item in enumerate(edgar_signals[:10], start=1):
-                seeded.append({
+                sig = {
                     "id": f"ll_{i}",
                     "type": "edgar_filing",
                     "source": "SEC EDGAR",
@@ -793,8 +1096,11 @@ def operators_learning_loop():
                     "score": max(10, 80 - i * 5),
                     "status": "warm",
                     "discoveredAt": item.get("filing_date", datetime.utcnow().isoformat()),
-                })
-            _signals.extend(seeded)
+                }
+                _supabase_upsert_signal(sig)
+                with _lock:
+                    if not any(s["id"] == sig["id"] for s in _signals_fallback):
+                        _signals_fallback.append(sig)
 
     return _ok({
         "actions": actions,

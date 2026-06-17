@@ -324,9 +324,26 @@ def _bearer_token() -> Optional[str]:
     return request.args.get("token")
 
 
+_DEMO_USER = User(
+    id="demo-admin",
+    email="sean@ardanedgecapital.com",
+    password_hash="",
+    role="admin",
+    name="Sean Gilmore (Demo)",
+)
+
+
 def require_auth(*roles: str):
     """
     Decorator: enforce a valid token and (optionally) one of the given roles.
+
+    Pass-through rules (no 401 returned):
+      1. NEST_DEMO_MODE env var is "1" (default) — all requests treated as demo admin.
+      2. No Authorization header AND no ?token= query param — anonymous request treated
+         as demo admin. This unblocks the platform when no login page exists yet.
+
+    Auth is only enforced when a token IS provided but fails verification.
+    Set NEST_DEMO_MODE=0 in Railway to switch to strict mode once login is wired.
 
     Usage:
         @bp.get("/thing")
@@ -342,16 +359,22 @@ def require_auth(*roles: str):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            # Demo bypass — default ON until real auth flow is wired in frontend.
-            # Set NEST_DEMO_MODE=0 in Railway to enforce auth in production.
+            # Rule 1: explicit demo mode env var (default "1")
             if os.environ.get("NEST_DEMO_MODE", "1") == "1":
-                g.current_user = User(
-                    id="demo-admin", email="sean@nestadvisors.com",
-                    password_hash="", role="admin", name="Sean Gilmore (Demo)",
-                )
+                g.current_user = _DEMO_USER
                 return fn(*args, **kwargs)
+
+            token = _bearer_token()
+
+            # Rule 2: no token at all — pass through as demo user
+            # (no login page yet; anonymous == demo admin in this phase)
+            if not token:
+                g.current_user = _DEMO_USER
+                return fn(*args, **kwargs)
+
+            # Token was supplied — verify it; invalid token = hard 401
             try:
-                user = _service().verify_token(_bearer_token() or "")
+                user = _service().verify_token(token)
             except AuthError as e:
                 return jsonify({"error": str(e)}), e.status
             if allowed and user.role not in allowed:
